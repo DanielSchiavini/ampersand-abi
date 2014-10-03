@@ -2,3 +2,8 @@
 *.log
 *.synctex.gz
 *.toc
+*.dvi
+*.out
+*.bbl
+*.blg
+*.brf
