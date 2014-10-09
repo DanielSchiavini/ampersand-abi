@@ -26,105 +26,83 @@
 \clearpage
 
 \section{Introduction}
-\subsection{Context}
-\begin{description}
-\item [Opdrachtgever] Bastiaan Heeren / Stef Joosten - OU Informatica
-\item [Research context] Modelleren van bedrijfsregels
-\item [Taal] Haskell
-\end{description}
-
-\begin{itemize}
-\item Refactoren van de source code van een parser uit een open source project 
-\item Verbeteren van de parser-foutmeldingen
-\end{itemize}
-
-\subsection{Related work}
-Onderzoekscontext/related work, plaats van project daarin, mogelijke consequenties voor het onderzoek.
-
+\subsection{Identification}
+\subsection{Goal of this document}
 \subsection{Document overview}
-\lipsum[1]
 
-Task division, Approach plan, requirements, risks, global architecture, tool alternatives,
-regelmatige overleg,
+\section{Project description}
+\subsection{The Ampersand project}
+\subsection{As-Is situation}
+\subsection{Goal of the project}
+\subsection{Project architecture, components and environment}
+\subsection{Critical success factors}
+\subsection{Our objectives and commitments towards the project and customer}
 
+\section{Knowledge acquisition}
+\subsection{Onderzoekscontext}
+\subsection{3a domein \& techniek}
+\subsubsection{Part Daniel}
+\subsubsection{Part Maarten}
+\subsection{Knowledge documentation}
 
-\newpage
-\section{Objectives}
-Vraagstelling in detail.
+\section{Project approach}
+\subsection{Project methodology}
+\subsection{Project planning (\& phases)}
+\subsection{Project milestones and corresponding deliverables }
 
-In het kader van het Ampersand onderzoeksprogramma is een compiler gemaakt voor bedrijfsregels. Deze compiler is in Haskell geschreven, en is beschikbaar als open source project. Eén van de vraagstukken is de kwaliteit van de parser-foutmeldingen. Daar is nog nooit goed naar gekeken, met als gevolg dat de foutmeldingen niet altijd informatief zijn voor de gebruiker.
+\section{Project management}
+\subsection{Project governance / roles \& responsibilities}
+\subsection{Communication}
+\subsubsection{Internal}
+\subsubsection{OU}
+\subsubsection{Customer}
+\subsection{Time keeping}
+\subsection{Project reporting}
+\subsection{Quality assurance}
+\subsubsection{Process quality \& monitoring}
+\subsubsection{Deliverables quality \& monitoring}
 
-De opdracht is om de bestaande parser in z’n geheel te refactoren, met aandacht voor foutmeldingen en pretty-printing. De uitdaging is om zo informatief mogelijke foutmeldingen te genereren. Als randvoorwaarde geldt dat de Haskell code onderhoudbaar moet zijn en goed moet zijn getest. Wanneer het aan de onderhoudbaarheid mankeert, wordt de nieuwe parser niet in productie genomen.
+\section{Assumptions and limitations}
+(knowledge/architecture/etc...)
 
-Een ontwikkelstraat op basis van SVN is aanwezig. Dit project zal in een branch worden uitgevoerd. Bij succesvolle afronding zal het ABI-team deze branch in de productiestroom integreren.
+\section{Interferences with other projects}
+(code conflicts, etc...)
 
-\begin{itemize}
-\item Analyse naar gebruiksvriendelijke foutmeldingen in compilers 
-\item Vergelijken van diverse Haskell bibliotheken om te parsen en te pretty-printen. 
-\item Inventarisatie van technieken en tools in Haskell ter bevordering van de software\-kwaliteit 
-\item Analyse van de huidige ontwikkelstraat in relatie tot software engineering principes zoals continuous delivery/integration en het doen van aanbevelingen om de kwaliteit bewaking te vergroten 
-\end{itemize}
+\section{Risk management}
+\subsection{Risk identification and qualification}
+\subsubsection{Functional risks}
+\subsubsection{Technical risks}
+\subsection{Risk mitigation plan}
 
-De software waaraan wordt gewerkt draagt in belangrijke mate bij aan het onderzoek naar bedrijfsregels dat wordt uitgevoerd door Joosten en zijn onderzoeksgroep. De ABI studenten zullen zich voldoende moeten inwerken in dit onderzoek om een bijdrage te kunnen leveren. De opdracht biedt ook de ruimte om onderzoeksresultaten naar gebruiksvriendelijke foutmeldingen en testmethoden in functionele talen (bijv. QuickCheck) in te passen in het project.
+\section{Project realization}
+\subsection{Coding conventions}
+\subsection{Scrum approach}
+\subsection{Validation}
 
-\paragraph{Accenten}
-\begin{description}
-\item[analyse van een gebruikerscontext] er zal enigszins een beeld moeten worden gevormd van het soort gebruiker van Ampersand en hoe deze gebruiker omgaat met de huidige foutmeldingen
-\item[ontwerpen van een toepassing] bestaande software moet worden aangepast: daarvoor is het noodzakelijk dat eerst het bestaande ontwerp wordt begrepen en dat dit zorgvuldig wordt uitgebreid met het oog op kwaliteit en onderhoudbaarheid
-\item[bouwen en implementeren van een toepassing] delen van de software zullen herschreven moeten worden
-\item[literatuuronderzoek of bureauonderzoek] mogelijke oplossingsrichtingen en documentatie van software bibliotheken zullen onderzocht moeten worden
-\end{description}
+\section{Testing \& Validation}
+\subsection{Test approach}
+\subsection{Test methodology}
+\subsection{Test plan \& Milestones}
+\subsection{Test documentation}
 
-\section{Domain analysis}
-individueel:  details van domein en technieken in relatie met het onderzoeksproject
-academische verantwoording gemaakte keuzen
+\section{Issue management}
 
-\subsection{Baertsoen}
-\lipsum[1]
+\section{Integration \& release}
+(acceptation, communication, etc...)
 
-\subsection{Schiavini}
-\lipsum[1]
+\section{Documentation}
+\subsection{Documentation plan}
+\subsection{Deliverables}
 
-\section{Results}
-beschrijving van het projectresultaat (het softwaresysteem)
-overzicht van de oplossing, met enkele globale voorbeelden
-
-\section{Assessment}
-reflectie inhoud, resultaat
-beperkingen in het resultaat/afbakening (op voorhand en praktisch) 
-
-\section{Conclusion and next steps}
-conclusies, aanbevelingen voor vervolg / uitbreiding
+\section{Tools, methodologies and accelerators}
+\subsection{Collaboration}
+\subsection{Documentation}
+\subsection{Design}
+\subsection{Development}
+\subsection{Testing}
 
 \newpage
 \appendix
-\section{Appendices}
-\subsection{Planning}
-\subsubsection{Original planning}
-\begin{tabular}{ l l l l }
-  \multicolumn{3}{c}{\textbf{Medio september 2014 -– medio mei 2015}} & \\
-Fase 2 & Taakverdeling, planning & 1,5 maand (medio sep -- eind okt)          & 20 uur \\
-Fase 3a & Domeinen \& technieken & 2 maanden (eind sep -- eind nov)       & 50 uur \\
-Fase 3c & Ontwerp \& implementatie & 5 maanden (eind nov -- eind apr)                & 230 uur \\
-Fase 3d & Documentatie & 5 maanden (eind nov -- eind apr)                & 50 uur \\
-Fase 3b & Onderzoekscontext & 2 maanden (eind feb -- eind apr)                   & 30 uur \\
-Fase 4  & Scriptie en eindpresentatie & 1,5 maand (eind mrt -- medio mei)                      & 20 uur
-\end{tabular}
-
-\subsubsection{Planning evaluation}
-\lipsum[1]
-
-\subsection{Evaluation}
-wat zou je de volgende keer anders/beter doen, als groep, eventueel ook individueel
-
-\subsection{Usage information}
-Overige appendices. Doel: alle extra benodigde informatie voor gebruik (wat nodig is vanuit de scriptie)
-
-\begin{itemize}
-\item individueel: relevante details van domein- en techniekanalyse
-\item relevante details van architectuurdiagrammen
-\item relevante code, listings, uitgewerkte oplossingen 
-\item relevante uitgewerkte voorbeelden
-\end{itemize}
+\section{Lexicon}
 
 \end{document}
