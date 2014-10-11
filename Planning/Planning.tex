@@ -6,6 +6,7 @@
 \usepackage[affil-it]{authblk}
 \usepackage{lipsum}
 \usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
 
 % code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
 \usepackage[acronym,toc]{glossaries}
@@ -38,6 +39,7 @@
 \newpage
 
 \tableofcontents
+\listoffigures
 \clearpage
 
 \section{Introduction (R-M)}
@@ -79,6 +81,12 @@ Finally, a glossary of terms, definitions and abbreviations is given in \autoref
 \subsection{As-Is situation}
 \subsection{Goal of the project}
 \subsection{Project architecture, components and environment}
+\begin{figure}[hb]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Architecture}
+  \caption[Architecture of the project]{Architecture of the project, showing where the parser fits in the Ampersand system}
+\end{figure}
+
 \subsection{Critical success factors}
 \subsection{Our objectives and commitments towards the project and customer}
 
