@@ -7,3 +7,10 @@
 *.bbl
 *.blg
 *.brf
+*.glg
+*.glo
+*.glsdefs
+*.ist
+*.acn
+*.acr
+*.alg

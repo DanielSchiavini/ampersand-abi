@@ -6,7 +6,9 @@ call:cleanup
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
 pdflatex Planning
 :: bibtex  Planning
-:: pdflatex Planning
+makeglossaries Planning
+pdflatex Planning
+pdflatex Planning
 
 :: Run Cleanup
 call:cleanup

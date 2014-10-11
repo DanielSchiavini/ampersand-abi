@@ -7,6 +7,16 @@
 \usepackage{lipsum}
 \usepackage[hidelinks]{hyperref}
 
+% code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
+\usepackage[acronym,toc]{glossaries}
+\newcommand{\dict}[2]{%
+  \newglossaryentry{#1}{name=#1,description={#2}}%
+  \glslink{#1}{}%
+}
+\makeglossaries
+
+% Here we set up the header, meta-information and front matter
+%\date{}      %// Today's date will appear when this is commented out.
 \newcommand{\version}{0.1}
 
 \author{Maarten Baertsoen and Daniel S. C. Schiavini}
@@ -14,7 +24,6 @@
 	T61327 - Afstudeerproject bachelor informatica}
 \title{Planning}
 \subtitle{Useful feedback in the\\ Ampersand parser}
-%\date{}      %// Today's date will appear when this is commented out.
 \publishers{Version \version}
 
 \pagestyle{fancy}
@@ -23,6 +32,7 @@
 \cfoot{\thepage}
 \setlength{\headheight}{15pt}
 
+% Now the document starts
 \begin{document}
 \maketitle
 \newpage
@@ -61,7 +71,7 @@ Details of the development techniques are given in the project realization strat
 Testing and validation plans are in \autoref{sec:testing-validation}, while issue management is explained in \autoref{sec:issue-management}.
 The strategy for integration of the released software is given in \autoref{sec:integration-release}, while the documentation strategy is given \autoref{sec:documentation} and the used tools and methodologies are given in \autoref{sec:tools-methodologies}.
 
-Finally, a vocabulary/lexicon is given in \autoref{sec:lexicon}.
+Finally, a glossary of terms, definitions and abbreviations is given in \autoref{sec:glossary}.
 
 \section{Project description (-)}
 \label{sec:project-description}
@@ -184,6 +194,10 @@ Will we use student's data? That can be hard to do.
 \section{Tools, methodologies and accelerators (R-M)}
 \label{sec:tools-methodologies}
 \subsection{Collaboration}
+\dict{Dropbox}{File hosting service that offers cloud storage, file synchronization, personal cloud, and client software}%
+\dict{Git}{A distributed revision control and source code management}%
+\dict{GitHub}{Git repository web-based hosting service which offers all of the distributed revision control and source code management (SCM) functionality of Git}%
+\dict{Microsoft Office}{Office suite of desktop applications devleoped by Microsoft}%
 For the collaboration between the project members, the following tools will be used:
 \begin{description}
 	\item[Dropbox] For sharing time tracking and other reference documents;
@@ -192,6 +206,9 @@ For the collaboration between the project members, the following tools will be u
 \end{description}
 
 \subsection{Documentation}
+\dict{Haddock}{A software documentation generator for the Haskell programming language}%
+\dict{TeXworks}{Graphical user interface for editing and compiling \LaTeX{} documents}%
+\dict{LaTeX}{Document preparation system and document markup language for the TeX typeset}%
 For writing the documentation, the following tools will be used:
 \begin{description}
 	\item[Haddock] For annotating documentation on the code;
@@ -199,12 +216,16 @@ For writing the documentation, the following tools will be used:
 \end{description}
 
 \subsection{Design}
+\dict{yEd}{Software for editing graphs}%
 For designing the software and its architecture, the following tools will be used:
 \begin{description}
-	\item[yED] For creating diagrams and graphs;
+	\item[yEd] For creating diagrams and graphs;
 \end{description}
 
 \subsection{Development}
+\dict{IDE}{Integrated Development Environment}%
+\dict{GHC}{Glasgow Haskell Compilation system}%
+\dict{Cabal}{Library for managing Haskell builds and packages}%
 For software development, the following tools will be used:
 \begin{description}
 	\item[IDE] No standard integrated development environment will be chosen: the project members are free to use any IDE, e.g. Eclipse, Leksah, Notepad++;
@@ -213,6 +234,9 @@ For software development, the following tools will be used:
 \end{description}
 
 \subsection{Testing}
+\dict{Hpc}{Library for checking, recording and displaying code coverage}%
+\dict{Sentinel}{Test server for the Ampersand project}%
+\dict{QuickCheck}{Library for testing Haskell code}%
 Finally, the following tools will be used for testing the software:
 \begin{description}
 	\item[Hpc] might be used for checking, recording and displaying the code coverage of tests;
@@ -220,10 +244,12 @@ Finally, the following tools will be used for testing the software:
 	\item[QuickCheck] for automating tests on the code and property based testing (e.g. pretty-print and reparsing, random code generation);
 \end{description}
 
+% Appendices
 \newpage
 \appendix
-\section{Lexicon (-)}
-\label{sec:lexicon}
-Terms, definitions, abbreviations...
+\addcontentsline{toc}{part}{Appendices}
+\label{sec:glossary}
+% To update this section, it's necessary to run the file build.bat!
+\printglossary[style=altlist,title=Glossary]
 
 \end{document}
