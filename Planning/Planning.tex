@@ -181,22 +181,44 @@ Will we use student's data? That can be hard to do.
 \subsection{Deliverables}
 \lipsum[1]
 
-\section{Tools, methodologies and accelerators (D)}
+\section{Tools, methodologies and accelerators (R-M)}
 \label{sec:tools-methodologies}
 \subsection{Collaboration}
-\lipsum[1]
+For the collaboration between the project members, the following tools will be used:
+\begin{description}
+	\item[Dropbox] For sharing time tracking and other reference documents;
+	\item[GitHub] For sharing git repositories of code and documentation;
+	\item[Microsoft Office] For writing internal documents, e.g. time tracking;
+\end{description}
 
 \subsection{Documentation}
-Annotation in code, latex in github.
+For writing the documentation, the following tools will be used:
+\begin{description}
+	\item[Haddock] For annotating documentation on the code;
+	\item[TeXworks] For writing and compiling \LaTeX{} documents;
+\end{description}
 
 \subsection{Design}
-\lipsum[1]
+For designing the software and its architecture, the following tools will be used:
+\begin{description}
+	\item[yED] For creating diagrams and graphs;
+\end{description}
 
 \subsection{Development}
-Eclipse? Cabal.
+For software development, the following tools will be used:
+\begin{description}
+	\item[IDE] No standard integrated development environment will be chosen: the project members are free to use any IDE, e.g. Eclipse, Leksah, Notepad++;
+	\item[GHC] The compiler GHC (Glasgow Haskell Compilation System), version 7.8.3, will be used;
+	\item[Cabal] For managing Haskell packages and compilation, cabal-install version 1.18.0.5 and Cabal library version 1.18.1.3.
+\end{description}
 
 \subsection{Testing}
-Coverage HPC, sentinel, property based testing (e.g. pretty-print + parse), random code generation, quick-check library.
+Finally, the following tools will be used for testing the software:
+\begin{description}
+	\item[Hpc] might be used for checking, recording and displaying the code coverage of tests;
+	\item[Sentinel server] can be used for the integration tests;
+	\item[QuickCheck] for automating tests on the code and property based testing (e.g. pretty-print and reparsing, random code generation);
+\end{description}
 
 \newpage
 \appendix
