@@ -1,0 +1,54 @@
+% !TEX root = ../Planning.tex
+\section{Tools, methodologies and accelerators (R-M)}
+\label{sec:tools-methodologies}
+
+\subsection{Collaboration}
+\dict{Dropbox}{File hosting service that offers cloud storage, file synchronization, personal cloud, and client software}%
+\dict{Git}{A distributed revision control and source code management}%
+\dict{GitHub}{Git repository web-based hosting service which offers all of the distributed revision control and source code management (SCM) functionality of Git}%
+\dict{Microsoft Office}{Office suite of desktop applications devleoped by Microsoft}%
+For the collaboration between the project members, the following tools will be used:
+\begin{description}
+	\item[Dropbox] For sharing time tracking and other reference documents;
+	\item[GitHub] For sharing git repositories of code, besides managing issues and documentation;
+	\item[Microsoft Office] For writing internal documents, e.g. time tracking;
+\end{description}
+
+\subsection{Documentation}
+\dict{Haddock}{A software documentation generator for the Haskell programming language}%
+\dict{TeXworks}{Graphical user interface for editing and compiling \LaTeX{} documents}%
+\dict{LaTeX}{Document preparation system and document markup language for the TeX typeset}%
+For writing the documentation, the following tools will be used:
+\begin{description}
+	\item[Haddock] For annotating documentation on the code;
+	\item[TeXworks] For writing and compiling \LaTeX{} documents;
+\end{description}
+
+\subsection{Design}
+\dict{yEd}{Software for editing graphs}%
+For designing the software and its architecture, the following tools will be used:
+\begin{description}
+	\item[yEd] For creating diagrams and graphs;
+\end{description}
+
+\subsection{Development}
+\dict{IDE}{Integrated Development Environment}%
+\dict{GHC}{Glasgow Haskell Compilation system}%
+\dict{Cabal}{Library for managing Haskell builds and packages}%
+For software development, the following tools will be used:
+\begin{description}
+	\item[IDE] No standard integrated development environment will be chosen: the project members are free to use any IDE, e.g. Eclipse, Leksah, Notepad++;
+	\item[GHC] The compiler GHC (Glasgow Haskell Compilation System), version 7.8.3, will be used;
+	\item[Cabal] For managing Haskell packages and compilation, cabal-install version 1.18.0.5 and Cabal library version 1.18.1.3.
+\end{description}
+
+\subsection{Testing}
+\dict{Hpc}{Library for checking, recording and displaying code coverage}%
+\dict{Sentinel}{Test server for the Ampersand project}%
+\dict{QuickCheck}{Library for testing Haskell code}%
+Finally, the following tools will be used for testing the software:
+\begin{description}
+	\item[Hpc] might be used for checking, recording and displaying the code coverage of tests;
+	\item[Sentinel server] can be used for the integration tests;
+	\item[QuickCheck] for automating tests on the code and property based testing (e.g. pretty-print and reparsing, random code generation);
+\end{description}
