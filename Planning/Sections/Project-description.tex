@@ -7,15 +7,19 @@ In November 2003, the Business Rules Manifesto\footnote{\url{http://www.business
 The manifesto supports the vision of business rules as equivalent to requirements.
 This is considered a radical change on how people see the world of business architecture.
 
-Later on, the Ampersand approach was created as a way for defining business rules.
+In December 2010, Stef Joosten, Lex Wedemeijer and Gerard Michels published the paper ``Rule Based Design'', presenting the Ampersand approach.
 The approach puts the rules in the center, using them to define the business processes.
 Ampersand is named after the \& symbol with the desire of realizing results for both business and IT, in an efficient and effective way.
 
-In a series of research projects and open source developments, the Ampersand compiler was created.
-The compiler has been improved and used in both business and academic contexts.
+In 2011, the Ampersand compiler was created as an open source project.
+Since then, the compiler has been improved and applied in both business and academic contexts.
 The Ampersand end-users write business rules in a specific language (ADL), and compile that specification into functional specification, documentation and working software prototypes.
 \dict{ADL}{Ampersand Design Language}%
-The theory behind Ampersand has been throughly studied, and is based on mathematical concepts e.g. Tarski's axioms.
+
+The theory behind Ampersand has been throughly studied, and is based on mathe\-matical concepts, e.g. Tarski's axioms.
+Using this compiler, users write the requirements in ADL and generate all the system specification.
+This way the requirements consistency and traceability are always correct, from the lowest level up to the front-end.
+The requirements can be presented to business stakeholders in natural language, guaranteeing that any business expert (who is knowledgeable in matters of content) can validate the requirements.
 
 \subsection{Current situation}
 The compiler developed for the Ampersand research project runs in several steps (see \autoref{subsec:architecture} for the architecture).
@@ -26,10 +30,11 @@ Since the beginning of the project, the parser subcomponent has never been analy
 In order to generate better error messages, it is assumed that a complete refactoring of the parser will be necessary.
 The main challenge is to choose the correct kind of architecture and libraries in order to generate the most user-friendly messages possible.
 
-\subsection{Goal of the project}
+Besides the main project task of improving the parser's feedback, a list of user wishes has accumulated over the years.
+
+\subsection{Goals of the project}
 The main objective for the graduation project is to implement useful feedback in the Ampersand parser.
-If this task can be successfully accomplished, a list of open issues can be addressed by the project members\footnote{\url{https://github.com/AmpersandTarski/ampersand/tree/ABI\_Parser/ArchitectureAndDesign}}.
-In order to achieve the project goals, some of the following activities can take place:
+In order to achieve this goal, some of the following activities can take place:
 \begin{itemize}
 	\item Analysis of user-friendly messages in compilers;
 	\item Comparison of different Haskell parsing libraries (also for pretty-printing);
@@ -37,6 +42,10 @@ In order to achieve the project goals, some of the following activities can take
 	\item Analysis of the current development environment in relation with software engineering principles such as continuous delivery/integration;
 	\item Recommending improvements for the overall software quality;
 \end{itemize}
+%
+In case the new parser is successfully implemented and accepted, while the project members still have time budget available, the list of open user wishes issues can be addressed.
+Some of these wishes are substantial, so that most of them cannot be fulfilled during the graduation project.
+The current list of open issues has been provided\footnote{\url{https://github.com/AmpersandTarski/ampersand/tree/ABI\_Parser/ArchitectureAndDesign}}, although it must be clear that the issues are strictly seen as lower priority.
 
 \subsection{Project architecture, components and environment}
 \label{subsec:architecture}
