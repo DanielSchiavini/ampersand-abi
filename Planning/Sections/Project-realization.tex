@@ -1,5 +1,5 @@
 % !TEX root = ../Planning.tex
-\section{Project realization (D)}
+\section{Project realization (R-M)}
 \label{sec:project-realization}
 \dict{Phase 3c}{Phase of the project when the software is actually designed, developed and tested. See \autoref{sec:project-realization}}%
 During the project phase 3d, the software solution for the customer is designed, developed and tested.
@@ -7,22 +7,91 @@ During the project phase 3d, the software solution for the customer is designed,
 \subsection{Coding conventions}
 \label{subsec:coding-conventions}
 \dict{Wiki}{Website that allows users to create web pages collaboratively}%
-De coding conventions are described on the Ampersand wiki\cite{ampersand-wiki}.
+The coding conventions are described on the Ampersand wiki\cite{ampersand-wiki}.
+In order to guarantee consistency, the conventions will not be duplicated in this document.
 
 \subsection{Scrum approach}
-\lipsum[1]
+\dict{Agile}{Group of software development methods in which requirements evolve through collaboration during the project's execution}%
+\dict{Product Owner}{Role in Scrum that represents the stakeholders, and is the voice of the customer}%
+\dict{Scrum}{Scrum is an iterative and incremental agile software development framework for managing product development}%
+\dict{Scrum master}{Facilitator role in Scrum, who is responsible for removing impediments for the development team}%
+\dict{Sprint}{A sprint (or iteration) is the basic unit of development in Scrum}%
+For this project, an agile iterative approach has been chosen for the following reasons:
+\begin{itemize}
+	\item Offering a fast feedback to the customer;
+	\item Allowing adaptation during the project;
+	\item Delivering software as often as possible;
+	\item Often merging code with other ongoing projects (see \autoref{sec:risk-management});
+	\item Maintaining a sustainable pace of development;
+	\item Allowing team self-organization;
+\end{itemize}
+%
+Considering the member's experience with agile methods, the preferred approach chosen was Scrum.
+This project will be executed in a part-time way, thus the amount of work in each sprint will be very limited.
+That makes the use of scrum very challenging, so the following remarks are to be considered:
+\begin{itemize}
+	\item Since the team meetings with the supervisor are initially once per 3 weeks, the sprints shall also be once every three weeks.
+	\item This meeting will work also as a sprint review and sprint planning meeting.
+	\item The customer will take the role of product owner, the supervisor will take the role of scrum master, and the project members will take the role of development team.
+	\item The product owner cannot be present in every sprint review; this will be done partially by distance, via e-mail and other means (see \autoref{sec:tools-methodologies}).
+	\item The daily scrum is not always possible; the project members shall get in contact as often as possible, for refinement and for answering the three basic questions:
+		\begin{itemize}
+			\item What have you done since yesterday?
+			\item What are you planning to do today?
+			\item Any impediments/stumbling blocks?
+		\end{itemize}
+\end{itemize}
 
 \subsection{Validation}
-\lipsum[1]
+In order to validate that the right product is being built, the first step before the scrum planning meeting is to define what is going to be built.
+This will be done by means of writing requirements and sharing them with the customer.
+
+An important step on defining the requirements for the Ampersand parser will be defining witch situations require improvement.
+This can be done by collecting user data, although this data might be hard to analyze afterward.
+The best and most approach will be defined in cooperation with the customer.
+
+Whenever applicable, additional documents, prototypes and examples will be shared with the customer or stakeholders.
+This will require a big amount of communication (see \autoref{subsec:communication}) between the project members and other stakeholders.
+Even though the customer has limited time, the end product can only be as good as the information given to the project team.
 
 \subsection{Test approach}
-\lipsum[1]
+In order to verify the requirements, the approach is to automate as much as possible of the testing platform.
+Although this will take some extra effort initially, the automation guarantees that a lot of time is saved in regression testing.
+
+See also \autoref{sec:tools-methodologies} for a list of tools that will be used for testing.
 
 \subsection{Test methodology}
-Will we use student's data? That can be hard to do.
+Automating tests for Haskell programs should be always possible.
+Indeed, the programs should be always deterministic.
+The Ampersand parser, specifically, can be used in a feedback way: the program code is parsed, and then converted back to source code.
+By parsing this code yet again, it can be verified that the result is the same.
 
 \subsection{Test documentation}
-\lipsum[1]
+All test scripts shall be added to source control (see \autoref{sec:tools-methodologies} for the used tools).
+If necessary, a simple test report will be delivered at the end of the sprint.
+Note that this report can be shared earlier with all stakeholders, as soon as a deliverable (backlog item) is ready.
 
 \subsection{Milestones}
-\lipsum[1]p
+Considering the iterative approach of the Scrum method, defining all backlog items beforehand is not possible.
+Defining which backlog items will be delivered in each sprint is thus also impossible.
+However, some products are known beforehand and can be defined here.
+See \autoref{tab:realization-milestones} for the initial planned delivery dates.
+%
+\begin{table}[h]
+  \begin{tabular}{|l|l|}\hline
+    \textbf{Date} & \textbf{Deliverable (s)} \\\hline
+    2014-10-22 & Project planning v0.1 \\\hline
+    2014-11-13 & Project planning v1.0 \\\hline
+    2014-12-03 & End of research: domain \& techniques (phase 3a) \\\hline
+    2014-12-24 & No delivery (Christmas holidays) \\\hline
+    2015-01-14 & Delivery sprint 1\\\hline
+    2015-02-04 & Delivery sprint 2\\\hline
+    2015-02-25 & Delivery sprint 3\\\hline
+    2015-03-18 & Delivery sprint 4\\\hline
+    2015-04-08 & Delivery sprint 5\\\hline
+    2015-04-29 & Delivery research context (phase 3b)\newline{}Final software delivery (phases 3c/3d)\\\hline
+    2015-05-20 & Final thesis delivery\newline{}Presentation\\\hline
+  \end{tabular}
+  \caption{Realization milestones}
+  \label{tab:realization-milestones}
+\end{table}
