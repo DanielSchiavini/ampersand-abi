@@ -1,7 +1,7 @@
 % !TEX root = ../Planning.tex
 \section{Risk management (M)}
 \label{sec:risk-management}
-Risk management is one of the measure taken within the project to guarantee the process quality and hance project success.
+Risk management is one of the measure taken within the project to guarantee the process quality and hence project success.
 
 The risk management approach consist out of 5 steps
 
@@ -13,13 +13,14 @@ The risk management approach consist out of 5 steps
 	\item Evaluate and fine-tune
 \end {enumerate}
 \subsection{Risk identification }
-Every identified risk withtin the full life cycle of the project will be listed. A risk is considered every event that can influence the project in a negative way. 
-All risks will be kept together in a central repsository, the risk register, in which a summary with the main charateristics is provided.
+Every identified risk within the full life cycle of the project will be listed. A risk is considered every event that can influence the project in a negative way. 
+All risks will be kept together in a central repository, the risk register, in which a summary with the main characteristics is provided.
 The following information is registered for each risk:
 
 \begin{enumerate}
 	\item Risk ID
 	\item Status
+	\item Domain
 	\item Identification date
 	\item Short description
 	\item Additional information
@@ -32,30 +33,51 @@ The following information is registered for each risk:
 \end {enumerate}
 
 \subsection{Risk qualification }
-Not every identified risk will have the same importance and hence, we will only focus on the risk which are worth our attention.
-Thi smeans that we will focus on the heavy risks which, if they occur, will have a very bad or catastrophic effect on he project and those that havce a fair chance of occuring but will still have quite a negative impact.
+Not every identified risk will have the same importance and we will only focus on the risk which are worth our attention.
+This means that we will focus on the heavy risks which, if they occur, will have a very bad or catastrophic effect on he project and those that havce a fair chance of occuring but will still have quite a negative impact.
+
 
 The exact qualification of the risks we will actively manage is based on the risks probability, what is the chance of the risk to becoma a fact, and the risk impact, how hard will this risk impact our project if it happens.
 
-Following matris identifies the risks category based on these 2 parameters:
+Following matrix identifies the risks qualification based on these 2 parameters:
 
-\begin{center}
-    \begin{tabular}{ | p{2cm} | p{2cm} | p{2cm} | p{2cm} |}
-    \hline
-    Probability & Low & Medium & High \\ \hline
-    Monday & 11C & 22C & A clear day with lots of sunshine.
-    However, the strong breeze will bring down the temperatures. \\ \hline
-    Tuesday & 9C & 19C & Cloudy with rain, across many northern regions. Clear spells 
-    across most of Scotland and Northern Ireland, 
-    but rain reaching the far northwest. \\ \hline
-    Wednesday & 10C & 21C & Rain will still linger for the morning. 
-    Conditions will improve by early afternoon and continue 
-    throughout the evening. \\
-    \hline
-    \end{tabular}
-\end{center}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+Impact & \multicolumn{3}{l}{Likelihood}                                                     \\
+       & \multicolumn{1}{l}{Low}   & \multicolumn{1}{l}{Medium} & \multicolumn{1}{l}{High}  \\
+High   & \cellcolor[HTML]{FFCB2F}M & \cellcolor[HTML]{FE0000}H  & \cellcolor[HTML]{FE0000}H \\
+Medium & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{FFCB2F}M  & \cellcolor[HTML]{FE0000}H \\
+Low    & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{34FF34}L  & \cellcolor[HTML]{FFC702}M
+\end{tabular}
+\end{table}
+
+Based on the identified risk qualification, the risk will be managed accordingmy:
+\begin{enumerate}
+	\item L - Low Risk
+	Low risks will be monitored on a regular basis, but no speciifc actions will be initiated with regards to risk mitigation and risk avoidance.
+	\item M - Medium Risk
+	Medium risk wil be managed in a more pro-active way, possible risk mitigation options will be documented and will be taken into account for during the riks life cycle. It is up to the project team to see if the risk is managed actively or if tis will be merely monitored.
+	\item H-High risks
+	The project team will act on high sense of urgency. High risks will be investigated in detail, a risk mitigation approach will be installed and the risk will be monitored intensively throughout the risk life cycle.
+\end {enumerate}
  
+
+\subsubsection{Determine risk mitigation and risk avoidance measures}
+The possible risk management strategies used to cope with each distinct risk are the following:
+\begin{enumerate}
+	\item Risk avoidance
+	Actions are undertaken to avoid the risk, meaning that the risk will dissapear due to 
+	\item Risk Reduction
+	The risk itself cannot be avoided, but measures are taken to limit the negatvive consuquences in case the risk materilases.
+	\item Risk sharing
+	This kind of risks cannot be coped with by the project team on tits own, therefore the risk is shared with other team to identify a joint risk approach.
+	\item Risk acceptance
+	The project teams decides to just accept the risk, identifies the risk impact and foresee time and budget to handle with the negative consequences once the risk has materilzes.
+\end {enumerate}
+
+The risk management strategy will be documented in the risk register.
 
 \subsubsection{Functional risks}
 \lipsum[1]
