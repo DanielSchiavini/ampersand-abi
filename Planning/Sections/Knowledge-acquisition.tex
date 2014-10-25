@@ -9,11 +9,40 @@ In the project phase 3a, the project members shall investigate the domain and th
 Each project member will do a separate analysis, and will present a separate document with their findings.
 The planning of the investigation is presented a section per project member.
 
-\subsubsection{Haskell parsing libraries \& User-friendly error messages (D)}
-Haskell parsers (e.g. Helium), monadit or combinators.
-user-friendly error messages (specific to compilers or not).
+\subsubsection{Haskell parsing libraries \& User-friendly error messages (R-M)}
+This part of the research is going to be executed and documented by Daniel Schiavini.
+It is divided in two interrelated parts:
+\begin{description}
+	\item [Haskell parsing libraries:]
+	The current Ampersand parser is created with the Utrecht University parser combinator library (UU.Parsing).
+	This library uses monads and combinators and has quite some good features.
+	There are, however, other libraries that can provide other feature sets.
+	
+	The purpose of this research is to choose the library best suited to the development of the new Ampersand parser.
+	Some of the libraries available are:
+	\begin{itemize}
+		\item Helium
+		\item Parsec
+		\item Polyparse
+		\item Happy parser generator
+	\end{itemize}
+	There are also advantages and disadvantages on using monads and combinators, which must be researched beforehand.
+	The result of this research could also be that the UU.Parsing library is the best choice.
+	One big advantage for this library is that the current code base can be very helpful.
+
+	\item [User-friendly error messages]
+	The most important feature of the parser that will be built, is that it should generate user-friendly error messages.
+	To understand what kinds of messages can be (and should be) generated, a research will be done on what good errors are and how to generate them.
+	
+	This is also related to the choice of the parsing library, since the chosen library should support the generation of good errors without extensive effort.
+	Coincidently, a good source of knowledge are the papers of the supervisor, Bastiaan Heeren, who has done his PhD thesis on the generation of top quality type error messages\cite{heeren-error}.
+\end{description}
+
+\noindent
+The results of this research will be reported in a separate document, and be added as an appendix of the thesis.
 
 \subsubsection{Business Rules \& Ampersand Users (M)}
+This part of the research is going to be executed and documented by Maarten Baertsoen.
 
 \subsection{Research context (R-M)}
 \dict{Phase 3b}{Phase of the project when the research context is investigated}%
