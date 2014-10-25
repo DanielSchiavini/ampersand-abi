@@ -9,6 +9,7 @@ pdflatex Planning
 makeglossaries Planning
 pdflatex Planning
 pdflatex Planning
+:: (cat Planning.log | grep -i Warn)
 
 :: Run Cleanup
 call:cleanup
