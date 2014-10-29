@@ -1,4 +1,37 @@
 % !TEX root = ../Planning.tex
 \section{High-level requirements (D)}
 \label{sec:requirements}
-\lipsum[1]
+In this section, a list of known requirements is given.
+Please note that because the project plan is made in the beginning of the project, only the highest-level requirements can be described.
+Also note that the project will be executed in an iterative/agile way, so the requirements will change, and when they do this document might be not updated.
+
+~\newline\noindent
+In this section, the abbreviation NAP is used, with the meaning ``new Ampersand Parser''.
+\dict{NAP}{Ampersand Parser}%
+
+\subsection{Functional requirements}
+\req{PL-FUN-010}{Ampersand code base}{
+	The NAP shall be implemented in the Ampersand code base.\\
+	Note: This also means that NAP shall be implemented in the Haskell programming language, and will use the same compiler as Ampersand does.}
+
+\req{PL-FUN-020}{User-friendly errors}{
+	The NAP shall give user-friendly error messages for the most common parsing errors.\\
+	Note: Discovering which errors are the most common is part of the assignment.}
+
+\req{PL-FUN-030}{Command-line interface}{
+	The NAP shall only have a command-line interface.}
+
+\req{PL-FUN-040}{Windows environment}{
+	The NAP shall run in the Microsoft Windows 7 operational system.}
+
+\req{PL-FUN-050}{Git repository}{
+	The NAP code shall be managed in the ``AmpersandTarski/ampersand'' GitHub repository, in the ``ABI\_Parser'' branch.}
+
+\req{PL-FUN-050}{P-structure}{
+	The NAP code shall generate the P-structure in the same way the old Ampersand parser currently does.}
+
+\subsection{Non-functional requirements}
+
+In case the new parser is successfully implemented and accepted, while the project members still have time budget available, the list of open user wishes issues can be addressed.
+Some of these wishes are substantial, so that most of them cannot be fulfilled during the graduation project.
+The current list of open issues has been provided\cite{open-issues}, although it must be clear that the issues are strictly seen as lower priority.
