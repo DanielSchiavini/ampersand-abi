@@ -1,5 +1,5 @@
 % !TEX root = ../Planning.tex
-\section{High-level requirements (D)}
+\section{High-level requirements (R-M)}
 \label{sec:requirements}
 In this section, a list of known requirements is given.
 Please note that because the project plan is made in the beginning of the project, only the highest-level requirements can be described.
@@ -9,35 +9,43 @@ Also note that the project will be executed in an iterative/agile way, so the re
 In this section, the abbreviation NAP is used, with the meaning ``new Ampersand Parser''.
 \dict{NAP}{Ampersand Parser}%
 
-In case the new parser is successfully implemented and accepted, while the project members still have time budget available, the list of open user wishes issues can be addressed.
-Some of these wishes are substantial, so that most of them cannot be fulfilled during the graduation project.
-The current list of open issues has been provided\cite{open-issues}, although it must be clear that the issues are strictly seen as lower priority.
-
 \subsection{Capability requirements}
 \req{PL-FUN-010}{Command-line interface}{
 	The NAP shall only have a command-line interface.}
 
 \subsection{Required states and modes}
-No such requirements have been identified.
+\req{PL-RSM-010}{Forward parsing}{
+	The NAP shall provide forward parsing, from ADL to P-structure.}\\
+
+\req{PL-RSM-020}{Backwards parsing}{
+	The NAP shall provide backwards parsing, from P-structure to ADL.}
 
 \subsection{External interface requirements}
-No such requirements have been identified.
+\req{PL-EIF-010}{File interface}{
+	The NAP shall read input text files in ADL format.}\\
+
+\req{PL-EIF-020}{File encoding}{
+	The NAP shall read input files with Windows-1252 (a.k.a. ANSI) encoding.}
+\dict{a.k.a.}{Also known as}%
 
 \subsection{Internal interface requirements}
-\req{PL-IIF-010}{P-structure}{
-	The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does.}
+\req{PL-IIF-010}{Interface with Type Checker}{
+	The NAP code shall interface with the Type Checker via the P-structure.}
 
 \subsection{Internal data requirements}
-No such requirements have been identified.
+\req{PL-IDR-010}{Generate P-structure}{
+	The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does.}
 
 \subsection{Adaptation requirements}
 No such requirements have been identified.
 
 \subsection{Safety requirements}
 Ampersand is not a safety critical application.
+Therefore, no such requirements have been identified.
 
 \subsection{Security and privacy requirements}
 Ampersand is not a security or privacy critical application.
+Therefore, no such requirements have been identified.
 
 \subsection{Environment requirements}
 \req{PL-ENV-010}{Windows environment}{
@@ -51,7 +59,11 @@ Ampersand is not a security or privacy critical application.
 	No such requirements have been identified.
 
 	\subsubsection{Software requirements}
-	No such requirements have been identified.
+	\req{PL-CSW-010}{Haskell language}{
+		The NAP shall be written in the Haskell programming language.}\\
+		
+	\req{PL-CSW-020}{Haskell compiler}{
+		The NAP shall be compiled with GHC version 7.8.3.}
 
 	\subsubsection{Communications requirements}
 	No such requirements have been identified.
@@ -59,7 +71,10 @@ Ampersand is not a security or privacy critical application.
 \subsection{Software quality factors}
 \req{PL-SQF-010}{User-friendly errors}{
 	The NAP shall give user-friendly error messages for the most common parsing errors.\\
-	Note: Discovering which errors are the most common is part of the assignment.}
+	Note: Discovering which errors are the most common is part of the assignment.}\\
+
+\req{PL-SQF-020}{Code annotation}{
+	The NAP source code shall be documented in Haddock format.}
 
 \subsection{Design and implementation constraints}
 \req{PL-DIC-010}{Ampersand code base}{
@@ -69,13 +84,17 @@ Ampersand is not a security or privacy critical application.
 \subsection{Personnel-related requirements}
 \req{PL-PER-010}{Project members availability}{
 	The project members shall be available for at least an average of 10 hours a week.
+}\\
+
+\req{PL-PER-020}{Peer reviews}{
+	The project members shall review each other's code and documentation before delivery.
 }
 
 \subsection{Training-related requirements}
 No such requirements have been identified.
 
 \subsection{Logistics-related requirements}
-No such requirements have been identified.
+All deliveries are done online, therefore no logistics requirements have been identified.
 
 \subsection{Other requirements}
 No such requirements have been identified.
@@ -85,4 +104,5 @@ No such requirements have been identified.
 	The NAP code shall be managed in the ``AmpersandTarski/ampersand'' GitHub repository, in the ``ABI\_Parser'' branch.}
 
 \subsection{Precedence and criticality of requirements}
-No such requirements have been identified.
+\req{PL-PAC-010}{Customer wishes}{
+	The implementation of the NAP shall have higher priority than any new features or customer wishes}
