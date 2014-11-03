@@ -1,8 +1,9 @@
 % !TEX root = ../Planning.tex
-\section{High-level requirements (R-M)}
+\section{High-level requirements}
 \label{sec:requirements}
 In this section, a list of known requirements is given.
 Please note that because the project plan is made in the beginning of the project, only the highest-level requirements can be described.
+The requirements will be further clarified in phase 3C based on the stated scope 'useful feedback in the Ampersand parser'.
 Also note that the project will be executed in an iterative/agile way, so the requirements will change, and when they do this document might be not updated.
 
 ~\newline\noindent
@@ -33,7 +34,8 @@ In this section, the abbreviation NAP is used, with the meaning `new Ampersand P
 
 \subsection{Internal data requirements}
 \req{PL-IDR-010}{Generate P-structure}{
-	The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does.}
+	The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does.
+	This implies that the P-structure created by the old or new parser will be a perfect match.}
 
 \subsection{Adaptation requirements}
 No such requirements have been identified.
@@ -78,7 +80,8 @@ Therefore, no such requirements have been identified.
 \subsection{Design and implementation constraints}
 \req{PL-DIC-010}{Ampersand code base}{
 	The NAP shall be implemented in the Ampersand code base.\\
-	Note: This also means that NAP shall be implemented in the Haskell programming language, and will use the same compiler as Ampersand does.}
+	Note: This also means that NAP shall be implemented in the Haskell programming language, and will use the same compiler as Ampersand does.
+	The existing coding conventions shall be respected.}
 
 \subsection{Personnel-related requirements}
 \req{PL-PER-010}{Project members availability}{
