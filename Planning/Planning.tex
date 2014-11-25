@@ -1,5 +1,5 @@
 \documentclass[a4paper,12pt,abstracton,titlepage]{scrartcl}
-\usepackage{fancyhdr}
+\usepackage{scrpage2}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
@@ -22,6 +22,7 @@
 %\date{November 3, 2014}      %// Today's date will appear when this is commented out.
 \newcommand{\version}{1.1}
 
+% title page
 \author{Maarten Baertsoen and Daniel S. C. Schiavini}
 \affil{Open Universiteit Nederland, faculteit Informatica \\
 	T61327 - Afstudeerproject bachelor informatica}
@@ -29,11 +30,15 @@
 \subtitle{Useful feedback in the\\ Ampersand parser}
 \publishers{Version \version}
 
-\pagestyle{fancy}
-\lhead{M. Baertsoen and D.S.C. Schiavini}
-\rhead{ABI Planning}
-\cfoot{\thepage}
-\setlength{\headheight}{15pt}
+
+% header
+\pagestyle{scrheadings}
+\setheadsepline{0.2pt}
+\clearscrheadings
+\automark[section]{chapter}
+\ihead{M. Baertsoen and D.S.C. Schiavini}
+\ohead{ABI Project Planning}
+\cfoot{\pagemark}
 
 % requirements
 \newcommand{\req}[3]{\noindent\textbf{\texttt{#1} #2}\\#3}
