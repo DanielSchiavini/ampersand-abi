@@ -17,27 +17,11 @@ Every identified risk within the full life-cycle of the project will be followed
 The definition of a risk in this project is  `every event that can influence the project in a tangible negative way'.
 Of course there can be risks with a positive effect, but these will be merely considered as a `lucky coincidence'.
 
-All risks will be kept together in a central repository, the risk register, in which a summary with the main characteristics is provided.
-The following information is registered for each risk:
-
-\begin{itemize}
-	\item Risk ID
-	\item Status
-	\item Domain
-	\item Identification date
-	\item Short description
-	\item Additional information
-	\item Mitigation actions
-	\item responsible
-	\item date next review
-	\item Impact
-	\item Likelihood
-	\item Risk evolution (status quo, increased or decreased probability/evolution)
-\end{itemize}
+All risks will be kept together in a central repository, the risk register, in which a summary with the main characteristics is provided such as: description, risk qualification, status and identified mitigation actions.
 
 \subsection{Risk qualification}
 Not every identified risk will have the same importance, and the focus will be on the risks that are worth paying attention to.
-This means that the focus will be on the medium or heavy risks which, if they occur, will have a bad or sometimes a catastrophic effect on he project.
+This means that the focus will be on the medium or heavy risks which, if they occur, will have a bad or sometimes a catastrophic effect on the project.
 
 The exact qualification of the risk type is based on the risk likelihood (what is the chance of the risk to become a fact), and the risk impact (how hard will this risk hit the project if it happens).
 
@@ -69,7 +53,7 @@ Based on the identified risk type, the risk will be managed accordingly:
 \end {description}
 
 \subsubsection{Determination of risk mitigation measures}
-The possible risk management strategies options to cope with each distinct risk are the following:
+The possible risk management strategies to cope with each distinct risk are the following:
 \begin{description}
 	\item [Risk avoidance]
 	Actions are undertaken to avoid the risk, meaning that the risk will disappear or become less likely due to the taken actions.
@@ -83,7 +67,7 @@ The possible risk management strategies options to cope with each distinct risk 
 \end {description}
 
 \noindent
-The risk management strategy option will be documented for each distinct risk in the risk register.
+The risk management strategy option, based on the PMI PMBok approach, will be documented for each distinct risk in the risk register.
 
 \subsubsection{Monitoring and control}
 The risks are monitored on a weekly basis and the necessary re-qualifications and new/ongoing mitigation actions are discussed when appropriate.
@@ -99,68 +83,46 @@ Risk management is a continuous process during the full project life cycle and t
 At the beginning of the project, some risks are already identified and documented in the risk register.
 Given the holistic goal of this project plan document, the identified high risks are summarized below:
 
-\begin{description}
-	\item [\underline{ID}]
-	\underline{1}
-	\item[Likelihood]
-	Medium
-	\item[Impact]
-	High
-	\item[Qualification]
-	High
-	\item[Domain]
-	Scope
-	\item[Risk]
-	Some requirements are unclear and/or ambiguous
-	\item[Possible impact]
-	We might build the features incorrectly
-	\item[Mitigation type]
-	Avoidance
-	\item[Mitigation approach]
-	For each requirement, a detailed description of the need including the solution approach will be documented and presented towards the customer to ensure that the delivered functionality meets expectations.
-\end {description}
+\begin{table}[h]
+\centering
+\begin{tabular}{|
+>{\columncolor[HTML]{C0C0C0}}l |l|l|l|l|l|}
+\hline
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}Some requirements are unclear and/or ambiguous}                                                                                                                                                                                                       \\ \hline
+Possible impact:              & \multicolumn{5}{l|}{The features might be build incorrectly}                                                                                                                                                                                                                                      \\ \hline
+ID:                           & 1                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
+Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
+Approach:                     & \multicolumn{5}{l|}{\begin{tabular}[c]{@{}l@{}}For each unclear requirement, a detailed description of the need including \\ the solution approach will be documented.\\ This will presented towards the customer to ensure that the delivered \\ functionality meets expectations.\end{tabular}} \\ \hline
+\end{tabular}
 
-\begin{description}
-	\item [\underline{ID}]
-	\underline{2}
-	\item[Likelihood]
-	Medium
-	\item[Impact]
-	High
-	\item[Qualification]
-	High
-	\item[Domain]
-	Scope
-	\item[Risk]
-	Requirements are not ordered by priority.
-	\item[Possible impact]
-	We might build the lower priority features before the high priority features.
-	\item[Mitigation type]
-	Avoidance
-	\item[Mitigation approach]
-	The project team will draw an overview of the perceived priorities and will align with the customer to reach an agreement regarding the priorities.
-\end {description}
+\centering
+\begin{tabular}{|
+>{\columncolor[HTML]{C0C0C0}}l |l|l|l|l|l|}
+\hline
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}Requirements are not ordered by priority}                                                                                                                                                                                                       \\ \hline
+Possible impact:              & \multicolumn{5}{l|}{Lower priority features might be build before the high priority features}                                                                                                                                                                                                                                      \\ \hline
+ID:                           & 2                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
+Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
+Approach:                     & \multicolumn{5}{l|}{\begin{tabular}[c]{@{}l@{}}Each time an additional topic can be initiated, \\ the most urgent one will be indicated by the customer.
+\end{tabular}} \\ \hline
+\end{tabular}
 
-\begin{description}
-	\item [\underline{ID}]
-	\underline{3}
-	\item[Likelihood]
-	High
-	\item[Impact]
-	High
-	\item[Qualification]
-	High
-	\item[Domain]
-	Scope
-	\item[Risk]
-	We don't know what the problems of the current parser are.
-	\item[Possible impact]
-	We might deliver a parser with the same problems.
-	\item[Mitigation type]
-	Avoidance
-	\item[Mitigation approach]
-	A meeting with the customer will be organized to gather knowledge of the existing system, especially regarding the current issues, pain points and pitfalls.
-\end {description}
+\centering
+\begin{tabular}{|
+>{\columncolor[HTML]{C0C0C0}}l |l|l|l|l|l|}
+\hline
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}We don't know what the problems of the current parser are}                                                                                                                                                                                                       \\ \hline
+Possible impact:              & \multicolumn{5}{l|}{We might deliver a parser with the same problems}                                                                                                                                                                                                                                      \\ \hline
+ID:                           & 3                                         & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
+Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
+Approach:                     & \multicolumn{5}{l|}{\begin{tabular}[c]{@{}l@{}}A meeting with the customer will be organized to gather\\ knowledge of the existing system, especially regarding the current issues, pain points and pitfalls.
+\end{tabular}} \\ \hline
+\end{tabular}
+
+
+\end{table}
+
+
 
 \begin{description}
 	\item [\underline{ID}]
