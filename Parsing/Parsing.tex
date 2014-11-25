@@ -1,5 +1,5 @@
 \documentclass[a4paper,12pt,abstracton,titlepage]{scrartcl}
-\usepackage{fancyhdr}
+\usepackage{scrpage2}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
@@ -22,18 +22,22 @@
 %\date{November 3, 2014}      %// Today's date will appear when this is commented out.
 \newcommand{\version}{0.1}
 
+% title page
 \author{Daniel S. C. Schiavini}
 \affil{Open Universiteit Nederland, faculteit Informatica \\
 	T61327 - Afstudeerproject bachelor informatica}
-\title{Haskell parsing libraries \& User-friendly error messages}
+\title{Haskell parsing libraries \&\\ user-friendly error messages}
 \subtitle{Phase 3a: Domain \& Techniques}
 \publishers{Version \version}
 
-\pagestyle{fancy}
-\lhead{D.S.C. Schiavini}
-\rhead{Parsing libraries \& error messages}
-\cfoot{\thepage}
-\setlength{\headheight}{15pt}
+% header
+\pagestyle{scrheadings}
+\setheadsepline{0.2pt}
+\clearscrheadings
+\automark[section]{chapter}
+\ihead{D.S.C. Schiavini}
+\ohead{Parsing libraries \& error messages}
+\cfoot{\pagemark}
 
 % requirements
 \newcommand{\req}[3]{\noindent\textbf{\texttt{#1} #2}\\#3}
