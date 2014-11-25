@@ -1,0 +1,23 @@
+% !TEX root = ../Parsing.tex
+
+\section{Haskell parsing libraries}
+\label{sec:libraries}
+\dict{UU.Parsing}{Haskell parsing library from the Utrecht University}%
+The current Ampersand parser is created with the Utrecht University parser combinator library (UU.Parsing).
+This library uses monads and combinators and has quite some good features.
+There are, however, other libraries that can provide other feature sets.
+
+The purpose of this research is to choose the library best suited to the development of the new Ampersand parser.
+Some of the libraries available are:
+\begin{itemize}
+	\item Helium
+	\item Parsec
+	\item Polyparse
+	\item Happy parser generator
+\end{itemize}
+There are also advantages and disadvantages on using monads and combinators, which must be researched beforehand.
+The result of this research could also be that the UU.Parsing library is the best choice.
+One big advantage for this library is that the current code base can be very helpful.
+
+The baseline approach for researching the libraries will be to check whether they have all required features and their corresponding effectiveness.
+Also, existing tools built with the parsing library will be checked, specially the maintainability of the code and quality of the error messages.
