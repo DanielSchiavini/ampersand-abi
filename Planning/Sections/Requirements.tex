@@ -1,80 +1,111 @@
 % !TEX root = ../Planning.tex
 \section{High-level requirements}
 \label{sec:requirements}
-In this section, a list of known functional and non-functional requirements is given.
+In this section, a list of known requirements is given.
 Please note that because the project plan is made in the beginning of the project, only the highest-level requirements can be described.
 The requirements will be further clarified in phase 3c based on the stated scope `useful feedback in the Ampersand parser'.
-Also note that the project will be executed in an iterative/agile way, so the requirements will change, and when they do this document might be not updated, however, a full backlog off all functionalities realized within the project will be maintained by the project team.
-
-\subsection{Main requirement: useful and user friendly error messages}
-	The main requirement is that the NAP shall give user-friendly error messages for the most common parsing errors.\\
-	Note: Discovering which errors are the most common and what user-friendly messages consist of, is the most important part of the assignment as there is at the start of the project no list available of the erroneous error messages.
-	It is up to the project team, as a part of the actual project, to identify all the wrong error messages and to identify the actual requirements to implement the useful feedback mechanism in the ampersand parser.
-	
-	The project team will investigate the current parser to be able to draw up these requirements.
-	This input will be gathered by the actual usage of the ampersand parser allowing the project team to discover the wrong error messages, the investigation of the Haskell code and by interviewing the students of the OU who are using the parser.
-	
-	The strategies for achieving the required results are described in \autoref{sec:knowledge-acquisition}.\\
+Also note that the project will be executed in an iterative/agile way, so the requirements will change, and when they do this document might be not updated.
 
 ~\newline\noindent
 In this section, the abbreviation NAP is used, with the meaning `new Ampersand Parser'.
 \dict{NAP}{Ampersand Parser}%
 
-\subsection{Additional functional and non-functional requirements}
-To assure that the listed requirements are as complete as possible, the project team used the .......todo: to be further described...as a requirements checklist towards the customer, the result of this checklist is listed below.
+\subsection{Capability requirements}
+\req{PL-FUN-010}{Command-line interface}{
+	The NAP shall only have a command-line interface.}
 
-\begin{longtable}{|>{\columncolor[HTML]{9B9B9B}}p{3cm} |p{3,5cm}|p{9,5cm}|}
-\hline
+\subsection{Required states and modes}
+\req{PL-RSM-010}{Forward parsing}{
+	The NAP shall provide forward parsing, from ADL to P-structure.}\\
 
-\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}Software quality factors}\\ \hline
-\cellcolor[HTML]{C0C0C0}Ref: PL-SQF-010 & User-friendly errors & The NAP shall give user-friendly error messages for the most common parsing errors in a consistent and clear way \\ \hline
-\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000} Code annotation}}                                                                                              \\ \hline
-\cellcolor[HTML]{C0C0C0}Ref: PL-SQF-020 & Code annotation      & \cellcolor[HTML]{FFFFFF}The NAP source code shall be documented in Haddock format                                \\ \hline
-\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Design and implementation constraints}}                                                                                              \\ \hline
-\cellcolor[HTML]{C0C0C0}Ref: PL-DIC-010 & Ampersand code base     & \cellcolor[HTML]{FFFFFF}The NAP shall be implemented in the Ampersand code base.
+\req{PL-RSM-020}{Backwards parsing}{
+	The NAP shall provide backwards parsing, from P-structure to ADL.}
+
+\subsection{External interface requirements}
+\req{PL-EIF-010}{File interface}{
+	The NAP shall read input text files in ADL format.}\\
+
+\req{PL-EIF-020}{File encoding}{
+	The NAP shall read input files with Windows-1252 (also known as ANSI) encoding.}
+
+\subsection{Internal interface requirements}
+\req{PL-IIF-010}{Interface with Type Checker}{
+	The NAP code shall interface with the Type Checker via the P-structure.}
+
+\subsection{Internal data requirements}
+\req{PL-IDR-010}{Generate P-structure}{
+	The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does.
+	This implies that the P-structure created by the old and new parser will be a perfect match.}
+
+\subsection{Adaptation requirements}
+No such requirements have been identified.
+
+\subsection{Safety requirements}
+Ampersand is not a safety critical application.
+Therefore, no such requirements have been identified.
+
+\subsection{Security and privacy requirements}
+Ampersand is not a security or privacy critical application.
+Therefore, no such requirements have been identified.
+
+\subsection{Environment requirements}
+\req{PL-ENV-010}{Windows environment}{
+	The NAP shall run in the Microsoft Windows 7 operational system.}
+
+\subsection{Computer resource requirements}
+	\subsubsection{Hardware requirements}
+	No such requirements have been identified.
+
+	\subsubsection{Hardware resource utilization requirements}
+	No such requirements have been identified.
+
+	\subsubsection{Software requirements}
+	\req{PL-CSW-010}{Haskell language}{
+		The NAP shall be written in the Haskell programming language.}\\
+		
+	\req{PL-CSW-020}{Haskell compiler}{
+		The NAP shall be compiled with GHC version 7.8.3.}
+
+	\subsubsection{Communications requirements}
+	No such requirements have been identified.
+
+\subsection{Software quality factors}
+\req{PL-SQF-010}{User-friendly errors}{
+	The NAP shall give user-friendly error messages for the most common parsing errors.\\
+	Note: Discovering which errors are the most common and what user-friendly messages consist of, is the most important part of the assignment.
+	The strategies for achieving the required results are described in \autoref{sec:knowledge-acquisition}.}\\
+
+\req{PL-SQF-020}{Code annotation}{
+	The NAP source code shall be documented in Haddock format.}
+
+\subsection{Design and implementation constraints}
+\req{PL-DIC-010}{Ampersand code base}{
+	The NAP shall be implemented in the Ampersand code base.\\
 	Note: This also means that NAP shall be implemented in the Haskell programming language, and will use the same compiler as Ampersand does.
-	The existing coding conventions shall be respected.                                
-\\ \hline
-	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Capability requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-FUN-010 & Command-line interface    & \cellcolor[HTML]{FFFFFF}The NAP shall only have a command-line interface and GUI interface                              \\ \hline
-	
-	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Required states and modes}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-RSM-010 & Forward parsing    & \cellcolor[HTML]{FFFFFF}The NAP shall provide forward parsing, from ADL to P-structure                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-RSM-020 & Backwards parsing    & \cellcolor[HTML]{FFFFFF}The NAP shall not provide backwards parsing, from P-structure to ADL \\ \hline
-		
-	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}External interface requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-EIF-010 & File interface    & \cellcolor[HTML]{FFFFFF}The NAP shall read input text files in the existing ADL format  \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref:PL-EIF-020 & File encoding    & \cellcolor[HTML]{FFFFFF}The NAP shall handle input files with UTF-8 encoding		 \\ \hline
-		
-	 \multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Internal interface requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-IIF-010 & Interface with Type Checker    & \cellcolor[HTML]{FFFFFF}The NAP code shall interface with the existing Type Checker via the P-structure  \\ \hline
-	 \multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Internal data requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-IDR-010 & Generate P-structure    & \cellcolor[HTML]{FFFFFF}The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does, this implies that the P-structure created by the old and new parser will be a perfect match  \\ \hline
-		
-	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Environment requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-ENV-010 & Windows environment    & \cellcolor[HTML]{FFFFFF}The NAP shall run in the Microsoft Windows 7 operational system  \\ \hline
-		
- 	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Software requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-CSW-010 & Haskell language    & \cellcolor[HTML]{FFFFFF}The NAP shall be written in the Haskell programming language  \\ \hline
- 		\cellcolor[HTML]{C0C0C0}Ref:PL-CSW-020 & Haskell compiler    & \cellcolor[HTML]{FFFFFF}The NAP shall be compiled with GHC version 7.8.3 \\ \hline
- 		
- 	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Software requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-CSW-010 & Haskell language    & \cellcolor[HTML]{FFFFFF}The NAP shall be written in the Haskell programming language \\ \hline
-		
-  	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}Packaging requirements}}                                                                                              \\ \hline
-		\cellcolor[HTML]{C0C0C0}Ref: PL-PAK-010 & Git repository    & \cellcolor[HTML]{FFFFFF}The NAP code shall be managed in the `AmpersandTarski/ampersand' GitHub repository, in the `ABI\_Parser' branch \\ \hline
-		
-   	\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000}topics without specific requirements}}                                    			\\ \hline
-   	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Adaptation requirements}}                                   					\\ \hline
-   	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Safety requirements}}                                        					\\ \hline
-   	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Security and privacy requirements}}                                        			\\ \hline
-   	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Hardware requirements}}                                                                         	\\ \hline
-   	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Hardware resource utilization requirements}}                                  		 \\ \hline
-      	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Communications requirements}}                                  				 \\ \hline
-      	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Training-related requirements}}                                  				 \\ \hline
-      	\multicolumn{3}{|p{16cm}|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Logistics-related requirements: All deliveries are done online, therefore no logistics requirements have been identified}}                                  				 \\ \hline
-	\multicolumn{3}{|l|}{\cellcolor[HTML]{FFFFFF}{\color[HTML]{000000}Personnel-related requirements}}                                  				 \\ \hline
-	
-	\caption{Requirements list}
-	\label{tab:requirements}
-\end{longtable}
+	The existing coding conventions shall be respected.}
+
+\subsection{Personnel-related requirements}
+\req{PL-PER-010}{Project members availability}{
+	The project members shall be available for at least an average of 10 hours a week.
+}\\
+
+\req{PL-PER-020}{Peer reviews}{
+	The project members shall review each other's code and documentation before delivery.
+}
+
+\subsection{Training-related requirements}
+No such requirements have been identified.
+
+\subsection{Logistics-related requirements}
+All deliveries are done online, therefore no logistics requirements have been identified.
+
+\subsection{Other requirements}
+No such requirements have been identified.
+
+\subsection{Packaging requirements}
+\req{PL-PAK-010}{Git repository}{
+	The NAP code shall be managed in the `AmpersandTarski/ampersand' GitHub repository, in the `ABI\_Parser' branch.}
+
+\subsection{Precedence and criticality of requirements}
+\req{PL-PAC-010}{Customer wishes}{
+	The implementation of the NAP shall have higher priority than any new features or customer wishes}
