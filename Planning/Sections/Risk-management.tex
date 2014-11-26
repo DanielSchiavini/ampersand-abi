@@ -30,11 +30,11 @@ The exact qualification of the risk type is based on the risk likelihood (what i
 
 \begin{longtable}{|l|c|c|c|}
 \hline
-       & \multicolumn{3}{l|}{Likelihood}                                                     \\ \hline
-Impact & Low                       & Medium                      & High                      \\ \hline
-High   & \cellcolor[HTML]{FFCB2F}M & \cellcolor[HTML]{FE0000}H   & \cellcolor[HTML]{FE0000}H \\ \hline
-Medium & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{FFCB2F}M   & \cellcolor[HTML]{FE0000}H \\ \hline
-Low    & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{34FF34}L   & \cellcolor[HTML]{FFC702}M \\ \hline
+       & \multicolumn{3}{l|}{Likelihood}                                                     \\\hline
+Impact & Low                       & Medium                      & High                      \\\hline
+High   & \cellcolor[HTML]{FFCB2F}M & \cellcolor[HTML]{FE0000}H   & \cellcolor[HTML]{FE0000}H \\\hline
+Medium & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{FFCB2F}M   & \cellcolor[HTML]{FE0000}H \\\hline
+Low    & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{34FF34}L   & \cellcolor[HTML]{FFC702}M \\\hline
 \caption{Risk qualification}
 \label{tab:risk-qualification}
 \end{longtable}
@@ -84,85 +84,59 @@ Risk management is a continuous process during the full project life cycle and t
 At the beginning of the project, some risks are already identified and documented in the risk register.
 Given the holistic goal of this project plan document, the identified high risks are summarized below:
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|
->{\columncolor[HTML]{C0C0C0}}p{2,5cm} |p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}Some requirements are unclear and/or ambiguous}                                                                                                                                                                                                       \\ \hline
-Poss. impact:              & \multicolumn{5}{l|}{The features might be build incorrectly}                                                                                                                                                                                                                                      \\ \hline
-ID:                           & 1                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
-Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
-Approach:                     & \multicolumn{5}{l|}{\begin{tabular}[c]{@{}l@{}}For each unclear requirement, a detailed description of the need including \\ the solution approach will be documented.\\ This will presented towards the customer to ensure that the delivered \\ functionality meets expectations.\end{tabular}} \\ \hline
-\end{tabular}
-\end{table}
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}Some requirements are unclear and/or ambiguous}                                                                                                                                                                                           \\\hline
+Poss. impact:              & \multicolumn{5}{l|}{The features might be build incorrectly}                                                                                                                                                                                                                             \\\hline
+ID:                           & 1                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                         & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
+Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                        \\\hline
+Approach:                     & \multicolumn{5}{l|}{For each unclear requirement, a detailed description of the need including the solution approach will be documented. This will presented towards the customer to ensure that the delivered functionality meets expectations.}                             \\\hline
+\end{longtable}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|
->{\columncolor[HTML]{C0C0C0}}p{2,5cm} |p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
-\hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}Requirements are not ordered by priority}                                                                                                                                                                                                       \\ \hline
-Poss. impact:              & \multicolumn{5}{l|}{Lower priority features might be build before the high priority features}                                                                                                                                                                                                                                      \\ \hline
-ID:                           & 2                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
-Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
-Approach:                     & \multicolumn{5}{l|}{\begin{tabular}[c]{@{}l@{}}Each time an additional topic can be initiated, \\ the most urgent one will be indicated by the customer.
-\end{tabular}} \\ \hline
-\end{tabular}
-\end{table}
-\begin{table}[h]
-\centering
-\begin{tabular}{|
->{\columncolor[HTML]{C0C0C0}}p{2,5cm} |p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
-\hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}We don't know what the problems of the current parser are}                                                                                                                                                                                                       \\ \hline
-Poss. impact:              & \multicolumn{5}{l|}{We might deliver a parser with the same problems}                                                                                                                                                                                                                                      \\ \hline
-ID:                           & 3                                         & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
-Approach:                     & \multicolumn{5}{l|}{\begin{tabular}[c]{@{}l@{}}A meeting with the customer will be organized to gather knowledge of the \\existing system, focussing on the current issues, pain points and pitfalls.
-\end{tabular}} \\ \hline
-\end{tabular}
-\end{table}
-\begin{table}[h]
-\centering
-\begin{tabular}{|
->{\columncolor[HTML]{C0C0C0}}p{2,5cm} |p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
-\hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}The code, grammar description, code comments and examples aren't consistent.}                                                                                                                                                                                                       \\ \hline
-Poss. impact:              & \multicolumn{5}{l|}{The delivered code may not be according to the expected coding conventions}                                                                                                                                                                                                                                      \\ \hline
-ID:                           & 4                                         & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
-Approach:                     & \multicolumn{5}{l|}{\begin{tabular}[c]{@{}l@{}}The team will document the differences in the current code and plan a meeting \\with the customer to decide on the correct coding conventions.
-\end{tabular}} \\ \hline
-\end{tabular}
-\end{table}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|
->{\columncolor[HTML]{C0C0C0}}p{2,5cm} |p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\hline
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}Requirements are not ordered by priority}                                                                                                                                                                                                       \\\hline
+Poss. impact:              & \multicolumn{5}{l|}{Lower priority features might be build before the high priority features}                                                                                                                                                                                                                                      \\\hline
+ID:                           & 2                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
+Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
+Approach:                     & \multicolumn{5}{l|}{Each time an additional topic can be initiated, the most urgent one will be indicated by the customer.} \\\\hline
+\end{longtable}
+
+\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\hline
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}We don't know what the problems of the current parser are}                                                                                                                                                                                                       \\\hline
+Poss. impact:              & \multicolumn{5}{l|}{We might deliver a parser with the same problems}                                                                                                                                                                                                                                      \\\hline
+ID:                           & 3                                         & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
+Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
+Approach:                     & \multicolumn{5}{l|}{A meeting with the customer will be organized to gather knowledge of the existing system, focussing on the current issues, pain points and pitfalls.} \\\hline
+\end{longtable}
+
+\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\hline
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{l|}{\cellcolor[HTML]{9B9B9B}The code, grammar description, code comments and examples aren't consistent.}                                                                                                                                                                                                       \\\hline
+Poss. impact:              & \multicolumn{5}{l|}{The delivered code may not be according to the expected coding conventions}                                                                                                                                                                                                                                      \\\hline
+ID:                           & 4                                         & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
+Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
+Approach:                     & \multicolumn{5}{l|}{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
+\end{longtable}
+
+\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
 \hline
 \cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{14,5cm}|}{\cellcolor[HTML]{9B9B9B}Useful feedback' is a subjective term, if the project team and the project customer have a different opinion regarding this term, the team could end up delivering a project according to spec but of which the quality is judged as insufficient.}                                                                                                                                                                                                       
-\\ \hline
-Poss. impact:              & \multicolumn{5}{p{14,5cm}|}{The delivered code may not be according to the expected coding conventions}                                                                                                                                                                                                                                      \\ \hline
-ID:                           & 5                                        & \cellcolor[HTML]{C0C0C0}Domain:                                            & Quality                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\ \hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\ \hline
-Approach:                     & \multicolumn{5}{p{12,5cm}|}{\begin{tabular}[c]{@{}l@{}}The team will document the differences in the current code and plan a meeting \\with the customer to decide on the correct coding conventions.
-\end{tabular}} \\ \hline
-\end{tabular}
-\end{table}
+\\\hline
+Poss. impact:              & \multicolumn{5}{p{14,5cm}|}{The delivered code may not be according to the expected coding conventions}                                                                                                                                                                                                                                      \\\hline
+ID:                           & 5                                        & \cellcolor[HTML]{C0C0C0}Domain:                                            & Quality                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
+Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
+Approach:                     & \multicolumn{5}{p{12,5cm}|}{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
+\end{longtable}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|
->{\columncolor[HTML]{C0C0C0}}p{2,5cm} |p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{14,5cm}|}{\cellcolor[HTML]{9B9B9B}It already clear that the full list of current enhancement points cannot be treated within the current budget (hrs).}                                                                                                                                                                                                       \\ \hline
-Poss. impact:              & \multicolumn{5}{l|}{Unsatisfied customer, non acceptance of the project.}                                                                                                                                                                                                                                      \\ \hline
-ID:                           & 6                                        & \cellcolor[HTML]{C0C0C0}Domain:                                            & Budget                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & Medium                                         \\ \hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Reduction                                    \\ \hline
-Approach:                     & \multicolumn{5}{p{14,5cm}|}{\begin{tabular}[c]{@{}l@{}}	Within the project plan, it is clearly stated that the feedback mechanism \\in the parser receives full priority. The additional requirements will only be \\considered when the project team is able to integrate them without \\ budget overrun. 	This will be discussed with the customer.
-\end{tabular}} \\ \hline
-\end{tabular}
-
-\end{table}
+\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{14,5cm}|}{\cellcolor[HTML]{9B9B9B}It already clear that the full list of current enhancement points cannot be treated within the current budget (hrs).}                                                                                                                                                                                                       \\\hline
+Poss. impact:              & \multicolumn{5}{l|}{Unsatisfied customer, non acceptance of the project.}                                                                                                                                                                                                                                      \\\hline
+ID:                           & 6                                        & \cellcolor[HTML]{C0C0C0}Domain:                                            & Budget                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & Medium                                         \\\hline
+Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Reduction                                    \\\hline
+Approach:                     & \multicolumn{5}{p{14,5cm}|}{Within the project plan, it is clearly stated that the feedback mechanism in the parser receives full priority. The additional requirements will only be considered when the project team is able to integrate them without budget overrun. 	This will be discussed with the customer.}
+\\\hline
+\end{longtable}
