@@ -24,28 +24,28 @@ In this section, the abbreviation NAP is used, with the meaning `new Ampersand P
 To assure that the listed requirements are as complete as possible, the project team used the .......todo: to be further described...as a requirements checklist towards the customer, the result of this checklist is listed below.
 
 \subsection{Capability requirements}
-\req{PL-FUN-010}{Command-line interface}{
+\req{PL-FUN-010}{Command-line interface}{Project members}{
 	The NAP shall only have a command-line interface and GUI interface.}
 
 \subsection{Required states and modes}
-\req{PL-RSM-010}{Forward parsing}{
+\req{PL-RSM-010}{Forward parsing}{Current parser}{
 	The NAP shall provide forward parsing, from ADL to P-structure.}\\
-\req{PL-RSM-020}{Backwards parsing}{
+\req{PL-RSM-020}{Backwards parsing}{Current parser}{
 	The NAP shall not provide backwards parsing, from P-structure to ADL.}
 
 \subsection{External interface requirements}
-\req{PL-EIF-010}{File interface}{
+\req{PL-EIF-010}{File interface}{Current parser}{
 	The NAP shall read input text files in the existing ADL format.}\\
 
-\req{PL-EIF-020}{File encoding}{
+\req{PL-EIF-020}{File encoding}{Stef Joosten}{
 	The NAP shall handle input files with UTF-8 encoding.}
 
 \subsection{Internal interface requirements}
-\req{PL-IIF-010}{Interface with Type Checker}{
+\req{PL-IIF-010}{Interface with Type Checker}{Current parser}{
 	The NAP code shall interface with the existing Type Checker via the P-structure.}
 
 \subsection{Internal data requirements}
-\req{PL-IDR-010}{Generate P-structure}{
+\req{PL-IDR-010}{Generate P-structure}{Current parser}{
 	The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does,
 	this implies that the P-structure created by the old and new parser will be a perfect match.}
 
@@ -61,7 +61,7 @@ Ampersand is not a security or privacy critical application.
 Therefore, no such requirements have been identified.
 
 \subsection{Environment requirements}
-\req{PL-ENV-010}{Windows environment}{
+\req{PL-ENV-010}{Windows environment}{Current parser}{
 	The NAP shall run in the Microsoft Windows 7 operational system.}
 
 \subsection{Computer resource requirements}
@@ -72,24 +72,24 @@ Therefore, no such requirements have been identified.
 	No such requirements have been identified.
 
 	\subsubsection{Software requirements}
-	\req{PL-CSW-010}{Haskell language}{
+	\req{PL-CSW-010}{Haskell language}{Stef Joosten}{
 		The NAP shall be written in the Haskell programming language.}\\
 		
-	\req{PL-CSW-020}{Haskell compiler}{
+	\req{PL-CSW-020}{Haskell compiler}{Stef Joosten}{
 		The NAP shall be compiled with GHC version 7.8.3.}
 
 	\subsubsection{Communications requirements}
 	No such requirements have been identified.
 
 \subsection{Software quality factors}
-\req{PL-SQF-010}{User-friendly errors}{
+\req{PL-SQF-010}{User-friendly errors}{Project description}{
 	The NAP shall give user-friendly error messages for the most common parsing errors in a consistent and clear way.}
 
-\req{PL-SQF-020}{Code annotation}{
+\req{PL-SQF-020}{Code annotation}{Stef Joosten}{
 	The NAP source code shall be documented in Haddock format.}
 
 \subsection{Design and implementation constraints}
-\req{PL-DIC-010}{Ampersand code base}{
+\req{PL-DIC-010}{Ampersand code base}{Stef Joosten}{
 	The NAP shall be implemented in the Ampersand code base.\\
 	Note: This also means that NAP shall be implemented in the Haskell programming language, and will use the same compiler as Ampersand does.
 	The existing coding conventions shall be respected.}
@@ -107,7 +107,7 @@ All deliveries are done online, therefore no logistics requirements have been id
 No such requirements have been identified.
 
 \subsection{Packaging requirements}
-\req{PL-PAK-010}{Git repository}{
+\req{PL-PAK-010}{Git repository}{Stef Joosten}{
 	The NAP code shall be managed in the `AmpersandTarski/ampersand' GitHub repository, in the `ABI\_Parser' branch.}
 
 \subsection{Precedence and criticality of requirements}
