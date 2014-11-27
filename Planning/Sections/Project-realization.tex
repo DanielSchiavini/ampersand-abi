@@ -2,12 +2,13 @@
 \section{Project realization}
 \label{sec:project-realization}
 \dict{Phase 3c}{Phase of the project when the software is actually designed, developed and tested. See \autoref{sec:project-realization}}%
-During the project phase 3d, the software solution for the customer is designed, developed and tested.
+During the project phase 3c, the software solution for the customer is designed, developed and tested.
+This section describes the approach for the development and testing.
 
 \subsection{Coding conventions}
 \label{subsec:coding-conventions}
 \dict{Wiki}{Website that allows users to create web pages collaboratively}%
-The coding conventions are described on the Ampersand wiki\cite{ampersand-wiki} and the project team will strictly adhere to these coding conventions.
+The coding conventions are described on the Ampersand wiki \cite{ampersand-wiki} and the project team will strictly adhere to these coding conventions.
 In order to guarantee consistency, the conventions will not be duplicated in this document.
 
 \subsection{Iterative approach}
@@ -34,13 +35,13 @@ That makes the use of Scrum very challenging, so the following remarks are to be
 		\begin{itemize}
 			\item What have you done since yesterday?
 			\item What are you planning to do today?
-			\item Any impediments/stumbling blocks?
+			\item Are there any impediments or stumbling blocks?
 		\end{itemize}
 \end{itemize}
 
 \subsection{Validation}
 In order to validate that the right product is being built, the first step before the planning meeting is to define what is going to be built.
-This will be done by means of writing requirements and sharing them with the customer.
+This will be defined in communication with the customer.
 
 An important step on defining the requirements for the Ampersand parser will be defining which situations require improvement.
 This can be done by collecting user data, although this data might be hard to analyze afterwards.
@@ -52,27 +53,22 @@ Even though the customer has limited time, the end product can only be as good a
 
 The validation of the work products will be facilitated by the project team using a pre-defined validation approach:
 \begin{itemize}
-	\item Upon the completion of a work product, the project team will do the verification and validation of the work product against the agreed on requirements;
-	\item The verification and validation will be documented and handed over to the customer, the supervisor will be added in cc;
-	\item After review by the customer's team, all remarks and issues of topics not corresponding to the agreed on scope will be delivered by the customer within a time frame of 1 week;
-	\item The project team will treat and handle the remarks and issues within 1 week;
-	\item The final work product is presented to the customer for acceptance.
+	\item Upon the completion of a work product, the project team will do the verification and validation of the work product;
+	\item The verification and validation will be reported and handed over to the customer for acceptance (with a copy to the supervisor);
+	\item After review by the customer, all remaining remarks and non-conforming topics will be solved;
+	\item The final work product then is presented to the customer for acceptance.
 \end{itemize}
 
 \subsection{Test approach}
 In order to verify the requirements, the approach is to automate as much as possible of the testing platform.
 Although this will take some extra effort at the beginning of the project, the automation guarantees that a lot of time is saved in regression testing.
 
-See also \autoref{sec:tools-methodologies} for a list of tools that will be used for testing.
-
-\subsection{Test methodology}
-Automating tests for Haskell programs should always be possible.
-Indeed, the programs should be always deterministic.
+Automating tests for Haskell programs should be possible, since the programs should be deterministic.
 The Ampersand parser, specifically, can be used in a feedback way: the program code is parsed, and then converted back to source code.
-By parsing this code yet again, it can be verified that the result is the same.
+By parsing this code yet again, it can be verified that the result is the same (also known as pretty-printing).
 
-\subsection{Test documentation}
-\label{subsec:test-documentation}
 All test scripts shall be added to source control (see \autoref{sec:tools-methodologies} for the used tools).
 If necessary, a simple test report will be delivered at the end of the sprint.
-Note that this report can be shared earlier with all stakeholders, as soon as a deliverable (backlog item) is ready.
+Note that this report can be shared earlier with all stakeholders, as soon as a deliverable is ready.
+
+See also \autoref{sec:tools-methodologies} for a list of tools that will be used for testing.

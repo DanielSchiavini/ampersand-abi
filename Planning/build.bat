@@ -25,5 +25,6 @@ call:cleanup
 :: del /q *.blg
 :: del /q *.brf
 del /q *.toc
+del /q *.glsdefs
 
 goto:eof

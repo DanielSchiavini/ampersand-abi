@@ -2,16 +2,16 @@
 
 \section{Integration \& release}
 \label{sec:integration-release}
-\dict{branching}{Branching is the duplication of an object under revision control so that modifications can happen in parallel along both branches.}%
+\dict{branching}{Branching is the duplication of an object under revision control so that modifications can happen in parallel along both branches}%
 \dict{merging}{The reintegration of a branch into the original code}%
 The code changes of this project will be done in a separate branch (\texttt{ABI\_Parser}) of the Ampersand GitHub repository (\texttt{AmpersandTarski/ampersand}).
 In the end of each sprint, the project members will evaluate whether the integration into the master branch is advised.
 If so, the following steps will be taken:
 \begin{enumerate}
-	\item The code has already been merged and tested in the project branch.
-	\item The project manager shall send a notification via e-mail to the customer, including the test documentation and any other applicable information, such as the commit identifier (see \autoref{subsec:test-documentation}).
-	\item The customer should realize any complementary tests and accept the release.
-	\item When the release is accepted, a push request will be issued.
+	\item The code will be merged and tested in the master branch;
+	\item The customer will be informed, including any other applicable information;
+	\item A git pull request will be issued;
+	\item The customer should realize any complementary tests and accept the request;
 \end{enumerate}
 %
 It is important to note that any code developed in a sprint should be usable and integrated into the master branch.

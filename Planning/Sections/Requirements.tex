@@ -3,32 +3,30 @@
 \label{sec:requirements}
 In this section, a list of known functional and non-functional requirements is given.
 Please note that because the project plan is made in the beginning of the project, only the highest-level requirements can be described.
-The requirements will be further clarified in phase 3c based on the stated scope `useful feedback in the Ampersand parser'.
-Also note that the project will be executed in an iterative/agile way, so the requirements will change, and when they do this document might be not updated, however, a full backlog off all functionalities realized within the project will be maintained by the project team.
+Also note that the project will be executed in an iterative/agile way, so the requirements will change, and when they do this document may not be updated.
+However, a backlog of functionalities realized within the project will be kept by the project team.
+
+~\newline\noindent
+Note: In this section, the abbreviation NAP is used, meaning `new Ampersand Parser'.
+\dict{NAP}{New Ampersand Parser (the software deliverable of this project)}%
 
 \subsection{Main requirement: useful and user friendly error messages}
 The main requirement is that the NAP shall give user-friendly error messages for the most common parsing errors.\\
-Note: Discovering which errors are the most common and what user-friendly messages consist of, is the most important part of the assignment as there is at the start of the project no list available of the erroneous error messages.
-It is up to the project team, as a part of the actual project, to identify all the wrong error messages and to identify the actual requirements to implement the useful feedback mechanism in the ampersand parser.
+Note that discovering which errors are the most common and what user-friendly messages consist of, is an important part of the assignment.
+At the beginning of the project, no list of undesirable error messages is available.
+It is up to the project team, as a part of the actual project, to identify undesirable error messages and requirements to implement the useful feedback mechanism in the ampersand parser.
 
 The project team will investigate the current parser to be able to draw up these requirements.
-This input will be gathered by the actual usage of the ampersand parser allowing the project team to discover the wrong error messages, the investigation of the Haskell code and by interviewing the students of the OU who are using the parser.
+This input will be gathered by using the ampersand parser, investigating the Haskell code and by interviewing the students of the OU who are using the parser.
+This will allow the project team to discover the error messages to be improved.
 
 The strategies for achieving the required results are described in \autoref{sec:knowledge-acquisition}.
 
-~\newline\noindent
-In this section, the abbreviation NAP is used, with the meaning `new Ampersand Parser'.
-\dict{NAP}{New Ampersand Parser (the software deliverable of this project)}%
-
 \subsection{Additional functional and non-functional requirements}
-To assure that the listed requirements are as complete as possible, the project team used the standards ISO/IEC 9126 \cite{iso-9126} and J-STD-016 \cite{jstd-016} as requirement checklists towards the customer, the result of this checklist is listed below.
-Since so little requirements have been identified, the requirements are listed here:
+To assure that the listed requirements are as complete as possible, the project team used the standards ISO/IEC 9126 \cite{iso-9126} and J-STD-016 \cite{jstd-016} as requirement checklists.
+Since so little requirements have been identified, the requirements are listed in a light-weight format, instead of the formats required by the named standards.
+The completeness and correctness of the requirements has been checked with the customer, Stef Joosten.
 
-	\req{PL-FUN-010}{Command-line interface}
-		{Capability requirement}
-		{Project members}
-		{The NAP shall only have a command-line interface and GUI interface}
-		
 	\req{PL-RSM-010}{Forward parsing}
 		{Required state/mode}
 		{Current parser}
@@ -58,8 +56,8 @@ Since so little requirements have been identified, the requirements are listed h
 	\req{PL-IDR-010}{Generate P-structure}
 		{Internal data requirement}
 		{Current parser}
-		{The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does,
-		this implies that the P-structure created by the old and new parser will be a perfect match}
+		{The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does.
+		This implies that the P-structure created by the old and new parser will match}
 
 	\req{PL-ENV-010}{Windows environment}
 		{Environment requirement}

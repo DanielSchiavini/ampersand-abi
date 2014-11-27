@@ -2,39 +2,30 @@
 \section{Risk management}
 \label{sec:risk-management}
 Risk management is one of the measures taken within the project to guarantee the process quality and hence project success.
-This appraoch is loosly based on the PMI Risk Management approach  \cite{pmi}.
+This approach is loosely based on the PMI Risk Management approach \cite{pmi}.
+This risk management approach consists out of 5 steps: Risk identification, risk qualification, determination of risk mitigation measures, monitoring \& control and evaluation \& fine-tuning.
 
-The risk management approach consist out of 5 steps:
-
-\begin{enumerate}
-    \item Risk identification 
-    \item Risk qualification
-    \item Determination of risk mitigation measures
-    \item Monitoring and control
-    \item Evaluation and fine-tuning
-\end {enumerate}
 \subsection{Risk identification}
 Every identified risk within the full life-cycle of the project will be followed up by the project team.
-The definition of a risk in this project is  `every event that can influence the project in a tangible negative way'.
+The definition of a risk in this project is  `an event that can influence the project in a tangible negative way'.
 Of course there can be risks with a positive effect, but these will be merely considered as a `lucky coincidence'.
 
-All risks will be kept together in a central repository, the risk register, in which a summary with the main characteristics is provided such as: description, risk qualification, status and identified mitigation actions.
+The risks will be kept together in a central repository, the risk register, in which a summary with the main characteristics is provided such as: description, risk qualification, status and identified mitigation actions.
 
 \subsection{Risk qualification}
 Not every identified risk will have the same importance, and the focus will be on the risks that are worth paying attention to.
 This means that the focus will be on the medium or heavy risks which, if they occur, will have a bad or sometimes a catastrophic effect on the project.
 
-The exact qualification of the risk type is based on the risk likelihood (what is the chance of the risk to become a fact), and the risk impact (how hard will this risk hit the project if it happens).
+The exact qualification of the risk type is based on the risk likelihood (what is the chance of the risk becoming a fact), and the risk impact (how hard would the risk hit the project if it happens).
 
 \autoref{tab:risk-qualification} identifies the risks qualification based on these 2 parameters:
 
-\begin{longtable}{|l|c|c|c|}
-\hline
+\begin{longtable}{|p{1,5cm}|p{1,5cm}|p{1,5cm}|p{1,5cm}|}\hline
        & \multicolumn{3}{l|}{Likelihood} \\\hline
 Impact & Low           & Medium          & High \\\hline
-High   & \cellcolor[HTML]{FFCB2F}M & \cellcolor[HTML]{FE0000}H   & \cellcolor[HTML]{FE0000}H \\\hline
-Medium & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{FFCB2F}M   & \cellcolor[HTML]{FE0000}H \\\hline
-Low    & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{34FF34}L   & \cellcolor[HTML]{FFC702}M \\\hline
+High   & \risklow & \riskhigh   & \riskhigh \\\hline
+Medium & \risklow & \riskmedium   & \riskhigh \\\hline
+Low    & \risklow & \risklow   & \riskmedium \\\hline
 \caption{Risk qualification}
 \label{tab:risk-qualification}
 \end{longtable}
@@ -69,6 +60,7 @@ The possible risk management strategies to cope with each distinct risk are the 
 
 \noindent
 The risk management strategy will be documented for each distinct risk in the risk register.
+%todo: should we delete this subsection?
 
 \subsubsection{Monitoring and control}
 The risks are monitored on a weekly basis and the necessary re-qualifications and new/ongoing mitigation actions are discussed when appropriate.
@@ -87,27 +79,27 @@ Given the holistic goal of this project plan document, the identified high risks
 \begin{longtable}{R}
 \hline
 \risk{Some requirements are unclear and/or ambiguous} \\\hline
-Poss. impact:    & \riskline{The features might be build incorrectly} \\\hline
+Poss. impact:    & \riskline{The features might be built incorrectly} \\\hline
 ID:  & 1        & Domain:        & Scope     & Impact:           & High \\\hline
-Likelihood:      & Medium   & Qualification: & High      & Mitigation type:  & Avoidance \\\hline
+Likelihood:      & Medium   & Qualification: & \riskhigh     & Mitigation:  & Avoidance \\\hline
 Approach:        & \riskline{For each unclear requirement, a detailed description of the need including the solution approach will be documented. This will presented towards the customer to ensure that the delivered functionality meets expectations.} \\\hline
 \end{longtable}
 
 \begin{longtable}{R}
 \hline
 \risk{Requirements are not ordered by priority} \\\hline
-Poss. impact:   & \riskline{Lower priority features might be build before the high priority features} \\\hline
+Poss. impact:   & \riskline{Lower priority features might be built before the high priority features} \\\hline
 ID: & 2         & Domain:       & Scope    & Impact:             & High \\\hline
-Likelihood:     & Medium    & Qualification:            & High     & Mitigation type:    & Avoidance \\\hline
+Likelihood:     & Medium    & Qualification:            & \riskhigh     & Mitigation:    & Avoidance \\\hline
 Approach:       & \riskline{Each time an additional topic can be initiated, the most urgent one will be indicated by the customer.} \\\hline
 \end{longtable}
 
 \begin{longtable}{R}
 \hline
-\risk{We don't know what the problems of the current parser are} \\\hline
-Poss. impact:    & \riskline{We might deliver a parser with the same problems} \\\hline
+\risk{The problems of the current parser are still unknown} \\\hline
+Poss. impact:    & \riskline{A parser with the same problems may be delivered} \\\hline
 ID:              & 3        & Domain:          & Scope    & Impact:             & High \\\hline
-Likelihood:      & High    & Qualification:    & High     & Mitigation type:    & Avoidance \\\hline
+Likelihood:      & High    & Qualification:    & \riskhigh     & Mitigation:    & Avoidance \\\hline
 Approach:        & \riskline{A meeting with the customer will be organized to gather knowledge of the existing system, focussing on the current issues, pain points and pitfalls.} \\\hline
 \end{longtable}
 
@@ -116,7 +108,7 @@ Approach:        & \riskline{A meeting with the customer will be organized to ga
 \risk{The code, grammar description, code comments and examples aren't consistent.} \\\hline
 Poss. impact:     & \riskline{The delivered code may not be according to the expected coding conventions} \\\hline
 ID:               & 4        & Domain:          & Scope    & Impact:             & High \\\hline
-Likelihood:       & High    & Qualification:    & High     & Mitigation type:    & Avoidance \\\hline
+Likelihood:       & High    & Qualification:    & \riskhigh     & Mitigation:    & Avoidance \\\hline
 Approach:         & \riskline{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
 \end{longtable}
 
@@ -125,16 +117,18 @@ Approach:         & \riskline{The team will document the differences in the curr
 \risk{`Useful feedback' is a subjective term}\\\hline
 Poss. impact:    & \riskline{If the project team and the project customer have a different opinion regarding this term, the team could end up delivering a project according to specifications but of which the quality is judged as insufficient.} \\\hline
 ID:               & 5       & Domain:           & Quality  & Impact:             & High \\\hline
-Likelihood:       & High    & Qualification:    & High     & Mitigation type:    & Avoidance \\\hline
+Likelihood:       & High    & Qualification:    & \riskhigh     & Mitigation:    & Avoidance \\\hline
 Approach:         & \riskline{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
 \end{longtable}
 
 \begin{longtable}{R}
 \hline
-\risk{It already clear that the full list of current enhancement points cannot be treated within the current budget (hrs)} \\\hline
+\risk{The full list of wishes cannot be implemented within the time budget} \\\hline
 Poss. impact:    & \riskline{Unsatisfied customer, non acceptance of the project.} \\\hline
 ID:               & 6       & Domain:           & Budget   & Impact:             & Medium \\\hline
-Likelihood:       & High    & Qualification:    & High     & Mitigation type:    & Reduction \\\hline
-Approach:         & \riskline{Within the project plan, it is clearly stated that the feedback mechanism in the parser receives full priority. The additional requirements will only be considered when the project team is able to integrate them without budget overrun.     This will be discussed with the customer.}
+Likelihood:       & High    & Qualification:    & \riskhigh     & Mitigation:    & Reduction \\\hline
+Approach:         & \riskline{The customer was informed that the full list cannot be implemented.
+	Within the project plan, it is clearly stated that the feedback mechanism in the parser receives full priority.
+	The additional requirements will only be considered when the project team is able to integrate them within budget.}
 \\\hline
 \end{longtable}

@@ -41,15 +41,24 @@
 \cfoot{\pagemark}
 
 % requirements
-\newcommand{\req}[5]{
-	\begin{tabular}{|p{3cm}|p{9cm}|}\hline
+%todo: make requirements with same layout as risks
+\newcommand{\req}[5]{~\\
+	\begin{tabular}{|p{2.5cm}|p{10cm}|}\hline
 		Reference	& \texttt{#1} \\\hline
 		Title		& \textbf{#2} \\\hline
 		Category	& #3 \\\hline
 		Source 		& #4 \\\hline
 		Description	& #5 \\\hline
-	\end{tabular}~\\~\\
+	\end{tabular}~\\
 }
+
+%risks
+\newcolumntype{R}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,2cm}|>{\columncolor[HTML]{C0C0C0}}p{2,2cm}|p{2,2cm}|>{\columncolor[HTML]{C0C0C0}}p{2,2cm}|p{2,2cm}|}
+\newcommand{\risk}[1]{\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{13,5cm}|}{\cellcolor[HTML]{9B9B9B}#1}}
+\newcommand{\riskline}[1]{\multicolumn{5}{p{13,5cm}|}{#1}}
+\newcommand{\riskhigh}{\cellcolor[HTML]{FE0000}High}
+\newcommand{\riskmedium}{\cellcolor[HTML]{FFCB2F}Medium}
+\newcommand{\risklow}{\cellcolor[HTML]{34FF34}Low}
 
 % hyphenation
 \hyphenation{
@@ -74,6 +83,7 @@
 \clearpage
 
 \input{Sections/Introduction.tex}
+\clearpage
 \input{Sections/Project-description.tex}
 \input{Sections/Project-approach.tex}
 \input{Sections/Project-management.tex}
