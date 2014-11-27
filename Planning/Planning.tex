@@ -41,11 +41,10 @@
 \cfoot{\pagemark}
 
 % requirements
-%todo: make requirements with same layout as risks
 \newcommand{\req}[5]{~\\
-	\begin{tabular}{|p{2.5cm}|p{10cm}|}\hline
-		Reference	& \texttt{#1} \\\hline
-		Title		& \textbf{#2} \\\hline
+	\begin{tabular}{|>{\columncolor[HTML]{C0C0C0}}p{2.5cm}|p{10cm}|}\hline
+		\cellcolor[HTML]{9B9B9B}Requirement	& \cellcolor[HTML]{9B9B9B}\textbf{#2} \\\hline
+		ID			& \texttt{#1} \\\hline
 		Category	& #3 \\\hline
 		Source 		& #4 \\\hline
 		Description	& #5 \\\hline
