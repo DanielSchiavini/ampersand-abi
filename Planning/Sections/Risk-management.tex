@@ -7,11 +7,11 @@ This appraoch is loosly based on the PMI Risk Management approach  \cite{pmi}.
 The risk management approach consist out of 5 steps:
 
 \begin{enumerate}
-	\item Risk identification 
-	\item Risk qualification
-	\item Determination of risk mitigation measures
-	\item Monitoring and control
-	\item Evaluation and fine-tuning
+    \item Risk identification 
+    \item Risk qualification
+    \item Determination of risk mitigation measures
+    \item Monitoring and control
+    \item Evaluation and fine-tuning
 \end {enumerate}
 \subsection{Risk identification}
 Every identified risk within the full life-cycle of the project will be followed up by the project team.
@@ -30,8 +30,8 @@ The exact qualification of the risk type is based on the risk likelihood (what i
 
 \begin{longtable}{|l|c|c|c|}
 \hline
-       & \multicolumn{3}{l|}{Likelihood}                                                     \\\hline
-Impact & Low                       & Medium                      & High                      \\\hline
+       & \multicolumn{3}{l|}{Likelihood} \\\hline
+Impact & Low           & Medium          & High      \\\hline
 High   & \cellcolor[HTML]{FFCB2F}M & \cellcolor[HTML]{FE0000}H   & \cellcolor[HTML]{FE0000}H \\\hline
 Medium & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{FFCB2F}M   & \cellcolor[HTML]{FE0000}H \\\hline
 Low    & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{34FF34}L   & \cellcolor[HTML]{FFC702}M \\\hline
@@ -42,29 +42,29 @@ Low    & \cellcolor[HTML]{34FF34}L & \cellcolor[HTML]{34FF34}L   & \cellcolor[HT
 \noindent
 Based on the identified risk type, the risk will be managed accordingly:
 \begin{description}
-	\item [L - Low Risk:]
-	Low risks will be monitored on a regular basis, but no specific actions will be initiated with regards to risk mitigation and/or risk avoidance.
-	\item [M - Medium Risk:]
-	Medium risk will be managed in a more proactive way.
-	Risk mitigation options will be documented, and these will be taken into account during the risk's life-cycle.
-	It is up to the project team to decide whether the risk is managed actively or merely monitored.
-	\item[H-High risks:]
-	The project team will act on high risks with a high sense of urgency.
-	High risks will be investigated in detail, a risk mitigation approach will be installed and the risk will be monitored intensively throughout the risk's life-cycle.
+    \item [L - Low Risk:]
+    Low risks will be monitored on a regular basis, but no specific actions will be initiated with regards to risk mitigation and/or risk avoidance.
+    \item [M - Medium Risk:]
+    Medium risk will be managed in a more proactive way.
+    Risk mitigation options will be documented, and these will be taken into account during the risk's life-cycle.
+    It is up to the project team to decide whether the risk is managed actively or merely monitored.
+    \item[H-High risks:]
+    The project team will act on high risks with a high sense of urgency.
+    High risks will be investigated in detail, a risk mitigation approach will be installed and the risk will be monitored intensively throughout the risk's life-cycle.
 \end {description}
 
 \subsubsection{Determination of risk mitigation measures}
 The possible risk management strategies to cope with each distinct risk are the following:
 \begin{description}
-	\item [Risk avoidance]
-	Actions are undertaken to avoid the risk, meaning that the risk will disappear or become less likely due to the taken actions.
-	\item[Risk reduction]
-	The risk itself cannot be avoided, but measures are taken to limit the negative consequences in case the risk materializes.
-	\item[Risk sharing]
-	This kind of risk cannot be coped with by the project team on its own, therefore the risk mitigation responsibility is shared with other resources or project teams to identify a joint risk approach.
-	\item[Risk acceptance]
-	The project team decides to just accept the consequences of the risk.
-	The team identifies the risk impact and foresee time budget to handle with the negative consequences in case the risk materializes.
+    \item [Risk avoidance]
+    Actions are undertaken to avoid the risk, meaning that the risk will disappear or become less likely due to the taken actions.
+    \item[Risk reduction]
+    The risk itself cannot be avoided, but measures are taken to limit the negative consequences in case the risk materializes.
+    \item[Risk sharing]
+    This kind of risk cannot be coped with by the project team on its own, therefore the risk mitigation responsibility is shared with other resources or project teams to identify a joint risk approach.
+    \item[Risk acceptance]
+    The project team decides to just accept the consequences of the risk.
+    The team identifies the risk impact and foresee time budget to handle with the negative consequences in case the risk materializes.
 \end {description}
 
 \noindent
@@ -84,59 +84,57 @@ Risk management is a continuous process during the full project life cycle and t
 At the beginning of the project, some risks are already identified and documented in the risk register.
 Given the holistic goal of this project plan document, the identified high risks are summarized below:
 
-\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{R}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{15cm}|}{\cellcolor[HTML]{9B9B9B}Some requirements are unclear and/or ambiguous}                                                                                                                                                                                           \\\hline
-Poss. impact:              & \multicolumn{5}{p{15cm}|}{The features might be build incorrectly}                                                                                                                                                                                                                             \\\hline
-ID:                           & 1                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                         & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
-Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                        \\\hline
-Approach:                     & \multicolumn{5}{p{15cm}|}{For each unclear requirement, a detailed description of the need including the solution approach will be documented. This will presented towards the customer to ensure that the delivered functionality meets expectations.}                             \\\hline
+\risk{Some requirements are unclear and/or ambiguous}                                    \\\hline
+Poss. impact:    & \riskline{The features might be build incorrectly}                    \\\hline
+ID:  & 1        & Domain:        & Scope     & Impact:           & High      \\\hline
+Likelihood:      & Medium   & Qualification: & High      & Mitigation type:  & Avoidance \\\hline
+Approach:        & \riskline{For each unclear requirement, a detailed description of the need including the solution approach will be documented. This will presented towards the customer to ensure that the delivered functionality meets expectations.} \\\hline
 \end{longtable}
 
-
-\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{R}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{15cm}|}{\cellcolor[HTML]{9B9B9B}Requirements are not ordered by priority}                                                                                                                                                                                                       \\\hline
-Poss. impact:              & \multicolumn{5}{p{15cm}|}{Lower priority features might be build before the high priority features}                                                                                                                                                                                                                                      \\\hline
-ID:                           & 2                                          & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
-Likelihood:                   & Medium                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
-Approach:                     & \multicolumn{5}{p{15cm}|}{Each time an additional topic can be initiated, the most urgent one will be indicated by the customer.} \\\hline
+\risk{Requirements are not ordered by priority} \\\hline
+Poss. impact:   & \riskline{Lower priority features might be build before the high priority features}    \\\hline
+ID: & 2         & Domain:       & Scope    & Impact: & High     \\\hline
+Likelihood:     & Medium    & Qualification:            & High     & Mitigation type:    & Avoidance    \\\hline
+Approach:       & \riskline{Each time an additional topic can be initiated, the most urgent one will be indicated by the customer.} \\\hline
 \end{longtable}
 
-\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{R}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{15cm}|}{\cellcolor[HTML]{9B9B9B}We don't know what the problems of the current parser are}                                                                                                                                                                                                       \\\hline
-Poss. impact:              & \multicolumn{5}{p{15cm}|}{We might deliver a parser with the same problems}                                                                                                                                                                                                                                      \\\hline
-ID:                           & 3                                         & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
-Approach:                     & \multicolumn{5}{p{15cm}|}{A meeting with the customer will be organized to gather knowledge of the existing system, focussing on the current issues, pain points and pitfalls.} \\\hline
+\risk{We don't know what the problems of the current parser are} \\\hline
+Poss. impact:    & \riskline{We might deliver a parser with the same problems}    \\\hline
+ID:              & 3        & Domain:           & Scope    & Impact: & High     \\\hline
+Likelihood:      & High    & Qualification:    & High     & Mitigation type:    & Avoidance    \\\hline
+Approach:        & \riskline{A meeting with the customer will be organized to gather knowledge of the existing system, focussing on the current issues, pain points and pitfalls.} \\\hline
 \end{longtable}
 
-\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{R}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{15cm}|}{\cellcolor[HTML]{9B9B9B}The code, grammar description, code comments and examples aren't consistent.}                                                                                                                                                                                                       \\\hline
-Poss. impact:              & \multicolumn{5}{p{15cm}|}{The delivered code may not be according to the expected coding conventions}                                                                                                                                                                                                                                      \\\hline
-ID:                           & 4                                         & \cellcolor[HTML]{C0C0C0}Domain:                                            & Scope                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
-Approach:                     & \multicolumn{5}{p{15cm}|}{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
+\risk{The code, grammar description, code comments and examples aren't consistent.} \\\hline
+Poss. impact:     & \riskline{The delivered code may not be according to the expected coding conventions}    \\\hline
+ID:               & 4        & Domain:           & Scope    & Impact: & High     \\\hline
+Likelihood:       & High    & Qualification:    & High     & Mitigation type:    & Avoidance    \\\hline
+Approach:         & \riskline{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
 \end{longtable}
 
-\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{R}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{14,5cm}|}{\cellcolor[HTML]{9B9B9B}Useful feedback' is a subjective term, if the project team and the project customer have a different opinion regarding this term, the team could end up delivering a project according to spec but of which the quality is judged as insufficient.}                                                                                                                                                                                                       
-\\\hline
-Poss. impact:              & \multicolumn{5}{p{14,5cm}|}{The delivered code may not be according to the expected coding conventions}                                                                                                                                                                                                                                      \\\hline
-ID:                           & 5                                        & \cellcolor[HTML]{C0C0C0}Domain:                                            & Quality                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & High                                         \\\hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Avoidance                                    \\\hline
-Approach:                     & \multicolumn{5}{p{15cm}|}{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
+\risk{`Useful feedback' is a subjective term, if the project team and the project customer have a different opinion regarding this term, the team could end up delivering a project according to specifications but of which the quality is judged as insufficient}\\\hline
+Poss. impact:    & \riskline{The delivered code may not be according to the expected coding conventions}    \\\hline
+ID:               & 5       & Domain:           & Quality    & Impact: & High     \\\hline
+Likelihood:       & High    & Qualification:    & High     & Mitigation type:    & Avoidance    \\\hline
+Approach:         & \riskline{The team will document the differences in the current code and plan a meeting with the customer to decide on the correct coding conventions.} \\\hline
 \end{longtable}
 
-\begin{longtable}{|>{\columncolor[HTML]{C0C0C0}}p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|p{2,5cm}|}
+\begin{longtable}{R}
 \hline
-\cellcolor[HTML]{9B9B9B}Risk: & \multicolumn{5}{p{14,5cm}|}{\cellcolor[HTML]{9B9B9B}It already clear that the full list of current enhancement points cannot be treated within the current budget (hrs).}                                                                                                                                                                                                       \\\hline
-Poss. impact:              & \multicolumn{5}{p{15cm}|}{Unsatisfied customer, non acceptance of the project.}                                                                                                                                                                                                                                      \\\hline
-ID:                           & 6                                        & \cellcolor[HTML]{C0C0C0}Domain:                                            & Budget                                     & \cellcolor[HTML]{C0C0C0}Impact:                                              & Medium                                         \\\hline
-Likelihood:                   & High                                     & \cellcolor[HTML]{C0C0C0}Qualification:                                     & High                                      & \cellcolor[HTML]{C0C0C0}Mitigation type:                                     & Reduction                                    \\\hline
-Approach:                     & \multicolumn{5}{p{14,5cm}|}{Within the project plan, it is clearly stated that the feedback mechanism in the parser receives full priority. The additional requirements will only be considered when the project team is able to integrate them without budget overrun. 	This will be discussed with the customer.}
+\risk{It already clear that the full list of current enhancement points cannot be treated within the current budget (hrs)} \\\hline
+Poss. impact:    & \riskline{Unsatisfied customer, non acceptance of the project.}    \\\hline
+ID:               & 6       & Domain:           & Budget    & Impact: & Medium     \\\hline
+Likelihood:       & High    & Qualification:    & High     & Mitigation type:    & Reduction    \\\hline
+Approach:         & \riskline{Within the project plan, it is clearly stated that the feedback mechanism in the parser receives full priority. The additional requirements will only be considered when the project team is able to integrate them without budget overrun.     This will be discussed with the customer.}
 \\\hline
 \end{longtable}
