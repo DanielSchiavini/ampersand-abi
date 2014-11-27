@@ -41,13 +41,14 @@
 \cfoot{\pagemark}
 
 % requirements
-\newcommand{\req}[4]{
-	\cellcolor[HTML]{C0C0C0}#1 & #2 &
-	\cellcolor[HTML]{FFFFFF}#4 (Source: #3). \\ \hline
-}
-\newcommand{\reqtype}[1]{
-	%\multicolumn{3}{|l|}{\cellcolor[HTML]{9B9B9B}#1}\\ \hline
-	%\req{}{#1}{}{}
+\newcommand{\req}[5]{
+	\begin{tabular}{|p{3cm}|p{9cm}|}\hline
+		Reference	& \texttt{#1} \\\hline
+		Title		& \textbf{#2} \\\hline
+		Category	& #3 \\\hline
+		Source 		& #4 \\\hline
+		Description	& #5 \\\hline
+	\end{tabular}~\\~\\
 }
 
 % hyphenation

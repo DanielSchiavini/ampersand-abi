@@ -6,7 +6,7 @@ Please note that because the project plan is made in the beginning of the projec
 The requirements will be further clarified in phase 3c based on the stated scope `useful feedback in the Ampersand parser'.
 Also note that the project will be executed in an iterative/agile way, so the requirements will change, and when they do this document might be not updated, however, a full backlog off all functionalities realized within the project will be maintained by the project team.
 
-\reqtype{Main requirement: useful and user friendly error messages}
+\subsection{Main requirement: useful and user friendly error messages}
 The main requirement is that the NAP shall give user-friendly error messages for the most common parsing errors.\\
 Note: Discovering which errors are the most common and what user-friendly messages consist of, is the most important part of the assignment as there is at the start of the project no list available of the erroneous error messages.
 It is up to the project team, as a part of the actual project, to identify all the wrong error messages and to identify the actual requirements to implement the useful feedback mechanism in the ampersand parser.
@@ -20,102 +20,82 @@ The strategies for achieving the required results are described in \autoref{sec:
 In this section, the abbreviation NAP is used, with the meaning `new Ampersand Parser'.
 \dict{NAP}{New Ampersand Parser (the software deliverable of this project)}%
 
-\reqtype{Additional functional and non-functional requirements}
+\subsection{Additional functional and non-functional requirements}
 To assure that the listed requirements are as complete as possible, the project team used the standards ISO/IEC 9126 \cite{iso-9126} and J-STD-016 \cite{jstd-016} as requirement checklists towards the customer, the result of this checklist is listed below.
-Since so little requirements have been identified, the requirements are listed here as a table:
+Since so little requirements have been identified, the requirements are listed here:
 
-\begin{longtable}{|>{\columncolor[HTML]{9B9B9B}}p{3cm} |p{3,5cm}|p{9,5cm}|}\hline
+	\req{PL-FUN-010}{Command-line interface}
+		{Capability requirement}
+		{Project members}
+		{The NAP shall only have a command-line interface and GUI interface}
+		
+	\req{PL-RSM-010}{Forward parsing}
+		{Required state/mode}
+		{Current parser}
+		{The NAP shall provide forward parsing, from ADL to P-structure}
+	
+	\req{PL-RSM-020}{Backwards parsing}
+		{Required state/mode}
+		{Current parser}
+		{The NAP shall provide backwards parsing, from P-structure to ADL (also known as pretty printing)}
 
-	\reqtype{Capability requirements}
-	\req{PL-FUN-010}{Command-line interface}{Project members}{
-		The NAP shall only have a command-line interface and GUI interface}
+	\req{PL-EIF-010}{File interface}
+		{External interface requirement}
+		{Current parser}
+		{The NAP shall read input text files in the existing ADL format}
 
-	\reqtype{Required states and modes}
-	\req{PL-RSM-010}{Forward parsing}{Current parser}{
-		The NAP shall provide forward parsing, from ADL to P-structure}
-	\req{PL-RSM-020}{Backwards parsing}{Current parser}{
-		The NAP shall provide backwards parsing, from P-structure to ADL (also known as pretty printing)}
+	\req{PL-EIF-020}{File encoding}
+		{External interface requirement}
+		{Stef Joosten}
+		{The NAP shall handle input files with UTF-8 encoding}
 
-	\reqtype{External interface requirements}
-	\req{PL-EIF-010}{File interface}{Current parser}{
-		The NAP shall read input text files in the existing ADL format}
+	\req{PL-IIF-010}
+		{Interface with Type Checker}
+		{Internal interface requirement}
+		{Current parser}
+		{The NAP code shall interface with the existing Type Checker via the P-structure}
 
-	\req{PL-EIF-020}{File encoding}{Stef Joosten}{
-		The NAP shall handle input files with UTF-8 encoding}
-
-	\reqtype{Internal interface requirements}
-	\req{PL-IIF-010}{Interface with Type Checker}{Current parser}{
-		The NAP code shall interface with the existing Type Checker via the P-structure}
-
-	\reqtype{Internal data requirements}
-	\req{PL-IDR-010}{Generate P-structure}{Current parser}{
-		The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does,
+	\req{PL-IDR-010}{Generate P-structure}
+		{Internal data requirement}
+		{Current parser}
+		{The NAP code shall generate the P-structure in the same manner as the old Ampersand parser currently does,
 		this implies that the P-structure created by the old and new parser will be a perfect match}
 
-	\reqtype{Adaptation requirements}
-%	No such requirements have been identified.
+	\req{PL-ENV-010}{Windows environment}
+		{Environment requirement}
+		{Current parser}
+		{The NAP shall run in the Microsoft Windows 7 operational system}
 
-	\reqtype{Safety requirements}
-%	Ampersand is not a safety critical application.
-%	Therefore, no such requirements have been identified.
+	\req{PL-CSW-010}{Haskell language}
+		{Software resource requirement}
+		{Stef Joosten}
+		{The NAP shall be written in the Haskell programming language}
+		
+	\req{PL-CSW-020}{Haskell compiler}
+		{Software resource requirement}
+		{Stef Joosten}
+		{The NAP shall be compiled with GHC version 7.8.3}
 
-	\reqtype{Security and privacy requirements}
-%	Ampersand is not a security or privacy critical application.
-%	Therefore, no such requirements have been identified.
+	\req{PL-SQF-010}
+		{User-friendly errors}
+		{Software quality factor}
+		{Project description}
+		{The NAP shall give user-friendly error messages for the most common parsing errors in a consistent and clear way}
 
-	\reqtype{Environment requirements}
-	\req{PL-ENV-010}{Windows environment}{Current parser}{
-		The NAP shall run in the Microsoft Windows 7 operational system}
+	\req{PL-SQF-020}
+		{Code annotation}
+		{Software quality factor}
+		{Stef Joosten}
+		{The NAP source code shall be documented in Haddock format}
 
-	\reqtype{Computer resource requirements}
-%		\subsubsection{Hardware requirements}
-%		No such requirements have been identified.
-
-%		\subsubsection{Hardware resource utilization requirements}
-%		No such requirements have been identified.
-
-%		\subsubsection{Software requirements}
-		\req{PL-CSW-010}{Haskell language}{Stef Joosten}{
-			The NAP shall be written in the Haskell programming language}
-			
-		\req{PL-CSW-020}{Haskell compiler}{Stef Joosten}{
-			The NAP shall be compiled with GHC version 7.8.3}
-
-%		\subsubsection{Communications requirements}
-%		No such requirements have been identified.
-
-	\reqtype{Software quality factors}
-	\req{PL-SQF-010}{User-friendly errors}{Project description}{
-		The NAP shall give user-friendly error messages for the most common parsing errors in a consistent and clear way}
-
-	\req{PL-SQF-020}{Code annotation}{Stef Joosten}{
-		The NAP source code shall be documented in Haddock format}
-
-	\reqtype{Design and implementation constraints}
-	\req{PL-DIC-010}{Ampersand code base}{Stef Joosten}{
-		The NAP shall be implemented in the Ampersand code base.\newline
+	\req{PL-DIC-010}{Ampersand code base}
+		{Design and implementation constraint}
+		{Stef Joosten}
+		{The NAP shall be implemented in the Ampersand code base.\newline
 		Note: This also means that NAP shall be implemented in the Haskell programming language, and will use the same compiler as Ampersand does.
 		The existing coding conventions shall be respected}
 
-	\reqtype{Personnel-related requirements}
-%	No such requirements have been identified.
-
-	\reqtype{Training-related requirements}
-%	No such requirements have been identified.
-
-	\reqtype{Logistics-related requirements}
-%	All deliveries are done online, therefore no logistics requirements have been identified.
-
-	\reqtype{Other requirements}
-%	No such requirements have been identified.
-
-	\reqtype{Packaging requirements}
-	\req{PL-PAK-010}{Git repository}{Stef Joosten}{
-		The NAP code shall be managed in the `AmpersandTarski/ampersand' GitHub repository, in the `ABI\_Parser' branch}
-
-	\reqtype{Precedence and criticality of requirements}
-%	No such requirements have been identified.
-
-	\caption{Requirements list}
-	\label{tab:requirements}
-\end{longtable}
+	\req{PL-PAK-010}{Git repository}
+		{Packaging requirement}
+		{Stef Joosten}
+		{The NAP code shall be managed in the `AmpersandTarski/ampersand' GitHub repository, in the `ABI\_Parser' branch}
