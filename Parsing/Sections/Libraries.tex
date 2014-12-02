@@ -4,11 +4,26 @@
 \label{sec:libraries}
 
 \subsection{Parsing remarks}
-Parsing is sometimes divided into two stages: lexical analysis (the domain of tools like flex) and parsing itself (performed by programs such as bison). Parsec can perform both lexical analysis and parsing.
+Parsing is sometimes divided into two stages: lexical analysis (separating the source text into tokens) and parsing itself (constructing a parse tree).
+Tools such as the ones analyzed here can perform both lexical analysis and parsing.
+Eventually, other tools (e.g. Alex) can be used for supporting the lexical analysis.
 
-My impression is that Happy has significantly better performance than almost any parser combinator library, especially for large grammars with little or no context. On the other hand, the flexibility of combinator libraries (with regards to effects, treating parsers as first class values, etc) is I think an everywhere better choice until performance becomes the dominating factor and one is dealing with a complex grammar.
+Generally, there are two options for implementing a parser:
+Programmers can implement the parser itself in the language of choice - i.e. Haskell for this project.
+The use a parsing library to support the implementation can then save effort during the implementation and improve the maintainability and performance.
+In Haskell this is mostly done by libraries that provide combinators. %todo: explain
+Another possibility is to use a domain-specific-language (DSL) to describe the grammar, and let a separate software generate the actual parsing code.
 
-Since Happy packs things down to neat little state machines which it can optimize, then the more states the parser can be in, the better the expected gain, I 'd imagine. Also, bear in mind that happy is happiest (most performant) when used with a separate lexer pass such as by alex
+The advantages of building the parser in Haskell, instead of using a generator, are:
+\begin{description}
+	\item[Flexibility] The programming language gives much more flexibility in coping with context-sensitive grammars.
+\end{description}
+%
+On the other hand, the advantages of using a parser generator, instead of building the code ourselves, are:
+\begin{description}
+	\item[Performance] Because the parser is generated on-the-fly, the generator can apply optimizations that would otherwise be hard to implement.
+		This is even more true for complex grammars that offer many possible alternatives, since generators can pack the code down into state machines that can be optimized.
+\end{description}
 
 My rule of thumb is if I have a LR grammar (LR parsers are a type of bottom-up parsers that efficiently handle deterministic context-free languages in guaranteed linear time) I go with Happy, otherwise I use Parsec. It's usually not worth the effort changing LR to Parsec (more code, slower parser), but if I have to work out the grammar myself I like the tricks that Parsec supplies (e.g. context sensitive parsing).
 
