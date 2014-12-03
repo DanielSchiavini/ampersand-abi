@@ -6,64 +6,78 @@
 \subsection{Parsing remarks}
 Parsing is sometimes divided into two stages: lexical analysis (separating the source text into tokens) and parsing itself (constructing a parse tree).
 Tools such as the ones analyzed here can perform both lexical analysis and parsing.
-Eventually, other tools (e.g. Alex) can be used for supporting the lexical analysis.
+However, sometimes the tools can be more efficient when supported by a separate Lexer (e.g. Alex).
+
+%todo: descent parsers defined by hand lack the efficiency of bottom-up parsers (Aho et al., 1986; Mogensen, 1993; Gill & Marlow, 1995)
 
 Generally, there are two options for implementing a parser:
 Programmers can implement the parser itself in the language of choice - i.e. Haskell for this project.
-The use a parsing library to support the implementation can then save effort during the implementation and improve the maintainability and performance.
-In Haskell this is mostly done by libraries that provide combinators. %todo: explain
 Another possibility is to use a domain-specific-language (DSL) to describe the grammar, and let a separate software generate the actual parsing code.
 
-The advantages of building the parser in Haskell, instead of using a generator, are:
+\subsection{Generators vs. combinators}
+For complicated cases Happy and parser generators in general are much better. However, in case of simple, stupid languages with LL(k) parseable grammars I would use parser combinator library as more maintainer-friendly.
+
+It is possible to convert EBNF to BNF. http://lampwww.epfl.ch/teaching/archive/compilation-ssc/2000/part4/parsing/node3.html
+
+\subsection{Parsing libraries}
+When programmers go down the path of building a parser directly in Haskell, building up a set of functions that support parsing is a natural consequence.
+Although it's possible to build these functions for each and every project (see how in \cite{monadic-parsing}), using a premade library has several advantages, e.g. reduced effort, increased functionality, optimized performance and better documentation.
+The extra effort to learn the library is paid off by these advantages.
+In Haskell this is mostly done by providing monadic combinators and results in very ellegant solutions \cite{monadic-parsing}.
+
+The parsers built by hand are often recursive descent parsers, wherein the parser runs top-down from a set of recursive calls.
+The program structure is then closely related to the rules of the grammar, supporting the recognition of the program structure.
+
+%A predictive parser is a recursive descent parser that does not require backtracking. Predictive parsing is possible only for the class of LL(k) grammars, which are the context-free grammars for which there exists some positive integer k that allows a recursive descent parser to decide which production to use by examining only the next k tokens of input. The LL(k) grammars therefore exclude all ambiguous grammars, as well as all grammars that contain left recursion. Any context-free grammar can be transformed into an equivalent grammar that has no left recursion, but removal of left recursion does not always yield an LL(k) grammar. A predictive parser runs in linear time.
+
+Some advantages of building the parser in Haskell, instead of using a generator, are:
 \begin{description}
 	\item[Flexibility] The programming language gives much more flexibility in coping with context-sensitive grammars.
+	\item[Learning] One of the objectives of this project is having more experience with Haskell, and a generator's input is not Haskell code.
+	\item[Simplicity] It makes life simpler because it is not necessary to run a separate program to generate the parser.
 \end{description}
-%
-On the other hand, the advantages of using a parser generator, instead of building the code ourselves, are:
+
+\subsection{Parser generators}
+As mentioned earlier, another approach for building a parser is to specify the software's grammar in a specific notation and use a parser generator to create the actual parser source code.
+In the domain of context-free grammars, a widely used grammar notation is the Backus-Naur Form (BNF).
+The generator inputs thus a file containing a BNF specification of a grammar and produces a Haskell module containing a parser for the grammar.
+
+Instead of running the parser 
+
+%Although predictive parsers are widely used, and are frequently chosen if writing a parser by hand, programmers often prefer to use a table-based parser produced by a parser generator, either for an LL(k) language or using an alternative parser, such as LALR or LR. This is particularly the case if a grammar is not in LL(k) form, as transforming the grammar to LL to make it suitable for predictive parsing is involved. Predictive parsers can also be automatically generated, using tools like ANTLR.
+
+%Because the LALR parser performs a right derivation instead of the more intuitive left derivation, understanding how it works is quite difficult. This makes the process of finding a correct and efficient LALR grammar very demanding and time-consuming.[citation needed] For the same reason, error-reporting can be quite hard because LALR parser errors cannot always be interpreted into messages with high-level terms meaningful for the end user.[citation needed] However, any LR(k > 0) table makes it trivial to at least enumerate the various tokens that would have been valid options when a syntax error occurred, for low-level error messages. For this reason, the recursive descent parser is sometimes preferred over the LALR parser. This parser requires more hand-written code because of its lower language-recognition power. However, it does not have the special difficulties of the LALR parser because it performs left-derivation. Notable examples of this phenomenon are the C-language and C++ parsers of the Gnu Compiler Collection. These started as LALR parsers but were later changed to recursive-descent parsers.[13][14]
+
+The advantages of using a parser generator, instead of building the code, are:
 \begin{description}
 	\item[Performance] Because the parser is generated on-the-fly, the generator can apply optimizations that would otherwise be hard to implement.
 		This is even more true for complex grammars that offer many possible alternatives, since generators can pack the code down into state machines that can be optimized.
 \end{description}
 
-My rule of thumb is if I have a LR grammar (LR parsers are a type of bottom-up parsers that efficiently handle deterministic context-free languages in guaranteed linear time) I go with Happy, otherwise I use Parsec. It's usually not worth the effort changing LR to Parsec (more code, slower parser), but if I have to work out the grammar myself I like the tricks that Parsec supplies (e.g. context sensitive parsing).
+%My rule of thumb is if I have a LR grammar (LR parsers are a type of bottom-up parsers that efficiently handle deterministic context-free languages in guaranteed linear time) I go with Happy, otherwise I use Parsec. It's usually not worth the effort changing LR to Parsec (more code, slower parser), but if I have to work out the grammar myself I like the tricks that Parsec supplies (e.g. context sensitive parsing).
 
-uu-parsinglib is very full-featured (automatic error correction is nice), and simple to use. The documentation is decent also. I probably use attoparsec more because I do more work with binary stuff, for which it's very efficient. The on-demand model also matches well with enumerator-style IO (which I naturally use heavily). I listed polyparse because I admire the simplicity and elegance, although I rarely use it.
+%uu-parsinglib is very full-featured (automatic error correction is nice), and simple to use. The documentation is decent also. I probably use attoparsec more because I do more work with binary stuff, for which it's very efficient. The on-demand model also matches well with enumerator-style IO (which I naturally use heavily). I listed polyparse because I admire the simplicity and elegance, although I rarely use it.
 
-Another vote for uu-parsinglib. Our team switched from Parsec to uu-parsinglib a bit more than a year ago, and we haven't looked back. No explicit 'try' combinator needed, ability to do lazy parsing, and error correction mean that the fundamentals are more powerful than those of Parsec (even if the end-user niceties - documentation,pre-provided parsers for lexing etc aren't yet quite as good - but getting better). Happy is generally somewhat more awkward to use - but you do get the standard yacc-style guarantee of linear time parsing - otherwise you get told at compile time. 
+%Another vote for uu-parsinglib. Our team switched from Parsec to uu-parsinglib a bit more than a year ago, and we haven't looked back. No explicit 'try' combinator needed, ability to do lazy parsing, and error correction mean that the fundamentals are more powerful than those of Parsec (even if the end-user niceties - documentation,pre-provided parsers for lexing etc aren't yet quite as good - but getting better). Happy is generally somewhat more awkward to use - but you do get the standard yacc-style guarantee of linear time parsing - otherwise you get told at compile time. 
 
-As a downside of Parsec, you'll never know if your Parsec parser contains a left recursion, and your parser will get stuck in runtime (because Parsec is basically a top-down recursive-descent parser).
-
-Happy is a program and you'll write in a different language if you use Happy and then compile with Happy
-
- keep life simple by not having to run a separate program in order to generate a parser 
-
-Of course, recursive descent parsers defined by hand lack the efficiency of bottom-up parsers generated by machine (Aho et al., 1986; Mogensen, 1993; Gill & Marlow, 1995)
-
-\subsection{Generators vs. combinators}
-For complicated cases Happy and parser generators in general are much better. However, in case of simple, stupid languages with LL(k) parseable grammars I would use parser combinator library as more maintainer-friendly.
-
-An LL parser is a top-down parser for a subset of context-free languages. It parses the input from Left to right, performing Leftmost derivation of the sentence.
-An LL parser is called an LL(k) parser if it uses k tokens of lookahead when parsing a sentence. If such a parser exists for a certain grammar and it can parse sentences of this grammar without backtracking then it is called an LL(k) grammar.
-
-In computer science, LR parsers are a type of bottom-up parsers that efficiently handle deterministic context-free languages in guaranteed linear time.[1] The LALR parsers and the SLR parsers are common variants of LR parsers. LR parsers are often mechanically generated from a formal grammar for the language by a parser generator tool. They are very widely used for the processing of computer languages, more than other kinds of generated parsers.
+%As a downside of Parsec, you'll never know if your Parsec parser contains a left recursion, and your parser will get stuck in runtime (because Parsec is basically a top-down recursive-descent parser).
 
 \subsection{Combinators vs. monads}
 \lipsum[1]
 
 \subsection{UU.Parsing}
 \dict{UU.Parsing}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
-~4k downloads
+%~4k downloads
 
-can have error correcting and permutations for free, and also the things that parsec has
-\lipsum[1]
+%can have error correcting and permutations for free, and also the things that parsec has
 
 \subsection{Parsec}
 \dict{UU.Parsing}{Haskell monadic parsing combinator library written by Daan Leijen. \url{https://www.haskell.org/haskellwiki/Parsec}}%
-~200k downloads
+%~200k downloads
 
 \subsection{Happy Parser Generator}
 \dict{Happy Parser Generator}{Parser generator system for Haskell. \url{https://www.haskell.org/happy/}}%
-~75k downloads
+%~75k downloads
 
 \subsection{Feature comparison}
 \lipsum[1]
