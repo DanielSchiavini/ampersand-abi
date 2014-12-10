@@ -15,10 +15,10 @@ Grammars associated with a formal language are described as a set of production 
 Since these rules are formally defined, a series of mathematical constructions can be used to manipulate and describe the grammar.
 
 \dict{ADL}{Ampersand Definition Language}%
-\dict{BNF}{Backus-Naur Form, a metasyntax notation for expressing context-free grammars}%
+\dict{BNF}{Backus-Naur Form, a meta-syntax notation for expressing context-free grammars}%
 \dict{EBNF}{Extended Backus-Naur Form, an extension on BNF}%
-For Ampersand, the ADL-language specification is in a grammar in the Extended Backus-Naur Form (EBNF).
-Even though it is known that the grammar is not up to date, this article assumes the updated version will not fundamentally be different thant he specified grammar.
+For Ampersand, the ADL language specification is in a grammar described in the Extended Backus-Naur Form (EBNF).
+Even though it is known that the grammar is not up to date, this article assumes the updated version will not fundamentally be different than the specified grammar.
 
 \subsection{Generators vs. combinators}
 \dict{DSL}{Domain specific language}%
@@ -32,11 +32,11 @@ When programmers go down the path of building a parser directly in Haskell, buil
 Although it's possible to build these functions for each and every project \cite{monadic-parsing}, using a premade library has several advantages, e.g. reduced effort, increased functionality, optimized performance and better documentation.
 The extra effort to learn the library is paid off by these advantages.
 In Haskell this is mostly done by providing monadic combinators, to hold up extra information about the state.
-This results in very ellegant solutions \cite{monadic-parsing}.
+This results in very elegant solutions \cite{monadic-parsing}.
 
 The parsers built in Haskell are mostly recursive descent parsers, wherein the parser runs top-down from a set of recursive calls.
 The program structure is then closely related to the production rules, supporting the readability of the program structure.
-These parsers analyse the input text from \underline{L}eft to right, and choose the \underline{L}eftmost derivation in the grammar, and are called therefore LL parsers.
+These parsers analyze the input text from \underline{L}eft to right, and choose the \underline{L}eftmost derivation in the grammar, and are called therefore LL parsers.
 
 However, there are limitations related to recursive descent parsers.
 Such parsers may require exponential time to run and are not able to guarantee termination.
@@ -47,7 +47,7 @@ This is only possible for the class of unambiguous grammars without left recursi
 \dict{LL(k)-parser}{Top-down parser that parses from left to right, performing the leftmost derivation with a maximum $k$-tokens of look-ahead}%
 The EBNF for the ADL-language is not ambiguous and has no left recursion.
 This grammar can therefore be called an LL($k$)-grammar, for which an LL($k$)-parser can be created.
-The $k$ between parenthesis means that this parser needs a maximum of $k$ tokens of lookahead in order to choose a production rule.
+The $k$ between parenthesis means that this parser needs a maximum of $k$ tokens of look-ahead in order to choose a production rule.
 
 \subsubsection{Parser generators}
 As mentioned, another approach for building a parser is to specify the software's grammar in a specific notation and use a parser generator to create the actual parser source code.
@@ -87,7 +87,7 @@ In the context of the new Ampersand parser, Some advantages of building the pars
 \begin{description}
 	\item[Flexibility] The programming language gives much more flexibility in coping with context-sensitive grammars.
 	\item[Learning] One of the objectives of this project is having more experience with Haskell, and a generator's input is not Haskell code.
-	\item[Building] It makes life simpler because it is not necessary to run a separate program to generate the parser.
+	\item[Building] The process is simpler since it is unnecessary to run a separate program to generate the parser.
 	\item[Language] Both the customer and the project members feel more comfortable working in Haskell then in an unknown DSL.
 	\item[Errors] The main objective of the project is giving useful feedback in the new Ampersand parser, and this seems much easier to achieve with a handwritten parser.
 \end{description}
@@ -97,7 +97,7 @@ On the other hand, the advantages of using a parser generator, instead of handwr
 \begin{description}
 	\item[Optimizations] Because the parser is generated on-the-fly, the generator can apply optimizations that would otherwise be hard to implement.
 	\item[Performance] Bottom-up parsers are much more efficient because they are able to pack the code into state machines.
-		This is even more valid when many options are available.
+		This is even more valid when many parsing alternatives are available.
 	\item[Static analysis] The generator is able to do a lot more static analysis, while a library is only executed during the runtime.
 	\item[Documentation] Since the DSL basically annotated BNF, keeping the syntax diagrams up to date is much easier.
 \end{description}
@@ -107,7 +107,6 @@ From the above advantages and disadvantages, it is clear that no universal truth
 Although it is a difficult choice, the error messages are indeed the most important project target, so writing the parser by hand is the advised option.
 
 \subsection{Combinators vs. monads}
-\lipsum[1]
 
 \subsection{UU.Parsing}
 \dict{UU.Parsing}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
@@ -132,20 +131,19 @@ Although it is a difficult choice, the error messages are indeed the most import
 %~75k downloads
 
 \subsection{Maintainability}
-\lipsum[1]
 
 \subsection{Comparison}
 \begin{longtable}{|l|l|l|l|}\hline
 	\textbf{} & \textbf{UU} & \textbf{Parsec} & \textbf{Happy} \\\hline
 	\endhead
 	
-	Development language 	  & Haskell & Haskell & BNF \\
-	Documentation synchronization  & No & No & Yes \\
-	Static checking			  & No & No & Yes \\
-	Precedences & No & No & Yes \\
-	 & & & \\
-	 & & & \\
-	 & & & \\
+	Development language 	  & Haskell & Haskell & BNF \\\hline
+	Documentation synchronization  & No & No & Yes \\\hline
+	Static checking			  & No & No & Yes \\\hline
+	Precedences & No & No & Yes \\\hline
+	 & & & \\\hline
+	 & & & \\\hline
+	 & & & \\\hline
 	
 	\caption{Comparison between the different parsing tools}
 	\label{tab:comparison}
