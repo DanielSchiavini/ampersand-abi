@@ -100,6 +100,7 @@ On the other hand, the advantages of using a parser generator, instead of handwr
 	\item[Performance] Bottom-up parsers are much more efficient because they are able to pack the code into state machines.
 		This is even more valid when many parsing alternatives are available.
 	\item[Static analysis] The generator is able to do a lot more static analysis, while a library is only executed during the runtime.
+    E.g. programmers will only know of left recursions and non-terminations by testing the parser.
 	\item[Documentation] Since the DSL basically annotated BNF, keeping the syntax diagrams up to date is much easier.
 \end{description}
 
@@ -123,19 +124,28 @@ The new version of the uu-parsinglib provides combinators that include error cor
 Errors are recognized and corrected automatically if the programmers want so, but the reporting is customizable.
 It also supports grammars that are not context-free and even ambiguous grammars (provided the user accepts exponential runtime).
 
+Finally, the uu-parsinglib runs online, i.e. it returns parts of the parsing three as soon as they are ready.
+This gives programmers the ability to do lazy parsing.
+
 \subsection{Parsec}
 \dict{Parsec}{Haskell monadic parsing combinator library written by Daan Leijen. \url{https://www.haskell.org/haskellwiki/Parsec}}%
-%~200k downloads
+Parsec is a monadic parsing combinator library created by Daan Leijen
+It seems to be the most popular combinator library in the Haskell community, with more than 200 thousand downloads in the Hackage package manager.
 
-%uu-parsinglib is very full-featured (automatic error correction is nice), and simple to use. The documentation is decent also. I probably use attoparsec more because I do more work with binary stuff, for which it's very efficient. The on-demand model also matches well with enumerator-style IO (which I naturally use heavily). I listed polyparse because I admire the simplicity and elegance, although I rarely use it.
+Parsec is designed to be simple, safe and well documented industrial parser library.
+Besides, there has also been some work done on the performance and error messages.
+The documentation of Parsec tends to be better than that of the uu-parsinglib because of a larger user base.
 
-%Another vote for uu-parsinglib. Our team switched from Parsec to uu-parsinglib a bit more than a year ago, and we haven't looked back. No explicit 'try' combinator needed, ability to do lazy parsing, and error correction mean that the fundamentals are more powerful than those of Parsec (even if the end-user niceties - documentation,pre-provided parsers for lexing etc aren't yet quite as good - but getting better). Happy is generally somewhat more awkward to use - but you do get the standard yacc-style guarantee of linear time parsing - otherwise you get told at compile time. 
+%todo: https://www.haskell.org/haskellwiki/Parsec
+%todo: http://stackoverflow.com/questions/19208231/attoparsec-or-parsec-in-haskell/19213247#19213247
 
-%As a downside of Parsec, you'll never know if your Parsec parser contains a left recursion, and your parser will get stuck in runtime (because Parsec is basically a top-down recursive-descent parser).
+
+\subsection{Other libraries}
+Other libraries (e.g. Attoparsec, Polyparse) are out of the scope of this research.
 
 \subsection{Maintainability}
 
-\subsection{Comparison}
+\subsection{Feature comparison}
 \begin{longtable}{|l|l|l|l|}\hline
 	\textbf{} & \textbf{UU} & \textbf{Parsec} & \textbf{Happy} \\\hline
 	\endhead
@@ -151,4 +161,7 @@ It also supports grammars that are not context-free and even ambiguous grammars 
 	\caption{Comparison between the different parsing tools}
 	\label{tab:comparison}
 \end{longtable}
+
+\subsection{Conclusion}
+%Another vote for uu-parsinglib. Our team switched from Parsec to uu-parsinglib a bit more than a year ago, and we haven't looked back. No explicit 'try' combinator needed, ability to do lazy parsing, and error correction mean that the fundamentals are more powerful than those of Parsec (even if the end-user niceties - documentation,pre-provided parsers for lexing etc aren't yet quite as good - but getting better).
 
