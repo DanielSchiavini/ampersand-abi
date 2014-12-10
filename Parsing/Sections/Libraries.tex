@@ -17,7 +17,7 @@ Since these rules are formally defined, a series of mathematical constructions c
 \dict{ADL}{Ampersand Definition Language}%
 \dict{BNF}{Backus-Naur Form, a meta-syntax notation for expressing context-free grammars}%
 \dict{EBNF}{Extended Backus-Naur Form, an extension on BNF}%
-For Ampersand, the ADL language specification is in a grammar described in the Extended Backus-Naur Form (EBNF).
+The Ampersand Definition Language (ADL) is specified in a grammar in the Extended Backus-Naur Form (EBNF).
 Even though it is known that the grammar is not up to date, this article assumes the updated version will not fundamentally be different than the specified grammar.
 
 \subsection{Generators vs. combinators}
@@ -31,8 +31,7 @@ The two approaches and their advantages and disadvantages are described in this 
 When programmers go down the path of building a parser directly in Haskell, building up a set of functions that support parsing is a natural consequence.
 Although it's possible to build these functions for each and every project \cite{monadic-parsing}, using a premade library has several advantages, e.g. reduced effort, increased functionality, optimized performance and better documentation.
 The extra effort to learn the library is paid off by these advantages.
-In Haskell this is mostly done by providing monadic combinators, to hold up extra information about the state.
-This results in very elegant solutions \cite{monadic-parsing}.
+In Haskell this is mostly done by providing monadic combinators to hold up extra information about the parsing state, and results in very elegant solutions \cite{monadic-parsing}.
 
 The parsers built in Haskell are mostly recursive descent parsers, wherein the parser runs top-down from a set of recursive calls.
 The program structure is then closely related to the production rules, supporting the readability of the program structure.
@@ -87,7 +86,6 @@ On the other hand, resulting source code is simpler and easier to maintain, as c
 In the context of the new Ampersand parser, Some advantages of building the parser in Haskell, instead of using a generator, are:
 \begin{description}
 	\item[Flexibility] The programming language gives much more flexibility in coping with context-sensitive grammars.
-	\item[Learning] One of the objectives of this project is having more experience with Haskell, and a generator's input is not Haskell code.
 	\item[Building] The process is simpler since it is unnecessary to run a separate program to generate the parser.
 	\item[Language] Both the customer and the project members feel more comfortable working in Haskell then in an unknown DSL.
 	\item[Errors] The main objective of the project is giving useful feedback in the new Ampersand parser, and this seems much easier to achieve with a handwritten parser.
