@@ -53,7 +53,8 @@ The $k$ between parenthesis means that this parser needs a maximum of $k$ tokens
 As mentioned, another approach for building a parser is to specify the software's grammar in a specific notation and use a parser generator to create the actual parser source code.
 In the domain of context-free grammars, a widely used grammar notation is the Backus-Naur Form (BNF).
 
-This research is focused in the Happy parser generator, which is part of the Haskell Platform.
+\dict{Happy Parser Generator}{Parser generator system for Haskell. \url{https://www.haskell.org/happy/}}%
+This research is focused in the Happy parser generator, which is part of the Haskell Platform since 2001.
 Happy inputs a file containing an annotated BNF specification of a grammar and produces a Haskell module with a parser for the grammar.
 Since it is possible to convert EBNF to BNF \cite{convert-ebnf} \cite{bnf-ebnf}, a Happy parser should not involve a lot of effort.
 It is important to know, however, that besides converting the EBNF to BNF, the annotation still requires effort and knowledge acquisition.
@@ -106,29 +107,31 @@ On the other hand, the advantages of using a parser generator, instead of handwr
 From the above advantages and disadvantages, it is clear that no universal truth exists in these matters.
 Although it is a difficult choice, the error messages are indeed the most important project target, so writing the parser by hand is the advised option.
 
-\subsection{Combinators vs. monads}
+\subsection{Combinator libraries}
+In the previous section, the choice to use a combinator library has been taken.
+In this section, two libraries will be compared: the Utrecht University parser combinator library (uu-parsinglib) and Parsec.
 
-\subsection{UU.Parsing}
-\dict{UU.Parsing}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
-%~4k downloads
+\subsection{Utrecht University Parsing Library}
+\dict{uu-parsinglib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
+The uu-parsinglib is a library created by Doaitse Swierstra in the Utrecht University.
+This library is used in many mature projects, including the current version of the Ampersand Parser.
+It currently has more than 4 thousand downloads in the Hackage package manager.
 
-%can have error correcting and permutations for free, and also the things that parsec has
+The documentation is mainly in Haddock format and in a paper from 2009 \cite{uu-doc}.
+The implementation is open source.
+The new version of the uu-parsinglib provides combinators that include error correction in a monadic interface.
+Errors are recognized and corrected automatically if the programmers want so, but the reporting is customizable.
+It also supports grammars that are not context-free and even ambiguous grammars (provided the user accepts exponential runtime).
 
 \subsection{Parsec}
-\dict{UU.Parsing}{Haskell monadic parsing combinator library written by Daan Leijen. \url{https://www.haskell.org/haskellwiki/Parsec}}%
+\dict{Parsec}{Haskell monadic parsing combinator library written by Daan Leijen. \url{https://www.haskell.org/haskellwiki/Parsec}}%
 %~200k downloads
-
-%My rule of thumb is if I have a LR grammar (LR parsers are a type of bottom-up parsers that efficiently handle deterministic context-free languages in guaranteed linear time) I go with Happy, otherwise I use Parsec. It's usually not worth the effort changing LR to Parsec (more code, slower parser), but if I have to work out the grammar myself I like the tricks that Parsec supplies (e.g. context sensitive parsing).
 
 %uu-parsinglib is very full-featured (automatic error correction is nice), and simple to use. The documentation is decent also. I probably use attoparsec more because I do more work with binary stuff, for which it's very efficient. The on-demand model also matches well with enumerator-style IO (which I naturally use heavily). I listed polyparse because I admire the simplicity and elegance, although I rarely use it.
 
 %Another vote for uu-parsinglib. Our team switched from Parsec to uu-parsinglib a bit more than a year ago, and we haven't looked back. No explicit 'try' combinator needed, ability to do lazy parsing, and error correction mean that the fundamentals are more powerful than those of Parsec (even if the end-user niceties - documentation,pre-provided parsers for lexing etc aren't yet quite as good - but getting better). Happy is generally somewhat more awkward to use - but you do get the standard yacc-style guarantee of linear time parsing - otherwise you get told at compile time. 
 
 %As a downside of Parsec, you'll never know if your Parsec parser contains a left recursion, and your parser will get stuck in runtime (because Parsec is basically a top-down recursive-descent parser).
-
-\subsection{Happy Parser Generator}
-\dict{Happy Parser Generator}{Parser generator system for Haskell. \url{https://www.haskell.org/happy/}}%
-%~75k downloads
 
 \subsection{Maintainability}
 
@@ -141,9 +144,9 @@ Although it is a difficult choice, the error messages are indeed the most import
 	Documentation synchronization  & No & No & Yes \\\hline
 	Static checking			  & No & No & Yes \\\hline
 	Precedences & No & No & Yes \\\hline
-	 & & & \\\hline
-	 & & & \\\hline
-	 & & & \\\hline
+	Features & & & \\\hline
+	Error reporting & & & \\\hline
+	Error correction & & & \\\hline
 	
 	\caption{Comparison between the different parsing tools}
 	\label{tab:comparison}
