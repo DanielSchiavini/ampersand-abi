@@ -110,10 +110,15 @@ Although it is a difficult choice, the error messages are indeed the most import
 In the previous section, the choice to use a combinator library has been taken.
 In this section, two libraries will be compared: the Utrecht University parser combinator library (uu-parsinglib) and Parsec.
 
+\subsection{Monadic vs. idiomatic interfaces}
+%todo
+
 \subsection{Utrecht University Parsing Library}
 \dict{uu-parsinglib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
 The uu-parsinglib is a library created by Doaitse Swierstra in the Utrecht University.
-This library is used in many mature projects, including the current version of the Ampersand Parser.
+This library is used in many mature projects.
+The current Ampersand parser is also built with the previous version of the uu-parsinglib.
+The new version has serveral improvements, mainly in performance \cite{parse-benchmark}.
 It currently has more than 4 thousand downloads in the Hackage package manager.
 
 The documentation is mainly in Haddock format and in a paper from 2009 \cite{uu-doc}.

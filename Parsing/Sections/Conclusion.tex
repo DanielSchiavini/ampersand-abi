@@ -2,3 +2,11 @@
 
 \section{Conclusion}
 \label{sec:conclusion}
+In \autoref{sec:libraries}, the choice was made to use a combinator library for the new parser of Ampersand.
+The main reason to avoid the parser generators is that it is hard to generate useful feedback.
+Then, in \autoref{sec:errors}, it was made even more clear that besides generating good messages, those messages should also be customizable.
+Therefore, the advise is to use the combinator library that offers the highest level of customization in error messages.
+Based on the experiences from the Helium compiler \cite{helium-parser}, the advise is to also use the Parsec library.
+This library offers better support and more customization options.
+
+Besides the choice of the library, a list of important attention points has been found in the literature and can be found in \autoref{sec:errors}.
