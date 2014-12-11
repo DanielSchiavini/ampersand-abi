@@ -9,9 +9,11 @@
 \usepackage{graphicx}
 \usepackage[table,xcdraw]{xcolor}
 \usepackage{longtable}
+\usepackage{multicol}
 
 % code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
 \usepackage[acronym,toc]{glossaries}
+\usepackage{glossary-mcols}
 \newcommand{\dict}[2]{%
   \newglossaryentry{#1}{name=#1,description={#2}}%
   \glslink{#1}{}%
@@ -42,7 +44,7 @@
 \cfoot{\pagemark}
 
 % requirements
-\newcommand{\req}[3]{\noindent\textbf{\texttt{#1} #2}\\#3}
+\renewcommand*{\UrlFont}{\footnotesize\ttfamily}
 
 % hyphenation
 \hyphenation{
