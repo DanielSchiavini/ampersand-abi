@@ -35,13 +35,21 @@ In Haskell this is mostly done by providing monadic combinators to hold up extra
 
 The parsers built in Haskell are mostly recursive descent parsers, wherein the parser runs top-down from a set of recursive calls.
 The program structure is then closely related to the production rules, supporting the readability of the program structure.
-These parsers analyze the input text from \underline{L}eft to right, and choose the \underline{L}eftmost derivation in the grammar, and are called therefore LL parsers.
 
+These parsers analyze the input text from \underline{L}eft to right and choose the \underline{L}eftmost derivation in the grammar.
+Such parsers are called therefore LL parsers.
+
+~\\
 However, there are limitations related to recursive descent parsers.
-Such parsers may require exponential time to run and are not able to guarantee termination.
+For instance, a common kind of production rule is a left recursive one, e.g. \texttt{term $\rightarrow$ term `$+$' term $|$ number}.
+In this case, the first thing the parser would do is call itself, resulting in an infinite loop.
+Gladly, any left recursive grammar can be converted into a right recursive one \cite{remove-left}.
+
+Therefore, LL parsers may require exponential time to run and are not able to guarantee termination.
 In order to guarantee termination and linear execution time, a recursive descent parser must be able to recognize which production rule to use by reading only limited amount of tokens.
 This is only possible for the class of unambiguous grammars without left recursion.
 
+~\\
 \dict{LL(k)-grammar}{A grammar that can be parsed by an LL($k$)-parser}%
 \dict{LL(k)-parser}{Top-down parser that parses from left to right, performing the leftmost derivation with a maximum $k$-tokens of look-ahead}%
 The EBNF for the ADL-language is not ambiguous and has no left recursion.
@@ -55,7 +63,7 @@ In the domain of context-free grammars, a widely used grammar notation is the Ba
 \dict{Happy Parser Generator}{Parser generator system for Haskell. \url{https://www.haskell.org/happy/}}%
 This research is focused in the Happy parser generator, which is part of the Haskell Platform since 2001.
 Happy inputs a file containing an annotated BNF specification of a grammar and produces a Haskell module with a parser for the grammar.
-Since it is possible to convert EBNF to BNF \cite{convert-ebnf} \cite{bnf-ebnf}, a Happy parser should not involve a lot of effort.
+Since it is possible to convert EBNF to BNF \cite{convert-ebnf,bnf-ebnf}, a Happy parser should not involve a lot of effort.
 It is important to know, however, that besides converting the EBNF to BNF, the annotation still requires effort and knowledge acquisition.
 
 \dict{LR parser}{Top-down parser that parses from left to right, performing the rightmost derivation}%
@@ -110,9 +118,6 @@ Although it is a difficult choice, the error messages are indeed the most import
 In the previous section, the choice to use a combinator library has been taken.
 In this section, two libraries will be compared: the Utrecht University parser combinator library (uu-parsinglib) and Parsec.
 
-\subsection{Monadic vs. idiomatic interfaces}
-%todo
-
 \subsection{Utrecht University Parsing Library}
 \dict{uu-parsinglib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
 The uu-parsinglib is a library created by Doaitse Swierstra in the Utrecht University.
@@ -142,28 +147,30 @@ The documentation of Parsec tends to be better than that of the uu-parsinglib be
 %todo: https://www.haskell.org/haskellwiki/Parsec
 %todo: http://stackoverflow.com/questions/19208231/attoparsec-or-parsec-in-haskell/19213247#19213247
 
-
 \subsection{Other libraries}
 Other libraries (e.g. Attoparsec, Polyparse) are out of the scope of this research.
 
-\subsection{Maintainability}
+\subsection{Monadic vs. arrow interfaces}
+Monads have become the standard way of building Haskell parsers.
+However, in a paper from Swierstra \cite{}, the uu-parsinglib was presented with an alternative interface.
+Hughes presented this alternative as a generalization of monads, calling it `arrows' \cite{monad-arrows}.
+
+Arrows are less convenient than monads but are much widely applicable \cite{monad-arrows}.
+Monads would still be used for state passing and other constructions, but the continuations would be carried over to arrows.
 
 \subsection{Feature comparison}
-\begin{longtable}{|l|l|l|l|}\hline
-	\textbf{} & \textbf{UU} & \textbf{Parsec} & \textbf{Happy} \\\hline
-	\endhead
-	
-	Development language 	  & Haskell & Haskell & BNF \\\hline
-	Documentation synchronization  & No & No & Yes \\\hline
-	Static checking			  & No & No & Yes \\\hline
-	Precedences & No & No & Yes \\\hline
-	Features & & & \\\hline
-	Error reporting & & & \\\hline
-	Error correction & & & \\\hline
-	
-	\caption{Comparison between the different parsing tools}
-	\label{tab:comparison}
-\end{longtable}
+The following differences have been found between the two considered libraries:
+\begin{description}
+	\item[Documentation]
+	\item[Static checking]
+	\item[Precedences]
+	\item[Features]
+	\item[Error reporting]
+	\item[Error correction]
+	\item[Maintainability] No significant difference has been found in the maintainability of the two analyzed libraries.
+		Note that the programmers working on Ampersand are already familiar with the uu-parsinlib.
+		On the other hand, there is more support and documentation available for Parsec, so it can also be seen as more future-proof.
+\end{description}
 
 \subsection{Conclusion}
 %Another vote for uu-parsinglib. Our team switched from Parsec to uu-parsinglib a bit more than a year ago, and we haven't looked back. No explicit 'try' combinator needed, ability to do lazy parsing, and error correction mean that the fundamentals are more powerful than those of Parsec (even if the end-user niceties - documentation,pre-provided parsers for lexing etc aren't yet quite as good - but getting better).

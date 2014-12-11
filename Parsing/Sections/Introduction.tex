@@ -1,8 +1,8 @@
 % !TEX root = ../Parsing.tex
 \section{Introduction}
 \subsection{Identification}
-This document contains the domain \& and techniques analysis of the project `Useful feedback in the Ampersand parser'.
-The document is the milestone product of the project phase 3a for the project member Daniel S.C. Schiavini, as specified in the project planning \cite{plan}.
+This document contains the domain \& techniques analysis of the project `Useful feedback in the Ampersand parser'.
+The document is the milestone product of the project phase 3a for Daniel S.C. Schiavini, as specified in the project planning \cite{plan}.
 
 This document is part of the graduation project of the computer science bachelor at the Open Universiteit Nederland.
 The project `Useful feedback in the Ampersand parser' is executed in collaboration with Maarten Baertsoen, with support of the supervisor Dr. Bastiaan Heeren and examiner Prof.dr. Marko C.J.D. van Eekelen.
@@ -11,6 +11,7 @@ The assignment is given by Dr. Stef Joosten, who researches how to further autom
 Ampersand is an approach for the use of business rules to define the business processes.
 Users describe the business rules in a formal language (ADL), and Ampersand compiles those rules into functional specification, documentation and working software
 prototypes.
+The main objective of this project is to improve the feedback and maintainability of the Ampersand parser.
 See \cite{plan} for more details on the project.
 
 \subsection{Goals}
@@ -19,7 +20,7 @@ This document contains the results of the research on domain and techniques that
 It focuses on knowledge acquisition in two interrelated fronts:
 \begin{description}
 	\item[Haskell parsing libraries]
-	In order to build the new Ampersand Parser, a small research will be done to choose the library best suited for the development.
+	In order to build the new Ampersand Parser (or refactor the current one), a research is done to choose the library best suited for the development.
 	The appropriate library is chosen based on its design, documentation, features and generated errors.
 	
 	\item[User-friendly error messages]
@@ -31,8 +32,8 @@ It focuses on knowledge acquisition in two interrelated fronts:
 The results of both subjects culminate in a single section with research conclusions.
 
 \subsection{Document overview}
-An introduction is given is this chapter.
+An introduction is given is this section.
 Then, in \autoref{sec:libraries} the choices of user-friendly error messages are elaborated.
-In \autoref{sec:errors} the qualities of user-friendly error messages are quickly described, and in \autoref{sec:conclusion} a conclusion is given.
+In \autoref{sec:errors} the qualities of user-friendly error messages are quickly described, and in \autoref{sec:conclusion} the final conclusion is given.
 
 Finally, in the appendix, a glossary of terms, definitions and abbreviations is given, just as a list of references.
