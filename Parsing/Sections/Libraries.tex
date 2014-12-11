@@ -73,7 +73,7 @@ Besides, they are often able to recognize more complicated grammars by running \
 \dict{LALR parser}{LR parser with look-ahead}%
 An LR parser with \underline{L}ook-\underline{A}head is called an LALR parser.
 By performing the rightmost derivation of the production rules, an LALR parser is able to recognize more complex grammars.
-However, it's workings are quite unintuitive, and understanding such parsers can be very hard.
+However, its workings are quite unintuitive, and understanding such parsers can be very hard.
 That's why LALR parsers are usually generated instead of built by hand.
 
 Since understanding LALR parsers is hard, the syntax errors caused by incorrect input may be much harder to pinpoint and understand.
@@ -105,7 +105,7 @@ On the other hand, the advantages of using a parser generator, instead of handwr
 	\item[Optimizations] Because the parser is generated on-the-fly, the generator can apply optimizations that would otherwise be hard to implement.
 	\item[Performance] Bottom-up parsers are much more efficient because they are able to pack the code into state machines.
 		This is even more valid when many parsing alternatives are available.
-	\item[Static analysis] The generator is able to do a lot more static analysis, while a library is only executed during the runtime.
+	\item[Static analysis] The generator is able to do a lot more static analysis, while a library is only executed during the run-time.
     E.g. programmers will only know of left recursions and non-terminations by testing the parser.
 	\item[Documentation] Since the DSL basically annotated BNF, keeping the syntax diagrams up to date is much easier.
 \end{description}
@@ -120,29 +120,29 @@ In this section, two libraries will be compared: the Utrecht University parser c
 
 \subsection{Utrecht University Parsing Library}
 \dict{uu-parsinglib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
-The uu-parsinglib is a library created by Doaitse Swierstra in the Utrecht University.
+The uu-parsinglib is a combinator library created by Doaitse Swierstra in the Utrecht University.
 This library is used in many mature projects.
 The current Ampersand parser is also built with the previous version of the uu-parsinglib.
-The new version has serveral improvements, mainly in performance \cite{parse-benchmark}.
+The new version has several improvements, mainly in performance \cite{benchmark}.
 It currently has more than 4 thousand downloads in the Hackage package manager.
 
 The documentation is mainly in Haddock format and in a paper from 2009 \cite{uu-doc}.
 The implementation is open source.
 The new version of the uu-parsinglib provides combinators that include error correction in a monadic interface.
 Errors are recognized and corrected automatically if the programmers want so, but the reporting is customizable.
-It also supports grammars that are not context-free and even ambiguous grammars (provided the user accepts exponential runtime).
+It also supports grammars that are not context-free and even ambiguous grammars (provided the user accepts exponential run-time).
 
 Finally, the uu-parsinglib runs online, i.e. it returns parts of the parsing three as soon as they are ready.
 This gives programmers the ability to do lazy parsing.
 
 \subsection{Parsec}
 \dict{Parsec}{Haskell monadic parsing combinator library written by Daan Leijen. \url{https://www.haskell.org/haskellwiki/Parsec}}%
-Parsec is a monadic parsing combinator library created by Daan Leijen
+Parsec is a monadic parsing combinator library created by Daan Leijen.
 It seems to be the most popular combinator library in the Haskell community, with more than 200 thousand downloads in the Hackage package manager.
 
 Parsec is designed to be simple, safe and well documented industrial parser library.
 Besides, there has also been some work done on the performance and error messages.
-The documentation of Parsec tends to be better than that of the uu-parsinglib because of a larger user base.
+The documentation of Parsec and its documentation tends to be better than that of the uu-parsinglib because of a larger user base.
 
 %todo: https://www.haskell.org/haskellwiki/Parsec
 %todo: http://stackoverflow.com/questions/19208231/attoparsec-or-parsec-in-haskell/19213247#19213247
@@ -151,27 +151,62 @@ The documentation of Parsec tends to be better than that of the uu-parsinglib be
 Other libraries (e.g. Attoparsec, Polyparse) are out of the scope of this research.
 
 \subsection{Monadic vs. arrow interfaces}
-Monads have become the standard way of building Haskell parsers.
-However, in a paper from Swierstra \cite{}, the uu-parsinglib was presented with an alternative interface.
+Monads allow sequences and state to be saved during the parsing, and had become the most common way of building Haskell parsers.
+Until, in a paper from Swierstra \cite{error-correcting}, a parsing library was presented with an alternative interface.
 Hughes presented this alternative as a generalization of monads, calling it `arrows' \cite{monad-arrows}.
 
 Arrows are less convenient than monads but are much widely applicable \cite{monad-arrows}.
 Monads would still be used for state passing and other constructions, but the continuations would be carried over to arrows.
 
-\subsection{Feature comparison}
-The following differences have been found between the two considered libraries:
-\begin{description}
-	\item[Documentation]
-	\item[Static checking]
-	\item[Precedences]
-	\item[Features]
-	\item[Error reporting]
-	\item[Error correction]
-	\item[Maintainability] No significant difference has been found in the maintainability of the two analyzed libraries.
-		Note that the programmers working on Ampersand are already familiar with the uu-parsinlib.
-		On the other hand, there is more support and documentation available for Parsec, so it can also be seen as more future-proof.
-\end{description}
+Arrow-style parsers do not depend on the run-time values -- they are not dependent on the context.
+This means that it is then possible to analyze and optimize the parser before executing it.
+Swierstra goes so far to say that this works a run-time parser generator \cite{error-correcting}.
+On the other hand, the lack of context means that only context-free languages can be implemented this way \cite{parsec}.
+
+The uu-parsinglib allows both monadic and arrow-style parsing, while Parsec only has a monadic interface.
+In the arrow-style interface, the uu-parsinglib also adds error correction:
+After detecting an error, the library will correct it by adding or deleting tokens.
+It then generates an appropriate error message and continues with the rest of the program.
+By using this interface, the parsing will thus always succeed.
+
+%todo: http://worldbusiness.org/wp-content/uploads/2012/10/arrows-and-idioms2.pdf
+%todo: http://marc.info/?l=haskell-cafe&m=128039136131494
 
 \subsection{Conclusion}
-%Another vote for uu-parsinglib. Our team switched from Parsec to uu-parsinglib a bit more than a year ago, and we haven't looked back. No explicit 'try' combinator needed, ability to do lazy parsing, and error correction mean that the fundamentals are more powerful than those of Parsec (even if the end-user niceties - documentation,pre-provided parsers for lexing etc aren't yet quite as good - but getting better).
-
+The following differences have been found between the two considered libraries:
+\begin{description}
+	\item[Documentation] The documentation of Parsec seems to be more extended and well-maintained.
+		Several tutorials can be found on the internet.
+		On the other hand, the uu-parsinglib's documentation is mostly generated from code annotations.
+	\item[Support] Since Parsec is much more used and online support can be more easily found.
+		For example, the website StackOverflow currently has 14 questions about the uu-parsinglib and 301 about Parsec.
+	\item[Static checking] None of the libraries is able to do static checking.
+		However, the uu-parsinglib has more possibilities of grammar analysis in its arrow-style interface.
+	\item[Precedences] The Ampersand parser is currently built with the uu-parsinglib with great satisfaction.
+		This both means that the library is sufficient and that it is known by the other Ampersand programmers.
+	\item[Error reporting] No literature has been found with a comparison of the errors generated by the libraries.
+		However, many publications affirm that the generated errors from both libraries are great.
+	\item[Error correction] When a parsing error is found, a Parsec parser stops immediately.
+		A parser built with uu-parsinglib, however, corrects the error and continues parsing.
+		Error correction is good because the parser always succeeds.
+		On the other hand, a big list of errors can also overwhelm the user.
+		Finally, to perform the corrections, the parser needs to make assumptions based e.g. on statistics.
+		These assumptions cannot always be correct.
+	\item[Fine-tuning] According to the Helium development team, Parsec's possibilities for error fine-tuning are greater \cite{helium-parser}.
+		However, to apply optimizations it is necessary to know the internal workings of the parser \cite{uu-doc}.
+	\item[Backtracking] Parsec works with more traditional backtracking algorithms \cite{parsec} that can often lead to high space consumption \cite{uu-doc}.
+		This is however
+	\item[Performance] The Parsec library seems to have better performance \cite{benchmark}, but the difference is small and is not expected to make a considerable difference in the small ADL scripts.
+	\item[Try operator] In order to allow backtracking, Parsec code uses the try-function, which is considered harmful and can be easily misused \cite{try-harmful}.
+		This keyword is totally unnecessary in the uu-parsinglib because it uses breadth-first lazy parsing.
+		%todo: http://osdir.com/ml/haskell-cafe@haskell.org/2012-01/msg00566.html
+	\item[Maintainability] No significant difference has been found in the maintainability of the two analyzed libraries.
+		Note that the programmers working on Ampersand are already familiar with the uu-parsinglib.
+		On the other hand, there is more support and documentation available for Parsec, so it can also be seen as more future-proof.
+	\item[Origin] Both libraries are originated at the Utrecht University.
+		In 2003, a Haskell compiler focused on user friendliness, Helium, was published from the same university.
+		Knowing both libraries very well, the authors made the choice to use Parsec because of the possibilities of error customization \cite{helium-parser}.
+\end{description}
+%
+Considering these differences, a deeper analysis of error messages is given.
+The actual library choice is delayed until \autoref{sec:conclusion}.
