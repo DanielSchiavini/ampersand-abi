@@ -176,7 +176,7 @@ By using this interface, the parsing will thus always succeed.
 The following differences have been found between the two considered libraries:
 \begin{description}
 	\item[Documentation] The documentation of Parsec seems to be more extended and well-maintained.
-		Several tutorials can be found on the internet.
+		Several tutorials can be found on the internet (e.g. \cite{using-parsec}).
 		On the other hand, the uu-parsinglib's documentation is mostly generated from code annotations.
 	\item[Support] Since Parsec is much more used and online support can be more easily found.
 		For example, the website StackOverflow currently has 14 questions about the uu-parsinglib and 301 about Parsec.
@@ -189,7 +189,7 @@ The following differences have been found between the two considered libraries:
 	\item[Error correction] When a parsing error is found, a Parsec parser stops immediately.
 		A parser built with uu-parsinglib, however, corrects the error and continues parsing.
 		Error correction is good because the parser always succeeds.
-		On the other hand, a big list of errors can also overwhelm the user.
+		On the other hand, a big list of errors can also overwhelm the user \cite{heeren-error}.
 		Finally, to perform the corrections, the parser needs to make assumptions based e.g. on statistics.
 		These assumptions cannot always be correct.
 	\item[Fine-tuning] According to the Helium development team, Parsec's possibilities for error fine-tuning are greater \cite{helium-parser}.
