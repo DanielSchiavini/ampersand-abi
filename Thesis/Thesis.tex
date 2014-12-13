@@ -5,6 +5,17 @@
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 \usepackage[affil-it]{authblk}
 \usepackage{lipsum}
+\usepackage[hidelinks]{hyperref}
+\usepackage{multicol}
+
+% code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
+\usepackage[acronym,toc]{glossaries}
+\usepackage{glossary-mcols}
+\newcommand{\dict}[2]{%
+  \newglossaryentry{#1}{name=#1,description={#2}}%
+  \glslink{#1}{}%
+}
+\makeglossaries
 
 \author{Maarten Baertsoen, Evergem, Belgium \\
 	Daniel S. C. Schiavini, Utrecht, Netherlands\\~}
