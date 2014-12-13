@@ -36,102 +36,13 @@
 \tableofcontents
 \clearpage
 
-\section{Introduction}
-\subsection{Context}
-\begin{description}
-\item [Opdrachtgever] Bastiaan Heeren / Stef Joosten - OU Informatica
-\item [Research context] Modelleren van bedrijfsregels
-\item [Taal] Haskell
-\end{description}
-
-\begin{itemize}
-\item Refactoren van de source code van een parser uit een open source project 
-\item Verbeteren van de parser-foutmeldingen
-\end{itemize}
-
-\subsection{Related work}
-Onderzoekscontext/related work, plaats van project daarin, mogelijke consequenties voor het onderzoek.
-
-\subsection{Document overview}
-\lipsum[1]
-
+\input{Introduction/Introduction}
 \newpage
-\section{Objectives}
-Vraagstelling in detail.
-
-In het kader van het Ampersand onderzoeksprogramma is een compiler gemaakt voor bedrijfsregels. Deze compiler is in Haskell geschreven, en is beschikbaar als open source project. Eén van de vraagstukken is de kwaliteit van de parser-foutmeldingen. Daar is nog nooit goed naar gekeken, met als gevolg dat de foutmeldingen niet altijd informatief zijn voor de gebruiker.
-
-De opdracht is om de bestaande parser in z’n geheel te refactoren, met aandacht voor foutmeldingen en pretty-printing. De uitdaging is om zo informatief mogelijke foutmeldingen te genereren. Als randvoorwaarde geldt dat de Haskell code onderhoudbaar moet zijn en goed moet zijn getest. Wanneer het aan de onderhoudbaarheid mankeert, wordt de nieuwe parser niet in productie genomen.
-
-Een ontwikkelstraat op basis van SVN is aanwezig. Dit project zal in een branch worden uitgevoerd. Bij succesvolle afronding zal het ABI-team deze branch in de productiestroom integreren.
-
-\begin{itemize}
-\item Analyse naar gebruiksvriendelijke foutmeldingen in compilers 
-\item Vergelijken van diverse Haskell bibliotheken om te parsen en te pretty-printen. 
-\item Inventarisatie van technieken en tools in Haskell ter bevordering van de software\-kwaliteit 
-\item Analyse van de huidige ontwikkelstraat in relatie tot software engineering principes zoals continuous delivery/integration en het doen van aanbevelingen om de kwaliteit bewaking te vergroten 
-\end{itemize}
-
-De software waaraan wordt gewerkt draagt in belangrijke mate bij aan het onderzoek naar bedrijfsregels dat wordt uitgevoerd door Joosten en zijn onderzoeksgroep. De ABI studenten zullen zich voldoende moeten inwerken in dit onderzoek om een bijdrage te kunnen leveren. De opdracht biedt ook de ruimte om onderzoeksresultaten naar gebruiksvriendelijke foutmeldingen en testmethoden in functionele talen (bijv. QuickCheck) in te passen in het project.
-
-\paragraph{Accenten}
-\begin{description}
-\item[analyse van een gebruikerscontext] er zal enigszins een beeld moeten worden gevormd van het soort gebruiker van Ampersand en hoe deze gebruiker omgaat met de huidige foutmeldingen
-\item[ontwerpen van een toepassing] bestaande software moet worden aangepast: daarvoor is het noodzakelijk dat eerst het bestaande ontwerp wordt begrepen en dat dit zorgvuldig wordt uitgebreid met het oog op kwaliteit en onderhoudbaarheid
-\item[bouwen en implementeren van een toepassing] delen van de software zullen herschreven moeten worden
-\item[literatuuronderzoek of bureauonderzoek] mogelijke oplossingsrichtingen en documentatie van software bibliotheken zullen onderzocht moeten worden
-\end{description}
-
-\section{Domain analysis}
-individueel:  details van domein en technieken in relatie met het onderzoeksproject
-academische verantwoording gemaakte keuzen
-
-\subsection{Baertsoen}
-\lipsum[1]
-
-\subsection{Schiavini}
-\lipsum[1]
-
-\section{Results}
-beschrijving van het projectresultaat (het softwaresysteem)
-overzicht van de oplossing, met enkele globale voorbeelden
-
-\section{Assessment}
-reflectie inhoud, resultaat
-beperkingen in het resultaat/afbakening (op voorhand en praktisch) 
-
-\section{Conclusion and next steps}
-conclusies, aanbevelingen voor vervolg / uitbreiding
-
+\input{Objectives/Objectives}
+\input{Domain/Domain}
+\input{Results/Results}
+\input{Assessment/Assessment}
+\input{Conclusion/Conclusion}
 \newpage
-\appendix
-\section{Appendices}
-\subsection{Planning}
-\subsubsection{Original planning}
-\begin{tabular}{ l l l l }
-  \multicolumn{3}{c}{\textbf{Medio september 2014 -– medio mei 2015}} & \\
-Fase 2 & Taakverdeling, planning & 1,5 maand (medio sep -- eind okt)          & 20 uur \\
-Fase 3a & Domeinen \& technieken & 2 maanden (eind sep -- eind nov)       & 50 uur \\
-Fase 3c & Ontwerp \& implementatie & 5 maanden (eind nov -- eind apr)                & 230 uur \\
-Fase 3d & Documentatie & 5 maanden (eind nov -- eind apr)                & 50 uur \\
-Fase 3b & Onderzoekscontext & 2 maanden (eind feb -- eind apr)                   & 30 uur \\
-Fase 4  & Scriptie en eindpresentatie & 1,5 maand (eind mrt -- medio mei)                      & 20 uur
-\end{tabular}
-
-\subsubsection{Planning evaluation}
-\lipsum[1]
-
-\subsection{Evaluation}
-wat zou je de volgende keer anders/beter doen, als groep, eventueel ook individueel
-
-\subsection{Usage information}
-Overige appendices. Doel: alle extra benodigde informatie voor gebruik (wat nodig is vanuit de scriptie)
-
-\begin{itemize}
-\item individueel: relevante details van domein- en techniekanalyse
-\item relevante details van architectuurdiagrammen
-\item relevante code, listings, uitgewerkte oplossingen 
-\item relevante uitgewerkte voorbeelden
-\end{itemize}
-
+\input{Appendices/Appendices}
 \end{document}
