@@ -5,12 +5,14 @@ call:cleanup
 
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
 pdflatex Thesis
-::bibtex Thesis
-::pdflatex Thesis
+bibtex Thesis
+pdflatex Thesis
 pdflatex Thesis
 makeglossaries Thesis
 pdflatex Thesis
-@cls && (cat Thesis.log | grep -i Warn)
+cls && find "Warning" Thesis.log
+where bibtex>nul         || echo Error: Could not find bibtex.exe in the PATH
+where makeglossaries>nul || echo Error: Could not find makeglossaries.exe in the PATH
 pause
 
 :: Run Cleanup
