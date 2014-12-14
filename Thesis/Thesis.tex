@@ -1,11 +1,14 @@
 \documentclass[a4paper,12pt,abstracton,titlepage]{scrartcl}
-\usepackage{fancyhdr}
+\usepackage{scrpage2}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
 \usepackage[affil-it]{authblk}
 \usepackage{lipsum}
 \usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{longtable}
 \usepackage{multicol}
 
 % code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
@@ -17,22 +20,22 @@
 }
 \makeglossaries
 
+% Here we set up the header, meta-information and front matter
+%\date{November 3, 2014}      %// Today's date will appear when this is commented out.
+\newcommand{\version}{0.1}
+
+% title page
 \author{Maarten Baertsoen, Evergem, Belgium \\
 	Daniel S. C. Schiavini, Utrecht, Netherlands\\~}
 \affil{Open Universiteit Nederland, faculteit Informatica\\
-	T61327 - Afstudeerproject bachelor informatica}
+	T61327 - Afstudeerproject bachelor informatica\\
+	~\\\normalfont
+	Version \version}
 \title{Useful feedback in the\\ Ampersand parser}
 \subtitle{Bruikbare feedback in de Ampersand parser \\
 	~\\
 	Supervisor: Bastiaan Heeren\\
 	Examiner: Marko van Eekelen}
-
-\pagestyle{fancy}
-\lhead{M. Baertsoen and D.S.C. Schiavini}
-\rhead{Useful feedback in the Ampersand parser}
-\cfoot{\thepage}
-\setlength{\headheight}{15pt}
-
 \publishers{
 	\normalfont\normalsize
 	\parbox{0.8\linewidth}{
@@ -40,11 +43,36 @@
 	}
 }
 
+% header
+\pagestyle{scrheadings}
+\setheadsepline{0.2pt}
+\clearscrheadings
+\automark[section]{chapter}
+\ihead{M. Baertsoen and D.S.C. Schiavini}
+\ohead{Useful feedback in the Ampersand parser}
+\cfoot{\pagemark}
+
+% hyphenation
+\hyphenation{
+	gua-ran-tee
+	pro-duct
+	cor-res-pon-ding
+	me-cha-nism
+	know-ledge
+	de-ve-lo-pers
+	do-cu-men-ta-tion
+	sa-tis-fac-tion
+	Schi-a-vi-ni
+	Ba-ert-so-en}
+
+% Now the document starts
 \begin{document}
 \maketitle
 \newpage
 
 \tableofcontents
+\listoffigures
+\listoftables
 \clearpage
 
 \input{Introduction/Introduction}
