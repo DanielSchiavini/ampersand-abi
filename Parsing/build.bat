@@ -4,14 +4,14 @@
 call:cleanup
 
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
-pdflatex Parsing
+pdflatex Parsing>nul
 bibtex  ac
 bibtex  nac
-pdflatex Parsing
-pdflatex Parsing
+pdflatex Parsing>nul
+pdflatex Parsing>nul
 makeglossaries Parsing
-pdflatex Parsing
-cls && find "Warning" Parsing.log
+pdflatex Parsing>nul
+find "Warning" Parsing.log
 where bibtex>nul         || echo Error: Could not find bibtex.exe in the PATH
 where makeglossaries>nul || echo Error: Could not find makeglossaries.exe in the PATH
 pause
