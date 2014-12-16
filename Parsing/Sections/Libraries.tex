@@ -7,7 +7,7 @@
 \dict{Lexical analysis}{Separating text into tokens}%
 \dict{Lexer}{Software that does the lexical analysis}%
 \dict{Alex}{Lexer included in the Haskell Platform}%
-Parsing is sometimes divided into two stages: lexical analysis (separating the source text into tokens) and parsing itself (constructing a parse tree).
+Parsing is sometimes divided into two stages: lexical analysis (separating the source text into tokens) and parsing itself (constructing a parse tree from these tokens).
 Tools such as the ones analyzed here can perform both lexical analysis and parsing.
 However, sometimes the tools can be more efficient when supported by a separate Lexer (e.g. Alex).
 
@@ -18,20 +18,22 @@ Since these rules are formally defined, a series of mathematical constructions c
 \dict{BNF}{Backus-Naur Form, a meta-syntax notation for expressing context-free grammars}%
 \dict{EBNF}{Extended Backus-Naur Form, an extension on BNF}%
 The Ampersand Definition Language (ADL) is specified in a grammar in the Extended Backus-Naur Form (EBNF).
-Even though it is known that the grammar is not up to date, this article assumes the updated version will not fundamentally be different than the specified grammar.
+Even though it is known that the grammar is not up to date, this article assumes the updated version will not be fundamentally different from the specified grammar.
 
 \subsection{Generators vs. combinators}
 \dict{DSL}{Domain specific language}%
-Generally, there are two options for implementing a parser:
-The first option is to implement the parser in the language of choice, i.e. Haskell for this project.
-Another possibility is to use a domain-specific-language (DSL) to describe the grammar, and let a separate software generate the actual parsing code.
+Generally, there are two options for constructing a parser:
+The first option is to construct the parser in the language of choice, i.e. Haskell for this project.
+Another possibility is to use a domain-specific-language (DSL) to describe the grammar, and let separate software generate the actual parsing code.
 The two approaches and their advantages and disadvantages are described in this section.
 
 \subsubsection{Parsing libraries}
+\dict{EDSL}{Embedded Domain Specific Language}%
 When programmers go down the path of building a parser directly in Haskell, building up a set of functions that support parsing is a natural consequence.
-Although it's possible to build these functions for each and every project \cite{monadic-parsing}, using a premade library has several advantages, e.g. reduced effort, increased functionality, optimized performance and better documentation.
+Although it is possible to build these functions for each and every project \cite{monadic-parsing}, using a premade library is usually more advantageous, because of e.g. reduced effort, increased functionality, optimized performance and better documentation.
 The extra effort to learn the library is paid off by these advantages.
 In Haskell this is mostly done by providing monadic combinators to hold up extra information about the parsing state, and results in very elegant solutions \cite{monadic-parsing}.
+Combinator libraries are often called Embedded Domain Specific Languages (EDSL), as opposed to an external, stand-alone DSL.
 
 The parsers built in Haskell are mostly recursive descent parsers, wherein the parser runs top-down from a set of recursive calls.
 The program structure is then closely related to the production rules, supporting the readability of the program structure.
@@ -43,7 +45,7 @@ Such parsers are called therefore LL parsers.
 However, there are limitations related to recursive descent parsers.
 For instance, a common kind of production rule is a left recursive one, e.g. \texttt{term $\rightarrow$ term `$+$' term $|$ digit}.
 In this case, the first thing the parser would do is call itself, resulting in an infinite loop.
-Gladly, left recursive grammars can be converted into right recursive ones \cite{remove-left}.
+Fortunately, left recursive grammars can be converted into right recursive ones \cite{remove-left}.
 
 Therefore, LL parsers may require exponential time to run and are not able to guarantee termination.
 In order to guarantee termination and linear execution time, a recursive descent parser must be able to recognize which production rule to use by reading only limited amount of tokens.
@@ -52,9 +54,10 @@ This is only possible for the class of unambiguous grammars without left recursi
 ~\\
 \dict{LL(k)-grammar}{A grammar that can be parsed by an LL($k$)-parser}%
 \dict{LL(k)-parser}{Top-down parser that parses from left to right, performing the leftmost derivation with a maximum $k$-tokens of look-ahead}%
-The EBNF for the ADL-language is not ambiguous and has no left recursion.
+The EBNF for the ADL-language has no left recursion.
 This grammar can therefore be called an LL($k$)-grammar, for which an LL($k$)-parser can be created.
 The $k$ between the parenthesis means that this parser needs a maximum of $k$ tokens of look-ahead in order to choose a production rule.
+The grammar is currently ambiguous, however it is expected that it can be refactored so that the ambiguity is removed.
 
 \subsubsection{Parser generators}
 As mentioned, another approach for building a parser is to specify the software's grammar in a specific notation and use a parser generator to create the actual parser source code.
@@ -63,18 +66,18 @@ In the domain of context-free grammars, a widely used grammar notation is the Ba
 \dict{Happy Parser Generator}{Parser generator system for Haskell. \url{https://www.haskell.org/happy/}}%
 This research is focused in the Happy parser generator, which is part of the Haskell Platform since 2001.
 Happy inputs a file containing an annotated BNF specification of a grammar and produces a Haskell module with a parser for that grammar.
-Since it is possible to convert EBNF to BNF \cite{convert-ebnf,bnf-ebnf}, a Happy parser should not involve a lot of effort.
+Since it is possible to convert EBNF to BNF \cite{convert-ebnf,bnf-ebnf}, specifying a Happy parser should not involve a lot of effort.
 It is important to know, however, that besides converting the EBNF to BNF, the annotation still requires effort and knowledge acquisition.
 
 \dict{LR parser}{Top-down parser that parses from left to right, performing the rightmost derivation}%
 A parser generator is able to execute statical analysis on the input grammar.
-Besides, they are often able to recognize more complicated grammars by running \underline{L}eft-to-right, and picking the \underline{R}ightmost derivation, being called therefore an LR parser.
+Besides, generators are often able to recognize more complicated grammars by running \underline{L}eft-to-right, and picking the \underline{R}ightmost derivation, being called therefore an LR parser.
 
 \dict{LALR parser}{LR parser with look-ahead}%
 An LR parser with \underline{L}ook-\underline{A}head is called an LALR parser.
 By performing the rightmost derivation of the production rules, an LALR parser is able to recognize more complex grammars.
 However, its workings are quite unintuitive, and understanding such parsers can be very hard.
-That's exactly why LALR parsers are usually generated instead of built by hand.
+That is exactly why LALR parsers are usually generated instead of built by hand.
 
 Since understanding LALR parsers is hard, the syntax errors caused by incorrect input may be much harder to pinpoint and understand.
 The errors generated by LALR parsers are often not in high-level terms that the end users can understand.
@@ -88,14 +91,14 @@ Haskell compilers GHC and Hugs are both built with LALR generated parsers: Hugs 
 Later on, the Helium compiler was created for classroom-use because the mentioned Haskell compilers were not user friendly \cite{helium-parser}.
 Other examples are the GCC compilers for C and C++, that started as LALR generated compilers and were remade to be recursive-descent parsers \cite{gcc-c-parser,gcc-cpp-parser}.
 
-Although it's harder to understand its workings, the resulting source code for the generators is simpler and easier to maintain, as can be seen in \cite{parser-examples}.
+Although it is harder to understand its workings, the resulting source code for the generators is simpler and easier to maintain, as can be seen in Hulette's examples \cite{parser-examples}.
 
 \subsubsection{Conclusion}
 In the context of the new Ampersand parser, some advantages of building the parser in Haskell instead of using a generator, are:
 \begin{description}
 	\item[Flexibility] The programming language gives much more flexibility in coping with context-sensitive grammars.
 	\item[Building] The process is simpler since it is unnecessary to run a separate program to generate the parser.
-	\item[Language] Both the customer and the project members feel more comfortable working in Haskell then in an unknown DSL.
+	\item[Language] Both the customer and the project members feel more comfortable working in Haskell than in an unknown DSL.
 	\item[Errors] The main objective of the project is giving useful feedback in the new Ampersand parser, and this seems much easier to achieve with a handwritten parser.
 \end{description}
 
@@ -105,8 +108,8 @@ On the other hand, the advantages of using a parser generator, instead of handwr
 	\item[Optimizations] Because the parser is generated on-the-fly, the generator can apply optimizations that would otherwise be hard to implement.
 	\item[Performance] Bottom-up parsers are much more efficient because they are able to pack the code into state machines.
 		This is even more valid when many parsing alternatives are available.
-	\item[Static analysis] The generator is able to do a lot more static analysis, while a library is only executed during the run-time.
-    E.g. programmers will only know of left recursions and non-terminations by testing the parser.
+	\item[Static analysis] The generator is able to do a lot more static analysis, while a library is only executed at run-time.
+    E.g. programmers may only know of left recursions and non-terminations by testing the parser.
 	\item[Documentation] Since the DSL is basically annotated BNF, keeping the syntax diagrams up to date is much easier.
 \end{description}
 
@@ -121,17 +124,23 @@ In this section, two libraries will be compared: the Utrecht University parser c
 Other libraries (e.g. Attoparsec, Polyparse) are out of the scope of this research.
 
 \subsection{Utrecht University Parsing Library}
-\dict{uu-parsinglib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
+\dict{uu-parsinglib}{New version of the uulib}%
+\dict{uulib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
+\dict{GADT}{Generalized Algebraic Datatypes for Haskell}%
 The uu-parsinglib is a combinator library created by Doaitse Swierstra in the Utrecht University.
-This library is used in many mature projects.
-The current Ampersand parser is also built with the previous version of the uu-parsinglib.
-The new version has several improvements, mainly in performance \cite{benchmark}.
-It currently has more than 4 thousand downloads in the Hackage package manager.
-
+This library is used in many mature projects and has more than 4 thousand downloads in the Hackage package manager.
+There are two versions of this library:
+\begin{itemize}
+  \item The uulib library is older and more limited, dating back from 2005.
+    It is used in most of the projects distributed by the Utrecht University, and in the current Ampersand parser.
+  \item The new version, named uu-parsinglib, dates from 2008, has several improvements and much simpler internals because of GATD.
+    This version is considered in the rest of the document because of its performance \cite{benchmark} and the author's recommendation \cite{uulib-parsinglib}.
+\end{itemize}
+%
 The documentation is mainly in Haddock format and in a paper from 2009 \cite{uu-doc}.
 The implementation is open source.
 The new version of the uu-parsinglib provides combinators that include error correction and a monadic interface.
-Errors are recognized and corrected automatically if the programmers want so, but the reporting is customizable.
+Errors are recognized and corrected automatically if the programmer wants so, but the error reporting is customizable.
 It also supports grammars that are not context-free and even ambiguous grammars (provided the user accepts exponential run-time).
 
 Finally, the uu-parsinglib runs online, i.e. it returns parts of the parsing three as soon as they are ready.
@@ -150,27 +159,22 @@ The documentation of Parsec and its documentation tends to be better than that o
 %todo: https://www.haskell.org/haskellwiki/Parsec
 %todo: http://stackoverflow.com/questions/19208231/attoparsec-or-parsec-in-haskell/19213247#19213247
 
-\subsection{Monadic vs. arrow interfaces}
+\subsection{Monadic vs. applicative interfaces}
 Monads allow sequences and state to be saved during the parsing, and had become the most common way of building Haskell parsers.
 Until, in a paper from Swierstra \cite{error-correcting}, a parsing library was published with an alternative interface.
-Hughes presented this alternative as a generalization of monads, calling it `arrows' \cite{monad-arrows}.
+McBride and Paterson presented this alternative as a generalization of monads, calling it `applicative functors' or `idioms'.
+Applicative interfaces are less convenient than monads but are more widely applicable \cite{applicative}.
 
-Arrows are less convenient than monads but are much widely applicable \cite{monad-arrows}.
-Monads would still be used for state passing and other constructions, but the continuations would be carried over to arrows.
-
-Arrow-style parsers do not depend on the run-time values -- they are not dependent on the context.
+Applicative parsers do not depend on the run-time values -- they are not dependent on the context.
 This means that it is then possible to analyze and optimize the parser before executing it.
 Swierstra goes so far to say that this works as a run-time parser generator \cite{error-correcting}.
 On the other hand, the lack of context means that only context-free languages can be implemented this way \cite{parsec}.
 
-The uu-parsinglib allows both monadic and arrow-style parsing, while Parsec only has a monadic interface.
-In the arrow-style interface, the uu-parsinglib also adds error correction:
+Both the uu-parsinglib and Parsec have monadic and applicative interfaces.
+In the applicative interface, the uu-parsinglib also adds error correction:
 After detecting an error, the library will correct it by adding or deleting tokens.
 It then generates an appropriate error message and continues with the rest of the program.
 By using this interface, the parsing will thus always succeed.
-
-%todo: http://worldbusiness.org/wp-content/uploads/2012/10/arrows-and-idioms2.pdf
-%todo: http://marc.info/?l=haskell-cafe&m=128039136131494
 
 \subsection{Conclusion}
 The following differences have been found between the two considered libraries:
@@ -181,7 +185,7 @@ The following differences have been found between the two considered libraries:
 	\item[Support] Since Parsec is much more used, online support can be more easily found.
 		For example, the website Stack Overflow currently has 14 questions about the uu-parsinglib and 301 about Parsec.
 	\item[Static checking] None of the libraries is able to do static checking.
-		However, the uu-parsinglib has more possibilities of grammar analysis in its arrow-style interface.
+		However, the uu-parsinglib has more possibilities of grammar analysis in its applicative interface.
 	\item[Precedences] The Ampersand parser is currently built with the uu-parsinglib with great satisfaction.
 		This both means that the library has enough features and that it is known by the other Ampersand developers.
 	\item[Error reporting] No literature has been found with a comparison of the errors generated by the libraries.
@@ -195,11 +199,12 @@ The following differences have been found between the two considered libraries:
 	\item[Fine-tuning] According to the Helium development team, Parsec's possibilities for error fine-tuning are greater \cite{helium-parser}.
 		However, to apply optimizations it is necessary to know the internal workings of the parser \cite{uu-doc}.
 	\item[Backtracking] Parsec works with more traditional backtracking algorithms \cite{parsec} that can often lead to high space consumption \cite{uu-doc}.
-		Backtracking must be manually activated, though.
-	\item[Performance] The Parsec library seems to have better performance \cite{benchmark}, but the difference is small and is not expected to make a considerable difference in the small ADL scripts.
-	\item[Try operator] In order to allow backtracking, Parsec code uses the try-function, which is considered harmful and can be easily misused \cite{try-harmful}.
-		This keyword is totally unnecessary in the uu-parsinglib because it uses breadth-first lazy parsing \cite{uu-doc}.
+		Backtracking must be manually activated, though, with it's \textit{try} combinator.
+    This combinator is considered harmful and can be easily misused \cite{try-harmful}.
+		The uu-parsinglib, on the other hand, uses breadth-first lazy parsing \cite{uu-doc} so such combinator is not necessary.
 		%todo: http://osdir.com/ml/haskell-cafe@haskell.org/2012-01/msg00566.html
+    
+	\item[Performance] The Parsec library seems to have better performance \cite{benchmark}, but the difference is small and is not expected to make a considerable difference in the small ADL scripts.
 	\item[Maintainability] No significant difference has been found in the maintainability of the two analyzed libraries.
 		Note that the programmers working on Ampersand are already familiar with the uu-parsinglib.
 		On the other hand, there is more support and documentation available for Parsec, so it can also be seen as more future-proof.
@@ -210,4 +215,4 @@ The following differences have been found between the two considered libraries:
 \end{description}
 %
 Considering these differences, a deeper analysis of error messages is given in the next section.
-The actual library choice is delayed until \autoref{sec:conclusion}.
+The actual advice on the library choice is delayed until \autoref{sec:conclusion}.
