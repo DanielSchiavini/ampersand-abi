@@ -4,13 +4,13 @@
 call:cleanup
 
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
-pdflatex Parsing
-pdflatex Parsing
-:: bibtex  Parsing
-makeglossaries Parsing
-pdflatex Parsing
-pdflatex Parsing
-@cls && (cat Parsing.log | grep -i Warn)
+pdflatex AmpersandApproach
+pdflatex AmpersandApproach
+:: bibtex  AmpersandApproach
+makeglossaries AmpersandApproach
+pdflatex AmpersandApproach
+pdflatex AmpersandApproach
+@cls && (cat AmpersandApproach.log | grep -i Warn)
 pause
 
 :: Run Cleanup

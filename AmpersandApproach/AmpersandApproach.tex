@@ -5,11 +5,17 @@
 \usepackage[top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
 \usepackage[affil-it]{authblk}
 \usepackage{lipsum}
+\usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{graphicx}
 \usepackage[table,xcdraw]{xcolor}
 \usepackage{longtable}
 \usepackage{multicol}
+
+%citations
+\usepackage{multibib}
+\newcites{ac}{Academic references}
+\newcites{nac}{Informal references}
 
 % code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
 \usepackage[acronym,toc]{glossaries}
@@ -21,14 +27,14 @@
 \makeglossaries
 
 % Here we set up the header, meta-information and front matter
-%\date{November 3, 2014}      %// Today's date will appear when this is commented out.
-\newcommand{\version}{0.1}
+%\date{January 5, 2015}      %// Today's date will appear when this is commented out.
+\newcommand{\version}{0.4}
 
 % title page
 \author{Maarten Baertsoen}
 \affil{Open Universiteit Nederland, faculteit Informatica \\
 	T61327 - Afstudeerproject bachelor informatica}
-\title{The Ampersand approach \&\\ The practical use of the Ampersand tools}
+\title{The Ampersand approach \&\\ Ampersand in practice}
 \subtitle{Useful feedback in the Ampersand parser\\
 	~\\
 	Phase 3a: Domain \& Techniques}
@@ -40,10 +46,10 @@
 \clearscrheadings
 \automark[section]{chapter}
 \ihead{Maarten Baertsoen}
-\ohead{The Ampersand Approach\&The practical use of the Ampersand tools}
+\ohead{The Ampersand Approach\&Ampersand in practice}
 \cfoot{\pagemark}
 
-% requirements
+% URL's
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}
 
 % hyphenation
@@ -70,13 +76,15 @@
 \clearpage
 
 \input{Sections/Introduction.tex}
-\input{Sections/AmpersandApproach.tex}
+\input{Sections/AmpersandTheory.tex}
 \input{Sections/AmpersandInPractice.tex}
 \input{Sections/Conclusion.tex}
-\newpage
+
+\part*{Appendices}
+\addcontentsline{toc}{part}{Appendices}
 \appendix
 \input{Appendices/Glossary.tex}
-\clearpage
+\newpage
 \input{Appendices/Bibliography.tex}
 
 \end{document}
