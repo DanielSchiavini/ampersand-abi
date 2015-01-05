@@ -4,13 +4,16 @@
 call:cleanup
 
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
-pdflatex AmpersandApproach
-pdflatex AmpersandApproach
-:: bibtex  AmpersandApproach
+pdflatex AmpersandApproach>nul
+bibtex  ac
+bibtex  nac
+pdflatex AmpersandApproach>nul
+pdflatex AmpersandApproach>nul
 makeglossaries AmpersandApproach
-pdflatex AmpersandApproach
-pdflatex AmpersandApproach
-@cls && (cat AmpersandApproach.log | grep -i Warn)
+pdflatex AmpersandApproach>nul
+find "Warning" AmpersandApproach.log
+where bibtex>nul         || echo Error: Could not find bibtex.exe in the PATH
+where makeglossaries>nul || echo Error: Could not find makeglossaries.exe in the PATH
 pause
 
 :: Run Cleanup
@@ -28,3 +31,5 @@ call:cleanup
 del /q *.toc
 
 goto:eof
+
+
