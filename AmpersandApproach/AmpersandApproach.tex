@@ -1,0 +1,90 @@
+\documentclass[a4paper,12pt,abstracton,titlepage]{scrartcl}
+\usepackage{scrpage2}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
+\usepackage[affil-it]{authblk}
+\usepackage{lipsum}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{longtable}
+\usepackage{multicol}
+
+%citations
+\usepackage{multibib}
+\newcites{ac}{Academic references}
+\newcites{nac}{Informal references}
+
+% code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
+\usepackage[acronym,toc]{glossaries}
+\usepackage{glossary-mcols}
+\newcommand{\dict}[2]{%
+  \newglossaryentry{#1}{name=#1,description={#2}}%
+  \glslink{#1}{}%
+}
+\makeglossaries
+
+% Here we set up the header, meta-information and front matter
+%\date{January 5, 2015}      %// Today's date will appear when this is commented out.
+\newcommand{\version}{0.4}
+
+% title page
+\author{Maarten Baertsoen}
+\affil{Open Universiteit Nederland, faculteit Informatica \\
+	T61327 - Afstudeerproject bachelor informatica}
+\title{The Ampersand approach \&\\ Ampersand in practice}
+\subtitle{Useful feedback in the Ampersand parser\\
+	~\\
+	Phase 3a: Domain \& Techniques}
+\publishers{Version \version}
+
+% header
+\pagestyle{scrheadings}
+\setheadsepline{0.2pt}
+\clearscrheadings
+\automark[section]{chapter}
+\ihead{Maarten Baertsoen}
+\ohead{The Ampersand Approach\&Ampersand in practice}
+\cfoot{\pagemark}
+
+% URL's
+\renewcommand*{\UrlFont}{\footnotesize\ttfamily}
+
+% hyphenation
+\hyphenation{
+	gua-ran-tee
+	pro-duct
+	cor-res-pon-ding
+	me-cha-nism
+	know-ledge
+	de-ve-lo-pers
+	do-cu-men-ta-tion
+	sa-tis-fac-tion
+	Schi-a-vi-ni
+	Ba-ert-so-en}
+
+% Now the document starts
+\begin{document}
+\maketitle
+\newpage
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+\clearpage
+
+\input{Sections/Introduction.tex}
+\input{Sections/AmpersandTheory.tex}
+\input{Sections/AmpersandInPractice.tex}
+\input{Sections/Conclusion.tex}
+
+\part*{Appendices}
+\addcontentsline{toc}{part}{Appendices}
+\appendix
+\input{Appendices/Glossary.tex}
+\newpage
+\input{Appendices/Bibliography.tex}
+
+\end{document}
