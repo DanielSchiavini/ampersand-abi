@@ -128,21 +128,26 @@ data ContextElement = CMeta Meta
 pIncludeStatement :: AmpParser String
 pIncludeStatement = pKey "INCLUDE" *> pString
 
+--- pLanguageRef ::= 'IN' ('DUTCH' | 'ENGLISH')
 pLanguageRef :: AmpParser Lang
 pLanguageRef = pKey "IN" *>
                (( Dutch   <$ pKey "DUTCH"  ) <|>
                 ( English <$ pKey "ENGLISH")
                )
+
+--- pTextMarkup ::= 'REST' | 'HTML' | 'LATEX' | 'MARKDOWN'
 pTextMarkup :: AmpParser PandocFormat
 pTextMarkup = ( ReST     <$ pKey "REST"     ) <|>
               ( HTML     <$ pKey "HTML"     ) <|>
               ( LaTeX    <$ pKey "LATEX"    ) <|>
               ( Markdown <$ pKey "MARKDOWN" )
 
+--- pMeta ::= 'META' pString pString
 pMeta :: AmpParser Meta
 pMeta = Meta <$> pKey_pos "META" <*> pMetaObj <*> pString <*> pString
  where pMetaObj = pSucceed ContextMeta -- for the context meta we don't need a keyword
 
+--- pPatternDef ::= 'PATTERN' pConceptName pPatElems* 'ENDPATTERN'
 pPatternDef :: AmpParser P_Pattern
 pPatternDef = rebuild <$> pKey_pos "PATTERN" <*> pConceptName   -- The name spaces of patterns, processes and concepts are shared.
                       <*> pList pPatElem
@@ -162,6 +167,7 @@ pPatternDef = rebuild <$> pKey_pos "PATTERN" <*> pConceptName   -- The name spac
              , pt_xps = [e | Pe e<-pes]
              , pt_pop = [p | Pp p<-pes]
              }
+    --- pPatElem ::= pRuleDef | pClassify | pRelationDef | pConceptDef | pGenDef | pIndex | pViewDef | pPurpose | pPopulation
     pPatElem :: AmpParser PatElem
     pPatElem = Pr <$> pRuleDef      <|>
                Py <$> pClassify     <|>
@@ -183,6 +189,7 @@ data PatElem = Pr (P_Rule TermPrim)
              | Pe PPurpose
              | Pp P_Population
 
+--- pProcessDef ::= 'PROCESS' pConceptName pProcElem* 'ENDPROCESS'
 pProcessDef :: AmpParser P_Process
 pProcessDef = rebuild <$> pKey_pos "PROCESS" <*> pConceptName   -- The name spaces of patterns, processes and concepts are shared.
                       <*> pList pProcElem
@@ -204,6 +211,7 @@ pProcessDef = rebuild <$> pKey_pos "PROCESS" <*> pConceptName   -- The name spac
               , procXps   = [e  | PrE e <-pes]
               , procPop   = [p  | PrP p <-pes]
               }
+    --- pProcElem ::= pRuleDef | pClassify | pRelationDef | pRoleRule | pRoleRelation | pConceptDef | pGenDef | pIndex | pViewDef | pPurpose | pPopulation
     pProcElem :: AmpParser ProcElem
     pProcElem = PrR <$> pRuleDef      <|>
                 PrY <$> pClassify     <|>
@@ -229,6 +237,7 @@ data ProcElem = PrR (P_Rule TermPrim)
               | PrE PPurpose
               | PrP P_Population
 
+--- pClassify ::= 'CLASSIFY' pConceptRef 'IS' pCterms
 pClassify :: AmpParser P_Gen   -- Example: CLASSIFY A IS B /\ C /\ D
 pClassify = rebuild <$> pKey_pos "CLASSIFY"
                     <*> pConceptRef
@@ -240,6 +249,8 @@ pClassify = rebuild <$> pKey_pos "CLASSIFY"
                           , gen_rhs  = rhs             --  Right hand side concept expression
                           , gen_fp   = po
                           }
+                 --- pCterms ::= pCterm ('/\'' pCterm)*
+                 --- pCterm ::= pConceptRef '(' pCterms? ')'
                  pCterm  = f <$> pList1Sep (pKey "/\\") pCterm1
                  pCterm1 = g <$> pConceptRef                        <|>
                            h <$> (pSpec '(' *> pCterm <* pSpec ')')  -- brackets are allowed for educational reasons.
@@ -754,9 +765,11 @@ pADLid_val_pos    = pVarid_val_pos <|> pConid_val_pos <|> pString_val_pos
 pMaybe :: IsParser p s => p a -> p (Maybe a)
 pMaybe p = Just <$> p <|> pSucceed Nothing
 
-
+-- Gets the location of the token in the file
 get_tok_pos :: Token -> Origin
 get_tok_pos     (Tok _ _ s l f) = FileLoc(FilePos (f,l,s))
+
+-- Gets the location of the token in the file and it's value
 get_tok_val_pos :: Token -> (String, Origin)
 get_tok_val_pos (Tok _ _ s l f) = (s,FileLoc(FilePos (f,l,s)))
 
@@ -766,8 +779,10 @@ gsym_pos kind val' val2' = get_tok_pos <$> pSym (Tok kind val' val2' noPos "")
 gsym_val_pos :: IsParser p Token => TokenType -> String -> String -> p (String,Origin)
 gsym_val_pos kind val' val2' = get_tok_val_pos <$> pSym (Tok kind val' val2' noPos "")
 
+-- Key has no EBNF because in EBNF it's just the given keyword.
 pKey_pos :: String -> AmpParser Origin
 pKey_pos keyword  =   gsym_pos TkKeyword   keyword   keyword
+-- Spec just matches the given character so it has no EBNF
 pSpec_pos :: Char -> AmpParser Origin
 pSpec_pos s       =   gsym_pos TkSymbol    [s]       [s]
 

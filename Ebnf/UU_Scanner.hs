@@ -307,9 +307,11 @@ value c | isDigit c = ord c - ord '0'
         | isLower c = ord c - ord 'a' + 10
         | otherwise = fatal 321 ("value undefined for '"++ show c++"'")
 
+-- Gets the value of a given token
 get_tok_val :: Token -> String
 get_tok_val (Tok _ _ s _ _) = s
 
+-- Matches a token of a given type
 gsym :: IsParser p Token => TokenType -> String -> String -> p String
 gsym kind val val2' = get_tok_val <$> pSym (Tok kind val val2' noPos "")
 -- Key has no EBNF because in EBNF it's just the given keyword.
