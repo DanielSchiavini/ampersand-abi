@@ -1,0 +1,112 @@
+ADL_V2   ::= ContextDef
+
+LCase ::= 'a'|'b'|'c'|'d'|'e'|'f'|'g'|'h'|'i'|'j'|'k'|'l'|'m'|'n'|'o'|'p'|'q'|'r'|'s'|'t'|'u'|'y'|'x'|'w'|'z'
+UCase ::= 'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'|'I'|'J'|'K'|'L'|'M'|'N'|'O'|'P'|'Q'|'R'|'S'|'T'|'U'|'Y'|'X'|'W'|'Z'
+Digit ::= '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'
+FilePath ::= (LCase | UCase | '_' | '-' | Digit | '/')+
+String ::= (LCase | UCase | Digit | ' ')+
+
+Id ::= (LCase | UCase | '_') (LCase | UCase | '_' | Digit)*
+ADLid ::= Id
+Varid ::= Id
+Atom ::= '.'
+Value ::= Digit*
+
+TextSpec ::= LanguageRef? TextMarkup?
+
+ContextDef ::= 'CONTEXT' Id IncludeStatement* TextSpec ContextOption* 'ENDCONTEXT'
+
+ContextOption ::= GeneralOption | Meta | PatternDef | ProcessDef | InterfaceDef | Plug | Themes
+
+GeneralOption ::= RuleDef | RelationDef | ConceptDef | GenDef | KeyDef | Purpose | Population
+
+IncludeStatement ::= 'INCLUDE' FilePath
+
+LanguageRef ::= 'IN' ( 'DUTCH' | 'ENGLISH' )
+
+TextMarkup ::= 'REST' | 'HTML' | 'LATEX' | 'MARKDOWN'
+
+Meta     ::= 'META' String String
+
+PatternDef ::= 'PATTERN' Id LanguageRef? GeneralOption* 'ENDPATTERN'
+
+ProcessOption ::= GeneralOption | RoleRule | RoleRelation
+ProcessDef ::= 'PROCESS' Id LanguageRef? ProcessOption* 'ENDPROCESS'
+
+ViolationType ::= ( 'TXT' | 'SRC' | 'TGT' ) String
+ViolationTypes ::= ViolationType ( ',' ViolationType )*
+ViolationDef ::=  'VIOLATION' ViolationTypes
+RuleDef  ::= 'RULE' ( ADLid ':' )? Expr Meaning* ( 'MESSAGE' TextSpec String )* ViolationDef?
+
+PragmaDef ::= 'PRAGMA' String String*
+DefineDef ::= 'DEFINE' ( 'SRC' | 'TGT' ) String
+
+ByPlug ::= 'BYPLUG'? Props? 'BYPLUG'?
+RelationDef ::= RelationId ByPlug PragmaDef? Meaning? ( '=' Content )? DefineDef? '.'?
+RelationId ::= Id '::' ConceptRef Multiplicity ConceptRef | 'RELATION' Id Sign
+Multiplicity ::= '*' | '->' | '<-' | '[' Multiplicity1 '-' Multiplicity1 ']'
+Multiplicity1 ::= (('0' Multiplicity2) | ('1' Multiplicity2?) | '*' )?
+Multiplicity2 ::= '..' ( '1' | '*' )
+
+Prop     ::= 'UNI' | 'INJ' | 'SUR' | 'TOT' | 'SYM' | 'ASY' | 'TRN' | 'RFX' | 'IRF' | 'PROP'
+Props    ::= '[' ( Prop ( ',' Prop )* )? ']'
+
+ConceptDef ::= 'CONCEPT' Id 'BYPLUG'? String ( 'TYPE' String )? String?
+
+GenDef   ::= 'SPEC' Id 'ISA' Id
+
+KeyText ::= 'TXT' String | LabelProps? Expr
+KeyTexts ::= KeyText ( ',' KeyText )*
+KeyDef   ::= 'KEY' LabelProps ConceptRef '(' ( 'PRIMHTML' String | KeyTexts ) ')'
+
+Ids ::= Id ( ',' Id )*
+IdsPlus ::= ( '{' Id+ ( ',' Id+ )* '}' )
+RelSigns ::= RelSign ( ',' RelSign )*
+InterfaceDef ::= 'INTERFACE' ( '(' RelSigns ')' )? IdsPlus? ( 'FOR' Ids )? ':' Expr SubInterface
+
+SubInterface ::= 'INTERFACE' Id | Box
+
+Plug     ::= ( 'SQLPLUG' | 'PHPPLUG' ) ObjDef
+
+RefDef ::= 'REF' String
+Purpose  ::= 'PURPOSE' PurposeOf TextSpec RefDef? Expl
+PurposeOf ::= 'CONCEPT' Id | 'RELATION' Id Sign? | 'RULE' Id | 'KEY' Id | 'PATTERN' Id | 'PROCESS' Id | 'INTERFACE' Id | 'CONTEXT' Id
+
+Expl     ::= '{+' String '-}'
+
+Population ::= 'POPULATION' RelSign 'CONTAINS' Content
+
+RoleRelation ::= 'ROLE' Ids 'EDITS' RelSigns
+
+RoleRule ::= 'ROLE' Ids 'MAINTAINS' Ids
+
+Themes   ::= 'THEMES' Ids
+
+Meaning  ::= 'MEANING' TextSpec Expl
+
+Expr     ::= Exp1 ( ( '=' | '|-' ) Exp1 )?
+Exp1     ::= Exp2 ( ( '/\' | '\/' ) Exp2 )*
+Exp2     ::= Exp3 ( '-' Exp3 )?
+Exp3     ::= Exp4 ( ( '\' | '/' ) Exp4 )?
+Exp4     ::= Exp5 ( ';' Exp5 )* | Exp5 ( '!' Exp5 )* | Exp5
+Exp5     ::= '-'? Exp6 ( Sign | '~' | '*' | '+' )?
+Exp6     ::= RelationRef | '(' Expr ')'
+
+RelationRef ::= 'I' | 'V' | Varid | Atom
+
+RelSign  ::= RelationRef Sign?
+
+Sign     ::= '[' ConceptRef ( '*' ConceptRef )? ']'
+
+ConceptRef ::= 'ONE' | Id
+
+LabelProps ::= Id ( '{' Ids '}' )* ':'
+
+ObjDef   ::= LabelProps Expr SubInterface?
+ObjDefs ::= ObjDef ( ',' ObjDef )*
+
+Box      ::= 'BOX' '[' ObjDefs ']'
+
+ValuePair ::= '(' Value ',' Value ')'
+ValuePairs ::= ValuePair ( ';' ValuePair )*
+Content  ::= '[' ValuePairs? ']'
