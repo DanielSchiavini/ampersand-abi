@@ -14,10 +14,11 @@ Value ::= Digit*
 
 TextSpec ::= LanguageRef? TextMarkup?
 
-GeneralOption ::= RuleDef | RelationDef | ConceptDef | GenDef | KeyDef | Purpose | Population
+ContextDef ::= 'CONTEXT' Id IncludeStatement* TextSpec ContextOption* 'ENDCONTEXT'
 
 ContextOption ::= GeneralOption | Meta | PatternDef | ProcessDef | InterfaceDef | Plug | Themes
-ContextDef ::= 'CONTEXT' Id IncludeStatement* TextSpec ContextOption* 'ENDCONTEXT'
+
+GeneralOption ::= RuleDef | RelationDef | ConceptDef | GenDef | KeyDef | Purpose | Population
 
 IncludeStatement ::= 'INCLUDE' FilePath
 

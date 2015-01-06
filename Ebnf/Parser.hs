@@ -46,15 +46,16 @@ keywordstxt       = [ "INCLUDE"
 keywordsops :: [String]
 keywordsops       = [ "|-", "-", "->", "<-", ">", "=", "~", "+", "*", ";", "!", "#", "::", ":", "\\/", "/\\", "\\", "/", "<>"
                     , "..", "." , "0", "1"]
-specialchars :: String
+specialchars :: [Char]
 specialchars      = "()[],{}"
-opchars :: String
+opchars :: [Char]
 opchars           = nub (sort (concat keywordsops))
 
 --to parse files containing only populations
 pPopulations :: AmpParser [P_Population]
 pPopulations = pList1 pPopulation
 
+--- pContext ::= 'CONTEXT' pConceptName pLanguageRef pTextMarkup? pContextElement* 'ENDCONTEXT'
 pContext :: AmpParser (P_Context, [String]) -- the result is the parsed context and a list of include filenames
 pContext  = rebuild <$> pKey_pos "CONTEXT" <*> pConceptName
                          <*> pLanguageRef
@@ -85,6 +86,7 @@ pContext  = rebuild <$> pKey_pos "CONTEXT" <*> pConceptName
             }
        , [s | CIncl s<-ces]) -- the INCLUDE filenames
 
+    --- pContextElement ::= pMeta | pPatternDef | pProcessDef | pRuleDef | pClassify | pRelationDef | pConceptDef | pGenDef | pIndex | pViewDef | pInterface | pSqlplug | pPhpplug | pPurpose | pPopulation | pPrintThemes | pIncludeStatement
     pContextElement :: AmpParser ContextElement
     pContextElement = CMeta    <$> pMeta         <|>
                       CPat     <$> pPatternDef   <|>
@@ -122,6 +124,7 @@ data ContextElement = CMeta Meta
                     | CThm [String]    -- a list of themes to be printed in the functional specification. These themes must be PATTERN or PROCESS names.
                     | CIncl String     -- an INCLUDE statement
 
+--- pIncludeStatement ::= 'INCLUDE' pString
 pIncludeStatement :: AmpParser String
 pIncludeStatement = pKey "INCLUDE" *> pString
 

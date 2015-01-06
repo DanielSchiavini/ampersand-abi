@@ -1,0 +1,15 @@
+pContext ::= 'CONTEXT' pConceptName pLanguageRef pTextMarkup? pContextElement* 'ENDCONTEXT'
+    pContextElement ::= pMeta | pPatternDef | pProcessDef | pRuleDef | pClassify | pRelationDef | pConceptDef | pGenDef | pIndex | pViewDef | pInterface | pSqlplug | pPhpplug | pPurpose | pPopulation | pPrintThemes | pIncludeStatement
+pIncludeStatement ::= 'INCLUDE' pString
+String ::= '"' Any* '"'
+Expl ::= '{+' Any* '-}'
+Atom ::= '\'' Any* '\''
+Digit ::= ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9')
+Integer10 ::= ('1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') Digit*
+Integer8 ::= ('00' | '0o') Digit+
+Integer16 ::= ('0x' | '0X') Digit+
+Varid ::= (isLower | '_') (Char | '_')*
+Conid ::= isUpper (Char | '_')*
+Integer ::= Integer10 | Integer8 | Integer16
+Comma ::= ','
+Semi ::= ';'
