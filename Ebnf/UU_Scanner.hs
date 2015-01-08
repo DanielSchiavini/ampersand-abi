@@ -327,7 +327,7 @@ pString, pExpl, pAtom, pInteger10, pVarid, pConid,
 pString        =   gsym TkString    ""        ""
 --- Expl ::= '{+' Any* '-}'
 pExpl          =   gsym TkExpl      ""        ""
---- Atom ::= '\'' Any* '\''
+--- Atom ::= "'" Any* "'"
 pAtom          =   gsym TkAtom      ""        ""
 --- Digit ::= ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9')
 --- Integer10 ::= ('1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') Digit*
