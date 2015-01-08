@@ -335,9 +335,9 @@ pAtom          =   gsym TkAtom      ""        ""
 --- Integer8 ::= ('00' | '0o') Digit+
 --- Integer16 ::= ('0x' | '0X') Digit+
 pInteger10     =   gsym TkInteger10 ""        "1"
---- Varid ::= (isLower | '_') (Char | '_')*
+--- Varid ::= (LowerChar | '_') (Char | '_')*
 pVarid         =   gsym TkVarid     ""        "?lc?"
---- Conid ::= isUpper (Char | '_')*
+--- Conid ::= UpperChar (Char | '_')*
 pConid         =   gsym TkConid     ""        "?uc?"
 
 --- Integer ::= Integer10 | Integer8 | Integer16
@@ -349,4 +349,8 @@ pComma  = pSpec ','
 --- Semi ::= ';'
 pSemi   = pSpec ';'
 
-
+--- UpperChar ::= 'A'
+--- LowerChar ::= 'A'
+--- Char ::= 'A'
+--- Lower ::= 'A'
+--- Any ::= 'a'

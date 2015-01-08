@@ -147,7 +147,7 @@ pMeta :: AmpParser Meta
 pMeta = Meta <$> pKey_pos "META" <*> pMetaObj <*> pString <*> pString
  where pMetaObj = pSucceed ContextMeta -- for the context meta we don't need a keyword
 
---- PatternDef ::= 'PATTERN' ConceptName PatElems* 'ENDPATTERN'
+--- PatternDef ::= 'PATTERN' ConceptName PatElem* 'ENDPATTERN'
 pPatternDef :: AmpParser P_Pattern
 pPatternDef = rebuild <$> pKey_pos "PATTERN" <*> pConceptName   -- The name spaces of patterns, processes and concepts are shared.
                       <*> pList pPatElem
@@ -384,7 +384,7 @@ pGenDef           = rebuild <$> pKey_pos "SPEC"     <*> pConceptRef <* pKey "ISA
 -- The label 'onNameAddress' is used to refer to this identity.
 -- You may also use an expression on each attribute place, for example: IDENT onpassport: Person(nationality, passport;documentnr),
 -- which means that nationality<>nationality~ /\ passport;documentnr<>(passport;documentnr)~ |- I[Person].
---- Index ::= 'IDENT' Label ConceptRefPos Spec '(' IndSegmentList ')'
+--- Index ::= 'IDENT' Label ConceptRefPos '(' IndSegmentList ')'
 pIndex :: AmpParser P_IdentDef
 pIndex  = identity <$ pKey "IDENT" <*> pLabel <*> pConceptRefPos <* pSpec '(' <*> pList1Sep (pSpec ',') pIndSegment <* pSpec ')'
     where identity :: Label -> (P_Concept, Origin) -> [P_IdentSegment] -> P_IdentDef
@@ -467,7 +467,7 @@ pViewDef  = vd <$ (pKey "VIEW" <|> pKey "KEY") <*> pLabelProps <*> pConceptOneRe
                                   , obj_strs = []
                                   }
 
---- Interface ::= 'INTERFACE' ADLid 'CLASS'? (Conid | String) Params? InterfaceArgs? Roles? Key ':' Term SubInterface
+--- Interface ::= 'INTERFACE' ADLid 'CLASS'? (Conid | String) Params? InterfaceArgs? Roles? ':' Term SubInterface
 pInterface :: AmpParser P_Interface
 pInterface = lbl <$> (pKey "INTERFACE" *> pADLid_val_pos) <*>
                      (pMaybe $ pKey "CLASS" *> (pConid <|> pString)) <*> -- the class is an upper-case identifier or a quoted string
@@ -501,7 +501,7 @@ pInterface = lbl <$> (pKey "INTERFACE" *> pADLid_val_pos) <*>
           --- Roles ::= 'FOR' ADLidList
           pRoles  = pKey "FOR" *> pList1Sep (pSpec ',') pADLid
 
---- SubInterface ::= ('BOX' | 'ROWS' | 'COLS') BOX | 'INTERFACE' ADLid
+--- SubInterface ::= ('BOX' | 'ROWS' | 'COLS') Box | 'INTERFACE' ADLid
 pSubInterface :: AmpParser P_SubInterface
 pSubInterface = P_Box <$> (pKey_pos "BOX" <|> pKey_pos "ROWS" <|> pKey_pos "COLS" ) <*> pBox
                 <|> rebuild <$ pKey "INTERFACE" <*> pADLid_val_pos
@@ -509,6 +509,7 @@ pSubInterface = P_Box <$> (pKey_pos "BOX" <|> pKey_pos "ROWS" <|> pKey_pos "COLS
      rebuild (n,p) = P_InterfaceRef p n
 
 --- ObjDef ::= LabelProps Term SubInterface?
+--- ObjDefList ::= ObjDef (',' ObjDef)*
 pObjDef :: AmpParser P_ObjectDef
 pObjDef            = obj <$> pLabelProps
                          <*> pTerm            -- the context expression (for example: I[c])
@@ -520,7 +521,7 @@ pObjDef            = obj <$> pLabelProps
                                    , obj_msub = msub
                                    , obj_strs = strs
                                    }
---- Box ::= '[' pObjDefList ']'
+--- Box ::= '[' ObjDefList ']'
 pBox :: AmpParser [P_ObjectDef]
 pBox              = pSpec '[' *> pList1Sep (pSpec ',') pObjDef <* pSpec ']'
 
@@ -561,7 +562,7 @@ pPurpose          = rebuild <$> pKey_pos "PURPOSE"  -- "EXPLAIN" has become obso
                   PRef2Interface   <$ pKey "INTERFACE" <*> pADLid       <|>
                   PRef2Context     <$ pKey "CONTEXT"   <*> pADLid
 
---- pPopulation ::= 'POPULATION' RelSign 'CONTAINS' Content | 'POPULATION' ConceptName 'CONTAINS' '[' ValueList ']'
+--- Population ::= 'POPULATION' RelSign 'CONTAINS' Content | 'POPULATION' ConceptName 'CONTAINS' '[' ValueList ']'
 pPopulation :: AmpParser P_Population
 pPopulation = prelpop <$> pKey_pos "POPULATION" <*> pRelSign     <* pKey "CONTAINS" <*> pContent <|>
               pcptpop <$> pKey_pos "POPULATION" <*> pConceptName <* pKey "CONTAINS" <*> (pSpec '[' *> pListSep pComma pValue <* pSpec ']')
@@ -713,7 +714,7 @@ pTrm3  =  pTrm4 <??> (f <$>  (pKey_val_pos "/" <|> pKey_val_pos "\\" <|> pKey_va
 -}
 
 -- composition and relational addition are associative, and parsed similar to union and intersect...
---- Trm5 ((';' Trm5)+ | ('!' Trm5)+ | ('#' Trm5)+)?
+--- Trm4 ::= Trm5 ((';' Trm5)+ | ('!' Trm5)+ | ('#' Trm5)+)?
 pTrm4 :: AmpParser (Term TermPrim)
 pTrm4   = pTrm5 <??> (f PCps <$> pars PCps ";" <|> f PRad <$> pars PRad "!" <|> f PPrd <$> pars PPrd "#")
           where pars combinator operator
@@ -833,7 +834,6 @@ pValue  = pAtom <|> pConid <|> pVarid <|> pInteger <|> ((++)<$>pInteger<*>pConid
 pADLid :: AmpParser String
 pADLid            = pVarid <|> pConid <|> pString
 
---- ADLid ::= Varid | Conid | String
 pADLid_val_pos :: AmpParser (String, Origin)
 pADLid_val_pos    = pVarid_val_pos <|> pConid_val_pos <|> pString_val_pos
 
