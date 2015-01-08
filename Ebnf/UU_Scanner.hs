@@ -324,6 +324,7 @@ pSpec s        =   gsym TkSymbol    [s]       [s]
 pString, pExpl, pAtom, pInteger10, pVarid, pConid,
   pInteger :: IsParser p Token => p String
 --- String ::= '"' Any* '"'
+--- StringListSemi ::= String (';' String)*
 pString        =   gsym TkString    ""        ""
 --- Expl ::= '{+' Any* '-}'
 pExpl          =   gsym TkExpl      ""        ""
