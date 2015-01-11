@@ -258,7 +258,7 @@ pClassify = rebuild <$> pKey_pos "CLASSIFY"
                  g c = [c]
                  h cs = cs
 
---- RuleDef ::= 'RULE' (ADLid ':'?)? Rule Meaning* Message* Violation?
+--- RuleDef ::= 'RULE' (ADLid ':')? Rule Meaning* Message* Violation?
 pRuleDef :: AmpParser (P_Rule TermPrim)
 pRuleDef =  rebuild <$> pKey_pos "RULE"
                     <*> pMaybe (pADLid <* pKey ":" )
@@ -733,7 +733,7 @@ pTrm5  =  f <$> pList (pKey_val_pos "-") <*> pTrm6  <*> pList ( pKey_val_pos "~"
                 f ((_,orig):ms) pe ps   = let x=f ms pe ps in PCpl orig x     -- the type checker requires that the origin of x is equal to the origin of its complement.
                 f _ pe _                = pe
 
---- Trm6 ::= Relation | '(' Term ')'
+--- Trm6 ::= RelationRef | '(' Term ')'
 pTrm6 :: AmpParser (Term TermPrim)
 pTrm6  =  (Prim <$> pRelationRef)  <|>
           PBrk <$>  pSpec_pos '('  <*>  pTerm  <*  pSpec ')'
