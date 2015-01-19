@@ -5,14 +5,18 @@
 \dict{branching}{Branching is the duplication of an object under revision control so that modifications can happen in parallel along both branches}%
 \dict{merging}{The reintegration of a branch into the original code}%
 The code changes of this project will be done in a separate branch (\texttt{ABI\_Parser}) of the Ampersand GitHub repository (\texttt{AmpersandTarski/ampersand}).
-In the end of each iteration, the project members will evaluate whether the integration into the master branch is advised.
+The project team will work on a separate branch in parallel to the master branch of Ampersand.
+The client will limit all changes within the master branch as much as possible but urgent changes could occur, these changes need to be integrated in the project branch by the project team. 
+
+The project branch will only be merged with the master branch after the code is reviewed and accepted by the client.
+
 If so, the following steps will be taken:
 \begin{enumerate}
+	\item The customer will be informed of the release, including any other applicable information;
 	\item The code will be merged and tested in the master branch;
-	\item The customer will be informed, including any other applicable information;
 	\item A git pull request will be issued;
 	\item The customer should realize any complementary tests and accept the request;
 \end{enumerate}
 %
-It is important to note that any code developed in a iteration should be usable and integrated into the master branch.
+It is important to note that any code developed in a iteration should be usable and integrated into the project branch.
 If integration is not possible, the iteration can be considered failed.
