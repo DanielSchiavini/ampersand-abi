@@ -5,29 +5,37 @@
 
 \subsection{Software requirements, the problem statement}
 
-In 1976,  T. E. Bell investigated the domain of requirement engineering,\citeac{SoftReqProbs}, sponsored by the Ballistic Missile Advanced Technology Center with the goal to determine the magnitude and characteristics of requirement related problems in software engineering and to indicate what type of techniques could correct these issues. 
+In 1976,  Dr. Thomas E. Bell investigated the domain of requirement engineering \citeac{SoftReqProbs}, sponsored by the Ballistic Missile Advanced Technology Center with the goal to determine the magnitude and characteristics of requirement-related problems in software engineering and to indicate what type of techniques could correct these issues. 
 One of the main conclusions was that requirement errors were the most numerous and that these kind of errors are very time-consuming and, hence, costly to correct.
-In his conclusion,  T. E. Bel advises to use methods and techniques during the requirement engineering process to ensure consistency within and  between the requirements, such as the unique naming of objects and correct relations between the requirements themselves, in addition, he stressed that the applied methods must aid the verification and validation of the requirements.
+In his conclusion, Dr. Thomas E. Bel advises to use methods and techniques during the requirement engineering process to ensure consistency within and  between the requirements, such as the unique naming of objects and correct relations between the requirements themselves.
+Iin addition, he stressed that the applied methods must aid the verification and validation of the requirements.
  
-Although the research is ancient history from an IT point of view, the conclusion is actually still very relevant and therefore, methods and techniques to further improve the quality and consistency of the captured requirements are still a hot topic within the domain of `Requirement Engineering'.
+Although the research is ancient history from an IT point of view, the conclusion is actually still very relevant and therefore, methods and techniques to further improve the quality and consistency of the captured requirements are still a hot topic within the domain of requirement engineering.
 
-An important classification of requirements is made by  Prof.dr. Stef Joosten \citeac{Joosten_derivingfunctional} and Alex Borgida \citeac{JuretaBEM10}, into early phase requirements, the business requirements, and the late phase requirements, the functional specifications. 
+An important classification of requirements is made by  Prof.dr. Stef Joosten \citeac{Joosten_derivingfunctional} and Prof. dr. Alex Borgida \citeac{JuretaBEM10}, into early phase requirements (the business requirements), and the late phase requirements (the functional specifications). 
 
 \subsubsection{Formal functional specifications}
-The initial focus to tackle the requirments issue, in which the research still continuous after 30 years, was on the functional specifications by the introduction of formal methods for functional specifications,\citenac{Sommerville10}, which were based on a mathematical representation of the specifications resulting in the ability to analyze, validate and transform them into useful artifacts during the subsequent design and implementation phases. 
+The initial focus to tackle the requirements issue, in which the research still continuous after 30 years, was on the functional specifications by the introduction of formal methods for functional specifications \citenac{Sommerville10}, which were based on a mathematical representation of the specifications resulting in the ability to analyze, validate and transform them into useful artifacts during the subsequent design and implementation phases. 
 
-As described by  Luqi \& Goguen, J. A. , \citeac{LuqiGoguen1997}, these formal methods for functional specifications had a positive impact on the reliability of the software development process, specifically for the purpose of specification analysis, transformation and verification, \citeac{Clarke96formalmethods}, this  reflects  in the elaboration of several mature formal methods.
+As described by  Luqi \& Goguen, J. A. \citeac{LuqiGoguen1997}, these formal methods for functional specifications had a positive impact on the reliability of the software development process, specifically for the purpose of specification analysis, transformation and verification \citeac{Clarke96formalmethods}.
+This  reflects  in the elaboration of several mature formal methods.
 The formal methods are categorized into two domains:
 
+\dict{Z}{Formal specification notation zed}
+\dict{VDM}{Vienna Development Method}
+\dict{Larch}{Languages and Tools for Formal Specification}
+\dict{LOTOS}{Language Of Temporal Ordering Specification}
+\dict{RAISE}{Rigorous Approach to Industrial Software Engineering}
+
 \begin{description}
-	\item[Algebraic languages] describing the system in terms of types of date, mathematical operations on those date and their relationships, such as Z \citeac{Spivey89}, VDM \citeac{RISC3820} and Alloy \citeac{Jackson02}.
+	\item[Algebraic languages] describing the system in terms of types of data, mathematical operations on those data and their relationships, such as Z \citeac{Spivey89}, VDM \citeac{RISC3820} and Alloy \citeac{Jackson02}.
 	\item[Model based languages] using mathematical sets and sequences to express the system specification as a system state model such as OBJ \citenac{Goguen93introducingobj}, Larch \citenac{Guttag93larch:languages} and LOTOS \citeac{BolognesiB87}.
 	\item[Hybrid languages] combining features of both algebraic as model-based languages like RAISE \citeac{George03thelogic} and CafeOBJ, an enhancement of the OBJ language \citeac{DiaconescuFO03}.
 \end{description}
 
 \subsubsection{Business requirements}
-
-Although the positive impact of the formal specification methods, it was recognized that these techniques were not sufficient. Concisely summarized by Eric S. K. Yu and John Mylopoulos \citenac{Understandingwhys}, the formal specification methods focus on the `whats' and the  `hows' of the desired system without an understanding of the `whys' behind them. 
+\dict{RML}{Requirement Modeling Language}
+Although the positive impact of the formal specification methods, it was recognized that these techniques were not sufficient. Concisely summarized by Prof. dr. Eric S. K. Yu and Prof. dr. John Mylopoulos \citenac{Understandingwhys}, the formal specification methods focus on the `whats' and the `hows' of the desired system without an understanding of the `whys' behind them. 
 
 Within the social environment in which a software system will be introduced, several stakeholders have different goals,  business requirements, and based on these, they will express, often imprecise and inconsistent, expectations. Only by the correct understanding of their business requirements, to a feasible extend, the requirement engineers will truly feel the `whys' needed to derive the correct `whats' and `hows' to support these different goals.
 
@@ -38,6 +46,14 @@ Several early phase requirement modeling languages, RMLs, were introduced and ty
 	\item[Methods,] sometimes automated, to verify consistency and to perform additional analysis to verify if the stated requirements will satisfy the business expectations.
 \end{description}
 
+\noindent
+\dict{CML}{Conceptual Modeling Language}
+\dict{Telos }{From the Greek word which means end; the object aimed at in an effort; purpose}
+\dict{KAOS}{Knowledge Acquisition in autOmated Specification}
+\dict{i*}{i star}
+\dict{COTS}{Commercial Off The Shelf}
+
+
 Early RMLs such as RML\citenac{RMLRevisited}, provided initial methods but suffered from drawbacks such as extensibility as the provided ontologies were rather fixed meaning that no new notions on par with the existing instances could be addressed. CML \citenac{CML} , which evolved to Telos \citeac{mylopoulos90telos}, contained already additional flexibility. 
 
 KAOS \citeac{KAOS} introduced the notion of `stakeholder goal' where i* \citeac{yu97a} even differentiated between independent and interrelated, joint goals.
@@ -45,14 +61,14 @@ Further research to introduce the concept of goal priorities is ongoing for whic
 
 \subsubsection{Limitations and frequent issues}
 \label{sec:drawbacks}
-Besides the significant improvements and their positive impact in software engineering projects, several striking drawbacks related to the use of formal methods are identified \citeac{Joosten_derivingfunctional} \citeac{LuqiGoguen1997}:
+Besides the significant improvements and their positive impact in software engineering projects, several striking drawbacks related to the use of formal methods are identified \citeac{Joosten_derivingfunctional, LuqiGoguen1997}:
 \begin{description}
 	\item[Communication] Communication between the business users and the requirement engineers based on the mathematical model is difficult as the business users are not used with mathematical notations. Although the functional specifications are analyzed to make sure they are consistent, it still offers no guarantee that the business requirements are consistent and transformed correctly into functional specifications as they cannot be correctly understood by the end users.
 	\item[Typical experience and knowledge of developers] Software developers are not used to develop based on mathematical models, or even lack the skills of higher mathematics. It requires extensive training for these developers to understand the mathematical models and to develop efficiently in these kind of software projects.
-	\item[Theoretical approaches] Many formal methods are theoretical and their appliance is demonstrated by means of very simplified example but when they are effectively used in practice, the gap between theoretical specification and practical coding appears to be problematic, not to say impossible.
+	\item[Theoretical approaches] Many formal methods are theoretical and their appliance is demonstrated by means of very simplified example, but when they are effectively used in practice, the gap between theoretical specification and practical coding appears to be problematic, not to say impossible.
 	\item[Agile development] Building a formal specification of a complete system is sometimes perceived as not flexible towards agile development techniques in which a system is engineered incrementally. 
 	\item[Package based development] Many large software projects nowadays are using package based, COTS, solutions which are configured to fit the needs of the users. In such projects this package is mostly kept as standard as possible, meaning that no or little development is added and the functionalities of the package are used as implemented. In most commercial packages, no specific formal information is provided that allow the use of formal verification and validation techniques. The same goes for cloud solutions which are offered as-is without any, or only very limited, room for changes.
-	\item[From business requirements towards functional requirements]Early and late phase requirement methods tend to focus on their specific domain, business of funcitonal requirements, not many methods provide a means to verify the translation from business to functional requirements.
+	\item[From business requirements towards functional requirements]Early and late phase requirement methods tend to focus on their specific domain, business of functional requirements, not many methods provide a means to verify the translation from business to functional requirements.
 	\item[Supporting tools] Most formal methods don't have supporting tools making it very cumbersome to use them in larger scaled projects, even when there are supporting tools available, they often lack a suitable user interfaces due to which the practical use is threatened.
 
 \end{description}
@@ -60,53 +76,58 @@ Besides the significant improvements and their positive impact in software engin
 
 \subsection{The goals of the Ampersand Methodology}
    
-The Ampersand Methodology was founded in 2007 by the inventor Prof.dr. Stef Joosten with the vision to provide an answer to several of the main drawbacks listed in section \autoref{sec:drawbacks} of using formal techniques  in software engineering. 
+The Ampersand Methodology was founded in 2007 by the inventor Prof.dr. Stef Joosten  \citeac{Joosten_derivingfunctional}, with the vision to provide an answer to several of the main drawbacks of using formal techniques  in software engineering (listed in section \autoref{sec:drawbacks}). 
 The Ampersand Methodology is  developed to provide a method to unify the informal process of capturing the needs of users with the formal process of specifying an information system and to provide a formal translation method between both processes, including the necessary tools to ensure that the methodology is useful in real life projects.
-citeac{Joosten derivingfunctional}. Special attentions is given to the transformation and verification of the business requirements into functional specifications.
+Special attention is given to the transformation and verification of the business requirements into functional specifications.
 
-Bottom line, the methodology presents the means to structure and present requirements in such a way that they can be validated by end-users as well as be interpreted unambiguously by system engineers after an automated transformation into functional specifications and design artifacts while the consistency between both is guaranteed..
+Bottom line, the methodology presents the means to structure and present requirements in such a way that they can be validated by end-users as well as be interpreted unambiguously by system engineers after an automated transformation into functional specifications and design artifacts while the consistency between both is guaranteed.
 
 The Ampersand Methodology addresses several goals to achieve this vision:
 \begin{description}
 	\item[Communication]  To assure that the stakeholders can correctly understand and validate their needs, the requirements must be documented in a natural language to enable them, without any requirement engineering knowledge, to validate the formal system requirements. On the other hand, the requirements must be structured into formal  functional specifications to make them useful during the actual software development phase and to benefit from the advantages of formal methods. 
 	\item[Completeness]A software system in which not all requirements are supported is useless. The Ampersand language must be fully declarative, meaning that all the requirements must be supported in the method to assure that all business requirements, relevant to the subsequent software system, are accommodated correctly in the system specification.
-	\item[Consistency]One of the main goals of the Ampersand Methodology is to guarantee consistency, each specified requirement is must be applicable, and respected, to all processes in the context of this requirement. The methodology needs to provide the means to assure this consistency.
-	\item[Traceability] The requirements must be traceable in such a way that end-users can trace  functions back to the stated business requirements allowing them to fully understand to reason why these functions are defined.
+	\item[Consistency]One of the main goals of the Ampersand Methodology is to guarantee consistency, each specified requirement must be applicable, and respected, to all processes in the context of this requirement. The methodology needs to provide the means to assure this consistency.
+	\item[Traceability] The requirements must be traceable in such a way that end-users can trace  functions back to the stated business requirements, allowing them to fully understand to reason why these functions are defined.
 	\item[Supporting tools] In order to facilitate the adoption of the Ampersand Methodology outside an academic environment, Prof.dr. Stef Joosten defined the additional goal that the Ampersand Methodology must be accompanied with supporting tools to support the requirement engineers and this by creating design artifacts to be used by the software developers.
 \end{description}
 
 \subsection{The Ampersand approach}
-The Ampersand Methodology introduces a specific approach how to achieve the specified goals. The Ampersand Methodology can support different languages, a specific instance called `A Description Language', ADL, is implemented to support the Ampersand Methodology, the reasoning used to explain the achievement of the different goals is based on ADL.
+The Ampersand Methodology introduces a specific approach how to achieve the specified goals. The Ampersand Methodology can support different languages, a specific instance called `Ampersand Definition Language', ADL, is implemented to support the Ampersand Methodology.
+The reasoning used to explain the achievement of the different goals is based on ADL.
 
 \subsubsection{Communication}
 
-One of the key differentiators is that the business requirements are presented towards the stakeholder in natural language while the system engineers can use functional specifications which are automatically transformed from the business requirements assuring the functional specification is consistent with the business requirements.
+One of the key differentiators of this approach is that the business requirements are presented towards the stakeholder in natural language while the system engineers can use functional specifications which are automatically transformed from the business requirements, assuring the functional specification is consistent with the business requirements.
 
-The innovative aspect of the Ampersand methodology to achieve this goal is that the business requirements are  represented as `business rules' using relational algebra. A business rule must be seen as a business requirement in the form of an invariant to be satisfied by the business. The business rules are transformed in an automated way by an accompanying ADL tool, assuring the correctness of the functional specification based on the relational algebra of the business rules. Once the functional specifications are generated, the ADL tool will transform them back into the business rules for business user validation. When the re-translated requirements are then still correct for the end users, the system engineers have the assurance that the functional specification are fully consistent with the business requirements. 
+The innovative aspect of the Ampersand methodology to achieve this goal is that the business requirements are  represented as `business rules' using relational algebra. A business rule must be seen as a business requirement in the form of an invariant to be satisfied by the business. The business rules are transformed in an automated way by an accompanying ADL tool, assuring the correctness of the functional specification based on the relational algebra of the business rules. Once the functional specifications are generated, the ADL tool will transform them back into the business rules for business user validation. When the re-translated requirements are then still correct for the end users, the system engineers have the assurance that the functional specifications are fully consistent with the business requirements. 
 
-The use of natural language is further facilitated by the fact that it is not limitied to a single specific language, it supports any language that satisfies a predefined set of axioms that can be used, making it possible to address each business user in his own language.
+The use of natural language is further facilitated by the fact that it is not limited to a single specific language, it supports any language that satisfies a predefined set of axioms that can be used, making it possible to address each business user in his own language.
 
 \subsubsection{Completeness}
-Initial methodologies to define business requirements lacked the power to add new notions besides the pre)defined instances. ADL is designed as a purely declarative language to avoid this drawback. ADL features user specified rules, in relational algebra, design patterns, defined as sets of rules, contexts in which rules are applied and a signaling construct. In ADL, rules are specified without specific pre-defined actions to avoid that they become too narrow compromising the declarative aspect of ADL.
+Initial methodologies to define business requirements lacked the power to add new notions besides the pre-defined instances. ADL is designed as a purely declarative language to avoid this drawback. ADL features user specified rules, in relational algebra, design patterns, defined as sets of rules, contexts in which rules are applied and a signaling construct. In ADL, rules are specified without specific pre-defined actions to avoid that they become too narrow, compromising the declarative aspect of ADL.
 
 \subsubsection{Consistency}
-Expressing each business requirement as a business rule using relational algebra provides a mathematical foundation to check all rules against each other and to identify inconsistency between two or more business rules.  Checking each rule on his consistency towards the full set of defined business rules manually is quite demanding and would compromise the efficiency of the method on real life projects, the consistency check is therefore automated by the supporting tool.
+Expressing each business requirement as a business rule using relational algebra provides a mathematical foundation to check all rules against each other and to identify inconsistency between two or more business rules.  Checking each rule on his consistency towards the full set of defined business rules manually is quite demanding and would compromise the efficiency of the method on real life projects. 
+The consistency check is therefore automated by the supporting tool.
 
 \subsubsection{Traceability}
 Business requirements have a one-to-one relationship with business rules offering traceability back from a specific rule, specification, to the business requirement making it possible for the end-user to correctly identify the reasons why the business rule was identified.
 
 \subsubsection{Supporting tools}
-The practical use of the Ampersand Approach is supported by a tool built in the functional programming language Haskell, this tool produces of a wide range of fucnitonalities and design artifacts to support the validation, consistency checks and the subsequent software development steps:
+The practical use of the Ampersand Approach is supported by a tool built in the functional programming language Haskell. 
+This tool produces a wide range of functionalities and design artifacts to support the validation, consistency checks and the subsequent software development steps:
 \begin{description}
-	\item[Business rules and consistency issues] The inputted business rules in ADL are compiled and typed checked, this is realized by using the Swierstra's combinator package for the compiler \citeac{uu-doc}  and the AG-preprocessor by Dijkstra and Swiestra for the type-checker \citenac{MiddelkoopDS10}.
+	\item[Business rules and consistency issues] The inputted business rules in ADL are compiled and typed checked.
+	This is realized by using the Swierstra's combinator package for the compiler \citeac{uu-doc}  and the AG-preprocessor by Dijkstra and Swiestra for the type-checker \citenac{MiddelkoopDS10}.
 	\item[Data model]  Class diagrams and entity-relationships are created using the the GraphViz package \citenac{gansner2006drawing}. 
-	\item[Service catalogue] Al possible services on the defined classes and relationships, such as create, get, update and delete,  are specified formally. This formal representation together with the pre- and postconditions of the service make it possible that several developers can program the services independently of each other. It is up to the requirement engineers to determine which services that need to be implemented.
-	\item[Function point analysis] A function point analysis providing an insight on the complexity of the to be built system is generated according to the IFPUG guidelines \url{http://www.ifpug.org/}. This degree of complexity can be used to estimate the remaining system development effort taking into account the impact of the Ampersand tool as an accelerator
-	\item[Software prototype] A remarkable aspect of the Ampersand tool is that it makes it possible to generate a working prototype. The prototype is generated as a web application and is using a MySQL database.
+	\item[Service catalogue] All possible services on the defined classes and relationships, such as create, get, update and delete,  are specified formally. This formal representation together with the pre- and postconditions of the service make it possible that several developers can program the services independently of each other. 
+	It is up to the requirement engineers to determine which services that need to be implemented.
+	\item[Function point analysis] A function point analysis providing an insight on the complexity of the system to be built  is generated according to the IFPUG guidelines (\url{http://www.ifpug.org/}). This degree of complexity can be used to estimate the remaining system development effort taking into account the impact of the Ampersand tool as an accelerator
+	\item[Software prototype] A remarkable aspect of the Ampersand tool is that it makes it possible to generate a working prototype. The prototype is generated as a web application and uses a MySQL database.
 \end{description}
  
 \subsubsection{Training}
-Although the Ampersand Methodology, including ADL, is not yet widely adopted in the domain of requirement engineering, the methodology, including the supporting tools, is educated by the Open University of the Netherlands, course `Ontwerpen met bedrijfsregels'. a specific site is dedicated to the methodology is as well for self-tuition or co-development purposes.
+Although the Ampersand Methodology, including ADL, is not yet widely adopted in the domain of requirement engineering, the methodology, including the supporting tools, is educated by the Open University of the Netherlands, course `Ontwerpen met bedrijfsregels'. A specific site is dedicated to the methodology, as well for self-tuition or co-development purposes.
 
 \noindent
 
