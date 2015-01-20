@@ -4,13 +4,17 @@
 call:cleanup
 
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
-pdflatex Planning
-pdflatex Planning
-:: bibtex  Planning
+pdflatex Planning>nul
+bibtex  ac
+bibtex  nac
+pdflatex Planning>nul
+pdflatex Planning>nul
 makeglossaries Planning
-pdflatex Planning
-pdflatex Planning
-:: (cat Planning.log | grep -i Warn)
+pdflatex Planning>nul
+find "Warning" Planning.log
+where bibtex>nul         || echo Error: Could not find bibtex.exe in the PATH
+where makeglossaries>nul || echo Error: Could not find makeglossaries.exe in the PATH
+pause
 
 :: Run Cleanup
 call:cleanup
@@ -25,6 +29,5 @@ call:cleanup
 :: del /q *.blg
 :: del /q *.brf
 del /q *.toc
-del /q *.glsdefs
 
 goto:eof

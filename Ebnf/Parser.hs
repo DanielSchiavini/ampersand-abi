@@ -52,6 +52,7 @@ opchars :: [Char]
 opchars           = nub (sort (concat keywordsops))
 
 --to parse files containing only populations
+--- Populations ::= Population+
 pPopulations :: AmpParser [P_Population]
 pPopulations = pList1 pPopulation
 
