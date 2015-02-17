@@ -5,11 +5,17 @@
 \usepackage[top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
 \usepackage[affil-it]{authblk}
 \usepackage{lipsum}
+\usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{graphicx}
 \usepackage[table,xcdraw]{xcolor}
 \usepackage{longtable}
 \usepackage{multicol}
+
+%citations
+\usepackage{multibib}
+\newcites{ac}{Academic references}
+\newcites{nac}{Other references}
 
 % code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
 \usepackage[acronym,toc]{glossaries}
@@ -22,15 +28,16 @@
 
 % Here we set up the header, meta-information and front matter
 %\date{November 3, 2014}      %// Today's date will appear when this is commented out.
-\newcommand{\version}{0.1}
+\newcommand{\version}{Version 0.1}
 
 % title page
-\author{Maarten Baertsoen, Evergem, Belgium \\
-	Daniel S. C. Schiavini, Utrecht, Netherlands\\~}
+\author{
+	Daniel S. C. Schiavini, Utrecht, Netherlands\\
+	Maarten Baertsoen, Evergem, Belgium \\~}
 \affil{Open Universiteit Nederland, faculteit Informatica\\
-	T61327 - Afstudeerproject bachelor informatica\\
+	Afstudeerproject T61327\\
 	~\\\normalfont
-	Version \version}
+	\version}
 \title{Useful feedback in the\\ Ampersand parser}
 \subtitle{Bruikbare feedback in de Ampersand parser \\
 	~\\
@@ -51,6 +58,9 @@
 \ihead{M. Baertsoen and D.S.C. Schiavini}
 \ohead{Useful feedback in the Ampersand parser}
 \cfoot{\pagemark}
+
+% URL's
+\renewcommand*{\UrlFont}{\footnotesize\ttfamily}
 
 % hyphenation
 \hyphenation{
@@ -81,6 +91,6 @@
 \input{Results/Results}
 \input{Assessment/Assessment}
 \input{Conclusion/Conclusion}
-\newpage
+
 \input{Appendices/Appendices}
 \end{document}

@@ -11,14 +11,14 @@ MaxPos.x=-1
 MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
-NormalPos.right=1176
+NormalPos.right=1134
 NormalPos.bottom=417
 Class=LaTeXView
 Document=Thesis.tex
 
 [Frame0_View0,0]
-TopLine=66
-Cursor=2006
+TopLine=0
+Cursor=0
 
 [Frame1]
 Flags=0
@@ -29,7 +29,7 @@ MaxPos.x=-1
 MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
-NormalPos.right=1176
+NormalPos.right=1134
 NormalPos.bottom=417
 Class=LaTeXView
 Document=Appendices\Bibliography.tex
@@ -47,16 +47,16 @@ MaxPos.x=-1
 MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
-NormalPos.right=1176
+NormalPos.right=1134
 NormalPos.bottom=417
-Class=BibTeXView
-Document=References.bib
+Class=LaTeXView
+Document=..\..\..\curriculum\Curriculum.tcp
 
 [Frame2_View0,0]
 TopLine=0
-Cursor=162
+Cursor=0
 
 [SessionInfo]
 FrameCount=3
-ActiveFrame=0
+ActiveFrame=3
 
