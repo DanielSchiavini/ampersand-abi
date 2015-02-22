@@ -6,14 +6,18 @@ Business rules promise to improve the provisioning of information within organiz
 However, there used to be a large difference between the rules as seen by the Business Rules Manifesto and the possibilities provided by software.
 With this issue in mind, the Ampersand approach was developed, giving focus to rules formulated in agreements instead of actions.
 
-In order to put this approach into practice, the Ampersand compiler has been created.
+Ampersand is an approach for the use of business rules to define the business processes.
+Users describe the business rules in a formal language (ADL), and Ampersand compiles those rules into functional specification, documentation and working software
+prototypes.
+
 Over the years, the compiler has been extensively used, extended and improved.
 However, the parser component has never been carefully analyzed for improvements and better error messages.
+The main objective of this project is thus to improve the feedback and maintainability of the Ampersand parser.
 
-In this project, we have researched how to improve the error messages in the Ampersand compiler.
-While Maarten Baetsoen investigated the properties of good error messages, Daniel Schiavini investigated the proper way of implementing a parser in Haskell.
+We have therefore researched how to improve the error messages in the Ampersand compiler.
+While Maarten Baetsoen investigated the Ampersand approach and the domain of business rules, Daniel Schiavini investigated the proper way of implementing a parser in Haskell and the properties of good error messages.
 By understanding what kind of messages the Ampersand users expect, we have developed a new parser for Ampersand based on the Parsec library.
 This new parser improves both the error messages and the software properties related to readability, extensibility and maintainability.
-Besides the parser itself, a suite of automated tests has been developed to check the parsing results.
+Besides the parser itself, a suite of automated tests has been developed to assure the quality of the parsing results.
 
 \end{abstract}
