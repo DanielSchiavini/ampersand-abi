@@ -21,3 +21,4 @@
 *.lot
 /Parsing/*.tps
 /Parsing/Appendices/*.tmp
+*.tps
