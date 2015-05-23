@@ -20,7 +20,7 @@ pause
 call:cleanup
 
 :: Cleanup Function
-:cleanup  
+:cleanup
 :: del /q *.dvi
 :: del /q *.out
 :: del /q *.log
