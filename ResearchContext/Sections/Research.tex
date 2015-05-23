@@ -12,11 +12,14 @@ The Ampersand project has the ambition to offer a holistic methodology, includin
 A new way of business requirements gathering, using natural language, is introduced by Ampersand.
 %TODO: We have educational users too!
 In this context, the Ampersand users are typically business analysts who don't necessarily have programming experience.
-The goal of these users is to specify, sometimes complex, business rules in the most efficient way possible while still avoiding ambiguity.
+The goal of these users is to specify, often complex, business rules in the most efficient way possible while still avoiding ambiguity.
 To achieve their goals, the strictness of formal languages are a `necessary evil'.
 Therefore, syntax errors can be very frustrating for the users.
 
-Andrei Lapets \citeac{lapets2009improving} concludes that user accessibility has not been a priority in the design of formal verification systems.
+Experiences within the Open Universiteit have shown that business analysts need roughly 100 hours to learn how to formalize business rules using Ampersand \citeac{joosten2007deriving}.
+The learning costs can be thus quite high for organizations and students, and any improvement that can be made in the accessibility of Ampersand is welcome.
+
+Andrei Lapets \citeac{lapets2009improving} concludes that user accessibility has not been a priority in the design of most formal verification systems.
 He concludes that the syntax is often unfamiliar and/or introduces an entire new environment the user has to learn how to work with.
 Finally, he points out that formal systems often offer a bottom-up structure that forces users to implement the complete set of assumptions in their research domain; this is made worse by the fact that usually few external libraries are available.
 
@@ -24,6 +27,20 @@ There are several measures that can be taken in order to improve the accessibili
 For example, the syntax should be familiar, simple and concrete \citeac{lapets2009improving}.
 However, this project does not have any influence in the syntax.
 The syntax of the ADL language is a given, so our influence is constrained to better user errors and development maintainability.
+
+\dict{IDE}{Integrated development environment}
+Pim Bos \citeac{bos2013bedrijfsregels} made a comparison between the tools for semantic web and Ampersand.
+He concludes that the tools (e.g. script editors or an IDE) for supporting the development of Ampersand projects are lacking.
+The fact that the ADL-compiler is currently the only feedback tool for users, stresses how important the feedback from the compiler is important.
+
+Another issue named by Bos is the fact that the Ampersand user base is small.
+A large user base is important for organizations using the tool, since they need to find specialists to implement and maintain the system.
+It is also important for students and researchers, who may have difficulty finding peers to support and review their work.
+Hopefully a better user feedback may also facilitate a larger user base.
+
+The issues related with the lack of libraries and the bottom-up approach are named by both Lapets \citeac{lapets2009improving} and Bos \citeac{bos2013bedrijfsregels}.
+To address this problem the institute Informatiegilde has been created \citeac{foutvrije-specificaties}.
+This institute aims to organize an open-source repository of rules that can be used by anyone.
 
 \subsection{Parsing errors}
 Although the new Ampersand parser has no influence on the research for better user feedback in parsers, it is important to identify this context because it is of great importance for the project.
