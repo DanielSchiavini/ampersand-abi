@@ -2,34 +2,36 @@
 
 \section{Short research}
 \label{sec:research}
-By investigating the requirements defined in the project plan \citenac{plan}, we identify here two contexts in which the new Ampersand parser is implemented.
+By investigating the requirements defined in the project planning \citenac{plan}, we identify here two contexts in which the new Ampersand parser is implemented.
 First, we identify the Ampersand context, thus the research for the formal definition of business rules and the generation of documentation and software based  on it.
 Second, we identify the parser context, thus the research for better user feedback in parsers.
 In the following subsections each of the two contexts are described, including our findings during the literature research.
 
-\subsubsection{Business rules}
-%todo: Reformulate this subsection
+\subsection{Ampersand}
 The Ampersand project has the ambition to offer a holistic methodology, including supporting tools, to support organizations during a software development project.
 A new way of business requirements gathering, using natural language, is introduced by Ampersand.
+%TODO: We have educational users too!
 In this context, the Ampersand users are typically business analysts who don't necessarily have programming experience.
-The goal of these users is to specify, sometimes complex, business rules in the most efficient way possible while still avoiding ambiguity. To achieve their goals, the strictness of formal languages are a `necessary evil'. Therefore, syntax errors can be very frustrating for the users.
+The goal of these users is to specify, sometimes complex, business rules in the most efficient way possible while still avoiding ambiguity.
+To achieve their goals, the strictness of formal languages are a `necessary evil'.
+Therefore, syntax errors can be very frustrating for the users.
 
-In this short research, we will investigate how improving syntax errors in Ampersand may help the tool to achieve its goals of becoming the groundbreaking formal methodology of the future.
-
-%TODO: move the text below
 Andrei Lapets \citeac{lapets2009improving} concludes that user accessibility has not been a priority in the design of formal verification systems.
 He concludes that the syntax is often unfamiliar and/or introduces an entire new environment the user has to learn how to work with.
 Finally, he points out that formal systems often offer a bottom-up structure that forces users to implement the complete set of assumptions in their research domain; this is made worse by the fact that usually few external libraries are available.
 
-The syntax should be familiar, simple and concrete \citeac{lapets2009improving}.
+There are several measures that can be taken in order to improve the accessibility.
+For example, the syntax should be familiar, simple and concrete \citeac{lapets2009improving}.
+However, this project does not have any influence in the syntax.
+The syntax of the ADL language is a given, so our influence is constrained to better user errors and development maintainability.
 
-\subsubsection{Parsing errors}
+\subsection{Parsing errors}
 Although the new Ampersand parser has no influence on the research for better user feedback in parsers, it is important to identify this context because it is of great importance for the project.
 Our literature research was focused on the error messages for parsers implemented in Haskell, and then mainly the LL($k$) parsers built with the Parsec library, which was chosen during our domain and technique research \citenac{parsing}.
 
 Parsec has extensive error messages; giving position, unexpected input, expected productions and general user messages.
 The error messages are given in terms of high-level grammar productions and can be localized for different (natural) languages \citeac{parsec-fast}.
-Special care must be taken when using backtracking (the $try$-function) in the parsec library, as it may negatively influence the error messages generated \citenac{try-harmful} \citeac{parsec}.
+Special care must be taken when using backtracking (the $try$-function) in the parsec library, as it may negatively influence the error messages generated \citeac{parsec}\citenac{try-harmful}.
 
 Swierstra and Duponcheel \citeac{swierstra1996deterministic} describe how automatic error correction can be implemented.
 However, the shortcomings of error correction have been described in our techniques research \cite{parsing} so this possibility is not used in the new Ampersand parser.
