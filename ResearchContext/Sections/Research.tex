@@ -13,17 +13,19 @@ A new way of business requirements gathering, using natural language, is introdu
 We define the Ampersand approach by the Ampersand Methodology including the corresponding tools to create design artifacts and working software prototypes.
 
 \subsubsection{Rule based design}
-
 One of  the objectives of Ampersand is to bridge the gap between business analysts and system designers using natural language.
 This objective is part of a general research context describing information systems based on business rules.
 
-Kestutis Kapocius and Tomas Danikauskas \citeac{kapoc353} outline the use of an Output Driven Requirements Specification Method, ODRES, in combination with a Business Rules, BR, approach. 
-In this approach, the BR approach formulates business rules in natural language using the Business Rules Solution, BRS, RuleSpeak model, Ronald Ross  \citeac{RuleSpeak}.
+\dict{ODRES}{Output Driven Requirements Specification Method}%
+\dict{BR}{Business Rules}%
+\dict{BRS}{Business Rules Solution}%
+Kęstutis Kapočius and Tomas Danikauskas \citeac{kapoc353} outline the use of an Output Driven Requirements Specification Method (ODRES), in combination with a Business Rules (BR), approach. 
+The BR approach formulates business rules in natural language using the Business Rules Solution (BRS), a RuleSpeak model by Ronald Ross \citeac{RuleSpeak}.
 %TODO: good reference to add of RuleSpeak.
 The Ampersand Language, describing the rules and syntax, can be seen as a formalization of the RuleSpeak guidelines and best practices.
 
 \subsubsection{Ampersand target group context}
-The Ampersand approach currently has 2 target groups: business analysts, in a commercial context, and students, in an educational context.
+The Ampersand approach currently has 3 target groups: business analysts, in a commercial context, and researchers and students, in an academic context.
 
 In the commercial context, the Ampersand users are typically business analysts who don't necessarily have programming experience.
 The goal of these users is to specify, often complex, business rules in the most efficient way possible while still avoiding ambiguity.
@@ -33,19 +35,22 @@ Therefore, syntax errors can be very frustrating for the users.
 Experiences within the Open Universiteit have shown that business analysts need roughly 100 hours to learn how to formalize business rules using Ampersand \citeac{joosten2007deriving}.
 The learning costs can be thus quite high for organizations and students, and any improvement that can be made in the accessibility of Ampersand is welcome.
 
-In the educational context, the Ampersand Users are students focusing on the domain of Rule Based Design. 
+In the academic context, Ampersand users are either the researchers who are developing the tool or students focusing on the domain of Rule Based Design. 
 Within the course assignments, the students must check the completeness and consistency of their rule sets using Ampersand. 
- 
-Lex Wedemeijer \citeac{CSERC2013_Wedemijer} states that the instructional software must be powerful, yet basic.
-The advanced features, offered to professional users, is not needed for students, moreover, the usage of a rich modeling features has a negative impact on the students learning curve.
+
+Lex Wedemeijer \citeac{CSERC2013_Wedemeijer} states that the instructional software must be powerful, yet basic.
+The advanced features, offered to advanced users, are not needed for students.
+Moreover, the usage of rich modeling features has a negative impact on the students learning curve.
 The conclusion is made by Lex Wedemeijer that Ampersand may not be the perfect tool to support these student due to the richness of the language.
 A more straightforward language, referred to as the Essential Language, is proposed, with clear and unambiguous notations, which is more suited to support students in the domain of Rule Based Design.
 
-Providing a clearer error feedback in Ampersand does not lower the hurdle of the syntax richness, it is however a step in the good direction to better support the students. 
-An interesting next step is the possibility to re-use the Ampersand vision and tools to support the easier to learn syntax of The Essential Language. 
-To options to realize the re-use of Ampersand, is to simplify Ampersand towards the Essential Language or to implement a translator between both syntaxes.
-Given the similarities between both languages, the translator seems the best approach, additional research is however needed to confirm this statement.
+Providing a clearer error feedback in Ampersand does not lower the hurdle of the syntax richness.
+It is however a step in the good direction to better support the students. 
+An interesting next step is the possibility to re-use the Ampersand vision and tools to support the easier to learn syntax of this Essential Language.
+Two options to realize the re-use of Ampersand, are to either simplify Ampersand towards the Essential Language or to implement a translator between both syntaxes (i.e. an alternative parser).
+Given the similarities between the languages, the translator seems to be the best approach, additional research is however needed to confirm this statement.
 
+\subsubsection{Formal systems}
 Andrei Lapets \citeac{lapets2009improving} concludes that user accessibility has not been a priority in the design of most formal verification systems.
 He concludes that the syntax is often unfamiliar and/or introduces an entire new environment the user has to learn how to work with.
 Finally, he points out that formal systems often offer a bottom-up structure that forces users to implement the complete set of assumptions in their research domain; this is made worse by the fact that usually few external libraries are available.
@@ -58,7 +63,7 @@ The syntax of the ADL language is a given, so our influence is constrained to be
 \dict{IDE}{Integrated development environment}
 Pim Bos \citeac{bos2013bedrijfsregels} made a comparison between the tools for semantic web and Ampersand.
 He concludes that the tools (e.g. script editors or an IDE) for supporting the development of Ampersand projects are lacking.
-The fact that the ADL-compiler is currently the only feedback tool for users, stresses how important the feedback from the compiler is important.
+The fact that the ADL-compiler is currently the only feedback tool for users, stresses how important the feedback from the compiler is.
 
 Another issue named by Bos is the fact that the Ampersand user base is small.
 A large user base is important for organizations using the tool, since they need to find specialists to implement and maintain the system.
@@ -76,7 +81,7 @@ Our literature research was focused on the error messages for parsers implemente
 
 Parsec has extensive error messages; giving position, unexpected input, expected productions and general user messages.
 The error messages are given in terms of high-level grammar productions and can be localized for different (natural) languages \citeac{parsec-fast}.
-Special care must be taken when using backtracking (the $try$-function) in the parsec library, as it may negatively influence the error messages generated \citeac{parsec}\citenac{try-harmful}.
+Special care must be taken when using backtracking (the $try$-function), as it may negatively influence the error messages generated \citeac{parsec}\citenac{try-harmful}.
 
 Swierstra and Duponcheel \citeac{swierstra1996deterministic} describe how automatic error correction can be implemented.
 This automatic error correction was used in the previous Ampersand parser.
