@@ -12,6 +12,17 @@ The Ampersand project has the ambition to offer a holistic methodology, includin
 A new way of business requirements gathering, using natural language, is introduced by Ampersand.
 We define the Ampersand approach by the Ampersand Methodology including the corresponding tools to create design artifacts and working software prototypes.
 
+\subsubsection{Rule based design}
+
+One of  the objectives of Ampersand is to bridge the gap between business analysts and system designers using natural language.
+This objective is part of a general research context describing information systems based on business rules.
+
+Kestutis Kapocius and Tomas Danikauskas \citeac{kapoc353} outline the use of an Output Driven Requirements Specification Method, ODRES, in combination with a Business Rules, BR, approach. 
+In this approach, the BR approach formulates business rules in natural language using the Business Rules Solution, BRS, RuleSpeak model, Ronald Ross  \citeac{RuleSpeak}.
+%TODO: good reference to add of RuleSpeak.
+The Ampersand Language, describing the rules and syntax, can be seen as a formalization of the RuleSpeak guidelines and best practices.
+
+\subsubsection{Ampersand target group context}
 The Ampersand approach currently has 2 target groups: business analysts, in a commercial context, and students, in an educational context.
 
 In the commercial context, the Ampersand users are typically business analysts who don't necessarily have programming experience.
@@ -28,10 +39,12 @@ Within the course assignments, the students must check the completeness and cons
 Lex Wedemeijer \citeac{CSERC2013_Wedemijer} states that the instructional software must be powerful, yet basic.
 The advanced features, offered to professional users, is not needed for students, moreover, the usage of a rich modeling features has a negative impact on the students learning curve.
 The conclusion is made by Lex Wedemeijer that Ampersand may not be the perfect tool to support these student due to the richness of the language.
-A more straightforward language, with clear and unambiguous notations is more suited to support students in the domain of Rule Based Design.
+A more straightforward language, referred to as the Essential Language, is proposed, with clear and unambiguous notations, which is more suited to support students in the domain of Rule Based Design.
 
-Providing a clearer error feedback in Ampersand does not lower the hurdle of the syntax richness, it is however a step in the good direction to better support the students.
-%TODO: how can we integrate some info regarding the research context of RuleSpeak, natural language processors, chatbots...
+Providing a clearer error feedback in Ampersand does not lower the hurdle of the syntax richness, it is however a step in the good direction to better support the students. 
+An interesting next step is the possibility to re-use the Ampersand vision and tools to support the easier to learn syntax of The Essential Language. 
+To options to realize the re-use of Ampersand, is to simplify Ampersand towards the Essential Language or to implement a translator between both syntaxes.
+Given the similarities between both languages, the translator seems the best approach, additional research is however needed to confirm this statement.
 
 Andrei Lapets \citeac{lapets2009improving} concludes that user accessibility has not been a priority in the design of most formal verification systems.
 He concludes that the syntax is often unfamiliar and/or introduces an entire new environment the user has to learn how to work with.
@@ -57,6 +70,7 @@ To address this problem the institute Informatiegilde has been created \citeac{f
 This institute aims to organize an open-source repository of rules that can be used by anyone.
 
 \subsection{Parsing errors}
+%TODO: how can we integrate some info regarding the parser research context in regards to natural language processors, chatbots...
 Although the new Ampersand parser has no influence on the research for better user feedback in parsers, it is important to identify this context because it is of great importance for the project.
 Our literature research was focused on the error messages for parsers implemented in Haskell, and then mainly the LL($k$) parsers built with the Parsec library, which was chosen during our domain and technique research \citenac{parsing}.
 
@@ -67,7 +81,6 @@ Special care must be taken when using backtracking (the $try$-function) in the p
 Swierstra and Duponcheel \citeac{swierstra1996deterministic} describe how automatic error correction can be implemented.
 This automatic error correction was used in the previous Ampersand parser.
 However, the shortcomings of error correction have been described in our techniques research \cite{parsing} so this possibility is not used in the new Ampersand parser.
-
 
 
 
