@@ -12,29 +12,32 @@ The Ampersand project has the ambition to offer a holistic methodology, includin
 A new way of business requirements gathering, using natural language, is introduced by Ampersand.
 We define the Ampersand approach by the Ampersand Methodology including the corresponding tools to create design artifacts and working software prototypes.
 
-\subsubsection{Business Rule Appraoch}
+\subsubsection{Business Rule Approach}
 One of  the objectives of Ampersand is to bridge the gap between business analysts and system designers using natural language.
-This objective is part of a general research context describing information systems based on business rules, referenced to as the Business Rule Approach or Rule Based Design.
+This objective is part of a general research context describing information systems based on business rules, instantiated by methodologies such as 'Business Rule Approach' or 'Rule Based Design'.
 
-\dict{BRMS}{Business Rule Management System}%
-Eduard Bauer \citeac{Bauer2009} makes a distinction between the domain of the Business Rules design and the use of business rules in a central repository which serves as a rule engine, a Business Rule Management system, BRMS
+The basis for these methodologies are business rules, representing a statement that defines or constrains specific business policies, standards or procedures.
+In the research context of business rules methodologies, we can differentiate between the specification, and analysis, of business rules and the actual usage to steer and manage information systems.
 
-The Business Rule design is again a research context on its own, it is intensively addressed by the Business Rules Group who responsible for the Business Rules Manifesto.
-This Business Rules Manifesto is the foundation for many approaches within the domain of Rule Based Design.
+By establishing the Business Rules Manifesto \citeac{BRManifesto}, the Business Rules Group laid the foundation for many business rule specification methodologies and corresponding syntaxes.
+Well known methodologies are the 'Business Rules Solution (BRS) RuleSpeak" developed by members of the Business Rules Group \citeac{RuleSpeak} and the "Semantics of Business Vocabulary and Business Rules', established by the Object Management Group (OMG) \citeac{SBVR}.
+Both methodologies have the intention to formulate business rules in such a way they become easier to understand and to analyze by business analysts.
+By using natural language, Ampersand shares the same approach in closing the gap.
 
-\dict{ODRES}{Output Driven Requirements Specification Method}%
-\dict{BR}{Business Rules}%
-\dict{BRS}{Business Rules Solution}%
-Kęstutis Kapočius and Tomas Danikauskas \citeac{kapoc353} outline the use of an Output Driven Requirements Specification Method (ODRES), in combination with a Business Rules (BR), approach.
-The BR approach formulates business rules in natural language using the Business Rules Solution (BRS) RuleSpeak, a model established by Ronald Ross \citeac{RuleSpeak}, which is part of the Business Rules Group.
-%TODO: good reference to add of RuleSpeak.
-The Ampersand Language, describing the rules and syntax, can be seen as a formalization of the RuleSpeak guidelines and best practices.
+Several rules engines are built on business rules to manage the business logic used in information systems. 
+The goals of these engines are to provide a maintenance tool, to manage the business rules, and to centralize the business knowledge.
+Having a centralized view on the business rules, all involved  applications can use these as the single source of truth whilst the cross consistency between applications is guaranteed.
+
+\dict{BRMS}{Business Process Management Systems}%
+These systems are often referred to as 'Business Rule Management Systems', BRMS and are widely used in commercial companies.
 
 \dict{BPEL}{Business Process Execution Language}%
-BRMS solutions are available in many commercial products such as SAP and BPEL Engines.
+Some examples of BRMS solutions offered by large software vendors are the 'Operational Decision Manager' by IBM, 'Business Rules Framework +' by SAP and ' BPEL Process Manager' by Oracle.
 
-Both Eduard Bauer \citeac{Bauer2009} and Kęstutis Kapočius \citeac{kapoc353} concludes that the use of business rules can simplify the analysis effort and bridge the gap between business analysts and system designers. 
-A consistent formulation, close to natural language, further improves the quality of the specifications, the approach however does slows down the specification process.
+Several researches to identify the usefulness and efficiency of the Business Rule Approach are conducted.
+Both Eduard Bauer \citeac{Bauer2009} and Kęstutis Kapočius \citeac{kapoc353} conclude that the use of business rules can simplify the analysis effort and bridge the gap between business analysts and system designers. 
+A consistent formulation, close to natural language, further improves the quality of the specifications.
+The approach does however have a drawback as it slows down the requirement specification process, but this effort should be recuperated afterwards during the software maintenance phase.
 
 \subsubsection{Ampersand target group context}
 The Ampersand approach currently has 3 target groups: business analysts, in a commercial context, and researchers and students, in an academic context.
