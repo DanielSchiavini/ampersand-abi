@@ -20,10 +20,10 @@
         <y:ProxyAutoBoundsNode>
           <y:Realizers active="0">
             <y:GroupNode>
-              <y:Geometry height="376.37646484375" width="616.435546875" x="320.5" y="262.62353515625"/>
+              <y:Geometry height="407.37646484375" width="668.92578125" x="320.5" y="262.62353515625"/>
               <y:Fill color="#CAECFF84" transparent="false"/>
               <y:BorderStyle color="#666699" type="dotted" width="1.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="node_width" backgroundColor="#99CCFF" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="22.37646484375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="616.435546875" x="0.0" y="0.0">Database.Design.Ampersand.Test</y:NodeLabel>
+              <y:NodeLabel alignment="center" autoSizePolicy="node_width" backgroundColor="#99CCFF" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="22.37646484375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="668.92578125" x="0.0" y="0.0">Database.Design.Ampersand.Test</y:NodeLabel>
               <y:Shape type="roundrectangle"/>
               <y:State closed="false" closedHeight="50.0" closedWidth="50.0" innerGraphDisplayEnabled="false"/>
               <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0" top="15" topF="15.0"/>
@@ -49,14 +49,14 @@
             <y:ProxyAutoBoundsNode>
               <y:Realizers active="0">
                 <y:GroupNode>
-                  <y:Geometry height="268.37646484375" width="310.435546875" x="611.5" y="355.62353515625"/>
+                  <y:Geometry height="299.37646484375" width="362.92578125" x="611.5" y="355.62353515625"/>
                   <y:Fill color="#CAECFF84" transparent="false"/>
                   <y:BorderStyle color="#666699" type="dotted" width="1.0"/>
-                  <y:NodeLabel alignment="center" autoSizePolicy="node_width" backgroundColor="#99CCFF" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="22.37646484375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="310.435546875" x="0.0" y="0.0">Parser</y:NodeLabel>
+                  <y:NodeLabel alignment="center" autoSizePolicy="node_width" backgroundColor="#99CCFF" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="22.37646484375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="362.92578125" x="0.0" y="0.0">Parser</y:NodeLabel>
                   <y:Shape type="roundrectangle"/>
                   <y:State closed="false" closedHeight="50.0" closedWidth="50.0" innerGraphDisplayEnabled="false"/>
                   <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0" top="15" topF="15.0"/>
-                  <y:BorderInsets bottom="0" bottomF="0.0" left="10" leftF="10.0" right="11" rightF="11.435546875" top="0" topF="0.0"/>
+                  <y:BorderInsets bottom="0" bottomF="0.0" left="10" leftF="10.0" right="4" rightF="3.92578125" top="0" topF="0.0"/>
                 </y:GroupNode>
                 <y:GroupNode>
                   <y:Geometry height="50.0" width="50.0" x="762.0" y="347.0"/>
@@ -75,11 +75,13 @@
             <node id="n0::n0::n0">
               <data key="d6">
                 <y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
-                  <y:Geometry height="56.0" width="259.0" x="636.5" y="553.0"/>
+                  <y:Geometry height="87.0" width="319.0" x="636.5" y="553.0"/>
                   <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
                   <y:BorderStyle color="#000000" type="line" width="1.0"/>
-                  <y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#B7C9E3" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.701171875" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="62.681640625" x="98.1591796875" y="4.0">ParserTest</y:NodeLabel>
-                  <y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="251.435546875" x="2.0" y="30.701171875">parseScripts :: Options -&gt; [FilePath] -&gt; IO Bool<y:LabelModel>
+                  <y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#B7C9E3" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.701171875" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="62.681640625" x="128.1591796875" y="4.0">ParserTest</y:NodeLabel>
+                  <y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="48.103515625" modelName="custom" textColor="#000000" visible="true" width="309.490234375" x="2.0" y="30.701171875">parseScripts :: Options -&gt; [FilePath] -&gt; IO Bool
+parseReparse :: FilePath -&gt; String -&gt; Guarded P_Context
+showErrors :: [CtxError] -&gt; IO ()<y:LabelModel>
                       <y:ErdAttributesNodeLabelModel/>
                     </y:LabelModel>
                     <y:ModelParameter>
@@ -233,7 +235,7 @@
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="10.673828125" x="205.64089253190377" y="115.20310001609857">1<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="10.673828125" x="206.18512012142685" y="115.86407145642306">1<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
