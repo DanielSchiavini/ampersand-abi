@@ -16,9 +16,11 @@
 *.alg
 *.lof
 *.lnk
-*.pdf
 *.gls
 *.lot
-/Parsing/*.tps
-/Parsing/Appendices/*.tmp
+*.tmp
 *.tps
+/Parsing/Parsing.pdf
+/Planning/Planning.pdf
+/ResearchContext/ResearchContext.pdf
+/Thesis/Thesis.pdf
