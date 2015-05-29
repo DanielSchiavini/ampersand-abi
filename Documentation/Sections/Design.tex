@@ -14,7 +14,7 @@
   \end{figure}%
 
   \subsubsection{Modules}
-  \label{subsec:test-modules}
+  \label{subsec:parser-modules}
   In this section a short description of each module is given:%
   %
   \begin{description}
@@ -23,6 +23,7 @@
 
     \item[Parser] module responsible for executing the parsing itself.
       It accepts the tokens that are allowed in each grammar production and generates the corresponding parse tree.
+      The parser is described in \autoref{subsec:parser}.
       
     \item[ParsingLib] library that contains several useful functions to assist the parser, e.g. token recognition.
       These functions are not depending on the specific grammar rules.
@@ -36,6 +37,7 @@
       This module has not been refactored as a part of this project.
     
     \item[Lexer] module responsible for recognizing the input characters and converting them to tokens.
+      The lexer is described in \autoref{subsec:lexer}.
     
     \item[LexerMonad] contains a monad definition that supports lexing with context.
       It tracks for example the location in the input and the warnings that may be generated.
@@ -52,9 +54,11 @@
 TODO: Show the differences between uulib and Parsec, e.g. the try for backtracking.
 
 \subsection{Lexer}
+\label{subsec:lexer}
 TODO: describe how the lexer works, and the improvements done to it.
 
 \subsection{Parser}
+\label{subsec:parser}
 TODO: describe how the parser is implemented.
 
 \subsubsection{Backtracking}
@@ -64,4 +68,4 @@ TODO: describe why the try-statements are necessary.
 TODO: show what we've done to improve the errors.
 
 \subsection{Next steps}
-TODO: give tips on how to further improve the parser. e.g. cleanup CtxError, add warnings...
+TODO: give tips on how to further improve the parser. e.g. cleanup CtxError, add warnings, use <?> for the errors...
