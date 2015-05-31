@@ -57,14 +57,18 @@ getDataTypes mod = case parseModule mod of
 printNode :: ParseNode -> [String]
 printNode (ParseNode nm css) =
     case css of (c:cs) -> printConstr nm c ++ printNode (ParseNode nm cs)
-                []     -> [quote nm]
+                []     -> [quote nm "green"]
     where printConstr :: String -> Constructor -> [String]
           printConstr node (Constructor con rss) =
                 case rss of (r:rs) -> printRec con r ++ printConstr node (Constructor con rs)
-                            []     -> [arrow node con]
-          printRec con (Record r m) = [arrow con r]
-          arrow from to = quote from ++ "->" ++ quote to
-          quote name = "[" ++ name ++ "]"
+                            []     -> [quote node "green" ++ "-" ++ quote con "blue"]
+          printRec con (Record "Origin" _) = []
+          printRec con (Record "String" _) = []
+          printRec con (Record r m) = [quote con "blue" ++ arrow m ++ quote r "orange"]
+          arrow m = case m of One      -> "-1>"
+                              Optional -> "-.->"
+                              Many     -> "-*>"
+          quote name color = "[" ++ name ++ "{bg:" ++ color ++ "}" ++ "]"
 
 main :: IO ()
 main = do mod <- readFile "../../../ampersand/src/Database/Design/Ampersand/Core/ParseTree.hs"
