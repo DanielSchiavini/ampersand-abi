@@ -15,7 +15,7 @@ Cterm1 ::= ConceptRef | ('('? Cterm ')'?)
 RuleDef ::= 'RULE' (ADLid ':')? Rule Meaning* Message* Violation?
 Violation ::= 'VIOLATION' PairView
 PairView ::= '(' PairViewSegmentList ')'
-PairViewSegmentList  ::= PairViewSegment (',' PairViewSegment)*
+PairViewSegmentList ::= PairViewSegment (',' PairViewSegment)*
 PairViewSegment ::= 'SRC' Term | 'TGT' Term | 'TXT' String
 RelationDef ::= (RelationNew | RelationOld) 'BYPLUG'? Props? 'BYPLUG'? ('PRAGMA' String+)? Meaning* ('=' Content)? '.'?
 RelationNew ::= 'RELATION' Varid Sign
@@ -26,7 +26,6 @@ Prop ::= 'UNI' | 'INJ' | 'SUR' | 'TOT' | 'SYM' | 'ASY' | 'TRN' | 'RFX' | 'IRF' |
 Fun ::= '*' | '->' | '<-' | '[' Mults ']'
 Mults ::= Mult '-' Mult
 Mult ::= ('0' | '1') '..' ('1' | '*') | '*' | '1'
-Mult ::= '0' '..' ('1' | '*') | '1'('..' ('1' | '*'))? | '*'
 ConceptDef ::= 'CONCEPT' ConceptName 'BYPLUG'? String ('TYPE' String)? String?
 GenDef ::= ('CLASSIFY' | 'SPEC') ConceptRef 'ISA' ConceptRef
 Index ::= 'IDENT' Label ConceptRefPos '(' IndSegmentList ')'
