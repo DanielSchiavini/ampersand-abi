@@ -18,7 +18,7 @@ module Database.Design.Ampersand.Core.ParseTree (
 
    , P_ObjectDef, P_SubInterface, P_Interface(..), P_IClass(..), P_ObjDef(..), P_SubIfc(..)
 
-   , P_IdentDef(..) , P_IdentSegment(..)
+   , P_IdentDef, P_IdentDf(..) , P_IdentSegment, P_IdentSegmnt(..)
    , P_ViewDef , P_ViewSegment, ViewHtmlTemplate(..) {-, ViewTextTemplate-}
    , P_ViewD(..) , P_ViewSegmt(..)
 
@@ -62,7 +62,7 @@ data P_Context
          , ctx_thms ::   [String]         -- ^ Names of patterns/processes to be printed in the functional specification. (For partial documents.)
          , ctx_pats ::   [P_Pattern]      -- ^ The patterns defined in this context
          , ctx_PPrcs ::  [P_Pattern]      -- ^ The processes as defined by the parser
-         , ctx_rs ::     [(P_Rule TermPrim)]         -- ^ All user defined rules in this context, but outside patterns and outside processes
+         , ctx_rs ::     [P_Rule TermPrim]         -- ^ All user defined rules in this context, but outside patterns and outside processes
          , ctx_ds ::     [P_Declaration]  -- ^ The relations defined in this context, outside the scope of patterns
          , ctx_cs ::     [ConceptDef]     -- ^ The concept definitions defined in this context, outside the scope of patterns
          , ctx_ks ::     [P_IdentDef]     -- ^ The identity definitions defined in this context, outside the scope of patterns
@@ -94,9 +94,9 @@ data MetaObj = ContextMeta deriving Show -- for now, we just have meta data for 
 
 -- | A RoleRelation rs means that any role in 'rrRoles rs' may edit any Relation  in  'rrInterfaces rs'
 data P_RoleRelation
-   = P_RR { rr_Roles :: [Role]      -- ^ list of roles
+   = P_RR { rr_Pos :: Origin      -- ^ position in the Ampersand script
+          , rr_Roles :: [Role]      -- ^ list of roles
           , rr_Rels :: [P_NamedRel] -- ^ list of named relations
-          , rr_Pos :: Origin      -- ^ position in the Ampersand script
           } deriving (Show)       -- deriving Show is just for debugging
 instance Eq P_RoleRelation where rr==rr' = origin rr==origin rr'
 instance Traced P_RoleRelation where
@@ -105,9 +105,9 @@ instance Traced P_RoleRelation where
  -- | A RoleRule r means that a role called 'mRoles r' must maintain the process rule called 'mRules r'
 data P_RoleRule
    = Maintain
-     { mRoles :: [Role]    -- ^ name of a role
+     { mPos :: Origin      -- ^ position in the Ampersand script
+     , mRoles :: [Role]    -- ^ name of a role
      , mRules :: [String]  -- ^ name of a Rule
-     , mPos :: Origin      -- ^ position in the Ampersand script
      } deriving (Eq, Show) -- deriving (Eq, Show) is just for debugging
 
 data Role = Role String deriving (Eq, Show, Typeable )   -- deriving (Eq, Show) is just for debugging
@@ -119,10 +119,9 @@ instance Traced P_RoleRule where
  origin = mPos
 
 data P_Pattern
-   = P_Pat { pt_nm :: String            -- ^ Name of this pattern
-           , pt_pos :: Origin           -- ^ the starting position in the file in which this pattern was declared.
-           , pt_end :: Origin           -- ^ the end position in the file in which this pattern was declared.
-           , pt_rls :: [P_Rule TermPrim]-- ^ The user defined rules in this pattern
+   = P_Pat { pt_pos :: Origin           -- ^ the starting position in the file in which this pattern was declared.
+           , pt_nm :: String            -- ^ Name of this pattern
+           , pt_rls :: [P_Rule TermPrim]         -- ^ The user defined rules in this pattern
            , pt_gns :: [P_Gen]          -- ^ The generalizations defined in this pattern
            , pt_dcs :: [P_Declaration]  -- ^ The relations that are declared in this pattern
            , pt_RRuls :: [P_RoleRule]   -- ^ The assignment of roles to rules.
@@ -132,6 +131,7 @@ data P_Pattern
            , pt_vds :: [P_ViewDef]      -- ^ The view definitions defined in this pattern
            , pt_xps :: [PPurpose]       -- ^ The purposes of elements defined in this pattern
            , pt_pop :: [P_Population]   -- ^ The populations that are local to this pattern
+           , pt_end :: Origin           -- ^ the end position in the file in which this pattern was declared.
            }   deriving (Show)       -- for debugging purposes
 
 instance Named P_Pattern where
@@ -362,9 +362,9 @@ instance Functor PairView where fmap = fmapDefault
 instance Foldable PairView where foldMap = foldMapDefault
 
 data P_Rule a  =
-   P_Ru { rr_nm ::   String            -- ^ Name of this rule
+   P_Ru { rr_fps ::  Origin            -- ^ Position in the Ampersand file
+        , rr_nm ::   String            -- ^ Name of this rule
         , rr_exp ::  Term a            -- ^ The rule expression
-        , rr_fps ::  Origin            -- ^ Position in the Ampersand file
         , rr_mean :: [PMeaning]        -- ^ User-specified meanings, possibly more than one, for multiple languages.
         , rr_msg ::  [PMessage]        -- ^ User-specified violation messages, possibly more than one, for multiple languages.
         , rr_viol :: Maybe (PairView (Term a))  -- ^ Custom presentation for violations, currently only in a single language
@@ -375,8 +375,8 @@ instance Traced (P_Rule a) where
 instance Functor P_Rule where fmap = fmapDefault
 instance Foldable P_Rule where foldMap = foldMapDefault
 instance Traversable P_Rule where
- traverse f (P_Ru nm expr fps mean msg viol)
-  = (\e v -> P_Ru nm e fps mean msg v) <$> traverse f expr <*> traverse (traverse (traverse f)) viol
+ traverse f (P_Ru fps nm expr mean msg viol)
+  = (\e v -> P_Ru fps nm e mean msg v) <$> traverse f expr <*> traverse (traverse (traverse f)) viol
 
 instance Named (P_Rule a) where
  name = rr_nm
@@ -392,17 +392,17 @@ data P_Markup =
               } deriving Show -- for debugging only
 
 data P_Population
-  = P_RelPopu { p_rnme ::  String  -- the name of a relation
-              , p_orig ::  Origin  -- the origin
+  = P_RelPopu { p_orig ::  Origin  -- the origin
+              , p_rnme ::  String  -- the name of a relation
               , p_popps :: Pairs   -- the contents
               }
-  | P_TRelPop { p_rnme ::  String  -- the name of a relation
+  | P_TRelPop { p_orig ::  Origin  -- the origin
+              , p_rnme ::  String  -- the name of a relation
               , p_type ::  P_Sign  -- the signature of the relation
-              , p_orig ::  Origin  -- the origin
               , p_popps :: Pairs   -- the contents
               }
-  | P_CptPopu { p_cnme ::  String  -- the name of a concept
-              , p_orig ::  Origin  -- the origin
+  | P_CptPopu { p_orig ::  Origin  -- the origin
+              , p_cnme ::  String  -- the name of a concept
               , p_popas :: [String]   -- atoms in the initial population of that concept
               }
     deriving Show
@@ -458,21 +458,30 @@ instance Named (P_ObjDef a) where
 instance Traced (P_ObjDef a) where
  origin = obj_pos
 
-data P_IdentDef =
+type P_IdentDef = P_IdentDf TermPrim -- this is what is returned by the parser, but we need to change the "TermPrim" for disambiguation
+data P_IdentDf a = -- so this is the parametric data-structure
          P_Id { ix_pos :: Origin         -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number).
               , ix_lbl :: String         -- ^ the name (or label) of this Identity. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface. It is not an empty string.
               , ix_cpt :: P_Concept      -- ^ this expression describes the instances of this object, related to their context
-              , ix_ats :: [P_IdentSegment] -- ^ the constituent segments of this identity. TODO: refactor to a list of terms
+              , ix_ats :: [P_IdentSegmnt a] -- ^ the constituent segments of this identity. TODO: refactor to a list of terms
               } deriving (Show)
-instance Named P_IdentDef where
+instance Named (P_IdentDf a) where
  name = ix_lbl
-instance Eq P_IdentDef where identity==identity' = origin identity==origin identity'
-
-instance Traced P_IdentDef where
+instance Eq (P_IdentDf a) where identity==identity' = origin identity==origin identity'
+instance Traced (P_IdentDf a) where
  origin = ix_pos
+instance Functor P_IdentDf where fmap = fmapDefault
+instance Foldable P_IdentDf where foldMap = foldMapDefault
+instance Traversable P_IdentDf where
+  traverse f (P_Id a b c lst) = P_Id a b c <$> traverse (traverse f) lst
+instance Functor P_IdentSegmnt where fmap = fmapDefault
+instance Foldable P_IdentSegmnt where foldMap = foldMapDefault
+instance Traversable P_IdentSegmnt where
+  traverse f (P_IdentExp x) = P_IdentExp <$> traverse f x
 
-data P_IdentSegment
-              = P_IdentExp  { ks_obj :: P_ObjectDef }
+type P_IdentSegment = P_IdentSegmnt TermPrim
+data P_IdentSegmnt a
+              = P_IdentExp  { ks_obj :: P_ObjDef a}
                 deriving (Eq, Show)
                 
 type P_ViewDef = P_ViewD TermPrim
@@ -578,13 +587,13 @@ instance Show P_Sign where
   showsPrec _ sgn =
       showString (   "[" ++ show (pSrc sgn)++"*"++show (pTgt sgn) ++ "]" )
 
-data P_Gen =  P_Cy{ gen_spc :: P_Concept         -- ^ Left hand side concept expression
+data P_Gen =  P_Cy{ gen_fp ::  Origin            -- ^ Position in the Ampersand file
+                  , gen_spc :: P_Concept         -- ^ Left hand side concept expression
                   , gen_rhs :: [P_Concept]       -- ^ Right hand side concept expression
-                  , gen_fp ::  Origin            -- ^ Position in the Ampersand file
                   }
-            | PGen{ gen_spc :: P_Concept      -- ^ specific concept
+            | PGen{ gen_fp  :: Origin         -- ^ the position of the GEN-rule
+                  , gen_spc :: P_Concept      -- ^ specific concept
                   , gen_gen :: P_Concept      -- ^ generic concept
-                  , gen_fp  :: Origin         -- ^ the position of the GEN-rule
                   }
 gen_concs :: P_Gen -> [P_Concept]
 gen_concs (P_Cy {gen_rhs=x}) = x
