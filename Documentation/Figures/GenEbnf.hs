@@ -7,6 +7,7 @@ import Data.Text(pack, unpack, splitOn)
 cleanup :: String -> String
 cleanup ('_':rest) = "\\_" ++ cleanup rest
 cleanup ('#':rest) = "\\#" ++ cleanup rest
+cleanup ('\\':rest) = "\\textbackslash{}" ++ cleanup rest
 cleanup (x:rest) = (x : cleanup rest)
 cleanup [] = []
 
@@ -19,7 +20,7 @@ printEbnfRule x =
                , "  \\centering"
                , "  \\includegraphics[resolution=120,max size={\\textwidth}{\\textheight}]"
                , "  {Figures/Ebnf/" ++ name ++ "}"
-               , "  \\caption*{" ++ name ++ " \\small::= " ++ prod ++ "}"
+               , "  \\caption*{\\texttt{" ++ name ++ " \\small::= " ++ prod ++ "}}"
                , "  \\label{fig:ebnf-" ++ name ++ "}"
                , " \\end{figure}"
                ]

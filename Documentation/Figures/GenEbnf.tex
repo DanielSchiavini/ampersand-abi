@@ -2,7 +2,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Populations}
-  \caption*{Populations \small::=  Population+}
+  \caption*{\texttt{Populations \small::=  Population+}}
   \label{fig:ebnf-Populations}
  \end{figure}
 
@@ -10,7 +10,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Context}
-  \caption*{Context \small::=  'CONTEXT' ConceptName LanguageRef TextMarkup? ContextElement* 'ENDCONTEXT'}
+  \caption*{\texttt{Context \small::=  'CONTEXT' ConceptName LanguageRef TextMarkup? ContextElement* 'ENDCONTEXT'}}
   \label{fig:ebnf-Context}
  \end{figure}
 
@@ -18,7 +18,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ContextElement}
-  \caption*{ContextElement \small::=  Meta | PatternDef | ProcessDef | RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Interface | Sqlplug | Phpplug | Purpose | Population | PrintThemes | IncludeStatement}
+  \caption*{\texttt{ContextElement \small::=  Meta | PatternDef | ProcessDef | RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Interface | Sqlplug | Phpplug | Purpose | Population | PrintThemes | IncludeStatement}}
   \label{fig:ebnf-ContextElement}
  \end{figure}
 
@@ -26,7 +26,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/IncludeStatement}
-  \caption*{IncludeStatement \small::=  'INCLUDE' String}
+  \caption*{\texttt{IncludeStatement \small::=  'INCLUDE' String}}
   \label{fig:ebnf-IncludeStatement}
  \end{figure}
 
@@ -34,7 +34,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/LanguageRef}
-  \caption*{LanguageRef \small::=  'IN' ('DUTCH' | 'ENGLISH')}
+  \caption*{\texttt{LanguageRef \small::=  'IN' ('DUTCH' | 'ENGLISH')}}
   \label{fig:ebnf-LanguageRef}
  \end{figure}
 
@@ -42,7 +42,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/TextMarkup}
-  \caption*{TextMarkup \small::=  'REST' | 'HTML' | 'LATEX' | 'MARKDOWN'}
+  \caption*{\texttt{TextMarkup \small::=  'REST' | 'HTML' | 'LATEX' | 'MARKDOWN'}}
   \label{fig:ebnf-TextMarkup}
  \end{figure}
 
@@ -50,7 +50,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Meta}
-  \caption*{Meta \small::=  'META' String String}
+  \caption*{\texttt{Meta \small::=  'META' String String}}
   \label{fig:ebnf-Meta}
  \end{figure}
 
@@ -58,7 +58,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/PatternDef}
-  \caption*{PatternDef \small::=  'PATTERN' ConceptName PatElem* 'ENDPATTERN'}
+  \caption*{\texttt{PatternDef \small::=  'PATTERN' ConceptName PatElem* 'ENDPATTERN'}}
   \label{fig:ebnf-PatternDef}
  \end{figure}
 
@@ -66,7 +66,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/PatElem}
-  \caption*{PatElem \small::=  RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Purpose | Population}
+  \caption*{\texttt{PatElem \small::=  RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Purpose | Population}}
   \label{fig:ebnf-PatElem}
  \end{figure}
 
@@ -74,7 +74,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ProcessDef}
-  \caption*{ProcessDef \small::=  'PROCESS' ConceptName ProcElem* 'ENDPROCESS'}
+  \caption*{\texttt{ProcessDef \small::=  'PROCESS' ConceptName ProcElem* 'ENDPROCESS'}}
   \label{fig:ebnf-ProcessDef}
  \end{figure}
 
@@ -82,7 +82,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ProcElem}
-  \caption*{ProcElem \small::=  RuleDef | Classify | RelationDef | RoleRule | RoleRelation | ConceptDef | GenDef | Index | ViewDef | Purpose | Population}
+  \caption*{\texttt{ProcElem \small::=  RuleDef | Classify | RelationDef | RoleRule | RoleRelation | ConceptDef | GenDef | Index | ViewDef | Purpose | Population}}
   \label{fig:ebnf-ProcElem}
  \end{figure}
 
@@ -90,7 +90,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Classify}
-  \caption*{Classify \small::=  'CLASSIFY' ConceptRef 'IS' Cterm}
+  \caption*{\texttt{Classify \small::=  'CLASSIFY' ConceptRef 'IS' Cterm}}
   \label{fig:ebnf-Classify}
  \end{figure}
 
@@ -98,7 +98,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Cterm}
-  \caption*{Cterm \small::=  Cterm1 ('/\' Cterm1)*}
+  \caption*{\texttt{Cterm \small::=  Cterm1 ('/\textbackslash' Cterm1)*}}
   \label{fig:ebnf-Cterm}
  \end{figure}
 
@@ -106,7 +106,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Cterm1}
-  \caption*{Cterm1 \small::=  ConceptRef | ('('? Cterm ')'?)}
+  \caption*{\texttt{Cterm1 \small::=  ConceptRef | ('('? Cterm ')'?)}}
   \label{fig:ebnf-Cterm1}
  \end{figure}
 
@@ -114,7 +114,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RuleDef}
-  \caption*{RuleDef \small::=  'RULE' (ADLid ':')? Rule Meaning* Message* Violation?}
+  \caption*{\texttt{RuleDef \small::=  'RULE' (ADLid ':')? Rule Meaning* Message* Violation?}}
   \label{fig:ebnf-RuleDef}
  \end{figure}
 
@@ -122,7 +122,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Violation}
-  \caption*{Violation \small::=  'VIOLATION' PairView}
+  \caption*{\texttt{Violation \small::=  'VIOLATION' PairView}}
   \label{fig:ebnf-Violation}
  \end{figure}
 
@@ -130,7 +130,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/PairView}
-  \caption*{PairView \small::=  '(' PairViewSegmentList ')'}
+  \caption*{\texttt{PairView \small::=  '(' PairViewSegmentList ')'}}
   \label{fig:ebnf-PairView}
  \end{figure}
 
@@ -138,7 +138,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/PairViewSegmentList}
-  \caption*{PairViewSegmentList \small::=  PairViewSegment (',' PairViewSegment)*}
+  \caption*{\texttt{PairViewSegmentList \small::=  PairViewSegment (',' PairViewSegment)*}}
   \label{fig:ebnf-PairViewSegmentList}
  \end{figure}
 
@@ -146,7 +146,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/PairViewSegment}
-  \caption*{PairViewSegment \small::=  'SRC' Term | 'TGT' Term | 'TXT' String}
+  \caption*{\texttt{PairViewSegment \small::=  'SRC' Term | 'TGT' Term | 'TXT' String}}
   \label{fig:ebnf-PairViewSegment}
  \end{figure}
 
@@ -154,7 +154,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RelationDef}
-  \caption*{RelationDef \small::=  (RelationNew | RelationOld) 'BYPLUG'? Props? 'BYPLUG'? ('PRAGMA' String+)? Meaning* ('=' Content)? '.'?}
+  \caption*{\texttt{RelationDef \small::=  (RelationNew | RelationOld) 'BYPLUG'? Props? 'BYPLUG'? ('PRAGMA' String+)? Meaning* ('=' Content)? '.'?}}
   \label{fig:ebnf-RelationDef}
  \end{figure}
 
@@ -162,7 +162,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RelationNew}
-  \caption*{RelationNew \small::=  'RELATION' Varid Sign}
+  \caption*{\texttt{RelationNew \small::=  'RELATION' Varid Sign}}
   \label{fig:ebnf-RelationNew}
  \end{figure}
 
@@ -170,7 +170,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RelationOld}
-  \caption*{RelationOld \small::=  Varid '::' ConceptRef Fun ConceptRef}
+  \caption*{\texttt{RelationOld \small::=  Varid '::' ConceptRef Fun ConceptRef}}
   \label{fig:ebnf-RelationOld}
  \end{figure}
 
@@ -178,7 +178,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Props}
-  \caption*{Props \small::=  '[' PropList? ']'}
+  \caption*{\texttt{Props \small::=  '[' PropList? ']'}}
   \label{fig:ebnf-Props}
  \end{figure}
 
@@ -186,7 +186,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/PropList}
-  \caption*{PropList \small::=  Prop (',' Prop)*}
+  \caption*{\texttt{PropList \small::=  Prop (',' Prop)*}}
   \label{fig:ebnf-PropList}
  \end{figure}
 
@@ -194,7 +194,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Prop}
-  \caption*{Prop \small::=  'UNI' | 'INJ' | 'SUR' | 'TOT' | 'SYM' | 'ASY' | 'TRN' | 'RFX' | 'IRF' | 'AUT' | 'PROP'}
+  \caption*{\texttt{Prop \small::=  'UNI' | 'INJ' | 'SUR' | 'TOT' | 'SYM' | 'ASY' | 'TRN' | 'RFX' | 'IRF' | 'AUT' | 'PROP'}}
   \label{fig:ebnf-Prop}
  \end{figure}
 
@@ -202,7 +202,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Fun}
-  \caption*{Fun \small::=  '*' | '->' | '<-' | '[' Mults ']'}
+  \caption*{\texttt{Fun \small::=  '*' | '->' | '<-' | '[' Mults ']'}}
   \label{fig:ebnf-Fun}
  \end{figure}
 
@@ -210,7 +210,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Mults}
-  \caption*{Mults \small::=  Mult '-' Mult}
+  \caption*{\texttt{Mults \small::=  Mult '-' Mult}}
   \label{fig:ebnf-Mults}
  \end{figure}
 
@@ -218,7 +218,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Mult}
-  \caption*{Mult \small::=  ('0' | '1') '..' ('1' | '*') | '*' | '1'}
+  \caption*{\texttt{Mult \small::=  ('0' | '1') '..' ('1' | '*') | '*' | '1'}}
   \label{fig:ebnf-Mult}
  \end{figure}
 
@@ -226,7 +226,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ConceptDef}
-  \caption*{ConceptDef \small::=  'CONCEPT' ConceptName 'BYPLUG'? String ('TYPE' String)? String?}
+  \caption*{\texttt{ConceptDef \small::=  'CONCEPT' ConceptName 'BYPLUG'? String ('TYPE' String)? String?}}
   \label{fig:ebnf-ConceptDef}
  \end{figure}
 
@@ -234,7 +234,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/GenDef}
-  \caption*{GenDef \small::=  ('CLASSIFY' | 'SPEC') ConceptRef 'ISA' ConceptRef}
+  \caption*{\texttt{GenDef \small::=  ('CLASSIFY' | 'SPEC') ConceptRef 'ISA' ConceptRef}}
   \label{fig:ebnf-GenDef}
  \end{figure}
 
@@ -242,7 +242,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Index}
-  \caption*{Index \small::=  'IDENT' Label ConceptRefPos '(' IndSegmentList ')'}
+  \caption*{\texttt{Index \small::=  'IDENT' Label ConceptRefPos '(' IndSegmentList ')'}}
   \label{fig:ebnf-Index}
  \end{figure}
 
@@ -250,7 +250,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/IndSegmentList}
-  \caption*{IndSegmentList \small::=  IndSegment (',' IndSegment)}
+  \caption*{\texttt{IndSegmentList \small::=  IndSegment (',' IndSegment)}}
   \label{fig:ebnf-IndSegmentList}
  \end{figure}
 
@@ -258,7 +258,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/IndSegment}
-  \caption*{IndSegment \small::=  IndAtt}
+  \caption*{\texttt{IndSegment \small::=  IndAtt}}
   \label{fig:ebnf-IndSegment}
  \end{figure}
 
@@ -266,7 +266,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/IndAtt}
-  \caption*{IndAtt \small::=  LabelProps Term | Term}
+  \caption*{\texttt{IndAtt \small::=  LabelProps Term | Term}}
   \label{fig:ebnf-IndAtt}
  \end{figure}
 
@@ -274,7 +274,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ViewDef}
-  \caption*{ViewDef \small::=  FancyViewDef | ViewDefLegacy}
+  \caption*{\texttt{ViewDef \small::=  FancyViewDef | ViewDefLegacy}}
   \label{fig:ebnf-ViewDef}
  \end{figure}
 
@@ -282,7 +282,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/FancyViewDef}
-  \caption*{FancyViewDef \small::=  'VIEW' pLabel ConceptOneRefPos 'DEFAULT'? '{' ViewObjList '}' HtmlView? 'ENDVIEW'}
+  \caption*{\texttt{FancyViewDef \small::=  'VIEW' pLabel ConceptOneRefPos 'DEFAULT'? '{' ViewObjList '}' HtmlView? 'ENDVIEW'}}
   \label{fig:ebnf-FancyViewDef}
  \end{figure}
 
@@ -290,7 +290,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ViewObjList}
-  \caption*{ViewObjList \small::=  ViewObj (',' ViewObj)*}
+  \caption*{\texttt{ViewObjList \small::=  ViewObj (',' ViewObj)*}}
   \label{fig:ebnf-ViewObjList}
  \end{figure}
 
@@ -298,7 +298,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ViewObj}
-  \caption*{ViewObj \small::=  Label Term}
+  \caption*{\texttt{ViewObj \small::=  Label Term}}
   \label{fig:ebnf-ViewObj}
  \end{figure}
 
@@ -306,7 +306,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/HtmlView}
-  \caption*{HtmlView \small::=  'HTML' 'TEMPLATE' String}
+  \caption*{\texttt{HtmlView \small::=  'HTML' 'TEMPLATE' String}}
   \label{fig:ebnf-HtmlView}
  \end{figure}
 
@@ -314,7 +314,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ViewDefLegacy}
-  \caption*{ViewDefLegacy \small::=  ('VIEW' | 'KEY') LabelProps ConceptOneRefPos '(' ViewSegmentList ')'}
+  \caption*{\texttt{ViewDefLegacy \small::=  ('VIEW' | 'KEY') LabelProps ConceptOneRefPos '(' ViewSegmentList ')'}}
   \label{fig:ebnf-ViewDefLegacy}
  \end{figure}
 
@@ -322,7 +322,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ViewSegmentList}
-  \caption*{ViewSegmentList \small::=  ViewSegment (',' ViewSegment)*}
+  \caption*{\texttt{ViewSegmentList \small::=  ViewSegment (',' ViewSegment)*}}
   \label{fig:ebnf-ViewSegmentList}
  \end{figure}
 
@@ -330,7 +330,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ViewSegment}
-  \caption*{ViewSegment \small::=  ViewAtt | 'TXT' String | 'PRIMHTML' String}
+  \caption*{\texttt{ViewSegment \small::=  ViewAtt | 'TXT' String | 'PRIMHTML' String}}
   \label{fig:ebnf-ViewSegment}
  \end{figure}
 
@@ -338,7 +338,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ViewAtt}
-  \caption*{ViewAtt \small::=  LabelProps? Term}
+  \caption*{\texttt{ViewAtt \small::=  LabelProps? Term}}
   \label{fig:ebnf-ViewAtt}
  \end{figure}
 
@@ -346,7 +346,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Interface}
-  \caption*{Interface \small::=  'INTERFACE' ADLid 'CLASS'? (Conid | String) Params? InterfaceArgs? Roles? ':' Term SubInterface}
+  \caption*{\texttt{Interface \small::=  'INTERFACE' ADLid 'CLASS'? (Conid | String) Params? InterfaceArgs? Roles? ':' Term SubInterface}}
   \label{fig:ebnf-Interface}
  \end{figure}
 
@@ -354,7 +354,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Params}
-  \caption*{Params \small::=  '(' NamedRel ')'}
+  \caption*{\texttt{Params \small::=  '(' NamedRel ')'}}
   \label{fig:ebnf-Params}
  \end{figure}
 
@@ -362,7 +362,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/InterfaceArgs}
-  \caption*{InterfaceArgs \small::=  '{' ADLidListList '}'}
+  \caption*{\texttt{InterfaceArgs \small::=  '{' ADLidListList '}'}}
   \label{fig:ebnf-InterfaceArgs}
  \end{figure}
 
@@ -370,7 +370,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Roles}
-  \caption*{Roles \small::=  'FOR' RoleList}
+  \caption*{\texttt{Roles \small::=  'FOR' RoleList}}
   \label{fig:ebnf-Roles}
  \end{figure}
 
@@ -378,7 +378,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/SubInterface}
-  \caption*{SubInterface \small::=  ('BOX' ('<' Conid '>')? | 'ROWS' | 'COLS') Box | 'INTERFACE' ADLid}
+  \caption*{\texttt{SubInterface \small::=  ('BOX' ('<' Conid '>')? | 'ROWS' | 'COLS') Box | 'INTERFACE' ADLid}}
   \label{fig:ebnf-SubInterface}
  \end{figure}
 
@@ -386,7 +386,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ObjDef}
-  \caption*{ObjDef \small::=  LabelProps Term ('<' Conid '>')? SubInterface?}
+  \caption*{\texttt{ObjDef \small::=  LabelProps Term ('<' Conid '>')? SubInterface?}}
   \label{fig:ebnf-ObjDef}
  \end{figure}
 
@@ -394,7 +394,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ObjDefList}
-  \caption*{ObjDefList \small::=  ObjDef (',' ObjDef)*}
+  \caption*{\texttt{ObjDefList \small::=  ObjDef (',' ObjDef)*}}
   \label{fig:ebnf-ObjDefList}
  \end{figure}
 
@@ -402,7 +402,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Box}
-  \caption*{Box \small::=  '[' ObjDefList ']'}
+  \caption*{\texttt{Box \small::=  '[' ObjDefList ']'}}
   \label{fig:ebnf-Box}
  \end{figure}
 
@@ -410,7 +410,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Sqlplug}
-  \caption*{Sqlplug \small::=  'SQLPLUG' ObjDef}
+  \caption*{\texttt{Sqlplug \small::=  'SQLPLUG' ObjDef}}
   \label{fig:ebnf-Sqlplug}
  \end{figure}
 
@@ -418,7 +418,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Phpplug}
-  \caption*{Phpplug \small::=  'PHPPLUG' ObjDef}
+  \caption*{\texttt{Phpplug \small::=  'PHPPLUG' ObjDef}}
   \label{fig:ebnf-Phpplug}
  \end{figure}
 
@@ -426,7 +426,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Purpose}
-  \caption*{Purpose \small::=  'PURPOSE' Ref2Obj LanguageRef? TextMarkup? ('REF' StringListSemi)? Expl}
+  \caption*{\texttt{Purpose \small::=  'PURPOSE' Ref2Obj LanguageRef? TextMarkup? ('REF' StringListSemi)? Expl}}
   \label{fig:ebnf-Purpose}
  \end{figure}
 
@@ -434,7 +434,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Ref2Obj}
-  \caption*{Ref2Obj \small::=  'CONCEPT' ConceptName | 'RELATION' RelSign | 'RULE' ADLid | 'IDENT' ADLid | 'VIEW' ADLid | 'PATTERN' ADLid | 'PROCESS' ADLid | 'INTERFACE' ADLid | 'CONTEXT' ADLid}
+  \caption*{\texttt{Ref2Obj \small::=  'CONCEPT' ConceptName | 'RELATION' RelSign | 'RULE' ADLid | 'IDENT' ADLid | 'VIEW' ADLid | 'PATTERN' ADLid | 'PROCESS' ADLid | 'INTERFACE' ADLid | 'CONTEXT' ADLid}}
   \label{fig:ebnf-Ref2Obj}
  \end{figure}
 
@@ -442,7 +442,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Population}
-  \caption*{Population \small::=  'POPULATION' NamedRel 'CONTAINS' Content | 'POPULATION' ConceptName 'CONTAINS' '[' ValueList ']'}
+  \caption*{\texttt{Population \small::=  'POPULATION' NamedRel 'CONTAINS' Content | 'POPULATION' ConceptName 'CONTAINS' '[' ValueList ']'}}
   \label{fig:ebnf-Population}
  \end{figure}
 
@@ -450,7 +450,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RoleRelation}
-  \caption*{RoleRelation \small::=  'ROLE' RoleList 'EDITS' NamedRelList}
+  \caption*{\texttt{RoleRelation \small::=  'ROLE' RoleList 'EDITS' NamedRelList}}
   \label{fig:ebnf-RoleRelation}
  \end{figure}
 
@@ -458,7 +458,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RoleRule}
-  \caption*{RoleRule \small::=  'ROLE' RoleList 'MAINTAINS' ADLidList}
+  \caption*{\texttt{RoleRule \small::=  'ROLE' RoleList 'MAINTAINS' ADLidList}}
   \label{fig:ebnf-RoleRule}
  \end{figure}
 
@@ -466,7 +466,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Role}
-  \caption*{Role \small::=  ADLid}
+  \caption*{\texttt{Role \small::=  ADLid}}
   \label{fig:ebnf-Role}
  \end{figure}
 
@@ -474,7 +474,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RoleList}
-  \caption*{RoleList \small::=  Role (',' Role)*}
+  \caption*{\texttt{RoleList \small::=  Role (',' Role)*}}
   \label{fig:ebnf-RoleList}
  \end{figure}
 
@@ -482,7 +482,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/PrintThemes}
-  \caption*{PrintThemes \small::=  'THEMES' ConceptNameList}
+  \caption*{\texttt{PrintThemes \small::=  'THEMES' ConceptNameList}}
   \label{fig:ebnf-PrintThemes}
  \end{figure}
 
@@ -490,7 +490,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Meaning}
-  \caption*{Meaning \small::=  'MEANING' LanguageRef? TextMarkup? (String | Expl)}
+  \caption*{\texttt{Meaning \small::=  'MEANING' LanguageRef? TextMarkup? (String | Expl)}}
   \label{fig:ebnf-Meaning}
  \end{figure}
 
@@ -498,7 +498,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Message}
-  \caption*{Message \small::=  'MESSAGE' Markup}
+  \caption*{\texttt{Message \small::=  'MESSAGE' Markup}}
   \label{fig:ebnf-Message}
  \end{figure}
 
@@ -506,7 +506,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Rule}
-  \caption*{Rule \small::=  Term ('=' Term | '|-' Term)?}
+  \caption*{\texttt{Rule \small::=  Term ('=' Term | '|-' Term)?}}
   \label{fig:ebnf-Rule}
  \end{figure}
 
@@ -514,7 +514,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Term}
-  \caption*{Term \small::=  Trm2 (('/\' Trm2)+ | ('\/' Trm2)+)?}
+  \caption*{\texttt{Term \small::=  Trm2 (('/\textbackslash' Trm2)+ | ('\textbackslash/' Trm2)+)?}}
   \label{fig:ebnf-Term}
  \end{figure}
 
@@ -522,7 +522,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Trm2}
-  \caption*{Trm2 \small::=  Trm3 ('-' Trm3)?}
+  \caption*{\texttt{Trm2 \small::=  Trm3 ('-' Trm3)?}}
   \label{fig:ebnf-Trm2}
  \end{figure}
 
@@ -530,7 +530,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Trm3}
-  \caption*{Trm3 \small::=  Trm4 ('/' Trm4 | '\' Trm4 | '<>' Trm4)?}
+  \caption*{\texttt{Trm3 \small::=  Trm4 ('/' Trm4 | '\textbackslash' Trm4 | '<>' Trm4)?}}
   \label{fig:ebnf-Trm3}
  \end{figure}
 
@@ -538,7 +538,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Trm4}
-  \caption*{Trm4 \small::=  Trm5 ((';' Trm5)+ | ('!' Trm5)+ | ('\#' Trm5)+)?}
+  \caption*{\texttt{Trm4 \small::=  Trm5 ((';' Trm5)+ | ('!' Trm5)+ | ('\#' Trm5)+)?}}
   \label{fig:ebnf-Trm4}
  \end{figure}
 
@@ -546,7 +546,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Trm5}
-  \caption*{Trm5 \small::=  '-'* Trm6 ('~' | '*' | '+')*}
+  \caption*{\texttt{Trm5 \small::=  '-'* Trm6 ('~' | '*' | '+')*}}
   \label{fig:ebnf-Trm5}
  \end{figure}
 
@@ -554,7 +554,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Trm6}
-  \caption*{Trm6 \small::=  RelationRef | '(' Term ')'}
+  \caption*{\texttt{Trm6 \small::=  RelationRef | '(' Term ')'}}
   \label{fig:ebnf-Trm6}
  \end{figure}
 
@@ -562,7 +562,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RelationRef}
-  \caption*{RelationRef \small::=  RelSign | 'I' ('[' ConceptOneRef ']')? | 'V' Sign? | Atom ('[' ConceptOneRef ']')?}
+  \caption*{\texttt{RelationRef \small::=  RelSign | 'I' ('[' ConceptOneRef ']')? | 'V' Sign? | Atom ('[' ConceptOneRef ']')?}}
   \label{fig:ebnf-RelationRef}
  \end{figure}
 
@@ -570,7 +570,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/NamedRelList}
-  \caption*{NamedRelList \small::=  NamedRel (',' NamedRel)*}
+  \caption*{\texttt{NamedRelList \small::=  NamedRel (',' NamedRel)*}}
   \label{fig:ebnf-NamedRelList}
  \end{figure}
 
@@ -578,7 +578,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/NamedRel}
-  \caption*{NamedRel \small::=  Varid Sign?}
+  \caption*{\texttt{NamedRel \small::=  Varid Sign?}}
   \label{fig:ebnf-NamedRel}
  \end{figure}
 
@@ -586,7 +586,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Sign}
-  \caption*{Sign \small::=  '[' ConceptOneRef ('*' ConceptOneRef)? ']'}
+  \caption*{\texttt{Sign \small::=  '[' ConceptOneRef ('*' ConceptOneRef)? ']'}}
   \label{fig:ebnf-Sign}
  \end{figure}
 
@@ -594,7 +594,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ConceptName}
-  \caption*{ConceptName \small::=  Conid | String}
+  \caption*{\texttt{ConceptName \small::=  Conid | String}}
   \label{fig:ebnf-ConceptName}
  \end{figure}
 
@@ -602,7 +602,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ConceptNameList}
-  \caption*{ConceptNameList \small::=  ConceptName (',' ConceptName)}
+  \caption*{\texttt{ConceptNameList \small::=  ConceptName (',' ConceptName)}}
   \label{fig:ebnf-ConceptNameList}
  \end{figure}
 
@@ -610,7 +610,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ConceptRef}
-  \caption*{ConceptRef \small::=  ConceptName}
+  \caption*{\texttt{ConceptRef \small::=  ConceptName}}
   \label{fig:ebnf-ConceptRef}
  \end{figure}
 
@@ -618,7 +618,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ConceptOneRef}
-  \caption*{ConceptOneRef \small::=  'ONE' | ConceptRef}
+  \caption*{\texttt{ConceptOneRef \small::=  'ONE' | ConceptRef}}
   \label{fig:ebnf-ConceptOneRef}
  \end{figure}
 
@@ -626,7 +626,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/LabelProps}
-  \caption*{LabelProps \small::=  ADLid ('{' ADLidListList '}')? ':'}
+  \caption*{\texttt{LabelProps \small::=  ADLid ('{' ADLidListList '}')? ':'}}
   \label{fig:ebnf-LabelProps}
  \end{figure}
 
@@ -634,7 +634,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Label}
-  \caption*{Label \small::=  ADLid ':'}
+  \caption*{\texttt{Label \small::=  ADLid ':'}}
   \label{fig:ebnf-Label}
  \end{figure}
 
@@ -642,7 +642,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Content}
-  \caption*{Content \small::=  '[' RecordList? ']' | '[' RecordObsList? ']'}
+  \caption*{\texttt{Content \small::=  '[' RecordList? ']' | '[' RecordObsList? ']'}}
   \label{fig:ebnf-Content}
  \end{figure}
 
@@ -650,7 +650,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RecordList}
-  \caption*{RecordList \small::=  Record (',' Record)*}
+  \caption*{\texttt{RecordList \small::=  Record (',' Record)*}}
   \label{fig:ebnf-RecordList}
  \end{figure}
 
@@ -658,7 +658,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Record}
-  \caption*{Record \small::=  String '*' String}
+  \caption*{\texttt{Record \small::=  String '*' String}}
   \label{fig:ebnf-Record}
  \end{figure}
 
@@ -666,7 +666,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RecordObsList}
-  \caption*{RecordObsList \small::=  RecordObsList (';' RecordObsList)}
+  \caption*{\texttt{RecordObsList \small::=  RecordObsList (';' RecordObsList)}}
   \label{fig:ebnf-RecordObsList}
  \end{figure}
 
@@ -674,7 +674,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/RecordObs}
-  \caption*{RecordObs \small::=  '(' String ',' String ')'}
+  \caption*{\texttt{RecordObs \small::=  '(' String ',' String ')'}}
   \label{fig:ebnf-RecordObs}
  \end{figure}
 
@@ -682,7 +682,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ADLid}
-  \caption*{ADLid \small::=  Varid | Conid | String}
+  \caption*{\texttt{ADLid \small::=  Varid | Conid | String}}
   \label{fig:ebnf-ADLid}
  \end{figure}
 
@@ -690,7 +690,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ADLidList}
-  \caption*{ADLidList \small::=  ADLid (',' ADLid)*}
+  \caption*{\texttt{ADLidList \small::=  ADLid (',' ADLid)*}}
   \label{fig:ebnf-ADLidList}
  \end{figure}
 
@@ -698,7 +698,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/ADLidListList}
-  \caption*{ADLidListList \small::=  ADLid+ (',' ADLid+)*}
+  \caption*{\texttt{ADLidListList \small::=  ADLid+ (',' ADLid+)*}}
   \label{fig:ebnf-ADLidListList}
  \end{figure}
 
@@ -706,7 +706,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Conid}
-  \caption*{Conid \small::=  UpperChar (Char | '\_')*}
+  \caption*{\texttt{Conid \small::=  UpperChar (Char | '\_')*}}
   \label{fig:ebnf-Conid}
  \end{figure}
 
@@ -714,7 +714,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/String}
-  \caption*{String \small::=  '"' Any* '"'}
+  \caption*{\texttt{String \small::=  '"' Any* '"'}}
   \label{fig:ebnf-String}
  \end{figure}
 
@@ -722,7 +722,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/StringListSemi}
-  \caption*{StringListSemi \small::=  String (';' String)*}
+  \caption*{\texttt{StringListSemi \small::=  String (';' String)*}}
   \label{fig:ebnf-StringListSemi}
  \end{figure}
 
@@ -730,7 +730,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Expl}
-  \caption*{Expl \small::=  '{+' Any* '-}'}
+  \caption*{\texttt{Expl \small::=  '{+' Any* '-}'}}
   \label{fig:ebnf-Expl}
  \end{figure}
 
@@ -738,7 +738,7 @@
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]
   {Figures/Ebnf/Varid}
-  \caption*{Varid \small::=  (LowerChar | '\_') (Char | '\_')*}
+  \caption*{\texttt{Varid \small::=  (LowerChar | '\_') (Char | '\_')*}}
   \label{fig:ebnf-Varid}
  \end{figure}
 
