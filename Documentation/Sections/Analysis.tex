@@ -26,7 +26,7 @@ This is depicted in \autoref{fig:data-flow-2}.
 	\label{fig:data-flow-2}
 \end{figure}
 
-In order to take the next steps and understand how the parser can be designed, we first take a look at the grammar in \autoref{subsec:analysis-grammar}, the parse tree in \autoref{subsec:analysis-parse-tree} and the parsing library in \autoref{subsec:analysis-parsing-lib}.
+In order to take the next steps and understand how the parser can be designed, we first take a look at the grammar in \autoref{subsec:analysis-grammar} and the parse tree in \autoref{subsec:analysis-parse-tree}.
 Afterwards, we analyze the lexer with the original token structure, so that we can define a new token structure, in \autoref{subsec:analysis-lexer}.
 Finally, we analyze the parser in \autoref{subsec:analysis-parser} and the generated errors in \autoref{subsec:analysis-errors}.
 
@@ -36,13 +36,18 @@ Finally, we analyze the parser in \autoref{subsec:analysis-parser} and the gener
 \dict{Extended Backus-Naur Form}{Notation technique for documenting context-free grammars}%
 TODO: Show/describe the EBNF (maybe actual EBNF as attachment)
 
-\subsection{Parse tree (D)}
+\subsection{Parse tree (M-R)}
 \label{subsec:analysis-parse-tree}
-TODO: Give a short description of the parse tree, and how it's different than the actual grammar.
+The parse tree (also known as P-structure) is a data structure that very much resembles the EBNF description.
+The root of the tree is the \texttt{P\_Context} structure, and every leaf of the tree has a field for the location where it was found in the ADL code (the \texttt{Origin} structure).
+The tree is consistently defined with the record syntax and is well documented.
 
-\subsection{Parsing library (D)}
-\label{subsec:analysis-parsing-lib}
-TODO: reference the phase 3a decision to use parsec.
+However, the constructions are not completely pure, since some transformations are necessary from the ADL to the P-structure.
+This forces the parser to do more than only parsing.
+Also, the order of the fields can be confusing; sometimes \texttt{Origin} is the first field and sometimes it is not.
+
+During this project, small changes to the parse tree have been done.
+These changes are described in \autoref{subsec:design-parse-tree}.
 
 \subsection{Lexer (M)}
 \label{subsec:analysis-lexer}
