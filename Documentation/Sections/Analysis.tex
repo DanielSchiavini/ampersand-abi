@@ -4,7 +4,7 @@
 \label{sec:analysis}
 In this section, we analyze the previous Ampersand parser in order to understand its workings and signal the improvement points.
 
-\subsection{System overview (MR)}
+\subsection{System overview (R-M)}
 The requirements of the new parser have been described in the project planning \citenac{plan}.
 Basically, both the old and the new parser must be able to make a conversion from a text file (ADL-script) to a parse tree (the P-structure).
 \autoref{fig:data-flow-1} depicts this data flow.
@@ -39,7 +39,7 @@ Finally, we analyze the parser in \autoref{subsec:analysis-parser} and the gener
 TODO: Show/describe the EBNF (maybe actual EBNF as attachment).
 TODO: Note that this EBNF was not available, but we had to derive it from the parser.
 
-\subsection{Parse tree (M-R)}
+\subsection{Parse tree (R-M)}
 \label{subsec:analysis-parse-tree}
 The parse tree (also known as P-structure) is a data structure that very much resembles the EBNF description.
 The root of the tree is the \texttt{P\_Context} structure, and every leaf of the tree has a field for the location where it was found in the ADL code (the \texttt{Origin} structure).
