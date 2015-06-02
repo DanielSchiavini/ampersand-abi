@@ -60,13 +60,32 @@ TODO: describe how the lexer works, and the improvements done to it.
 
 \subsection{Parser (D)}
 \label{subsec:design-parser}
-TODO: describe how the parser is implemented.
+The mainstream design of the new parser has not changed much.
+Basically, each EBNF rule receives its own parser function.
+Thanks to the combinator operators, the parsing function also looks very similar to the EBNF.
 
-\subsubsection{Parsing library (D)}
+The applicative interface is consistently used.
+By changing details of the implementation, e.g. the order of the fields in the parse tree, we have made many of the `rebuild' functions unnecessary.
+For some parsers the amount of changes necessary in order to use a purely applicative style was too large or even impossible with the current parse tree.
+
+\subsubsection{Parsec (D)}
 \label{subsec:design-parsing-lib}
-TODO: reference the phase 3a decision to use parsec.
+As mentioned earlier, and described in research context document \citenac{parsing}, the new Ampersand parser has been rebuilt with another parsing library, namely Parsec.
+However, for the Ampersand developers, the source code of the parser will still look very familiar, thanks to the applicative interface.
+For developers, the main differences between Parsec and the uulib are:
+\begin{itemize}
+  \item Parsec does not backtrack by default.
+    In order to enable backtracking, the `try' function must be used.
+    This is described in \autoref{subsec:backtracking}.
+  \item Parsec does not try to solve parsing errors.
+    The parser stops immediately after the first issue.
+    Se also the error analysis in \autoref{subsec:design-errors}.
+  \item Error messages are customizable by using the <?> operator.
+    This is also suggested in \autoref{subsec:design-next-steps}.
+\end{itemize}
 
 \subsubsection{Backtracking (D)}
+\label{subsec:backtracking}
 TODO: describe why the try-statements are necessary.
 
 \subsection{Parse tree (R-M)}
@@ -77,9 +96,11 @@ The changes have been mostly in the order of the constructor parameters, and thi
 The updated parse tree is depicted in the appendices (\autoref{fig:parse-tree}).
 
 \subsection{Errors (M)}
+\label{subsec:design-errors}
 TODO: show what we've done to improve the errors.
 
 \subsection{Next steps (M)}
+\label{subsec:design-next-steps}
 TODO: give tips on how to further improve the parser. e.g.:
   - cleanup CtxError, add warnings, use <?> for the errors.
   - reorganize parse tree, e.g. using always Origin as first parameter.
