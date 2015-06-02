@@ -86,7 +86,36 @@ For developers, the main differences between Parsec and the uulib are:
 
 \subsubsection{Backtracking (D)}
 \label{subsec:backtracking}
-TODO: describe why the try-statements are necessary.
+In order to explain the differences on backtracking behavior between the uulib and Parsec, we quote Doaitse Swierstra here:
+\begin{quote}
+\textsl{To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in uu-parsinglib. Effectively the latter is a try which just looks ahead one symbol. In that respect it is less powerful than the try construct from Parsec, in which you specify that a specific construct has to be present completely. And then there is the underlying different overall strategy. Parsec uses a back-tracking strategy with explicit tries to commit, whereas uu-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.}
+\end{quote}
+%
+We can therefore conclude that the try-statements in Parsec are undesirable.
+However, they are necessary when the grammar is ambiguous.
+In this section we explain why each of the remaining try statements are necessary, and how the issues with the grammar can be resolved:
+\begin{description}
+  \item[Classify]
+    pClassify vs pGenDef
+  
+  \item[Role]
+    pRoleRelation vs pRoleRule
+  
+  \item[Population]
+    pPopulation with pNamedRel or pConceptName
+  
+  \item[View]
+    pFancyViewDef vs pViewDefLegacy
+  
+  \item[Content]
+    pContent
+  
+  \item[Multiplicity]
+    pFun.pMult
+  
+  \item[Labels and Terms]
+    opLabelProps + pTerm in pIndex and pViewAtt, pLabel + pRule in pRuleDef
+\end{description}
 
 \subsection{Parse tree (R-M)}
 \label{subsec:design-parse-tree}
