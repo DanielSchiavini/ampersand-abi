@@ -96,20 +96,51 @@ However, they are necessary when the grammar is ambiguous.
 In this section we explain why each of the remaining try statements are necessary, and how the issues with the grammar can be resolved:
 \begin{description}
   \item[Classify]
-    pClassify vs pGenDef
+    This ambiguity in the grammar arises from the \texttt{Classify} and \texttt{GenDef} productions:
+    \begin{quote}
+        \texttt{Classify ::= `CLASSIFY' ConceptRef `IS' Cterm}\\
+        \texttt{GenDef ::= (`CLASSIFY' | `SPEC') ConceptRef `ISA' ConceptRef}
+    \end{quote}
+    When the parser encounters \texttt{`CLASSIFY'}, it cannot define whether it found a \texttt{Classify} or a \texttt{GenDef} production.
+    Therefore, the parser must consume the keyword and a \texttt{ConceptRef} before consuming either \texttt{`IS'} or \texttt{`ISA'} and determining which production is applicable.
+    
+    In order to solve this issue, one must choose a different keyword or symbol for each of the productions.
+    Another option would be to merge the two statements.
   
   \item[Role]
-    pRoleRelation vs pRoleRule
-  
-  \item[Population]
-    pPopulation with pNamedRel or pConceptName
+    This ambiguity in the grammar arises from the \texttt{RoleRelation} and \texttt{RoleRule} productions:
+    \begin{quote}
+        \texttt{RoleRelation ::= `ROLE' RoleList `EDITS' NamedRelList}\\
+        \texttt{RoleRule ::= `ROLE' RoleList `MAINTAINS' ADLidList}
+    \end{quote}
+    When the parser encounters \texttt{`ROLE'}, it cannot define whether it is a \texttt{RoleRelation} or a \texttt{RoleRule} production.
+    Therefore, the parser must consume the keyword and a \texttt{RoleList} (which may be long) before consuming either \texttt{`MAINTAINS'} or \texttt{`EDITS'} and determining which production is applicable.
+    
+    In order to solve this issue, one must choose a different keyword for each of the productions, or merge the two options to have the same representation in the parse tree.
   
   \item[View]
-    pFancyViewDef vs pViewDefLegacy
-  
+    This ambiguity in the grammar arises from the \texttt{FancyViewDef} and \texttt{ViewDefLegacy} productions:
+    \begin{quote}
+        \texttt{FancyViewDef ::= `VIEW' Label ConceptOneRefPos `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'}\\
+        \texttt{ViewDefLegacy ::= (`VIEW' | `KEY') LabelProps ConceptOneRefPos `(' ViewSegmentList `)' }
+    \end{quote}
+    When the parser encounters \texttt{`VIEW'}, it cannot define whether it found a \texttt{FancyViewDef} or a \texttt{ViewDefLegacy} production.
+    In this case, defining which construction is applicable is even more complicated.
+    This decision must, in the worst case, be delayed until the parser encounters a `\{' or ')'.
+    That's because the productions \texttt{Label} and \texttt{LabelProps} are not disjoint, and \texttt{`DEFAULT'} is optional.
+    
+    In order to solve this issue, we advise to drop the legacy statement since it does not offer added functionality.
+    
   \item[Content]
-    pContent
-  
+    This ambiguity in the grammar arises from the \texttt{Content} production:
+    \begin{quote}
+      \texttt{Content ::= `[' (RecordList | RecordObsList)? `]'} where:\\
+      \texttt{RecordList ::= Record (`,' Record)*}\\
+      \texttt{Record ::= String `*' String}\\
+      \texttt{RecordObsList ::= RecordObsList (`;' RecordObsList)}\\
+      \texttt{RecordObs ::= `(' String `,' String `)'}
+    \end{quote}
+    
   \item[Multiplicity]
     pFun.pMult
   
