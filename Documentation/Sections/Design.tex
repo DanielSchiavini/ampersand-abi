@@ -105,7 +105,8 @@ In this section we explain why each of the remaining try statements are necessar
     Therefore, the parser must consume the keyword and a \texttt{ConceptRef} before consuming either \texttt{`IS'} or \texttt{`ISA'} and determining which production is applicable.
     
     In order to solve this issue, one must choose a different keyword or symbol for each of the productions.
-    Another option would be to merge the two statements.
+    Another option would be to merge the two statements in the same parser.
+    We did not merge the productions because that would make the parser less maintainable.
   
   \item[Role]
     This ambiguity in the grammar arises from the \texttt{RoleRelation} and \texttt{RoleRule} productions:
@@ -116,7 +117,8 @@ In this section we explain why each of the remaining try statements are necessar
     When the parser encounters \texttt{`ROLE'}, it cannot define whether it is a \texttt{RoleRelation} or a \texttt{RoleRule} production.
     Therefore, the parser must consume the keyword and a \texttt{RoleList} (which may be long) before consuming either \texttt{`MAINTAINS'} or \texttt{`EDITS'} and determining which production is applicable.
     
-    In order to solve this issue, one must choose a different keyword for each of the productions, or merge the two options to have the same representation in the parse tree.
+    In order to solve this issue, one must choose a different keyword for each of the productions, merge the two options to have the same representation in the parse tree, or refactor the parser so that the two options are parsed together.
+    We did not merge the productions because that would make the parser less maintainable.
   
   \item[View]
     This ambiguity in the grammar arises from the \texttt{FancyViewDef} and \texttt{ViewDefLegacy} productions:
@@ -132,7 +134,7 @@ In this section we explain why each of the remaining try statements are necessar
     In order to solve this issue, we advise to drop the legacy statement since it does not offer added functionality.
     
   \item[Content]
-    This ambiguity in the grammar arises from the \texttt{Content} production:
+    The backtracking in the \texttt{Content} production does not arise from the grammar:
     \begin{quote}
       \texttt{Content ::= `[' (RecordList | RecordObsList)? `]'} where:\\
       \texttt{RecordList ::= Record (`,' Record)*}\\
@@ -141,12 +143,51 @@ In this section we explain why each of the remaining try statements are necessar
       \texttt{RecordObs ::= `(' String `,' String `)'}
     \end{quote}
     
+    As you see, the \texttt{RecordList} production starts with a \texttt{String}, while the \texttt{RecordObsList} starts with a `('.
+    TODO: Why do we need try here?
+    
   \item[Multiplicity]
-    pFun.pMult
+    This ambiguity in the grammar arises from the \texttt{Mult} production:
+    \begin{quote}
+        \texttt{Mult ::= (`0' | `1') `..' (`1' | `*') | `*' | `1'}
+    \end{quote}
+    When the parser encounters \texttt{`1'}, it cannot define whether it found the first or the last option.
+    The parser must therefore read the next token before choosing the production.
+    
+    In order to solve this issue, we advise to refactor the grammar (and the parser) to have the following production:
+    \begin{quote}
+        \texttt{Mult ::= `0' `..' (`1' | `*') | `1'(`..' (`1' | `*'))? | `*'}
+    \end{quote}
+    %
+    We did not refactor the code in this matter because the \texttt{pMult} parser does more than only parsing: it also changes the representation of the found constructions before saving the parse tree.
   
   \item[Labels and Terms]
-    opLabelProps + pTerm in pIndex and pViewAtt, pLabel + pRule in pRuleDef
+    In the productions \texttt{Index}, \texttt{ViewAtt} and \texttt{RuleDef}, we see very similar ambiguities:
+    \begin{quote}
+        \texttt{Index ::= `IDENT' Label ConceptRefPos `(' IndSegmentList ')'}\\
+        \texttt{ViewAtt ::= LabelProps? Term}\\
+        \texttt{RuleDef ::= `RULE' (ADLid `:')? Rule Meaning* Message* Violation?}\\
+        wherein:
+        \texttt{Label ::= ADLid ':'}\\
+        \texttt{LabelProps ::= ADLid (`{' ADLidListList `}')? `:'}\\
+        \texttt{Rule ::= Term ('=' Term | '|-' Term)?}\\
+        and one of the possible productions of \texttt{Term} is:\\
+        \texttt{Term ::= Trm2 ::= Trm3 ::= Trm4 ::= Trm5 ::= Trm6 ::= RelationRef ::= NamedRel ::= Varid Sign?}\\
+        while:\\
+        \texttt{ADLid ::= Varid | Conid | String}
+    \end{quote}
+    
+    What happens here is that when the parser encounters a \texttt{Varid}, it cannot define whether it is part of the (optional) \texttt{Label} production or if no \texttt{Label} was given and the \texttt{Varid} is part of a \texttt{Term}/\texttt{NamedRel} production.
+    
+    Since the \texttt{Term} grammar is quite complex, this issue may severely impact the parser's performance.
+    This is probably the most harmful of the ambiguities mentioned.
+    However, it can only be solved by adding a symbol before the \texttt{Term} production (e.g. making the `:' non-optional).
+    
+    TODO: (ADLid `:')? should be Label? in RuleDef\\
+    TODO: RelSign doesn't exist. Should be NamedRel\\
 \end{description}
+%
+Please note that in order to have proper backtracking with correct error messages, Parsec may require two try-statements \citenac{try-harmful}.
 
 \subsection{Parse tree (R-M)}
 \label{subsec:design-parse-tree}
