@@ -82,6 +82,8 @@ For developers, the main differences between Parsec and the uulib are:
     Se also the error analysis in \autoref{subsec:design-errors}.
   \item Error messages are customizable by using the <?> operator.
     This is also suggested in \autoref{subsec:design-next-steps}.
+  \item Some combinators have a different name, e.g. one must use \texttt{option} instead of \texttt{opt}.
+    Assuming the documentation found on Hackage is clear and sufficient, interface differences are not documented here.
 \end{itemize}
 
 \subsubsection{Backtracking (D)}
@@ -162,11 +164,11 @@ In this section we explain why each of the remaining try statements are necessar
     We did not refactor the code in this matter because the \texttt{pMult} parser does more than only parsing: it also changes the representation of the found constructions before saving the parse tree.
   
   \item[Labels and Terms]
-    In the productions \texttt{Index}, \texttt{ViewAtt} and \texttt{RuleDef}, we see very similar ambiguities:
+    In the productions \texttt{IndAtt}, \texttt{ViewAtt} and \texttt{RuleDef}, we see very similar ambiguities:
     \begin{quote}
-        \texttt{Index ::= `IDENT' Label ConceptRefPos `(' IndSegmentList ')'}\\
+        \texttt{IndAtt ::= LabelProps? Term}\\
         \texttt{ViewAtt ::= LabelProps? Term}\\
-        \texttt{RuleDef ::= `RULE' (ADLid `:')? Rule Meaning* Message* Violation?}\\
+        \texttt{RuleDef ::= `RULE' Label? Rule Meaning* Message* Violation?}\\
         wherein:
         \texttt{Label ::= ADLid ':'}\\
         \texttt{LabelProps ::= ADLid (`{' ADLidListList `}')? `:'}\\
@@ -183,8 +185,7 @@ In this section we explain why each of the remaining try statements are necessar
     This is probably the most harmful of the ambiguities mentioned.
     However, it can only be solved by adding a symbol before the \texttt{Term} production (e.g. making the `:' non-optional).
     
-    TODO: (ADLid `:')? should be Label? in RuleDef\\
-    TODO: RelSign doesn't exist. Should be NamedRel\\
+    TODO: IndAtt and ViewAtt are the same parser.
 \end{description}
 %
 Please note that in order to have proper backtracking with correct error messages, Parsec may require two try-statements \citenac{try-harmful}.
