@@ -135,19 +135,6 @@ In this section we explain why each of the remaining try statements are necessar
     
     In order to solve this issue, we advise to drop the legacy statement since it does not offer added functionality.
     
-  \item[Content]
-    The backtracking in the \texttt{Content} production does not arise from the grammar:
-    \begin{quote}
-      \texttt{Content ::= `[' (RecordList | RecordObsList)? `]'} where:\\
-      \texttt{RecordList ::= Record (`,' Record)*}\\
-      \texttt{Record ::= String `*' String}\\
-      \texttt{RecordObsList ::= RecordObsList (`;' RecordObsList)}\\
-      \texttt{RecordObs ::= `(' String `,' String `)'}
-    \end{quote}
-    
-    As you see, the \texttt{RecordList} production starts with a \texttt{String}, while the \texttt{RecordObsList} starts with a `('.
-    TODO: Why do we need try here?
-    
   \item[Multiplicity]
     This ambiguity in the grammar arises from the \texttt{Mult} production:
     \begin{quote}
