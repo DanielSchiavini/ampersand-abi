@@ -51,51 +51,51 @@
       The tokens work as an interface between the lexer and the parsing library.
   \end{description}
 
-\subsection{Changes due to Parsec (D)}
-TODO: Show the differences between uulib and Parsec, e.g. the try for backtracking.
-
 \subsection{Lexer (M)}
 \label{subsec:lexer}
 TODO: describe how the lexer works, and the improvements done to it.
 
-\subsection{Parser (D)}
+\subsection{Parser (R-M)}
 \label{subsec:design-parser}
 The mainstream design of the new parser has not changed much.
 Basically, each EBNF rule receives its own parser function.
-Thanks to the combinator operators, the parsing function also looks very similar to the EBNF.
+Thanks to the combinator operators, each parsing function also looks very similar to its corresponding EBNF.
 
 The applicative interface is consistently used.
 By changing details of the implementation, e.g. the order of the fields in the parse tree, we have made many of the `rebuild' functions unnecessary.
-For some parsers the amount of changes necessary in order to use a purely applicative style was too large or even impossible with the current parse tree.
+For some parsers the amount of changes necessary in order to remove supporting functions was too large or even impossible with the current parse tree.
 
-\subsubsection{Parsec (D)}
+Note that in parts of the parser, the function syntax has substituted the record syntax for creating data objects.
+This was done only when the code readability could be improved by doing so.
+
+\subsubsection{Parsec}
 \label{subsec:design-parsing-lib}
 As mentioned earlier, and described in research context document \citenac{parsing}, the new Ampersand parser has been rebuilt with another parsing library, namely Parsec.
 However, for the Ampersand developers, the source code of the parser will still look very familiar, thanks to the applicative interface.
 For developers, the main differences between Parsec and the uulib are:
 \begin{itemize}
   \item Parsec does not backtrack by default.
-    In order to enable backtracking, the `try' function must be used.
+    In order to enable backtracking, the \texttt{try} function must be used.
     This is described in \autoref{subsec:backtracking}.
   \item Parsec does not try to solve parsing errors.
     The parser stops immediately after the first issue.
-    Se also the error analysis in \autoref{subsec:design-errors}.
-  \item Error messages are customizable by using the <?> operator.
+    See also the error analysis in \autoref{subsec:design-errors}.
+  \item Error messages are customizable by using the \texttt{<?>} operator.
     This is also suggested in \autoref{subsec:design-next-steps}.
   \item Some combinators have a different name, e.g. one must use \texttt{option} instead of \texttt{opt}.
     Assuming the documentation found on Hackage is clear and sufficient, interface differences are not documented here.
 \end{itemize}
 
-\subsubsection{Backtracking (D)}
+\subsubsection{Backtracking}
 \label{subsec:backtracking}
-In order to explain the differences on backtracking behavior between the uulib and Parsec, we quote Doaitse Swierstra here:
+In order to explain the differences on backtracking behavior between the uulib and Parsec, we quote here Doaitse Swierstra, the author of the uulib \citenac{swierstra-parsec}:
 \begin{quote}
 \textsl{To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in uu-parsinglib. Effectively the latter is a try which just looks ahead one symbol. In that respect it is less powerful than the try construct from Parsec, in which you specify that a specific construct has to be present completely. And then there is the underlying different overall strategy. Parsec uses a back-tracking strategy with explicit tries to commit, whereas uu-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.}
 \end{quote}
 %
 We can therefore conclude that the try-statements in Parsec are undesirable.
 However, they are necessary when the grammar is ambiguous.
-In this section we explain why each of the remaining try statements are necessary, and how the issues with the grammar can be resolved:
+In this section we explain why each of the remaining try statements are necessary, and how these issues can be resolved:
 \begin{description}
   \item[Classify]
     This ambiguity in the grammar arises from the \texttt{Classify} and \texttt{GenDef} productions:
@@ -130,49 +130,55 @@ In this section we explain why each of the remaining try statements are necessar
     \end{quote}
     When the parser encounters \texttt{`VIEW'}, it cannot define whether it found a \texttt{FancyViewDef} or a \texttt{ViewDefLegacy} production.
     In this case, defining which construction is applicable is even more complicated.
-    This decision must, in the worst case, be delayed until the parser encounters a `\{' or ')'.
+    This decision must, in the worst case, be delayed until the parser encounters a \texttt{`\{'} or \texttt{'('}.
     That's because the productions \texttt{Label} and \texttt{LabelProps} are not disjoint, and \texttt{`DEFAULT'} is optional.
     
-    In order to solve this issue, we advise to drop the legacy statement since it does not offer added functionality.
+    In order to solve this issue, we advise to merge or drop the legacy statement.
     
   \item[Multiplicity]
     This ambiguity in the grammar arises from the \texttt{Mult} production:
     \begin{quote}
         \texttt{Mult ::= (`0' | `1') `..' (`1' | `*') | `*' | `1'}
     \end{quote}
-    When the parser encounters \texttt{`1'}, it cannot define whether it found the first or the last option.
-    The parser must therefore read the next token before choosing the production.
+    When the parser encounters \texttt{`1'}, it cannot define whether it found the first or the last production.
+    The parser must therefore read the next token before choosing the right option.
     
     In order to solve this issue, we advise to refactor the grammar (and the parser) to have the following production:
     \begin{quote}
         \texttt{Mult ::= `0' `..' (`1' | `*') | `1'(`..' (`1' | `*'))? | `*'}
     \end{quote}
     %
-    We did not refactor the code in this matter because the \texttt{pMult} parser does more than only parsing: it also changes the representation of the found constructions before saving the parse tree.
+    We did not refactor the code in this matter because the \texttt{pMult} parser does more than only parsing: it also changes the representation of the found constructions before creating the parse tree.
   
   \item[Labels and Terms]
     In the productions \texttt{IndAtt}, \texttt{ViewAtt} and \texttt{RuleDef}, we see very similar ambiguities:
     \begin{quote}
         \texttt{IndAtt ::= LabelProps? Term}\\
         \texttt{ViewAtt ::= LabelProps? Term}\\
-        \texttt{RuleDef ::= `RULE' Label? Rule Meaning* Message* Violation?}\\
-        wherein:
+        \texttt{RuleDef ::= `RULE' Label? Rule Meaning* Message* Violation?}
+    \end{quote}
+    Wherein:
+    \begin{quote}
         \texttt{Label ::= ADLid ':'}\\
         \texttt{LabelProps ::= ADLid (`{' ADLidListList `}')? `:'}\\
-        \texttt{Rule ::= Term ('=' Term | '|-' Term)?}\\
-        and one of the possible productions of \texttt{Term} is:\\
-        \texttt{Term ::= Trm2 ::= Trm3 ::= Trm4 ::= Trm5 ::= Trm6 ::= RelationRef ::= NamedRel ::= Varid Sign?}\\
-        while:\\
+        \texttt{Rule ::= Term ('=' Term | '|-' Term)?}
+    \end{quote}
+    And one of the possible productions of \texttt{Term} is:
+    \begin{quote}
+        \texttt{Term ::= Trm2 ::= Trm3 ::= Trm4 ::= Trm5 ::= Trm6 ::= RelationRef ::= NamedRel ::= Varid Sign?}
+    \end{quote}
+    While:
+    \begin{quote}
         \texttt{ADLid ::= Varid | Conid | String}
     \end{quote}
     
     What happens here is that when the parser encounters a \texttt{Varid}, it cannot define whether it is part of the (optional) \texttt{Label} production or if no \texttt{Label} was given and the \texttt{Varid} is part of a \texttt{Term}/\texttt{NamedRel} production.
     
-    Since the \texttt{Term} grammar is quite complex, this issue may severely impact the parser's performance.
+    Due to the quite complex grammar for the \texttt{Term} production, this issue may severely impact the parser's performance.
     This is probably the most harmful of the ambiguities mentioned.
     However, it can only be solved by adding a symbol before the \texttt{Term} production (e.g. making the `:' non-optional).
     
-    TODO: IndAtt and ViewAtt are the same parser.
+    \textbf{TODO: IndAtt and ViewAtt are the same parser.}
 \end{description}
 %
 Please note that in order to have proper backtracking with correct error messages, Parsec may require two try-statements \citenac{try-harmful}.

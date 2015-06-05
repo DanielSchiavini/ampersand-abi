@@ -3,7 +3,7 @@
 \section{Test Report}
 \label{sec:tests}
 
-\subsection{Test suite}
+\subsection{Test suite (R-M)}
   Together with the new parser, a test suite has been developed.
   This test suite has been used to verify the performance and correctness of the new parser.
   The source code can be found in the folder \texttt{src/Database/Design/Ampersand/Test} within the Ampersand repository.
@@ -30,11 +30,12 @@
     \item[TestScripts] retrieves a list of scripts that can be used for the different tests.
       It searches for tests within the folder \texttt{ArchitectureAndDesign}, and contains a list of scripts from the \texttt{ampersand-models} repository, that can be changed at a later moment if wished.
       Note that all the ADL-scripts listed in this section must be correct for the parser and the type checker.
+      During development, the list was limited to the scripts that could be successfully executed by the original ampersand version.
     
     \item[ParserTest] exports three functions that are the core of testing the parser:
       \begin{itemize}
         \item \texttt{parseScripts} receives a list of files to parse, and checks that every file can be parsed successfully.
-        \item \texttt{parseReparse} tries to parse a file, and if sucessfull, pretty-prints the result and parses it again.
+        \item \texttt{parseReparse} tries to parse a file, and if successful, pretty-prints the result and parses it again.
         \item \texttt{showErrors} prints the given parse errors to the output.
       \end{itemize}
     
@@ -91,7 +92,8 @@ TODO: Compare the compiler warnings before and after the refactoring.
   Since evaluating the quality of error messages is manual work, the errors have not been included in the test suite.
   TODO: Give Maarten's findings on how the errors have improved. Maybe the tables should be an attachment, but the summary should be here.
 
-\subsection{Next steps}
+\subsection{Next steps (R-M)}
+\label{subsec:test-next-steps}
   In this section we name a couple changes that can be done in the test suite in the future:
   \begin{description}
     \item[Sentinel] During the development of the new parser, we worked in a separate fork.
