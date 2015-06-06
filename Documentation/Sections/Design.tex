@@ -56,7 +56,47 @@ TODO: Show the differences between uulib and Parsec, e.g. the try for backtracki
 
 \subsection{Lexer (M)}
 \label{subsec:lexer}
-TODO: describe how the lexer works, and the improvements done to it.
+The lexer module is responsible to split up the input stream into tokens.
+Tokens are meaningful pieces of the input strings that needs to be kept together together.
+
+\subsubsection{The rationale behind the new lexer}
+In the design of the new Ampersand parser, the question arose whether to keep the current scanner or to implement a new one.
+After the analysis of the error improvement areas, the main improvements were identified within the actual parser.
+The error feedback quality produced by the scanner module was higher and therefore, there was no stringent need to re-implement the scanner.
+On the other hand, given the aspect that Parsec was defined as the new Parser library, keeping the current scanner would have resulted in the utilization of 2 different libraries providing more of less the same functionality.
+To avoid a decrease in maintainability, the decision is made to implement the parser and scanner based on the same library.
+During the implementation of the lexer module, replacing the old scanner, additional attention was given to further improve the quality of the error messages
+The scanner module is renamed to the lexer module to stress the aspect that the principle of lexemes is used in the new scanner.
+
+\subsubsection{Lexer structure}
+
+
+The lexer is the main module, in which the actual lexing is done, and to do so, it it using the following submodules
+
+ \begin{description}
+ 
+    \item[LexerMonad] contains a monad definition that supports lexing with context.
+      It tracks for example the location in the input and the warnings that may be generated.
+    
+    \item[LexerMessage] contains functions to handle errors and warnings from the lexer.
+    
+    \item[LexerBinaryTrees] module responsible for searching binary trees in an efficient way, to support the token recognition.
+    
+    \item[LexerToken] contains the data structure that represents the input tokens for the lexer.
+      The tokens work as an interface between the lexer and the parsing library.
+  \end{description}
+
+Each token contains a part of the input string together with an identifier, defining the token content, and the position of the token in the input file.
+The token structure is defined as follows:
+
+data Token = Tok {	  tokLex :: Lexeme
+                		, tokPos :: FilePos }
+
+The lexeme is the combination of the token type and the actual token content, sliced from the input string.
+The FilePos is used to keep track of the original position of the lexeme in the input string.
+
+
+One of the first design questions in the design of the new Ampersand parser, was related to the existing scanner.
 
 \subsection{Parser (D)}
 \label{subsec:design-parser}
