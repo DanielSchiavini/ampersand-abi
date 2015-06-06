@@ -56,7 +56,7 @@ getFileRules fn = do file  <- readFile fn
                      return $ extractRules file
 
 getRules :: IO [String]
-getRules = do fs <- getFiles "../../../ampersand/src/Database/Design/Ampersand/Input/ADL1/" ".hs"
+getRules = do fs <- getFiles "../../ampersand/src/Database/Design/Ampersand/Input/ADL1/" ".hs"
               rules <- mapM getFileRules fs
               return $ concat rules
 
@@ -64,5 +64,5 @@ main :: IO ()
 main = do rules <- getRules
           let tex = map printEbnfRule rules
           writeFile "ADL.ebnf" (unlines rules)
-          writeFile "GenEbnf.tex" (unlines tex)
+          writeFile "../Documentation/Figures/GenEbnf.tex" (unlines tex)
           return ()
