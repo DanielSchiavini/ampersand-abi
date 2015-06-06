@@ -56,13 +56,6 @@
 
  \begin{figure}[H]
   \centering
-  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/PatElem}
-  \caption*{\texttt{PatElem \small::=  RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Purpose | Population}}
-  \label{fig:ebnf-PatElem}
- \end{figure}
-
- \begin{figure}[H]
-  \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/ProcessDef}
   \caption*{\texttt{ProcessDef \small::=  `PROCESS' ConceptName ProcElem* `ENDPROCESS'}}
   \label{fig:ebnf-ProcessDef}
@@ -70,9 +63,9 @@
 
  \begin{figure}[H]
   \centering
-  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/ProcElem}
-  \caption*{\texttt{ProcElem \small::=  RuleDef | Classify | RelationDef | RoleRule | RoleRelation | ConceptDef | GenDef | Index | ViewDef | Purpose | Population}}
-  \label{fig:ebnf-ProcElem}
+  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/PatElem}
+  \caption*{\texttt{PatElem \small::=  RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Purpose | Population}}
+  \label{fig:ebnf-PatElem}
  \end{figure}
 
  \begin{figure}[H]
@@ -99,7 +92,7 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/RuleDef}
-  \caption*{\texttt{RuleDef \small::=  `RULE' (ADLid `:')? Rule Meaning* Message* Violation?}}
+  \caption*{\texttt{RuleDef \small::=  `RULE' Label? Rule Meaning* Message* Violation?}}
   \label{fig:ebnf-RuleDef}
  \end{figure}
 
@@ -119,9 +112,9 @@
 
  \begin{figure}[H]
   \centering
-  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/PairViewSegmentList}
-  \caption*{\texttt{PairViewSegmentList \small::=  PairViewSegment (`,' PairViewSegment)*}}
-  \label{fig:ebnf-PairViewSegmentList}
+  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/PairViewSegmentList }
+  \caption*{\texttt{PairViewSegmentList  \small::=  PairViewSegment (`,' PairViewSegment)*}}
+  \label{fig:ebnf-PairViewSegmentList }
  \end{figure}
 
  \begin{figure}[H]
@@ -218,22 +211,8 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/IndSegmentList}
-  \caption*{\texttt{IndSegmentList \small::=  IndSegment (`,' IndSegment)}}
+  \caption*{\texttt{IndSegmentList \small::=  Att (`,' Att)*}}
   \label{fig:ebnf-IndSegmentList}
- \end{figure}
-
- \begin{figure}[H]
-  \centering
-  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/IndSegment}
-  \caption*{\texttt{IndSegment \small::=  IndAtt}}
-  \label{fig:ebnf-IndSegment}
- \end{figure}
-
- \begin{figure}[H]
-  \centering
-  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/IndAtt}
-  \caption*{\texttt{IndAtt \small::=  LabelProps Term | Term}}
-  \label{fig:ebnf-IndAtt}
  \end{figure}
 
  \begin{figure}[H]
@@ -246,7 +225,7 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/FancyViewDef}
-  \caption*{\texttt{FancyViewDef \small::=  `VIEW' pLabel ConceptOneRefPos `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'}}
+  \caption*{\texttt{FancyViewDef \small::=  `VIEW' Label ConceptOneRefPos `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'}}
   \label{fig:ebnf-FancyViewDef}
  \end{figure}
 
@@ -288,15 +267,8 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/ViewSegment}
-  \caption*{\texttt{ViewSegment \small::=  ViewAtt | `TXT' String | `PRIMHTML' String}}
+  \caption*{\texttt{ViewSegment \small::=  Att | `TXT' String | `PRIMHTML' String}}
   \label{fig:ebnf-ViewSegment}
- \end{figure}
-
- \begin{figure}[H]
-  \centering
-  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/ViewAtt}
-  \caption*{\texttt{ViewAtt \small::=  LabelProps? Term}}
-  \label{fig:ebnf-ViewAtt}
  \end{figure}
 
  \begin{figure}[H]
@@ -379,14 +351,14 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Ref2Obj}
-  \caption*{\texttt{Ref2Obj \small::=  `CONCEPT' ConceptName | `RELATION' RelSign | `RULE' ADLid | `IDENT' ADLid | `VIEW' ADLid | `PATTERN' ADLid | `PROCESS' ADLid | `INTERFACE' ADLid | `CONTEXT' ADLid}}
+  \caption*{\texttt{Ref2Obj \small::=  `CONCEPT' ConceptName | `RELATION' NamedRel | `RULE' ADLid | `IDENT' ADLid | `VIEW' ADLid | `PATTERN' ADLid | `PROCESS' ADLid | `INTERFACE' ADLid | `CONTEXT' ADLid}}
   \label{fig:ebnf-Ref2Obj}
  \end{figure}
 
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Population}
-  \caption*{\texttt{Population \small::=  `POPULATION' NamedRel `CONTAINS' Content | `POPULATION' ConceptName `CONTAINS' `[' ValueList `]'}}
+  \caption*{\texttt{Population \small::=  `POPULATION' (NamedRel `CONTAINS' Content | ConceptName `CONTAINS' `[' ValueList `]')}}
   \label{fig:ebnf-Population}
  \end{figure}
 
@@ -491,8 +463,15 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/RelationRef}
-  \caption*{\texttt{RelationRef \small::=  RelSign | `I' (`[' ConceptOneRef `]')? | `V' Sign? | Atom (`[' ConceptOneRef `]')?}}
+  \caption*{\texttt{RelationRef \small::=  NamedRel | `I' (`[' ConceptOneRef `]')? | `V' Sign? | Atom (`[' ConceptOneRef `]')?}}
   \label{fig:ebnf-RelationRef}
+ \end{figure}
+
+ \begin{figure}[H]
+  \centering
+  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Att}
+  \caption*{\texttt{Att \small::=  LabelProps? Term}}
+  \label{fig:ebnf-Att}
  \end{figure}
 
  \begin{figure}[H]
@@ -561,7 +540,7 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Content}
-  \caption*{\texttt{Content \small::=  `[' RecordList? `]' | `[' RecordObsList? `]'}}
+  \caption*{\texttt{Content \small::=  `[' (RecordList | RecordObsList)? `]'}}
   \label{fig:ebnf-Content}
  \end{figure}
 
