@@ -5,11 +5,16 @@ call:cleanup
 
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
 pdflatex Documentation>nul
+cd Figures
+runhaskell GenParseTree.hs
+runhaskell GenEbnf.hs
+cd ..
 bibtex  ac
 bibtex  nac
 pdflatex Documentation>nul
 pdflatex Documentation>nul
 makeglossaries Documentation
+pdflatex Documentation>nul
 pdflatex Documentation>nul
 find "Warning" Documentation.log
 where bibtex>nul         || echo Error: Could not find bibtex.exe in the PATH
