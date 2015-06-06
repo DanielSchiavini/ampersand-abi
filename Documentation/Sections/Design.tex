@@ -176,8 +176,6 @@ In this section we explain why each of the remaining try statements are necessar
     Due to the quite complex grammar for the \texttt{Term} production, this issue may severely impact the parser's performance.
     This is probably the most harmful of the ambiguities mentioned.
     However, it can only be solved by adding a symbol before the \texttt{Term} production (e.g. making the `:' non-optional).
-    
-    \textbf{TODO: IndAtt and ViewAtt are the same parser.}
 \end{description}
 %
 Please note that in order to have proper backtracking with correct error messages, Parsec may require two try-statements \citenac{try-harmful}.
