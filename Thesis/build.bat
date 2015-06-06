@@ -9,6 +9,7 @@ pdflatex Thesis>nul
 echo Running bibtex...
 bibtex  ac
 bibtex  nac
+bibtex  pr
 pdflatex Thesis>nul
 pdflatex Thesis>nul
 echo Glossary...
