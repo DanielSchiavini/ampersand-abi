@@ -57,7 +57,7 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/ProcessDef}
-  \caption*{\texttt{ProcessDef \small::=  `PROCESS' ConceptName ProcElem* `ENDPROCESS'}}
+  \caption*{\texttt{ProcessDef \small::=  `PROCESS' ConceptName PatElem* `ENDPROCESS'}}
   \label{fig:ebnf-ProcessDef}
  \end{figure}
 
@@ -112,9 +112,9 @@
 
  \begin{figure}[H]
   \centering
-  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/PairViewSegmentList }
-  \caption*{\texttt{PairViewSegmentList  \small::=  PairViewSegment (`,' PairViewSegment)*}}
-  \label{fig:ebnf-PairViewSegmentList }
+  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/PairViewSegmentList}
+  \caption*{\texttt{PairViewSegmentList \small::=  PairViewSegment (`,' PairViewSegment)*}}
+  \label{fig:ebnf-PairViewSegmentList}
  \end{figure}
 
  \begin{figure}[H]
@@ -204,7 +204,7 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Index}
-  \caption*{\texttt{Index \small::=  `IDENT' Label ConceptRefPos `(' IndSegmentList `)'}}
+  \caption*{\texttt{Index \small::=  `IDENT' Label ConceptRef `(' IndSegmentList `)'}}
   \label{fig:ebnf-Index}
  \end{figure}
 
@@ -225,7 +225,7 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/FancyViewDef}
-  \caption*{\texttt{FancyViewDef \small::=  `VIEW' Label ConceptOneRefPos `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'}}
+  \caption*{\texttt{FancyViewDef \small::=  `VIEW' Label ConceptOneRef `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'}}
   \label{fig:ebnf-FancyViewDef}
  \end{figure}
 
@@ -253,7 +253,7 @@
  \begin{figure}[H]
   \centering
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/ViewDefLegacy}
-  \caption*{\texttt{ViewDefLegacy \small::=  (`VIEW' | `KEY') LabelProps ConceptOneRefPos `(' ViewSegmentList `)'}}
+  \caption*{\texttt{ViewDefLegacy \small::=  (`VIEW' | `KEY') LabelProps ConceptOneRef `(' ViewSegmentList `)'}}
   \label{fig:ebnf-ViewDefLegacy}
  \end{figure}
 
@@ -409,6 +409,13 @@
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Message}
   \caption*{\texttt{Message \small::=  `MESSAGE' Markup}}
   \label{fig:ebnf-Message}
+ \end{figure}
+
+ \begin{figure}[H]
+  \centering
+  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Markup}
+  \caption*{\texttt{Markup \small::=  LanguageRef? TextMarkup? (String | Expl)}}
+  \label{fig:ebnf-Markup}
  \end{figure}
 
  \begin{figure}[H]
@@ -626,5 +633,12 @@
   \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Varid}
   \caption*{\texttt{Varid \small::=  (LowerChar | `\_') (Char | `\_')*}}
   \label{fig:ebnf-Varid}
+ \end{figure}
+
+ \begin{figure}[H]
+  \centering
+  \includegraphics[resolution=120,max size={\textwidth}{\textheight}]{Figures/Ebnf/Atom}
+  \caption*{\texttt{Atom \small::=  "`" Any* "'"}}
+  \label{fig:ebnf-Atom}
  \end{figure}
 
