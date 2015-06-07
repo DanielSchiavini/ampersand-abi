@@ -200,13 +200,12 @@ In this section we explain why each of the remaining try statements are necessar
         \texttt{Mult ::= `0' `..' (`1' | `*') | `1'(`..' (`1' | `*'))? | `*'}
     \end{quote}
     %
-    We did not refactor the code in this matter because the \texttt{pMult} parser does more than only parsing: it also changes the representation of the found constructions before creating the parse tree.
+    We did not refactor the code in this manner because the \texttt{pMult} parser does more than only parsing: it also changes the representation of the found constructions before creating the parse tree.
   
   \item[Labels and Terms]
-    In the productions \texttt{IndAtt}, \texttt{ViewAtt} and \texttt{RuleDef}, we see very similar ambiguities:
+    In the productions \texttt{Att} and \texttt{RuleDef}, we see very similar ambiguities:
     \begin{quote}
-        \texttt{IndAtt ::= LabelProps? Term}\\
-        \texttt{ViewAtt ::= LabelProps? Term}\\
+        \texttt{Att ::= LabelProps? Term}\\
         \texttt{RuleDef ::= `RULE' Label? Rule Meaning* Message* Violation?}
     \end{quote}
     Wherein:

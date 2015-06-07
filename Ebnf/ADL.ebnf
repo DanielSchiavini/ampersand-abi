@@ -6,6 +6,7 @@ LanguageRef ::= 'IN' ('DUTCH' | 'ENGLISH')
 TextMarkup ::= 'REST' | 'HTML' | 'LATEX' | 'MARKDOWN'
 Meta ::= 'META' String String
 PatternDef ::= 'PATTERN' ConceptName PatElem* 'ENDPATTERN'
+<<<<<<< .merge_file_a10376
 PatElem ::= RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Purpose | Population
 ProcessDef ::= 'PROCESS' ConceptName ProcElem* 'ENDPROCESS'
 ProcElem ::= RuleDef | Classify | RelationDef | RoleRule | RoleRelation | ConceptDef | GenDef | Index | ViewDef | Purpose | Population
@@ -16,6 +17,17 @@ RuleDef ::= 'RULE' (ADLid ':')? Rule Meaning* Message* Violation?
 Violation ::= 'VIOLATION' PairView
 PairView ::= '(' PairViewSegmentList ')'
 PairViewSegmentList ::= PairViewSegment (',' PairViewSegment)*
+=======
+ProcessDef ::= 'PROCESS' ConceptName ProcElem* 'ENDPROCESS'
+PatElem ::= RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Purpose | Population
+Classify ::= 'CLASSIFY' ConceptRef 'IS' Cterm
+Cterm ::= Cterm1 ('/\' Cterm1)*
+Cterm1 ::= ConceptRef | ('('? Cterm ')'?)
+RuleDef ::= 'RULE' Label? Rule Meaning* Message* Violation?
+Violation ::= 'VIOLATION' PairView
+PairView ::= '(' PairViewSegmentList ')'
+PairViewSegmentList  ::= PairViewSegment (',' PairViewSegment)*
+>>>>>>> .merge_file_a08492
 PairViewSegment ::= 'SRC' Term | 'TGT' Term | 'TXT' String
 RelationDef ::= (RelationNew | RelationOld) 'BYPLUG'? Props? 'BYPLUG'? ('PRAGMA' String+)? Meaning* ('=' Content)? '.'?
 RelationNew ::= 'RELATION' Varid Sign
@@ -29,18 +41,28 @@ Mult ::= ('0' | '1') '..' ('1' | '*') | '*' | '1'
 ConceptDef ::= 'CONCEPT' ConceptName 'BYPLUG'? String ('TYPE' String)? String?
 GenDef ::= ('CLASSIFY' | 'SPEC') ConceptRef 'ISA' ConceptRef
 Index ::= 'IDENT' Label ConceptRefPos '(' IndSegmentList ')'
+<<<<<<< .merge_file_a10376
 IndSegmentList ::= IndSegment (',' IndSegment)
 IndSegment ::= IndAtt
 IndAtt ::= LabelProps Term | Term
 ViewDef ::= FancyViewDef | ViewDefLegacy
 FancyViewDef ::= 'VIEW' pLabel ConceptOneRefPos 'DEFAULT'? '{' ViewObjList '}' HtmlView? 'ENDVIEW'
+=======
+IndSegmentList ::= Att (',' Att)*
+ViewDef ::= FancyViewDef | ViewDefLegacy
+FancyViewDef ::= 'VIEW' Label ConceptOneRefPos 'DEFAULT'? '{' ViewObjList '}' HtmlView? 'ENDVIEW'
+>>>>>>> .merge_file_a08492
 ViewObjList ::= ViewObj (',' ViewObj)*
 ViewObj ::= Label Term
 HtmlView ::= 'HTML' 'TEMPLATE' String
 ViewDefLegacy ::= ('VIEW' | 'KEY') LabelProps ConceptOneRefPos '(' ViewSegmentList ')'
 ViewSegmentList ::= ViewSegment (',' ViewSegment)*
+<<<<<<< .merge_file_a10376
 ViewSegment ::= ViewAtt | 'TXT' String | 'PRIMHTML' String
 ViewAtt ::= LabelProps? Term
+=======
+ViewSegment ::= Att | 'TXT' String | 'PRIMHTML' String
+>>>>>>> .merge_file_a08492
 Interface ::= 'INTERFACE' ADLid 'CLASS'? (Conid | String) Params? InterfaceArgs? Roles? ':' Term SubInterface
 Params ::= '(' NamedRel ')'
 InterfaceArgs ::= '{' ADLidListList '}'
@@ -52,8 +74,13 @@ Box ::= '[' ObjDefList ']'
 Sqlplug ::= 'SQLPLUG' ObjDef
 Phpplug ::= 'PHPPLUG' ObjDef
 Purpose ::= 'PURPOSE' Ref2Obj LanguageRef? TextMarkup? ('REF' StringListSemi)? Expl
+<<<<<<< .merge_file_a10376
 Ref2Obj ::= 'CONCEPT' ConceptName | 'RELATION' RelSign | 'RULE' ADLid | 'IDENT' ADLid | 'VIEW' ADLid | 'PATTERN' ADLid | 'PROCESS' ADLid | 'INTERFACE' ADLid | 'CONTEXT' ADLid
 Population ::= 'POPULATION' NamedRel 'CONTAINS' Content | 'POPULATION' ConceptName 'CONTAINS' '[' ValueList ']'
+=======
+Ref2Obj ::= 'CONCEPT' ConceptName | 'RELATION' NamedRel | 'RULE' ADLid | 'IDENT' ADLid | 'VIEW' ADLid | 'PATTERN' ADLid | 'PROCESS' ADLid | 'INTERFACE' ADLid | 'CONTEXT' ADLid
+Population ::= 'POPULATION' (NamedRel 'CONTAINS' Content | ConceptName 'CONTAINS' '[' ValueList ']')
+>>>>>>> .merge_file_a08492
 RoleRelation ::= 'ROLE' RoleList 'EDITS' NamedRelList
 RoleRule ::= 'ROLE' RoleList 'MAINTAINS' ADLidList
 Role ::= ADLid
@@ -68,7 +95,12 @@ Trm3 ::= Trm4 ('/' Trm4 | '\' Trm4 | '<>' Trm4)?
 Trm4 ::= Trm5 ((';' Trm5)+ | ('!' Trm5)+ | ('#' Trm5)+)?
 Trm5 ::= '-'* Trm6 ('~' | '*' | '+')*
 Trm6 ::= RelationRef | '(' Term ')'
+<<<<<<< .merge_file_a10376
 RelationRef ::= RelSign | 'I' ('[' ConceptOneRef ']')? | 'V' Sign? | Atom ('[' ConceptOneRef ']')?
+=======
+RelationRef ::= NamedRel | 'I' ('[' ConceptOneRef ']')? | 'V' Sign? | Atom ('[' ConceptOneRef ']')?
+Att ::= LabelProps? Term
+>>>>>>> .merge_file_a08492
 NamedRelList ::= NamedRel (',' NamedRel)*
 NamedRel ::= Varid Sign?
 Sign ::= '[' ConceptOneRef ('*' ConceptOneRef)? ']'
@@ -78,7 +110,11 @@ ConceptRef ::= ConceptName
 ConceptOneRef ::= 'ONE' | ConceptRef
 LabelProps ::= ADLid ('{' ADLidListList '}')? ':'
 Label ::= ADLid ':'
+<<<<<<< .merge_file_a10376
 Content ::= '[' RecordList? ']' | '[' RecordObsList? ']'
+=======
+Content ::= '[' (RecordList | RecordObsList)? ']'
+>>>>>>> .merge_file_a08492
 RecordList ::= Record (',' Record)*
 Record ::= String '*' String
 RecordObsList ::= RecordObsList (';' RecordObsList)
@@ -90,4 +126,8 @@ Conid ::= UpperChar (Char | '_')*
 String ::= '"' Any* '"'
 StringListSemi ::= String (';' String)*
 Expl ::= '{+' Any* '-}'
+<<<<<<< .merge_file_a10376
 Varid ::= (LowerChar | '_') (Char | '_')*
+=======
+Varid ::= (LowerChar | '_') (Char | '_')*
+>>>>>>> .merge_file_a08492
