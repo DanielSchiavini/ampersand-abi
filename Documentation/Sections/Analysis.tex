@@ -36,8 +36,26 @@ Finally, we analyze the parser in \autoref{subsec:analysis-parser} and the gener
 \label{subsec:analysis-grammar}
 \dict{EBNF}{Extended Backus-Naur Form}%
 \dict{Extended Backus-Naur Form}{Notation technique for documenting context-free grammars}%
-TODO: Describe the EBNF shortly (actual EBNF is in the appendix).\\
-TODO: Note that this EBNF was not available, but we had to derive it from the parser ourselves.
+
+\subsection{Getting the EBNF in good shape}
+The Ampersand syntax is described using the EBNF notation. 
+At the beginning of the project, we noticed that the existing EBNF diagram was not in line anymore with the actual syntax of Ampersand.
+As the EBNF is a crucial source of information in building the new parser, the first focus was to update the old EBNF to represent the actual Ampersand Syntax.
+
+Through reverse engineering, we checked all Haskell functions on the actual syntax they implement.
+In the source of the new parser, all the syntax notations are placed above the actual parser function to support code maintainability.
+
+The derived, and up to date, syntax is visualized using a railroad diagram, an ideal technique to visualize context free grammars.
+Several railroad diagram generators are available on the internet, free of charge.
+We used the railroad diagram generator created by Gunter Rademacher, available on http://bottlecaps.de/rr/ui.
+During the actual generation, the generator failed on the Ampersand Syntax, more precisely on the statement: Exp4 ::= Exp5 (( ';' Exp5 )* | ('!' Exp5)*)
+Convinced of the correctness of the EBNF statement, we contacted the owner of the tool, and he discovered a bug in his tool which he corrected promptly.
+
+\subsection{The actual EBNF diagram}
+
+TODO: Show/describe the EBNF (maybe actual EBNF as attachment).
+TODO: Note that this EBNF was not available, but we had to derive it from the parser.
+TODO: Note that we helped the railroad site to resolve a bug.
 
 One interesting plus is that during the project we found a bug in the Railroad Diagram Generator.
 The tool would crash with the \hyperref[fig:ebnf-Trm4]{\texttt{Trm4}} expressions.
