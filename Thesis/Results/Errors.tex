@@ -97,6 +97,8 @@ By implementing the new parser, an improvement of 360\% is made towards the crea
 
 One bad error message remains in the system.
 After analysis, the resolution of this remaining bad error would require too much effort, hence increased complexity, compared to the value gain.
+The error in question is thrown when the \texttt{Meta} statement is used with only one string value. 
+Given the simple structure of the notation, we assume that the reference to the line number of the \texttt{Meta} is sufficient although the error message is unclear.
 Therefore, this message is kept as is.
 
 TODO: What is the effort to improve the average errors? How bad are they, really? Maybe we should rename average to `acceptable'.
