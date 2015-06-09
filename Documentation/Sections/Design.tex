@@ -43,25 +43,24 @@
 
 \subsection{Lexer (M)}
 \label{subsec:lexer}
-The lexer module is responsible to split up the input stream into tokens.
-Tokens are meaningful pieces of the input strings that needs to be kept together together.
 
 \subsubsection{The rationale behind the new lexer}
-In the design of the new Ampersand parser, the question arose whether to keep the current scanner or to implement a new one.
-After the analysis of the error improvement areas, the main improvements were identified within the actual parser.
+In the design of the new Ampersand parser, the question arose whether to keep the current scanner, the former name of the lexer module within Ampersand, or to implement a new one.
+After the analysis of the error improvement areas, as described in \autoref{sec:analysis}, the main improvements were identified within the actual parser.
 The error feedback quality produced by the scanner module was higher and therefore, there was no stringent need to re-implement the scanner.
-On the other hand, given the aspect that Parsec was defined as the new Parser library, keeping the current scanner would have resulted in the utilization of 2 different libraries providing more of less the same functionality.
+On the other hand, given the aspect that Parsec was defined as the new parser library, keeping the current scanner would have resulted in the utilization of 2 different libraries providing more of less the same functionality.
+Besides the error message quality, other improvement topics were identified in \autoref{subsec:analysis-lexer}.
 To avoid a decrease in maintainability, the decision is made to implement the parser and scanner based on the same library.
-During the implementation of the lexer module, replacing the old scanner, additional attention was given to further improve the quality of the error messages
+During the implementation of the lexer module, replacing the old scanner, additional attention was given to further improve the quality of the error messages.
 The scanner module is renamed to the lexer module to stress the aspect that the principle of lexemes is used in the new scanner.
+Lexemes can be seen as the part of a token containing the actual language content besides the actual position information.
 
 The lexer is build based on the existing Helium lexer modules. 
 One of the main goals of this project create a compiler and a dialect of Haskell in which clear error messages were produced. TODO: reference
-The Lexer module in Helium contains interesting principles such as position monitoring, warnings and easy maintainable error messages.
+The lexer module in Helium contains interesting principles such as position monitoring, warnings and easy maintainable error messages.
 
 
 \subsubsection{Lexer structure}
-
 
 The lexer is the main module, in which the actual lexing is done, and to do so, it it using the following sub-modules:
 
@@ -87,25 +86,31 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
 	  This centralisation provides an easy entry point for the maintenance of the actual messages as the actual messages are no longer dispersed over the module functions.
 	  
     \item[LexerBinaryTrees] module responsible for searching binary trees in an efficient way, to support the token recognition.
-            This is the existing UU_BinaryTrees module which is renamed to match the used naming structure of the new lexer modules.
+            This is the existing UU\_BinaryTrees module which is renamed to match the used naming structure of the new lexer modules.
 
     \item[LexerToken] contains the data structure, and corresponding show function, that represents the input tokens for the lexer.
 	
   \end{description}
 
-Each token contains a part of the input string together with an identifier, defining the token content, and the position of the token in the input file.
+
+\subsubsection{New token structure}
+Based on the improvement topics mentioned in \autoref{subsec:analysis-lexer}, a new token structure is defined.
+
+Each token contains the lexeme: a part of the input string together with an identifier, defining the token content, and the position of the token in the input file.
 The token structure is defined as follows:
 
-data Token = Tok \{	  tokLex :: Lexeme
-                		, tokPos :: FilePos \}
+
+\begin{verbatim}
+  data Token = Tok {	  tokLex :: Lexeme
+                		    , tokPos :: FilePos   }
+\end{verbatim}
 
 The lexeme is the combination of the token type and the actual token content, sliced from the input string.
 FilePos is used to keep track of the original position of the lexeme in the input string.
 
 During the lexer processing, the input file is processed sequentially.
 All kind of differentiating formats are checked in a specific order, and each time a match is found, the lexeme is extracted from the input file and the token is created.
-In the token creation, function ReturnToken, the position and lexeme is grouped into the actual token and the next nested lexer iteration is launched.
-
+In the token creation, function \texttt{ReturnToken}, the position and lexeme is grouped into the actual token and the next nested lexer iteration is launched.
 
 \subsection{Parser (R-M)}
 \label{subsec:design-parser}
@@ -241,7 +246,37 @@ The updated parse tree is depicted in the appendices (\autoref{fig:parse-tree}).
 
 \subsection{Errors (M)}
 \label{subsec:design-errors}
-TODO: show what we've done to improve the errors.
+The proof of the pudding is in the eating, and therefore, our error message qualification definition from \autoref{subsec:analysis-errors} is applied on the new parser.
+All erroneous syntax statements recorded during the analysis phase are fed to the new parser to draw up the error message quality overview of the new parser.
+
+The results are placed in the overview below next to the results of the old parser as a reference point.
+The actual error list, containing the syntax statements with the corresponding error messages, is available as an appendix to this document.
+
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[h]
+  \centering
+	\begin{tabular}{llrlr}
+    Error quality  & \multicolumn{2}{c}{Old parser} & \multicolumn{2}{c}{New parser} \\
+		Good           & 19          & 22,35\%          & 70          & 82,35\%          \\
+		Average        & 18          & 21,18\%          & 14          & 16,47\%          \\
+		Bad            & 48          & 56,47\%          & 1           &  1,18\%          \\
+		\rowcolor[HTML]{BBBBBB}
+		\textbf{Total} & \textbf{85} & \textbf{100,00\%} & \textbf{85} & \textbf{100,00\%}
+	\end{tabular}
+  \caption{Error message comparison results}
+  \label{tab:error-messages-results}
+\end{table}
+
+The table clearly visualizes that there indeed was an issue with the error messages generated by the old Ampersand parser.
+By implementing the new parser, an improvement of 360\% is made towards the creation of good error messages in which 82\% of the generated error messages are good, compared to 22\% in the old Parser.
+
+One bad error message remains in the system.
+After analysis, the resolution of this remaining bad error would require too much effort, hence increased complexity, compared to the actual value gain.
+The error in question is thrown when the \texttt{Meta} statement is used with only one string value. 
+Given the simple structure of the notation, we assume that the reference to the line number of the \texttt{Meta} is sufficient although the error message is unclear.
+Therefore, this message is kept as is.
 
 \subsection{Next steps (M)}
 \label{subsec:design-next-steps}
