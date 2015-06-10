@@ -1,0 +1,39 @@
+% !TEX root = ../Thesis.tex
+
+% een korte samenvatting (plusminus 250 woorden)
+\begin{abstract} 
+Ampersand is een methode om businessregels een grotere rol te geven tijdens softwareontwikkeling.
+De Ampersand compiler converteert businessregels vanaf een scripttaal (ADL) naar ontwerpartefacten, documentatie en protypen.
+Naarmate het project groter wordt, krijgen gebruikers steeds meer last van de slechte kwaliteit van de Ampersand-foutberichten.
+Vooral nieuwe gebruikers worden hier door gehinderd en gefrustreerd.
+
+Onze opdracht, gegeven door Prof.dr. Stef Joosten, is om betere gebruikersfeedback te ontwerpen en implementeren in Ampersand.
+Ons eerst stap was om te onderzoeken wat goede berichten inhouden en hoe dat in Haskell geïmplementeerd wordt.
+De conclusie was om de parser te herschrijven met een andere bibliotheek (Parsec).
+Daarnaast hebben wij een onderzoek gedaan naar businessregels en de Ampersand-aanpak.
+
+Om de kwaliteit van de software te garanderen hebben wij een nieuwe testbibliotheek geïmplementeerd en de mogelijkheid om de parsetree te `prettyprinten’ als ADL-code.
+Daarnaast hebben we ons ingezet om de leesbaarheid, uitbreidbaarheid, onderhoudbaarheid, documentatie en performance van de parser te verbeteren.
+
+Naast de parser hebben wij ook aan de ADL-grammatica gewerkt.
+De documentatie ervan was niet up-to-date, dus wij hebben middels reverse-engineering de grammatica vastgelegd als codeannotaties en documentatie.
+Vervolgens hebben wij refactoring toegepast om de grammatica duidelijker en ondubbelzinnig te maken, zonder de ADL-taal te beïnvloeden.
+
+De nieuwe Ampersand parser is nu geïntegreerd en in productie genomen.
+Ten slotte, onze analyse toont aan dat de oude parser in 22\% van de gevallen goede foutberichten geeft, terwijl de nieuwe parser dit verbetert naar 82\%.
+Foutberichten met slechte kwaliteit dalen van 56\% naar 1\%.
+
+In deze presentatie laten wij zien hoe de nieuwe parser de eisen heeft vervuld en hoe deze verbeteringen het mogelijk maken dat Ampersand kan blijven groeien.
+Onze resultaten zullen tijd en inspanning sparen voor studenten, onderzoekers en commerciële gebruikers.
+
+~\\
+\centering{
+De presentatie zal gegeven worden op:\\
+Dinsdag 30 juni om 13u15\\
+~\\
+Open Universiteit Nederland\\
+Studiecentrum Utrecht\\
+Vondellaan 202, 3521 GZ Utrecht
+}
+
+\end{abstract}
