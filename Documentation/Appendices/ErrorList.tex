@@ -1,5 +1,13 @@
-\section*{Error list (M)}
-\label{app:error-list}
-\addcontentsline{toc}{section}{Error list}
+\begin{landscape}
+  \section*{Error list (M)}
+  \label{app:error-list}
+  \addcontentsline{toc}{section}{Error list}
 
-\input{Appendices/GenErrorList.tex}
+  \begin{longtable}{|p{4cm}|p{7cm}|p{2cm}|p{7cm}|p{2.5cm}|}\hline
+      \textbf{Code} & \textbf{Old error} & \textbf{Quality} & \textbf{New error} & \textbf{New quality} \\\hline
+    \endhead\small
+    \input{Appendices/GenErrorList.tex}
+    \caption{Complete error list with their respective qualities}
+    \label{tab:error-list}
+  \end{longtable}
+\end{landscape}
