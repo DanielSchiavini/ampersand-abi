@@ -2,21 +2,21 @@
 
 % een korte samenvatting (plusminus 250 woorden)
 \begin{abstract} 
-Ampersand is een methode om businessregels een grotere rol te geven tijdens softwareontwikkeling.
-Businessregels worden geschreven in scripttaal (ADL) en door Ampersand gecompileerd naar ontwerpartefacten, documentatie en prototypen.
-Naarmate het project groter wordt, krijgen gebruikers steeds meer last van de slechte kwaliteit van de gegenereerde foutberichten.
+Ampersand is een methode om bedrijfsregels een grotere rol te geven tijdens softwareontwikkeling.
+Bedrijfsregels worden geschreven in een scripttaal (ADL) en door Ampersand gecompileerd naar ontwerpartefacten, documentatie en prototypen.
+Naarmate het project zich ontwikkelt, krijgen gebruikers steeds meer last van de slechte kwaliteit van de gegenereerde foutberichten.
 Vooral nieuwe gebruikers worden hierdoor gehinderd en gefrustreerd.
 
-Onze opdracht, gegeven door Prof.dr. Stef Joosten, is om betere gebruikersfeedback te ontwerpen en te implementeren.
-Eerst hebben wij onderzocht wat goede berichten inhouden en hoe deze in Haskell geïmplementeerd worden, met de conclusie om de parser te herschrijven met Parsec.
-Daarnaast hebben wij een onderzoek gevoerd naar het gebruik van businessregels en de Ampersand-aanpak.
+Onze opdracht, gegeven door prof.dr. Stef Joosten, is om betere gebruikersfeedback voor de parser te ontwerpen en te implementeren.
+Eerst hebben wij onderzocht wat goede feedback inhoudt en hoe dit in Haskell geïmplementeerd kan worden, met als conclusie om de parser te herschrijven met Parsec.
+Daarnaast hebben wij een onderzoek uitgevoerd naar het gebruik van bedrijfsregels en de Ampersand-aanpak.
 
-De documentatie van de parser en de ADL-grammatica was niet up-to-date, waardoor wij reversengineering hebben toegepast om de documentatie vast te leggen.
+De documentatie van de parser en de ADL-grammatica was niet up-to-date, waardoor wij reverse engineering hebben toegepast om de documentatie vast te leggen.
 Door refactoring hebben wij de leesbaarheid, uitbreidbaarheid, onderhoudbaarheid, documentatie en performance van de parser en de grammatica verbeterd, zonder de ADL-taal te beïnvloeden. 
-Een automatisch testsysteem is geïmplementeerd met de mogelijkheid om de parsetree te `prettyprinten’ als ADL-code.
+Een automatisch testsysteem is geïmplementeerd met de mogelijkheid om parsebomen te prettyprinten als ADL-code.
 
 De nieuwe Ampersand parser is inmiddels geïntegreerd en in productie genomen.
-Onze analyse toont aan dat de goede foutberichten van 22\% naar 82\% zijn gestegen, terwijl slechte fouten daalden van 56\% naar 1\%.
+Onze analyse toont aan dat de goede foutberichten van 22\% naar 82\% zijn gestegen, terwijl slechte fouten zijn gedaald van 56\% naar 1\%.
 
 In deze presentatie laten wij zien hoe de nieuwe parser de doelstellingen behaalt en hoe deze verbeteringen het mogelijk maken dat Ampersand kan blijven groeien.
 Deze verbeteringen zullen tijd en inspanning besparen voor studenten, onderzoekers en commerciële gebruikers.
