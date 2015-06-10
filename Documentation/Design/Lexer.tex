@@ -1,0 +1,82 @@
+% !TEX root = ../Documentation.tex
+
+\subsection{Lexer}
+\label{subsec:lexer}
+
+\subsubsection{The rationale behind the new lexer}
+In the design of the new Ampersand parser, the question arose whether to keep the current scanner, the former name of the lexer module within Ampersand, or to implement a new one.
+After the analysis of the error improvement areas, as described in \autoref{sec:analysis}, the main improvements were identified within the actual parser.
+The error feedback quality produced by the scanner module was higher and therefore, there was no stringent need to re-implement the scanner.
+On the other hand, given the aspect that Parsec was defined as the new parser library, keeping the current scanner would have resulted in the utilization of two different libraries providing more of less the same functionality.
+To avoid a decrease in maintainability, the decision is made to implement the parser and scanner based on the same library.
+
+During the implementation of the lexer module, replacing the old scanner, additional attention was given to further improve the quality of the error messages.
+The scanner module is renamed to lexer to stress the aspect that the principle of lexemes is used in the new scanner.
+Lexemes can be seen as the part of a token containing the actual language content besides the actual position information.
+
+The lexer is built based on the existing Helium lexer modules. 
+Helium is a Haskell compiler with the main goal of giving user friendly error messages \citeac{helium}.
+The lexer module in Helium contains interesting principles such as position monitoring, warnings and easy maintainable error messages.
+
+\subsubsection{Lexer structure}
+The lexer is the main module, in which the actual lexing is done, and to do so, it uses the following sub-modules:
+
+ \begin{description}
+ 
+    \item[LexerMonad] contains a monad definition that supports lexing with context.
+      It tracks for example the location in the input and the warnings that may be generated.
+	  This module is re-used without any modification out of the  Helium parser.
+      The following functions or types are used in the Ampersand lexer:
+	  \begin{itemize}
+		\item \textbf{LexerMonad} is the main monadic type used in the lexer returning an error or a list of tokens together with a list of warnings
+		\item \textbf{addPos} is used to trace the position of the token
+		\item \textbf{lexerError} to generate lexer error
+		\item \textbf{lexerWarning} to generate lexer warnings
+		\item \textbf{runLexerMonad} main function to handle the \texttt{LexerMonad} results 
+	  \end{itemize}
+	  
+    \item[LexerMessage] contains functions to handle errors and warnings from the lexer.
+	  Based on the warning/error type and the needed language, \texttt{LexerMessage} will fetch the correct description of an error or a warning out of the \texttt{LexerTexts} module.
+	  The show functions for the error and warning are maintained in this module.
+	  
+    \item[LexerTexts] fetches the correct description of an error or a warning out of the \texttt{LexerTexts} module.
+	  This centralization provides an easy entry point for the maintenance of the actual messages as these messages are no longer dispersed over the module functions.
+	  
+    \item[LexerBinaryTrees] module responsible for searching binary trees in an efficient way, to support the token recognition.
+    This is the previously existing \texttt{UU\_BinaryTrees} module which is renamed to match the used naming structure of the new lexer modules.
+
+    \item[LexerToken] contains the data structure, and corresponding show function, that represents the input tokens for the lexer.
+	
+  \end{description}
+
+
+\subsubsection{New token structure}
+Based on the improvement topics mentioned in \autoref{subsec:analysis-lexer}, a new token structure is defined.
+Each token contains the lexeme: a part of the input string defining the token type and content, plus the position of the token in the input file.
+The token structure is defined as follows:
+
+\begin{verbatim}
+data Token = Tok { tokLex :: Lexeme
+                 , tokPos :: FilePos
+                 }
+                        
+data Lexeme  = LexSymbol      Char
+             | LexOperator    String
+             | LexKeyword     String
+             | LexString      String
+             | LexExpl        String
+             | LexAtom        String
+             | LexDecimal     Int
+             | LexOctal       Int
+             | LexHex         Int
+             | LexConId       String
+             | LexVarId       String
+  deriving (Eq, Ord)
+\end{verbatim}
+%
+\texttt{Lexeme} is the combination of the token type and the actual token content, sliced from the input string.
+\texttt{FilePos} is used to keep track of the original position of the lexeme in the input string.
+
+During the lexer processing, the input file is processed sequentially.
+All kinds of different accepted constructions are checked in a specific order, and each time a match is found, the lexeme is extracted from the input string and the token is created.
+In the token creation (function \texttt{returnToken}), the position and the lexeme are grouped into a token, then the next lexer iteration is started.

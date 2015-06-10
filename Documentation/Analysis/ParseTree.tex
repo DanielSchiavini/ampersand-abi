@@ -1,0 +1,14 @@
+% !TEX root = ../Documentation.tex
+
+\subsection{Parse tree (R-M)}
+\label{subsec:analysis-parse-tree}
+The parse tree (also known as P-structure) is a data structure that very much resembles the EBNF description.
+The root of the tree is the \texttt{P\_Context} structure, and every leaf of the tree has a field for the location where it was found in the ADL code (the \texttt{Origin} structure).
+The tree is consistently defined with the record syntax and is well documented.
+
+However, the constructions are not completely pure, since some transformations are necessary from the ADL to the P-structure.
+This forces the parser to do more than only parsing.
+Also, the order of the fields can be confusing; sometimes \texttt{Origin} is the first field and sometimes it is not.
+
+During this project, small changes to the parse tree have been done.
+These changes are described in \autoref{subsec:design-parse-tree}.
