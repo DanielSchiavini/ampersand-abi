@@ -1,0 +1,466 @@
+"clientName :: Client -Z> Name =
+    [ (""Client_1""      , ""Martijn"")
+    ; (""Client_2""      , ""Stef"")
+    ]
+",Yes,"Error(s) found:
+
+before ""-"" at line 14, column 22 of file ""testfle_mba.adl""
+Expecting symbol [ or ""*"" or ""->"" or ""<-""
+Try inserting symbol symbol [
+
+==============================
+
+before upper case identifier Z at line 14, column 23 of file ""testfle_mba.adl""
+Expecting symbol ] or ""*"" or ""0"" or ""1""
+Try inserting symbol symbol ]
+
+==============================
+
+before "">"" at line 14, column 24 of file ""testfle_mba.adl""
+Expecting symbol [ or lower case identifier ?lc? or ""."" or ""="" or ""BYPLUG"" or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT"" or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or
+""KEY"" or ""META"" or ""PATTERN"" or ""PHPPLUG"" or ""POPULATION"" or ""PRAGMA"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC"" or ""SQLPLUG"" or ""THEMES"" or ""V
+IEW"" or (""MEANING"" ...)*
+Try deleting symbol "">"" at line 14, column 24 of file ""testfile_mba.adl""
+
+==============================
+
+before upper case identifier Name at line 14, column 26 of file ""testfle_mba.adl
+"" Expecting lower case identifier ?lc? or ""."" or ""="" or ""CLASSIFY"" or ""CONCEPT"" or  ""ENDCONTEXT"" or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPLUG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC"" or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol upper case identifier Name at line 14, column 26 of file ""testfile_mba.adl""",Good,Average,Bad,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 14, column 22):
+unexpected Operator '-'
+expecting Operator '*', Operator '->', Operator '<-' or Symbol '['"
+"clientName :: Client ** Name =
+    [ (""Client_1""      , ""Martijn"")
+    ; (""Client_2""      , ""Stef"")
+    ]",Yes,"Error(s) found:
+
+before ""*"" at line 14, column 23 of file ""testfile_mba.adl""
+Expecting upper case identifier ?uc? or string """"
+Try deleting symbol ""*"" at line 14, column 23 of file ""testfile_mba.adl""",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 14, column 23):
+unexpected Operator '*'"
+"clientName :: Client [] Name =
+    [ (""Client_1""      , ""Martijn"")
+    ; (""Client_2""      , ""Stef"")
+    ]",Yes,"Error(s) found:
+
+before symbol ] at line 14, column 23 of file ""testfile_mba.adl""
+Expecting ""*"" or ""-"" or ""0"" or ""1""
+Try inserting symbol ""-""
+
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 14, column 23):
+unexpected Symbol ']'
+expecting Integer 0, Hexadecimal 0x, Octal 0o, Integer 1, Hexadecimal 0x1, Octal 0o1, Operator '*' or Operator '-'"
+"clientName :: Client [0..1] Name =
+    [ (""Client_1""      , ""Martijn"")
+    ; (""Client_2""      , ""Stef"")
+    ]",Yes,"Error(s) found:
+
+before symbol ] at line 14, column 27 of file ""testfile_mba.adl""
+Expecting ""-""
+Try inserting symbol ""-""
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 14, column 27):
+unexpected Symbol ']'
+expecting Operator '-'"
+RELATION RelTest [RelationCR],?? Is ok for ADLID used with RuleDef,"Error(s) found:
+
+before upper case identifier RelTest at line 29, column 10 of file ""testfile_mba
+.adl""
+Expecting lower case identifier ?lc?
+Try deleting symbol upper case identifier RelTest at line 29, column 10 of file
+""testfile_mba.adl""
+
+==============================
+
+before symbol [ at line 29, column 18 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc?
+Try inserting symbol lower case identifier ?lc?",Good,Average,Average,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 29, column 10):
+unexpected Upper case identifier RelTest"
+"""clientName :: client [*-1..1] Name =
+    [ (""""Client_1""""      , """"Martijn"""")
+    ; (""""Client_2""""      , """"Stef"""")
+    ]""",,"Error(s) found:
+
+before error in scanner: Unterminated string literal at line 27, column 1 of fil
+e ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol error in scanner: Unterminated string literal at line 27, co
+lumn 1 of file ""testfile_mba.adl""
+
+==============================
+
+before symbol [ at line 28, column 5 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol symbol [ at line 28, column 5 of file ""testfile_mba.adl""
+
+==============================
+
+before symbol ( at line 28, column 7 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol symbol ( at line 28, column 7 of file ""testfile_mba.adl""
+
+==============================
+
+before string """" at line 28, column 8 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol string """" at line 28, column 8 of file ""testfile_mba.adl""
+
+==============================
+
+before upper case identifier Client_1 at line 28, column 10 of file ""testfile_mb
+a.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol upper case identifier Client_1 at line 28, column 10 of file
+ ""testfile_mba.adl""
+
+==============================
+
+before string """" at line 28, column 18 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try inserting symbol ""THEMES""
+
+==============================
+
+before upper case identifier Martijn at line 28, column 30 of file ""testfile_mba
+.adl""
+Expecting symbol , or lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""
+ENDCONTEXT"" or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTER
+N"" or ""PHPPLUG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE
+"" or ""SPEC"" or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try inserting symbol ""PATTERN""
+
+==============================
+
+before string """" at line 28, column 37 of file ""testfile_mba.adl""
+Expecting ""ENDPATTERN"" or (lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT""
+ or ""IDENT"" or ""KEY"" or ""POPULATION"" or ""PURPOSE"" or ""RELATION"" or ""ROLE"" or ""RU
+LE"" or ""SPEC"" or ""VIEW"" ...)*
+Try inserting symbol ""ENDPATTERN""
+
+==============================
+
+before string """" at line 28, column 37 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try inserting symbol ""RULE""
+
+==============================
+
+before symbol ) at line 28, column 39 of file ""testfile_mba.adl""
+Expecting "":""
+Try deleting symbol symbol ) at line 28, column 39 of file ""testfile_mba.adl""
+
+==============================
+
+before "";"" at line 29, column 5 of file ""testfile_mba.adl""
+Expecting "":""
+Try inserting symbol "":""
+
+==============================
+
+before "";"" at line 29, column 5 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try inserting symbol lower case identifier ?LC?
+
+==============================
+
+before string """" at line 29, column 8 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try deleting symbol string """" at line 29, column 8 of file ""testfile_mba.adl""
+
+==============================
+
+before upper case identifier Client_2 at line 29, column 10 of file ""testfile_mb
+a.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try deleting symbol upper case identifier Client_2 at line 29, column 10 of file
+ ""testfile_mba.adl""
+
+==============================
+
+before string """" at line 29, column 18 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try inserting symbol lower case identifier ?LC?
+
+==============================
+
+before string """" at line 29, column 18 of file ""testfile_mba.adl""
+Expecting symbol ) or symbol [ or ""!"" or ""#"" or ""-"" or ""/"" or ""/\\"" or "";"" or ""<
+>"" or ""\\"" or ""\\/"" or (""*"" or ""+"" or ""~"" ...)*
+Try inserting symbol symbol )
+
+==============================
+
+before string """" at line 29, column 18 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""-"" or ""/"" or ""/\\"" or "";"" or ""<>"" or ""=
+"" or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT"" or ""IDENT"" or ""INCLUDE"" or ""INTERFA
+CE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPLUG"" or ""POPULATION"" or ""PROCESS"" or
+ ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC"" or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+or ""VIOLATION"" or ""\\"" or ""\\/"" or ""|-"" or (""*"" or ""+"" or ""~"" ...)* or (""MEANING
+"" ...)* or (""MESSAGE"" ...)*
+Try inserting symbol ""THEMES""
+
+==============================
+
+before upper case identifier Stef at line 29, column 30 of file ""testfile_mba.ad
+l""
+Expecting symbol , or lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""
+ENDCONTEXT"" or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTER
+N"" or ""PHPPLUG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE
+"" or ""SPEC"" or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try inserting symbol ""PATTERN""
+
+==============================
+
+before string """" at line 29, column 34 of file ""testfile_mba.adl""
+Expecting ""ENDPATTERN"" or (lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT""
+ or ""IDENT"" or ""KEY"" or ""POPULATION"" or ""PURPOSE"" or ""RELATION"" or ""ROLE"" or ""RU
+LE"" or ""SPEC"" or ""VIEW"" ...)*
+Try inserting symbol ""ENDPATTERN""
+
+==============================
+
+before string """" at line 29, column 34 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try inserting symbol ""RULE""
+
+==============================
+
+before symbol ) at line 29, column 36 of file ""testfile_mba.adl""
+Expecting "":""
+Try inserting symbol "":""
+
+==============================
+
+before symbol ) at line 29, column 36 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try deleting symbol symbol ) at line 29, column 36 of file ""testfile_mba.adl""
+
+==============================
+
+before symbol ] at line 30, column 5 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try deleting symbol symbol ] at line 30, column 5 of file ""testfile_mba.adl""
+
+==============================
+
+before error in scanner: Unterminated string literal at line 30, column 6 of fil
+e ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try deleting symbol error in scanner: Unterminated string literal at line 30, co
+lumn 6 of file ""testfile_mba.adl""
+
+==============================
+
+before ""::"" at line 34, column 15 of file ""testfile_mba.adl""
+Expecting symbol [ or lower case identifier ?lc? or ""!"" or ""#"" or ""-"" or ""/"" or
+""/\\"" or "";"" or ""<>"" or ""="" or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT"" or ""IDENT
+"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPLUG"" or ""P
+OPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC"" or ""SQLPL
+UG"" or ""THEMES"" or ""VIEW"" or ""VIOLATION"" or ""\\"" or ""\\/"" or ""|-"" or (""*"" or ""+""
+ or ""~"" ...)* or (""MEANING"" ...)* or (""MESSAGE"" ...)*
+Try inserting symbol lower case identifier ?lc?
+",Good,Average,Bad,"PE Lexer error LexerError line 27:1, file ArchitectureAndDesign/Syntax/testfile_mba.adl (NonTerminatedChar (Just ""clientName :: client [*-1..1] Name =\r""))"
+CONTEXT DeliverySimple REST2 IN ENGLISH ,,"Error(s) found:
+
+before upper case identifier REST2 at line 1, column 24 of file ""testfile_mba.ad
+l""
+Expecting ""ENDCONTEXT"" or ""HTML"" or ""IN"" or ""LATEX"" or ""MARKDOWN"" or ""REST"" or (
+lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""IDENT"" or ""INCLUDE"" or
+ ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPLUG"" or ""POPULATION"" or ""PR
+OCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC"" or ""SQLPLUG"" or ""THEMES"" o
+r ""VIEW"" ...)*
+Try deleting symbol upper case identifier REST2 at line 1, column 24 of file ""te
+stfile_mba.adl""
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 1, column 24):
+unexpected Upper case identifier REST2
+expecting Keyword ""IN""
+"
+CONTEXT DeliverySimple in ENGLISH,,"Error(s) found:
+
+before ""ENGLISH"" at line 1, column 27 of file ""testfile_mba.adl""
+Expecting ""::""
+Try deleting symbol ""ENGLISH"" at line 1, column 27 of file ""testfile_mba.adl""
+
+==============================
+
+before lower case identifier clientName at line 14, column 1 of file ""testfile_m
+ba.adl""
+Expecting ""::""
+Try deleting symbol lower case identifier clientName at line 14, column 1 of fil
+e ""testfile_mba.adl""",Good,Average,Average,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 1, column 24):
+unexpected Lower case identifier in
+expecting Keyword ""IN"""
+CONTEXT DeliverySimple IN ENGLISH INCLUDE 0FILEPATH,,"Error(s) found:
+
+before ""0"" at line 1, column 43 of file ""testfile_mba.adl""
+Expecting string """"
+Try deleting symbol ""0"" at line 1, column 43 of file ""testfile_mba.adl""
+
+==============================
+
+before upper case identifier FILEPATH at line 1, column 44 of file ""testfile_mba
+.adl""
+Expecting string """"
+Try deleting symbol upper case identifier FILEPATH at line 1, column 44 of file
+""testfile_mba.adl""
+
+==============================
+
+before lower case identifier clientName at line 14, column 1 of file ""testfile_m
+ba.adl""
+Expecting string """"
+Try inserting symbol string """"
+",Good,Average,Bad,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 1, column 43):
+unexpected Integer 0"
+"META ""authors"" ",,"Error(s) found:
+
+before lower case identifier clientName at line 17, column 1 of file ""testfile_m
+ba.adl""
+Expecting string """"
+Try inserting symbol string """"
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 17, column 1):
+unexpected Lower case identifier clientName"
+"METZA ""authors""  ""Jan""""",,"Error(s) found:
+
+before error in scanner: Unterminated string literal at line 11, column 22 of fi
+le ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol error in scanner: Unterminated string literal at line 11, co
+lumn 22 of file ""testfile_mba.adl""before error in scanner: Unterminated string literal at line 11, column 19 of fi
+le ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDCONTEXT""
+or ""IDENT"" or ""INCLUDE"" or ""INTERFACE"" or ""KEY"" or ""META"" or ""PATTERN"" or ""PHPPL
+UG"" or ""POPULATION"" or ""PROCESS"" or ""PURPOSE"" or ""RELATION"" or ""RULE"" or ""SPEC""
+or ""SQLPLUG"" or ""THEMES"" or ""VIEW""
+Try deleting symbol error in scanner: Unterminated string literal at line 11, co
+lumn 19 of file ""testfile_mba.adl""
+",Good,Average,Good,"PE Lexer error LexerError line 11:22, file ArchitectureAndDesign/Syntax/testfile_mba.adl (NonTerminatedChar (Just ""\r""))"
+"BYPLUG [UNI, TRN, ] BYPLUG",,"Error(s) found:
+
+before symbol ] at line 14, column 19 of file ""testfile_mba.adl""
+Expecting ""ASY"" or ""INJ"" or ""IRF"" or ""PROP"" or ""RFX"" or ""SUR"" or ""SYM"" or ""TOT""
+or ""TRN"" or ""UNI""
+Try inserting symbol ""UNI""
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 14, column 19):
+unexpected Symbol ']'
+expecting Keyword ""UNI"", Keyword ""INJ"", Keyword ""SUR"", Keyword ""TOT"", Keyword ""SYM"", Keyword ""ASY"", Keyword ""TRN"", Keyword ""RFX"", Keyword ""IRF"", Keyword ""AUT"" or Keyword ""PROP""
+"
+"PURPOSE RELATION werkgever
+--{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies één werkgever heeft.-}",,"Error(s) found:
+
+before ""ENDPATTERN"" at line 22, column 1 of file ""testfile_mba.adl""
+Expecting symbol [ or ""HTML"" or ""IN"" or ""LATEX"" or ""MARKDOWN"" or ""REF"" or ""REST""
+ or explanation {+-}
+Try inserting symbol explanation {+-}
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 22, column 1):
+unexpected Keyword ""ENDPATTERN""
+expecting Symbol '[', Keyword ""IN"", Keyword ""REST"", Keyword ""HTML"", Keyword ""LATEX"", Keyword ""MARKDOWN"" or Keyword ""REF"""
+RULE 1onlyAcceptOwn : orderAccepted |- orderedAt,,"Error(s) found:
+
+before ""1"" at line 228, column 6 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or upper case identifier ?uc? o
+r ""I"" or ""V"" or string """" or atom '' or (""-"" ...)*
+Try deleting symbol ""1"" at line 228, column 6 of file ""testfile_mba.adl""
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 228, column 6):
+unexpected Integer 1
+expecting Operator '-', Keyword ""I"", Keyword ""V"" or Symbol '('"
+"VIEW Client: Client{Test}(clientName, TXT "", "", clientAddress, TXT "" in "", clientCity)",,"Error(s) found:
+
+before symbol { at line 48, column 20 of file ""testfile_mba.adl""
+Expecting symbol (
+Try inserting symbol symbol (
+
+==============================
+
+before symbol { at line 48, column 20 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or upper case identifier ?UC? o
+r ""I"" or ""PRIMHTML"" or ""TXT"" or ""V"" or string ""?STR?"" or atom '' or (""-"" ...)*
+Try inserting symbol lower case identifier ?LC?
+
+==============================
+
+before symbol ( at line 48, column 26 of file ""testfile_mba.adl""
+Expecting "":""
+Try deleting symbol symbol ( at line 48, column 26 of file ""testfile_mba.adl""
+
+==============================
+
+before lower case identifier clientName at line 48, column 27 of file ""testfile_
+mba.adl""
+Expecting "":""
+Try inserting symbol "":""",Good,Average,Bad,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 48, column 25):
+unexpected Symbol '}'
+expecting Operator ':'"
+"VIEW Client: Client, Client(clientName, TXT "", "", clientAddress, TXT "" in "", clientCity)",,"Error(s) found:
+
+before symbol , at line 48, column 20 of file ""testfile_mba.adl""
+Expecting symbol (
+Try deleting symbol symbol , at line 48, column 20 of file ""testfile_mba.adl""
+
+==============================
+
+before upper case identifier Client at line 48, column 22 of file ""testfile_mba.
+adl""
+Expecting symbol (
+Try deleting symbol upper case identifier Client at line 48, column 22 of file ""
+testfile_mba.adl""
+
+",Good,Average,Average,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 48, column 20):
+unexpected Symbol ','
+expecting Keyword ""DEFAULT"", Symbol '{' or Symbol '('"
+MEANING REST IN DUTCH  {+ test -},,"Error(s) found:
+
+before ""IN"" at line 225, column 14 of file ""testfile_mba.adl""
+Expecting string """" or explanation {+-}
+Try inserting symbol string """"
+
+==============================
+
+before ""IN"" at line 225, column 14 of file ""testfile_mba.adl""
+Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDPROCESS""
+or ""IDENT"" or ""KEY"" or ""MEANING"" or ""POPULATION"" or ""PURPOSE"" or ""RELATION"" or ""
+ROLE"" or ""RULE"" or ""SPEC"" or ""VIEW"" or ""VIOLATION"" or (""MESSAGE"" ...)*
+Try inserting symbol ""MESSAGE""",Good,Average,Average,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 225, column 14):
+unexpected Keyword ""IN"""
+RULE allAccepted: I |- orderAccepted; orderAccepted- -- == TOT,,"Error(s) found:
+
+before ""MEANING"" at line 249, column 1 of file ""testfile_mba.adl""
+Expecting symbol ( or lower case identifier ?LC? or ""I"" or ""V"" or atom '' or (""-
+"" ...)*
+Try inserting symbol lower case identifier ?LC?
+",Good,Average,Good,"PE ""ArchitectureAndDesign/Syntax/testfile_mba.adl"" (line 249, column 1):
+unexpected Keyword ""MEANING""
+expecting Operator '-', Keyword ""I"", Keyword ""V"" or Symbol '('"
