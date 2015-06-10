@@ -32,23 +32,25 @@ In order to take the next steps and understand how the parser can be designed, w
 Afterwards, we analyze the lexer with the original token structure, so that we can define a new token structure, in \autoref{subsec:analysis-lexer}.
 Finally, we analyze the parser in \autoref{subsec:analysis-parser} and the generated errors in \autoref{subsec:analysis-errors}.
 
-\subsection{Grammar (M)}
+\subsection{Grammar}
 \label{subsec:analysis-grammar}
+
+\subsubsection{Getting the EBNF in good shape}
 \dict{EBNF}{Extended Backus-Naur Form}%
 \dict{Extended Backus-Naur Form}{Notation technique for documenting context-free grammars}%
-\subsubsection{Getting the EBNF in good shape}
-The Ampersand grammer is described using the EBNF notation. 
-EBNF is a notation technique with the goal to express a contect free grammer like Ampersand.
+The Ampersand grammar is described using the EBNF notation. 
+EBNF is a notation technique with the goal to express a context free grammar like Ampersand.
 At the beginning of the project, we noticed that the existing EBNF diagram was outdated and not in line anymore with the actual syntax of Ampersand.
 As the EBNF is the crucial source of information in building the new parser, the first focus was to update the old EBNF to represent the actual Ampersand Syntax.
 
 \subsubsection{The actual EBNF diagram}
 Through reverse engineering, we checked all Haskell functions on the actual syntax they implement.
-In the source of the new parser, all the grammer expressions are placed above the actual parser function as code annotaions to support code maintainability.
+In the source of the new parser, all the grammar expressions are placed above the actual parser function as code annotations to support code maintainability.
 
-The derived, and up to date, syntax is visualized using a railroad diagram, an ideal technique to create a vsual representatio of context free grammars.
+The derived syntax is up to date and visualized using a railroad diagram, an ideal technique to create a visual representation of context free grammars.
 Several railroad diagram generators are available on the internet, free of charge.
-We used the railroad diagram generator created by Gunter Rademacher, available on http://bottlecaps.de/rr/ui.
+We used the railroad diagram generator created by Gunter Rademacher, available on \texttt{\url{http://bottlecaps.de/rr/ui}}.
+The generated diagrams with the corresponding EBNF productions are available in the \autoref{app:ebnf}.
 
 One interesting plus is that during the project we found a bug in the Railroad Diagram Generator.
 The tool would crash with the \hyperref[fig:ebnf-Trm4]{\texttt{Trm4}} expressions.
@@ -69,17 +71,16 @@ Also, the order of the fields can be confusing; sometimes \texttt{Origin} is the
 During this project, small changes to the parse tree have been done.
 These changes are described in \autoref{subsec:design-parse-tree}.
 
-\subsection{Lexer (M)}
+\subsection{Lexer}
 \label{subsec:analysis-lexer}
 The lexer module is responsible to split up the input stream into tokens.
-Tokens are meaningful pieces of the input strings that needs to be kept together.
+Tokens are meaningful pieces of the input string that can be recognized by the parser.
 
-Following improvement points were identified after analysis:
-
+The following improvement points were identified after analysis:
 \begin{description}
   \item[Dispersed error messages]
-    The actual error messages produced by the lexer are of good quality.
-     Each error message is however defined directly within the corresponding lexer function making the maintenance harder.
+    The error messages produced by the lexer are of good quality.
+    Each error message is however defined directly within the corresponding lexer function making the maintenance harder.
   \item[Complex token structure]
     The token structure is complex and confusing.
     Two values are present in the token, of which one \texttt{val1} is never used.
@@ -88,11 +89,11 @@ Following improvement points were identified after analysis:
     In the lexer, the actual lexing functions are intermingled with data types, supporting functions and error message texts.
     This makes the lexer hard to understand and to maintain.
   \item[Language support]
-    The errors are returned in English only, no multi-lingual  support is available.
+    The errors are returned in English only, no multilingual support is available.
   \item[No support for warnings]
-    The lexer only returns errors, warnings are not supported. 
+    The lexer can only return errors, warnings are not supported. 
   \item[Strings only]
-    Token values are stored as strings at all times, no integration of integer values.
+    Token values are stored as strings for all types, with no conversion of integer values.
   \item[Lacking documentation]
     There was no documentation available on how the lexer was designed and structured.
 \end{description}
@@ -102,19 +103,37 @@ Following improvement points were identified after analysis:
 The old token has the following structure:
 
 \begin{verbatim}
-data Token = Tok { tp'      :: TokenType
-                 , val1     :: String
-                 , val2     :: String
-                 , pos      :: !Pos
-                 , file     :: !Filename
+data Token = Tok { tp' :: TokenType
+                 , val1 :: String
+                 , val2 :: String
+                 , pos :: !Pos
+                 , file :: !Filename
                  }
+
+data TokenType
+  = TkSymbol
+  | TkVarid
+  | TkConid
+  | TkKeyword
+  | TkOp
+  | TkString
+  | TkExpl
+  | TkAtom
+  | TkChar
+  | TkInteger8
+  | TkInteger10
+  | TkInteger16
+  | TkTextnm
+  | TkTextln
+  | TkSpace
+  | TkError
+  deriving (Eq, Ord)
 \end{verbatim}
-
+%
 The arguments have the following purpose:
-
 \begin{description}
   \item[TokenType]
-    Identification of the token type.
+    Identification of the token type. %, i.e. \texttt{TkSymbol}, \texttt{TkVarid}, \texttt{TkConid}, \texttt{TkKeyword}, \texttt{TkOp}, \texttt{TkString}, \texttt{TkExpl}, \texttt{TkAtom}, \texttt{TkChar}, \texttt{TkInteger8}, \texttt{TkInteger10}, \texttt{TkInteger16}, \texttt{TkTextnm}, \texttt{TkTextln}, \texttt{TkSpace} or \texttt{TkError}.
   \item[val1]
     This string argument is not used in the lexer.
     In the case of a \texttt{keyToken} creation, the value is filled in, but we could not find any purpose for this argument.
@@ -236,7 +255,8 @@ Although these references are used in several syntax statements, there is only o
 An improvement in the error message of this check may only be taken into account one time.
 
 \subsubsection{Results}
-Based on our error message qualification definition, the table below visualizes the results of the as-is analysis.
+Based on our error message qualification definition, \autoref{tab:error-messages-as-is-analysis-results} visualizes the results of the as-is analysis.
+This analysis clearly confirms the statement that the quality of the error messages is of low quality and that there is a lot of room for improvement.
 
 % Please add the following required packages to your document preamble:
 % \usepackage[table,xcdraw]{xcolor}
@@ -254,5 +274,3 @@ Based on our error message qualification definition, the table below visualizes 
   \caption{Error message as-is analysis results}
   \label{tab:error-messages-as-is-analysis-results}
 \end{table}
-
-This analysis clearly confirms the not qualified statement that the quality of the error messages is of low quality and there is a lot of room for improvement.

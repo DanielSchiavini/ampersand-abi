@@ -41,28 +41,26 @@
       The lexer, together with its sub-modules, is described in \autoref{subsec:lexer}.
   \end{description}
 
-\subsection{Lexer (M)}
+\subsection{Lexer}
 \label{subsec:lexer}
 
 \subsubsection{The rationale behind the new lexer}
 In the design of the new Ampersand parser, the question arose whether to keep the current scanner, the former name of the lexer module within Ampersand, or to implement a new one.
 After the analysis of the error improvement areas, as described in \autoref{sec:analysis}, the main improvements were identified within the actual parser.
 The error feedback quality produced by the scanner module was higher and therefore, there was no stringent need to re-implement the scanner.
-On the other hand, given the aspect that Parsec was defined as the new parser library, keeping the current scanner would have resulted in the utilization of 2 different libraries providing more of less the same functionality.
-Besides the error message quality, other improvement topics were identified in \autoref{subsec:analysis-lexer}.
+On the other hand, given the aspect that Parsec was defined as the new parser library, keeping the current scanner would have resulted in the utilization of two different libraries providing more of less the same functionality.
 To avoid a decrease in maintainability, the decision is made to implement the parser and scanner based on the same library.
+
 During the implementation of the lexer module, replacing the old scanner, additional attention was given to further improve the quality of the error messages.
-The scanner module is renamed to the lexer module to stress the aspect that the principle of lexemes is used in the new scanner.
+The scanner module is renamed to lexer to stress the aspect that the principle of lexemes is used in the new scanner.
 Lexemes can be seen as the part of a token containing the actual language content besides the actual position information.
 
-The lexer is build based on the existing Helium lexer modules. 
-One of the main goals of this project create a compiler and a dialect of Haskell in which clear error messages were produced. TODO: reference
+The lexer is built based on the existing Helium lexer modules. 
+Helium is a Haskell compiler with the main goal of giving user friendly error messages \citeac{helium}.
 The lexer module in Helium contains interesting principles such as position monitoring, warnings and easy maintainable error messages.
 
-
 \subsubsection{Lexer structure}
-
-The lexer is the main module, in which the actual lexing is done, and to do so, it it using the following sub-modules:
+The lexer is the main module, in which the actual lexing is done, and to do so, it uses the following sub-modules:
 
  \begin{description}
  
@@ -71,22 +69,22 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
 	  This module is re-used without any modification out of the  Helium parser.
       The following functions or types are used in the Ampersand lexer:
 	  \begin{itemize}
-		\item [LexerMonad] is the main monadic type used in the lexer returning an error or a list of tokens together with a list of warnings
-		\item [addPos] is used to trace the position of the token
-		\item [lexerError] to generate lexer error
-		\item [lexerWarning] to generate lexer warnings
-		\item [runLexerMonad] main function to handle the LexerMonad results 
+		\item \textbf{LexerMonad} is the main monadic type used in the lexer returning an error or a list of tokens together with a list of warnings
+		\item \textbf{addPos} is used to trace the position of the token
+		\item \textbf{lexerError} to generate lexer error
+		\item \textbf{lexerWarning} to generate lexer warnings
+		\item \textbf{runLexerMonad} main function to handle the \texttt{LexerMonad} results 
 	  \end{itemize}
 	  
     \item[LexerMessage] contains functions to handle errors and warnings from the lexer.
-	  Based on the warning/error type and the needed language, LexerMessage will fetch the correct description of an error or a warning out of the LexerTexts module
+	  Based on the warning/error type and the needed language, \texttt{LexerMessage} will fetch the correct description of an error or a warning out of the \texttt{LexerTexts} module.
 	  The show functions for the error and warning are maintained in this module.
 	  
-    \item[LexerTexts] will fetch the correct description of an error or a warning out of the LexerTexts module.
-	  This centralisation provides an easy entry point for the maintenance of the actual messages as the actual messages are no longer dispersed over the module functions.
+    \item[LexerTexts] fetches the correct description of an error or a warning out of the \texttt{LexerTexts} module.
+	  This centralization provides an easy entry point for the maintenance of the actual messages as these messages are no longer dispersed over the module functions.
 	  
     \item[LexerBinaryTrees] module responsible for searching binary trees in an efficient way, to support the token recognition.
-            This is the existing UU\_BinaryTrees module which is renamed to match the used naming structure of the new lexer modules.
+    This is the previously existing \texttt{UU\_BinaryTrees} module which is renamed to match the used naming structure of the new lexer modules.
 
     \item[LexerToken] contains the data structure, and corresponding show function, that represents the input tokens for the lexer.
 	
@@ -95,22 +93,34 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
 
 \subsubsection{New token structure}
 Based on the improvement topics mentioned in \autoref{subsec:analysis-lexer}, a new token structure is defined.
-
-Each token contains the lexeme: a part of the input string together with an identifier, defining the token content, and the position of the token in the input file.
+Each token contains the lexeme: a part of the input string defining the token type and content, plus the position of the token in the input file.
 The token structure is defined as follows:
 
-
 \begin{verbatim}
-  data Token = Tok {	  tokLex :: Lexeme
-                		    , tokPos :: FilePos   }
+data Token = Tok { tokLex :: Lexeme
+                 , tokPos :: FilePos
+                 }
+                        
+data Lexeme  = LexSymbol      Char
+             | LexOperator    String
+             | LexKeyword     String
+             | LexString      String
+             | LexExpl        String
+             | LexAtom        String
+             | LexDecimal     Int
+             | LexOctal       Int
+             | LexHex         Int
+             | LexConId       String
+             | LexVarId       String
+  deriving (Eq, Ord)
 \end{verbatim}
-
-The lexeme is the combination of the token type and the actual token content, sliced from the input string.
-FilePos is used to keep track of the original position of the lexeme in the input string.
+%
+\texttt{Lexeme} is the combination of the token type and the actual token content, sliced from the input string.
+\texttt{FilePos} is used to keep track of the original position of the lexeme in the input string.
 
 During the lexer processing, the input file is processed sequentially.
-All kind of differentiating formats are checked in a specific order, and each time a match is found, the lexeme is extracted from the input file and the token is created.
-In the token creation, function \texttt{ReturnToken}, the position and lexeme is grouped into the actual token and the next nested lexer iteration is launched.
+All kinds of different accepted constructions are checked in a specific order, and each time a match is found, the lexeme is extracted from the input string and the token is created.
+In the token creation (function \texttt{returnToken}), the position and the lexeme are grouped into a token, then the next lexer iteration is started.
 
 \subsection{Parser (R-M)}
 \label{subsec:design-parser}
@@ -244,13 +254,13 @@ However, during the development of the new parser a few constructions have been 
 The changes have been mostly in the order of the constructor parameters, and this was done consequently though all Ampersand modules.
 The updated parse tree is depicted in the appendices (\autoref{fig:parse-tree}).
 
-\subsection{Errors (M)}
+\subsection{Errors}
 \label{subsec:design-errors}
 The proof of the pudding is in the eating, and therefore, our error message qualification definition from \autoref{subsec:analysis-errors} is applied on the new parser.
 All erroneous syntax statements recorded during the analysis phase are fed to the new parser to draw up the error message quality overview of the new parser.
 
-The results are placed in the overview below next to the results of the old parser as a reference point.
-The actual error list, containing the syntax statements with the corresponding error messages, is available as an appendix to this document.
+The results are placed in \autoref{tab:error-message-results} next to the results of the old parser as a reference point.
+The actual error list, containing the syntax statements with the corresponding error messages, is available in \autoref{app:error-list}.
 
 % Please add the following required packages to your document preamble:
 % \usepackage[table,xcdraw]{xcolor}
@@ -274,8 +284,8 @@ By implementing the new parser, an improvement of 360\% is made towards the crea
 
 One bad error message remains in the system.
 After analysis, the resolution of this remaining bad error would require too much effort, hence increased complexity, compared to the actual value gain.
-The error in question is thrown when the \texttt{Meta} statement is used with only one string value. 
-Given the simple structure of the notation, we assume that the reference to the line number of the \texttt{Meta} is sufficient although the error message is unclear.
+The error in question is thrown when the \hyperref[fig:ebnf-Meta]{\texttt{Meta}} statement is used with only one string value. 
+Given the simple structure of the notation, we assume that the reference to the line number of the \hyperref[fig:ebnf-Meta]{\texttt{Meta}} is sufficient although the error message is unclear.
 Therefore, this message is kept as is.
 
 \subsection{Next steps (M)}
