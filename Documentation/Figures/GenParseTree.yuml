@@ -1,7 +1,6 @@
 [PCtx{bg:blue}]-1>[Lang{bg:orange}]
 [PCtx{bg:blue}]-.->[PandocFormat{bg:orange}]
 [PCtx{bg:blue}]-*>[P_Pattern{bg:orange}]
-[PCtx{bg:blue}]-*>[P_Pattern{bg:orange}]
 [PCtx{bg:blue}]-*>[P_Rule{bg:orange}]
 [PCtx{bg:blue}]-*>[P_Declaration{bg:orange}]
 [PCtx{bg:blue}]-*>[ConceptDef{bg:orange}]
