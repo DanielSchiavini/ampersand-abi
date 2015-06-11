@@ -2,6 +2,39 @@
 
 \subsection{Next steps (M)}
 \label{subsec:design-next-steps}
-TODO: give tips on how to further improve the parser. e.g.:
-  - cleanup CtxError, add warnings, use <?> for the errors.
-  - reorganize parse tree, e.g. using always Origin as first parameter.
+
+During the parser re-implementation and code re-factoring to enhance the code maintainability, we noticed potential improvement topics in Ampersand.
+Were possible, with respect to our project requirements and our milestones, we integrated these topics in the new parser.
+Some topics we could not handle due to time constraints or given the undesired impact on the surrounding modules.
+It would be a pity if these improvement ideas were lost as these can help the Ampersand team to further enhance the tool.
+This section summarizes our improvement suggestions, both generic as specific ones, for the Ampersand tool.
+
+\begin{description}
+  \item[Syntax improvements]
+    In the syntax, we discovered some statements which are not pure LL(k) statements.
+    The Parsec \texttt{try} function allows the backtracking in the parser, avoiding that input is consumed which is still needed in another parse statements if the parse function can not succeed successfully.
+    Using \texttt{try} we can handle this situation but the backtracking has a negative impact of the parser performance whilst it adds complexity to the parser module. 
+    Our suggestion is to further optimize the Ampersand syntax to establish a pure predictive syntax in which no backtracking is needed.
+    This will not only improve the parser performance and maintainability, the syntax simplifications will .
+    The syntax statements in which backtracking is needed, including the reasons why, are listed in section \autoref{subsec:backtracking}.
+
+  \item[Warnings]
+    An improvement point in the new lexer is that warnings are now supported. 
+    Warnings are however not yet integrated in the Ampersand tool.
+    There is no need to stop the compiling process for warnings, as the reasons behind them can make sense.
+    Warnings can, however, support the user identifying the cause of unexpected results, although the compilation could be completed successfully.
+    Our suggestion is to add the list of warnings to the design artifacts of Ampersand, available for the user to reflect on is needed.
+
+  \item[Uniform parse tree structure]
+
+todo
+
+
+  \item[Manual overrule of error message]
+    Our analysis of the new error messages showed that the quality of these improved distinctively.
+    Parsec provides to possibility to overrule the standard Parsec error message by an own formulated message.
+    During our implementation we decided to stick to the standard if the standard error message was, at least, sufficient.
+    If the Ampersand teams want to tweak some error message after all, this can be realized using the \texttt{<?>} Parsec function.
+    Placing the \texttt{<?>} after the parser, followed by a string, changes the standard Parsec text after the keyword `expecting'.
+
+\end{description}
