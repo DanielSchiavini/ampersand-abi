@@ -53,14 +53,15 @@ The learning costs can be thus quite high for organizations and students, and an
 
 \dict{RBD}{Rule Based Design}%
 In the academic context, Ampersand users are either the researchers who are developing the tool or students focusing on the domain of Rule Based Design (RBD).
-A specific RBD course 'Ontwerpen met bedrijfsregels' is offerd by the Open Universiteit Nederland.
+A specific RBD course `Ontwerpen met bedrijfsregels' is offerd by the Open Universiteit Nederland.
 Within the course assignments, the students must check the completeness and consistency of their rule sets using Ampersand. 
 
-Lex Wedemeijer \citeac{CSERC2013_Wedemeijer} states that the instructional software must be powerful, yet basic.
+Lex Wedemeijer states that instructional software must be powerful, yet basic \citeac{CSERC2013_Wedemeijer}.
 The advanced features, offered to advanced users, are not needed for students.
 Moreover, the usage of rich modeling features has a negative impact on the students learning curve.
-The conclusion darwed by Lex Wedemeijer is that Ampersand may not be the perfect tool to support these students due to the richness of the language.
-A more straightforward language, referred to as the Essential Language, is proposed by Wedemeijer, with clear and unambiguous notations, which is more suited to support students in the domain of Rule Based Design.
+The conclusion drawn by Wedemeijer is that Ampersand may not be the perfect tool to support these students due to the richness of the language.
+He proposes instead a more straightforward language, referred to as the Essential Language.
+This language should have more clear and unambiguous notations in order to be more suited to support students in the domain of Rule Based Design.
 
 Providing a clearer error feedback in Ampersand does not lower the hurdle of the syntax richness.
 It is, however, a step in the good direction to better support the students. 
@@ -75,8 +76,9 @@ Finally, he points out that formal systems often offer a bottom-up structure tha
 
 There are several measures that can be taken in order to improve the accessibility.
 For example, the syntax should be familiar, simple and concrete \citeac{lapets2009improving}.
-However, this Ampersand parser project does not have any influence on the syntax, more than that, one of the requirements of the new parser is that the syntax remains identical.
-The syntax of the ADL language is a given, so our influence is constrained to better user errors and development maintainability.
+However, this Ampersand parser project does not have any influence on the syntax.
+In fact, one of the requirements of the new parser is that the syntax remains identical.
+Since the syntax of the ADL language is a given, our influence is constrained to better user errors and development maintainability.
 
 \dict{IDE}{Integrated development environment}
 Pim Bos \citeac{bos2013bedrijfsregels} made a comparison between tools for the semantic web and Ampersand.
@@ -92,7 +94,7 @@ The issues related to the lack of libraries and the bottom-up approach are named
 To address this problem, the institute Informatiegilde has been created \citeac{foutvrije-specificaties}.
 This institute aims to organize an open-source repository of rules that can be used by anyone.
 
-\subsection{Parsing errors}
+\subsection{Parsing errors (imprecise)}
 %TODO: how can we integrate some info regarding the parser research context in regards to natural language processors, chatbots...
 During our literature study we noticed that the user feedback quality of parsers is a topic that is not yet addressed frequently.
 Given this absence, the impression we had is that our project does not have a notable influence on the research of parsers.
@@ -107,14 +109,3 @@ Special care must be taken when using backtracking (the $try$-function), as it m
 Swierstra and Duponcheel \citeac{swierstra1996deterministic} describe how automatic error correction can be implemented.
 This automatic error correction was used in the previous Ampersand parser.
 However, the shortcomings of error correction have been described in our techniques research \cite{parsing} so this possibility is not used in the new Ampersand parser.
-
-
-
-
-
-
-
-
-
-
-
