@@ -8,7 +8,7 @@ Second, we select the parser context, thus the research for better user feedback
 In the following subsections each of the two contexts are described, including our findings during the literature research.
 
 \subsection{Ampersand}
-The Ampersand project has the ambition to offer a holistic methodology, including supporting tools, to support organizations during a software development project.
+The Ampersand project has the ambition to offer a holistic methodology, including supporting tools, for organizations during a software development project.
 A new way of business requirements gathering, using natural language, is introduced by Ampersand.
 We define the Ampersand approach by the Ampersand Methodology including the corresponding tools to create design artifacts and working software prototypes.
 
@@ -16,13 +16,13 @@ We define the Ampersand approach by the Ampersand Methodology including the corr
 One of  the objectives of Ampersand is to bridge the gap between business analysts and system designers using natural language.
 This objective is part of a general research context describing information systems based on business rules, instantiated by methodologies such as `Business Rule Approach' or `Rule Based Design'.
 
-The basis for these methodologies are business rules, representing a statement that defines or constrains specific business policies, standards or procedures.
+The basis for these methodologies is the concept of business rules, which define or constrain specific business policies, standards or procedures.
 In the research context of business rules methodologies, we can differentiate between the specification and analysis of business rules and the actual usage to steer and manage information systems.
 
 \dict{BRS}{Business Rules Solution}%
 \dict{OMG}{Object Management Group}%
 By establishing the Business Rules Manifesto \citenac{BRManifesto}, the Business Rules Group laid the foundation for many business rule specification methodologies and corresponding syntaxes.
-Well known methodologies are the `Business Rules Solution (BRS) RuleSpeak' developed by members of the Business Rules Group \citenac{RuleSpeak} and the `Semantics of Business Vocabulary and Business Rules', established by the Object Management Group (OMG) \citeac{SBVR}.
+Well-known methodologies are the `Business Rules Solution (BRS) RuleSpeak' developed by members of the Business Rules Group \citenac{RuleSpeak} and the `Semantics of Business Vocabulary and Business Rules', established by the Object Management Group (OMG) \citeac{SBVR}.
 Both methodologies have the intention to formulate business rules in such a way that they become easier to understand and to analyze by business analysts.
 By using natural language, Ampersand shares the same approach in closing the gap.
 
@@ -35,21 +35,21 @@ These systems are often referred to as `Business Rule Management Systems' (BRMS)
 \dict{BPEL}{Business Process Execution Language}%
 Some examples of BRMS solutions offered by large software vendors are the `Operational Decision Manager' by IBM, `Business Rules Framework +' by SAP and `BPEL Process Manager' by Oracle.
 
-Elaborated research to identify the usefulness and efficiency of the Business Rule Approach have been conducted.
+Elaborated research to identify the usefulness and efficiency of the Business Rule Approach has been conducted.
 Both Eduard Bauer \citenac{Bauer2009} and Kęstutis Kapočius \citeac{kapoc353} conclude that the use of business rules can simplify the analysis effort and bridge the gap between business analysts and system designers. 
 A consistent formulation, close to natural language, further improves the quality of the specifications.
 The approach does, however, have a drawback as it slows down the requirement specification process, but this effort should be recuperated afterwards during the software maintenance phase.
 
 \subsubsection{Ampersand target group context}
-The Ampersand approach currently has three target groups: business analysts, in a commercial context, and researchers and students, in an academic context.
+The Ampersand approach currently has three target groups: business analysts in a commercial context, and researchers and students in an academic context.
 
 In the commercial context, the Ampersand users are typically business analysts who do not necessarily have programming experience.
 The goal of these users is to specify, often complex, business rules in the most efficient way possible while still avoiding ambiguity.
-To achieve their goals, the strictness of formal languages are a `necessary evil'.
+To achieve their goals, the strictness of formal languages is a `necessary evil'.
 Therefore, syntax errors can be very frustrating for the users.
 
 Experiences within the Open Universiteit have shown that business analysts need roughly one hundred hours to learn how to formalize business rules using Ampersand \citenac{joosten2007deriving}.
-The learning costs can be thus quite high for organizations and students, and any improvement that can be made in the accessibility of Ampersand is welcome.
+The learning costs can be thus quite high for organizations and students and any improvement that can be made in the accessibility of Ampersand is welcome.
 
 \dict{RBD}{Rule Based Design}%
 In the academic context, Ampersand users are either the researchers who are developing the tool or students focusing on the domain of Rule Based Design (RBD).
@@ -64,9 +64,9 @@ He proposes instead a more straightforward language, referred to as the Essentia
 This language should have more clear and unambiguous notations in order to be more suited to support students in the domain of Rule Based Design.
 
 Providing a clearer error feedback in Ampersand does not lower the hurdle of the syntax richness.
-It is, however, a step in the good direction to better support the students. 
-An interesting next step is the possibility to re-use the Ampersand vision and tools to support the easier to learn syntax of this Essential Language.
-Two options to realize the re-use of Ampersand, are to either simplify Ampersand towards the Essential Language or to implement a translator between both syntaxes (i.e. an alternative parser).
+It is, however, a step in the right direction to better support the students. 
+An interesting next step is the possibility to reuse the Ampersand vision and tools to support the easier to learn syntax of the Essential Language.
+Two options to realize the reuse of Ampersand, are to either simplify Ampersand towards the Essential Language or to implement a translator between both syntaxes (i.e. an alternative parser).
 Given the similarities between the languages, the translator seems to be the best approach, however, additional research is needed to confirm this statement.
 
 \subsubsection{Formal systems}
@@ -76,13 +76,13 @@ Finally, he points out that formal systems often offer a bottom-up structure tha
 
 There are several measures that can be taken in order to improve the accessibility.
 For example, the syntax should be familiar, simple and concrete \citeac{lapets2009improving}.
-However, this Ampersand parser project does not have any influence on the syntax.
+However, this graduation project does not have any influence on the syntax.
 In fact, one of the requirements of the new parser is that the syntax remains identical.
 Since the syntax of the ADL language is a given, our influence is constrained to better user errors and development maintainability.
 
 \dict{IDE}{Integrated development environment}%
-Pim Bos \citeac{bos2013bedrijfsregels} made a comparison between tools for the semantic web and Ampersand.
-He concludes that the tools (e.g. script editors or an IDE) for supporting the development of Ampersand projects are lacking.
+Pim Bos \citeac{bos2013bedrijfsregels} compared tools for the semantic web and Ampersand.
+His conclusion is that the tools for supporting the development of Ampersand projects are lacking (e.g. script editors or an IDE).
 The fact that the ADL-compiler is currently the only feedback tool for users, stresses how important the feedback from the compiler is.
 
 Another issue raised by Bos is the fact that the Ampersand user base is small.
@@ -92,19 +92,19 @@ Hopefully, a better user feedback may also facilitate a larger user base.
 
 The issues related to the lack of libraries and the bottom-up approach are named by both Lapets \citeac{lapets2009improving} and Bos \citeac{bos2013bedrijfsregels}.
 To address this problem, the institute Informatiegilde has been created \citeac{foutvrije-specificaties}.
-This institute aims to organize an open-source repository of rules that can be used by anyone.
+This institute aims to organize an open-source repository of Ampersand rules that can be used by anyone.
 
 \subsection{Parsing errors}
 %TODO: how can we integrate some info regarding the parser research context in regards to natural language processors, chatbots...
-During our literature study we noticed that parser errors are a popular topic of study.
-However, the user friendliness of these errors seems to be often neglected, since it is not yet addressed frequently.
+During our literature study we noticed that parser errors are a popular topic.
+However, the user friendliness of these errors seem to be mostly neglected, since it is not yet addressed frequently.
 Given this absence, we can conclude that our graduation project may be useful for others trying to learn more about user friendly parsers.
 
-Our literature research was focused on the error messages for parsers implemented in Haskell, and then mainly the LL($k$) parsers built with the Parsec library, which was chosen during our domain and technique research \citenac{parsing}.
+Our literature research was focused on the error messages for parsers implemented in Haskell, and then mainly the LL($k$) parsers built with the Parsec library, which was chosen during our domain and techniques research \citenac{parsing}.
 
 Parsec has elaborated error message features; giving position, unexpected input, expected productions and general user messages.
 The error messages are given in terms of high-level grammar productions and can be localized for different (natural) languages \citeac{parsec-fast}.
-Special care must be taken when using backtracking (the $try$-function), as it may negatively influence the error messages generated \citeac{parsec},  \citenac{try-harmful}.
+Special care must be taken when using backtracking (the $try$-function) \citenac{try-harmful}, as it may negatively influence the error messages generated \citeac{parsec}.
 
 Swierstra and Duponcheel \citeac{swierstra1996deterministic} describe how automatic error correction can be implemented.
 This automatic error correction was used in the previous Ampersand parser.
