@@ -26,9 +26,39 @@ This section summarizes our improvement suggestions, both generic as specific on
     Our suggestion is to add the list of warnings to the design artifacts of Ampersand, available for the user to reflect on is needed.
 
   \item[Uniform parse tree structure]
+  
+   In the parse tree, not all data types are constructed in correspondence to the syntax of the Ampersand language.
+   Several restructuring functions are used in the parser to reformulate the result of the parse functions to match the constructor type in the parse tree.
+   These functions can be recognized in the parser as rebuild or reorder functions.
+   An example of such a rebuild action is given below:
 
-todo
+   The syntax notation of \texttt{ViewAtt} is defined as: \texttt{ViewAtt ::= LabelProps? Term}
+   
+   The parser function will use the order of the notation to extract the needed information:
 
+   \begin{verbatim}
+          pViewAtt :: AmpParser P_ObjectDef
+          pViewAtt = rebuild <$> currPos <*> optLabelProps <*> pTerm
+              where rebuild pos (nm, strs) ctx = P_Obj nm pos ctx mView msub strs
+                    mView = Nothing
+                    msub  = Nothing
+    \end{verbatim}
+ 
+   When we look at the data type as defined in the parse tree, the following order is defined:
+   \begin{verbatim}
+         data P_ObjDef a =
+                  P_Obj { obj_nm :: String          
+                             , obj_pos :: Origin  
+                             , obj_ctx :: Term a
+                             , obj_mView :: Maybe String 
+                             , obj_msub :: Maybe (P_SubIfc a)  
+                             , obj_strs :: [[String]]
+                             } 
+    \end{verbatim}
+
+    As the order of the parameters in the parse tree and the parser are different, the intermediate function \texttt{rebuild} is used to align both types to each other.
+   Our personal experience was that these rebuild functions make the parser code more difficult to understand and hence, to maintain.
+   To further decrease the code complexity, we suggest to try to eliminate these rebuild functions by restructuring some data types in the parse tree.
 
   \item[Manual overrule of error message]
     Our analysis of the new error messages showed that the quality of these improved distinctively.
