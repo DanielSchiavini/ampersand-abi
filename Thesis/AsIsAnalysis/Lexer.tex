@@ -1,0 +1,75 @@
+% !TEX root = ../Documentation.tex
+
+\subsection{Lexer}
+\label{subsec:analysis-lexer}
+The lexer module is responsible to split up the input stream into tokens.
+Tokens are meaningful pieces of the input string that can be recognized by the parser.
+
+The following improvement points were identified after analysis:
+\begin{description}
+  \item[Dispersed error messages]
+    The error messages produced by the lexer are of good quality.
+    Each error message is however defined directly within the corresponding lexer function making the maintenance harder.
+  \item[Complex token structure]
+    The token structure is complex and confusing.
+    Two values are present in the token, of which one \texttt{val1} is never used.
+    There is no distinction between the values used to identify the content of the token and the ones to determine the position of the token.
+  \item[Module structuring]
+    In the lexer, the actual lexing functions are intermingled with data types, supporting functions and error message texts.
+    This makes the lexer hard to understand and to maintain.
+  \item[Language support]
+    The errors are returned in English only, no multilingual support is available.
+  \item[No support for warnings]
+    The lexer can only return errors, warnings are not supported. 
+  \item[Strings only]
+    Token values are stored as strings for all types, with no conversion of integer values.
+  \item[Lacking documentation]
+    There was no documentation available on how the lexer was designed and structured.
+\end{description}
+
+
+\subsubsection{Token structure}
+The old token has the following structure:
+
+\begin{verbatim}
+data Token = Tok { tp' :: TokenType
+                 , val1 :: String
+                 , val2 :: String
+                 , pos :: !Pos
+                 , file :: !Filename
+                 }
+
+data TokenType
+  = TkSymbol
+  | TkVarid
+  | TkConid
+  | TkKeyword
+  | TkOp
+  | TkString
+  | TkExpl
+  | TkAtom
+  | TkChar
+  | TkInteger8
+  | TkInteger10
+  | TkInteger16
+  | TkTextnm
+  | TkTextln
+  | TkSpace
+  | TkError
+  deriving (Eq, Ord)
+\end{verbatim}
+%
+The arguments have the following purpose:
+\begin{description}
+  \item[TokenType]
+    Identification of the token type. %, i.e. \texttt{TkSymbol}, \texttt{TkVarid}, \texttt{TkConid}, \texttt{TkKeyword}, \texttt{TkOp}, \texttt{TkString}, \texttt{TkExpl}, \texttt{TkAtom}, \texttt{TkChar}, \texttt{TkInteger8}, \texttt{TkInteger10}, \texttt{TkInteger16}, \texttt{TkTextnm}, \texttt{TkTextln}, \texttt{TkSpace} or \texttt{TkError}.
+  \item[val1]
+    This string argument is not used in the lexer.
+    In the case of a \texttt{keyToken} creation, the value is filled in, but we could not find any purpose for this argument.
+  \item[val2]
+    The actual token content, stored as a string, including the integer values.
+  \item[pos]
+    Line and column number.
+  \item[file]
+     Filename in which the token is located.
+\end{description}
