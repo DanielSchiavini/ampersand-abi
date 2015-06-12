@@ -1,8 +1,5 @@
 % !TEX root = ../Thesis.tex
 
-\section{Test Report}
-\label{sec:tests}
-
 \subsection{Test suite (R-M)}
   Together with the new parser, a test suite has been developed.
   This test suite has been used to verify the performance and correctness of the new parser.
@@ -85,23 +82,3 @@
   \subsubsection{Test coverage (D)}
   TODO: HPC test coverage description.
   
-\subsection{Warnings (M)}
-TODO: Compare the compiler warnings before and after the refactoring.
-
-\subsection{Errors (M)}
-  Since evaluating the quality of error messages is manual work, the errors have not been included in the test suite.
-  TODO: Give Maarten's findings on how the errors have improved. Maybe the tables should be an attachment, but the summary should be here.
-
-\subsection{Next steps (R-M)}
-\label{subsec:test-next-steps}
-  In this section we name a couple changes that can be done in the test suite in the future:
-  \begin{description}
-    \item[Sentinel] During the development of the new parser, we worked in a separate fork.
-      Our changes were not being tested in the Ampersand test server (Sentinel).
-      Since we did not have access to this server, we developed a separate test suite.
-      It may be pertinent to integrate the Sentinel jobs into the test suite or to integrate the test suite into the Sentinel jobs.
-    
-    \item[Output] Currently, the test suite outputs errors by using the \texttt{Debug.Trace} module.
-      From a purely functional perspective, using this module may be undesirable.
-      Therefore, the Ampersand team may consider changing the test outputs to use IO with monads in a more functional way.
-  \end{description}

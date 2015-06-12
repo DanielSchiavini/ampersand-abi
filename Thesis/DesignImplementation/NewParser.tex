@@ -5,7 +5,7 @@
 The mainstream design of the new parser has not changed much.
 While the new parser may still be recognizable for the Ampersand developers, several improvements have been made.
 In this subsection, we depict the high-level architecture of the parser.
-In the remainder of this section, other aspects of the new parser are covered: Code quality in \autoref{results:code-quality}, improved error messages in \autoref{results:errors} and the new test suite in \autoref{results:tests}.
+In the remainder of this section, other aspects of the new parser are covered: Code quality in \autoref{results:software-quality}, improved error messages in \autoref{results:errors} and the new test suite in \autoref{sec:tests}.
 A more complete documentation of all delivered software is given in the project documentation \citepr{documentation}.
 
 As decided during the research for domain \& techniques (see \autoref{domain:parsing}), the parser has been rebuilt with the Parsec combinator library.
@@ -30,7 +30,7 @@ For developers, the main differences between Parsec and the uulib are:
     This is described in \autoref{subsec:backtracking}.
   \item Parsec does not try to solve parsing errors.
     The parser stops immediately after the first issue.
-    See also the error analysis in \autoref{subsec:design-errors}.
+    See also the error analysis in \autoref{results:errors}.
   \item Error messages are customizable by using the \texttt{<?>} operator.
     This is also suggested in \autoref{subsec:design-next-steps}.
   \item Some combinators have a different name, e.g. one must use \texttt{option} instead of \texttt{opt}.
