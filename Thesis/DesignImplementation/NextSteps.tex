@@ -1,8 +1,7 @@
 % !TEX root = ../Documentation.tex
 
 \subsection{Next steps (R-D)}
-\label{subsec:design-next-steps}
-
+\label{design:next-steps}
 During the parser re-implementation and code re-factoring to enhance the code maintainability, we noticed potential improvement topics in Ampersand.
 Were possible, with respect to our project requirements and our milestones, we integrated these topics in the new parser.
 Some topics we could not handle due to time constraints or given the undesired impact on the surrounding modules.
@@ -16,7 +15,7 @@ This section summarizes our improvement suggestions, both generic as specific on
     Using \texttt{try} we can handle this situation but the backtracking has a negative impact of the parser performance whilst it adds complexity to the parser module. 
     Our suggestion is to further optimize the Ampersand syntax to establish a pure predictive syntax in which no backtracking is needed.
     This will not only improve the parser performance and maintainability, the syntax simplifications will .
-    The syntax statements in which backtracking is needed, including the reasons why, are listed in section \autoref{subsec:backtracking}.
+    The syntax statements in which backtracking is needed, including the reasons why, are listed in section \autoref{design:backtracking}.
 
   \item[Warnings]
     An improvement point in the new lexer is that warnings are now supported. 

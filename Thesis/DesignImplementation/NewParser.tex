@@ -1,11 +1,11 @@
 % !TEX root = ../Thesis.tex
 
 \subsection{New Parser (R-M)}
-\label{subsec:design-parser}
+\label{design:new-parser}
 The mainstream design of the new parser has not changed much.
 While the new parser may still be recognizable for the Ampersand developers, several improvements have been made.
 In this subsection, we depict the high-level architecture of the parser.
-In the remainder of this section, other aspects of the new parser are covered: Code quality in \autoref{results:software-quality}, improved error messages in \autoref{results:errors} and the new test suite in \autoref{sec:tests}.
+In the remainder of this section, other aspects of the new parser are covered: Code quality in \autoref{design:software-quality}, improved error messages in \autoref{design:errors} and the new test suite in \autoref{sec:tests}.
 A more complete documentation of all delivered software is given in the project documentation \citepr{documentation}.
 
 As decided during the research for domain \& techniques (see \autoref{domain:parsing}), the parser has been rebuilt with the Parsec combinator library.
@@ -20,25 +20,25 @@ Note that in parts of the parser, the function syntax has substituted the record
 This was done only when the code readability could be improved by doing so.
 
 \subsubsection{Parsec}
-\label{subsec:design-parsing-lib}
+\label{design:parsing-lib}
 As mentioned earlier, and described in research context document \citenac{parsing}, the new Ampersand parser has been rebuilt with another parsing library, namely Parsec.
 However, for the Ampersand developers, the source code of the parser will still look very familiar, thanks to the applicative interface.
 For developers, the main differences between Parsec and the uulib are:
 \begin{itemize}
   \item Parsec does not backtrack by default.
     In order to enable backtracking, the \texttt{try} function must be used.
-    This is described in \autoref{subsec:backtracking}.
+    This is described in \autoref{design:backtracking}.
   \item Parsec does not try to solve parsing errors.
     The parser stops immediately after the first issue.
-    See also the error analysis in \autoref{results:errors}.
+    See also the error analysis in \autoref{design:errors}.
   \item Error messages are customizable by using the \texttt{<?>} operator.
-    This is also suggested in \autoref{subsec:design-next-steps}.
+    This is also suggested in \autoref{design:next-steps}.
   \item Some combinators have a different name, e.g. one must use \texttt{option} instead of \texttt{opt}.
     Assuming the documentation found on Hackage is clear and sufficient, interface differences are not documented here.
 \end{itemize}
 
 \subsubsection{Backtracking}
-\label{subsec:backtracking}
+\label{design:backtracking}
 In order to explain the differences on backtracking behavior between the uulib and Parsec, we quote here Doaitse Swierstra, the author of the uulib \citenac{swierstra-parsec}:
 \begin{quote}
 \textsl{To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in uu-parsinglib. Effectively the latter is a try which just looks ahead one symbol. In that respect it is less powerful than the try construct from Parsec, in which you specify that a specific construct has to be present completely. And then there is the underlying different overall strategy. Parsec uses a back-tracking strategy with explicit tries to commit, whereas uu-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.}
@@ -130,3 +130,10 @@ In this section we explain why each of the remaining try statements are necessar
 \end{description}
 %
 Please note that in order to have proper backtracking with correct error messages, Parsec may require two try-statements \citenac{try-harmful}.
+
+\subsubsection{Changes to the parse tree}
+\label{design:parse-tree}
+Improvements in the Ampersand parse tree are out of the scope of this project, because of the potential consequences to the rest of the Ampersand system.
+However, during the development of the new parser a few constructions have been changed in order to make the parser more readable and maintainable.
+The changes have been mostly in the order of the constructor parameters, and this was done consequently though all Ampersand modules.
+The updated parse tree is depicted in the project documentation \citepr{documentation}.

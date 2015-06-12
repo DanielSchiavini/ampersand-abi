@@ -12,7 +12,7 @@
   TODO: Add the exported functions to each module.
 
   \subsubsection{Modules}
-  \label{subsec:parser-modules}
+  \label{design:parser-modules}
   In this section a short description of each module is given:
   %
   \begin{description}
@@ -21,7 +21,7 @@
 
     \item[Parser] module responsible for executing the parsing itself.
       It accepts the tokens that are allowed in each grammar production and generates the corresponding parse tree.
-      The parser is described in \autoref{subsec:design-parser}.
+      The parser is described in \autoref{design:new-parser}.
       
     \item[ParsingLib] library that contains several useful functions to assist the parser, e.g. token recognition.
       These functions are not depending on the specific grammar rules.
@@ -35,5 +35,5 @@
       This module has not been refactored as a part of this project.
     
     \item[Lexer] module responsible for recognizing the input characters and converting them to tokens.
-      The lexer, together with its sub-modules, is described in \autoref{subsec:lexer}.
+      The new lexer, together with its sub-modules, is described in \autoref{design:new-lexer}.
   \end{description}

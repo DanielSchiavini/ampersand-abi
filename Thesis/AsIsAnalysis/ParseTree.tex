@@ -1,7 +1,7 @@
 % !TEX root = ../Thesis.tex
 
 \subsection{Parse tree (R-M)}
-\label{subsec:analysis-parse-tree}
+\label{analysis:parse-tree}
 The parse tree (also known as P-structure) is a data structure that very much resembles the EBNF description.
 The root of the tree is the \texttt{P\_Context} structure, and every leaf of the tree has a field for the location where it was found in the ADL code (the \texttt{Origin} structure).
 The tree is consistently defined with the record syntax and is well documented.
@@ -11,10 +11,4 @@ This forces the parser to do more than only parsing.
 Also, the order of the fields can be confusing; sometimes \texttt{Origin} is the first field and sometimes it is not.
 
 During this project, small changes to the parse tree have been done.
-These changes are described in \autoref{subsec:design-parse-tree}.
-
-\label{subsec:design-parse-tree}
-Improvements in the Ampersand parse tree are out of the scope of this project, because of the potential consequences to the rest of the Ampersand system.
-However, during the development of the new parser a few constructions have been changed in order to make the parser more readable and maintainable.
-The changes have been mostly in the order of the constructor parameters, and this was done consequently though all Ampersand modules.
-The updated parse tree is depicted in the project documentation \citepr{documentation}.
+These changes are described in \autoref{design:parse-tree}.

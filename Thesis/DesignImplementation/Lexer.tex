@@ -1,7 +1,7 @@
 % !TEX root = ../Documentation.tex
 
 \subsection{Lexer}
-\label{subsec:lexer}
+\label{design:lexer}
 
 \subsubsection{Lexer structure}
 The lexer is the main module, in which the actual lexing is done, and to do so, it uses the following sub-modules:
@@ -36,7 +36,7 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
 
 
 \subsubsection{New token structure}
-Based on the improvement topics mentioned in \autoref{subsec:analysis-lexer}, a new token structure is defined.
+Based on the improvement topics mentioned in \autoref{analysis:lexer}, a new token structure is defined.
 Each token contains the lexeme: a part of the input string defining the token type and content, plus the position of the token in the input file.
 The token structure is defined as follows:
 
