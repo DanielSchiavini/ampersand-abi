@@ -1,0 +1,45 @@
+\haddockmoduleheading{Database.Design.Ampersand.Basics.Collection}
+\label{module:Database.Design.Ampersand.Basics.Collection}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Database.Design.Ampersand.Basics.Collection (
+    Collection(eleM, uni, isc, (>-), empty, elems)
+  ) where\end{verbatim}}
+\haddockendheader
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+class\ Collection\ a\ where
+\end{tabular}]\haddockbegindoc
+\haddockpremethods{}\textbf{Methods}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+eleM\ ::\ Eq\ b\ =>\ b\ ->\ a\ b\ ->\ Bool
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+uni,\ isc\ ::\ Eq\ b\ =>\ a\ b\ ->\ a\ b\ ->\ a\ b
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+(>-)\ ::\ Eq\ b\ =>\ a\ b\ ->\ a\ b\ ->\ a\ b
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+empty\ ::\ Eq\ b\ =>\ a\ b
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+elems\ ::\ Eq\ b\ =>\ a\ b\ ->\ {\char 91}b{\char 93}
+\end{tabular}]
+\end{haddockdesc}
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+instance\ Collection\ {\char 91}{\char 93}
+\end{tabular}]
+\end{haddockdesc}

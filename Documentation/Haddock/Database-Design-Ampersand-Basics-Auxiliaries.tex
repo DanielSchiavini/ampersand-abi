@@ -1,0 +1,111 @@
+\haddockmoduleheading{Database.Design.Ampersand.Basics.Auxiliaries}
+\label{module:Database.Design.Ampersand.Basics.Auxiliaries}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Database.Design.Ampersand.Basics.Auxiliaries (
+    eqClass,  eqCl,  getCycles,  transClosureMap,  combinations,  converse, 
+    commaEng,  commaNL,  fst3,  snd3,  thd3,  Flippable(flp),  showTrace, 
+    showTraceTag,  blockParenthesize,  addToLastLine,  indent
+  ) where\end{verbatim}}
+\haddockendheader
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+eqClass\ ::\ (a\ ->\ a\ ->\ Bool)\ ->\ {\char 91}a{\char 93}\ ->\ {\char 91}{\char 91}a{\char 93}{\char 93}
+\end{tabular}]\haddockbegindoc
+The \haddockid{eqClass} function takes an equality test function and a list and returns a list of lists such
+ that each sublist in the result contains only equal elements, and all equal elements are in
+ the same sublist.  For example,\par
+Example> eqClass \haddocktt{Mississippi} = {\char 91}\haddocktt{M},"iiii","ssss","pp"{\char 93}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+eqCl\ ::\ Eq\ b\ =>\ (a\ ->\ b)\ ->\ {\char 91}a{\char 93}\ ->\ {\char 91}{\char 91}a{\char 93}{\char 93}
+\end{tabular}]\haddockbegindoc
+eqCl is used for gathering things that are equal wrt some criterion f.
+   For instance, if you want to have persons with the same name:
+    'eqCl name persons' produces a list,in which each element is a list of persons with the same name.
+ Example> eqCl (==\haddocktt{s}) \haddocktt{Mississippi} = "ssss"\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+getCycles\ ::\ Eq\ a\ =>\ {\char 91}(a,\ {\char 91}a{\char 93}){\char 93}\ ->\ {\char 91}{\char 91}a{\char 93}{\char 93}
+\end{tabular}]\haddockbegindoc
+getCycles returns a list of cycles in the edges list (each edge is a pair of a from-vertex
+   and a list of to-vertices)\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+transClosureMap\ ::\ (Eq\ a,\ Ord\ a)\ =>\ Map\ a\ {\char 91}a{\char 93}\ ->\ Map\ a\ {\char 91}a{\char 93}
+\end{tabular}]\haddockbegindoc
+Warshall's transitive closure algorithm\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+combinations\ ::\ {\char 91}{\char 91}a{\char 93}{\char 93}\ ->\ {\char 91}{\char 91}a{\char 93}{\char 93}
+\end{tabular}]\haddockbegindoc
+The \haddockid{combinations} function returns all possible combinations of lists of list.
+ For example,\par
+\begin{quote}
+{\haddockverb\begin{verbatim}
+combinations [[1,2,3],[10,20],[4]] == [[1,10,4],[1,20,4],[2,10,4],[2,20,4],[3,10,4],[3,20,4]]\end{verbatim}}
+\end{quote}
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+converse\ ::\ forall\ a\ b.\ (Ord\ a,\ Ord\ b)\ =>\ {\char 91}(a,\ {\char 91}b{\char 93}){\char 93}\ ->\ {\char 91}(b,\ {\char 91}a{\char 93}){\char 93}
+]
+\item[
+commaEng\ ::\ String\ ->\ {\char 91}String{\char 93}\ ->\ String
+]
+\item[
+commaNL\ ::\ String\ ->\ {\char 91}String{\char 93}\ ->\ String
+]
+\item[
+fst3\ ::\ (a,\ b,\ c)\ ->\ a
+]
+\item[
+snd3\ ::\ (a,\ b,\ c)\ ->\ b
+]
+\item[
+thd3\ ::\ (a,\ b,\ c)\ ->\ c
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+class\ Flippable\ a\ where
+\end{tabular}]\haddockbegindoc
+\haddockpremethods{}\textbf{Methods}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+flp\ ::\ a\ ->\ a
+\end{tabular}]
+\end{haddockdesc}
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+instance\ Flippable\ Prop\\instance\ Flippable\ SrcOrTgt
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+showTrace\ ::\ Show\ a\ =>\ a\ ->\ a
+]
+\item[
+showTraceTag\ ::\ Show\ a\ =>\ String\ ->\ a\ ->\ a
+]
+\item[
+blockParenthesize\ ::\ String\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ->\ String\ ->\ String\ ->\ {\char 91}{\char 91}String{\char 93}{\char 93}\ ->\ {\char 91}String{\char 93}
+]
+\item[
+addToLastLine\ ::\ String\ ->\ {\char 91}String{\char 93}\ ->\ {\char 91}String{\char 93}
+]
+\item[
+indent\ ::\ Int\ ->\ {\char 91}String{\char 93}\ ->\ {\char 91}String{\char 93}
+]
+\end{haddockdesc}

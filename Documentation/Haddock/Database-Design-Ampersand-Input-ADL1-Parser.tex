@@ -1,0 +1,28 @@
+\haddockmoduleheading{Database.Design.Ampersand.Input.ADL1.Parser}
+\label{module:Database.Design.Ampersand.Input.ADL1.Parser}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Database.Design.Ampersand.Input.ADL1.Parser (
+    AmpParser,  pContext,  pPopulations,  pTerm,  pRule
+  ) where\end{verbatim}}
+\haddockendheader
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+type\ AmpParser\ a\ =\ ParsecT\ {\char 91}Token{\char 93}\ FilePos\ Identity\ a
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+pContext\ ::\ AmpParser\ (P{\char '137}Context,\ {\char 91}String{\char 93})
+]
+\item[
+pPopulations\ ::\ AmpParser\ {\char 91}P{\char '137}Population{\char 93}
+]
+\item[
+pTerm\ ::\ AmpParser\ (Term\ TermPrim)
+]
+\item[
+pRule\ ::\ AmpParser\ (Term\ TermPrim)
+]
+\end{haddockdesc}

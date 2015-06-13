@@ -1,0 +1,47 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.Basics.Collection
+<span class="lineno">    2 </span>  (  Collection ( eleM
+<span class="lineno">    3 </span>                , uni
+<span class="lineno">    4 </span>                , isc
+<span class="lineno">    5 </span>                ,(&gt;-)
+<span class="lineno">    6 </span>                ,empty
+<span class="lineno">    7 </span>                ,elems)
+<span class="lineno">    8 </span>  )where
+<span class="lineno">    9 </span>   ----------------------------------------------
+<span class="lineno">   10 </span>   ---- Collection of type a --------------------
+<span class="lineno">   11 </span>   ----------------------------------------------
+<span class="lineno">   12 </span>   infixl 5  &gt;-
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>   class Collection a where      -- TODO Vervangen door efficient algorithme: Data.Set
+<span class="lineno">   15 </span>    eleM :: Eq b =&gt; b -&gt; a b -&gt; Bool
+<span class="lineno">   16 </span>    uni, isc :: Eq b =&gt; a b -&gt; a b -&gt; a b
+<span class="lineno">   17 </span>    (&gt;-) :: Eq b =&gt; a b -&gt; a b -&gt; a b
+<span class="lineno">   18 </span>    empty :: Eq b =&gt; a b
+<span class="lineno">   19 </span>    elems :: Eq b =&gt; a b -&gt; [b]
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>   instance Collection [] where
+<span class="lineno">   22 </span>    <span class="decl"><span class="nottickedoff">eleM         = elem</span></span>
+<span class="lineno">   23 </span>    <span class="decl"><span class="nottickedoff">xs `uni` ys  = xs++(ys&gt;-xs)</span></span>
+<span class="lineno">   24 </span>    <span class="decl"><span class="nottickedoff">xs `isc` ys  = [y | y&lt;-ys, y `elem` xs]</span></span>
+<span class="lineno">   25 </span>    <span class="decl"><span class="istickedoff">xs &gt;- ys     = [<span class="nottickedoff">x</span> | x&lt;-xs, x `notElem` ys]</span></span>
+<span class="lineno">   26 </span>    <span class="decl"><span class="nottickedoff">empty        = []</span></span>
+<span class="lineno">   27 </span>    <span class="decl"><span class="nottickedoff">elems        = id</span></span>
+
+</pre>
+</body>
+</html>

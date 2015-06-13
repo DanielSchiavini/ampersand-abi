@@ -1,0 +1,142 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.FSpec.Crud (CrudInfo(..), showCrudInfo, getCrudObjectsForInterface, mkCrudInfo) where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Data.Function
+<span class="lineno">    4 </span>import Data.List
+<span class="lineno">    5 </span>import Data.Map (Map) 
+<span class="lineno">    6 </span>import qualified Data.Map as Map 
+<span class="lineno">    7 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">    8 </span>import Database.Design.Ampersand.Classes.ConceptStructure
+<span class="lineno">    9 </span>import Database.Design.Ampersand.Classes.Relational
+<span class="lineno">   10 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   13 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Crud&quot;</span></span>
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>-- For a description of the algorithms in this module, see https://github.com/AmpersandTarski/ampersand/issues/45 
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>-- NOTE: The definitions of the various CRUD aspects are still a bit quirky and will most-likely need refinement. 
+<span class="lineno">   18 </span>--      (see notes/todo's here and in ampersand-models/Tests/NoSentinel/Crud.adl)
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>data CrudInfo = CrudInfo { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allCrudObjects</span></span></span> :: [(A_Concept,[A_Concept])] -- crud concept together with its target concept in the surjective/total transitive closure of declarations 
+<span class="lineno">   21 </span>                         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">crudObjsPerInterface</span></span></span> :: [ (Interface, [(A_Concept,Bool,Bool,Bool,Bool)]) ]
+<span class="lineno">   22 </span>                         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">crudObjsPerConcept</span></span></span> :: [(A_Concept, ([Interface], [Interface], [Interface], [Interface]))]
+<span class="lineno">   23 </span>                         -- TODO: think about representation of these matrices
+<span class="lineno">   24 </span>                         } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>showCrudInfo :: CrudInfo -&gt; String
+<span class="lineno">   27 </span><span class="decl"><span class="nottickedoff">showCrudInfo (CrudInfo crudObjs ifcCrudObjs _) =</span>
+<span class="lineno">   28 </span><span class="spaces">  </span><span class="nottickedoff">&quot;CRUD info\nObjects:\n&quot; ++ unlines [ name crudCncpt ++&quot; : &quot; ++ show (map name crudDecls) | (crudCncpt, crudDecls) &lt;- crudObjs] ++</span>
+<span class="lineno">   29 </span><span class="spaces">  </span><span class="nottickedoff">&quot;\nMatrices\n&quot; ++ concat</span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;Interface &quot; ++ name ifc ++</span>
+<span class="lineno">   31 </span><span class="spaces">      </span><span class="nottickedoff">&quot;\nC R U D Object\n&quot; ++</span>
+<span class="lineno">   32 </span><span class="spaces">      </span><span class="nottickedoff">(unlines $ map showCrud cObjs)</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="nottickedoff">| (ifc, cObjs) &lt;- ifcCrudObjs</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="nottickedoff">] ++ &quot;\n&quot;</span>
+<span class="lineno">   35 </span><span class="spaces">  </span><span class="nottickedoff">where showCrud (cncpt, isC, isR, isU, isD) = concat [ showX isX ++ &quot; &quot; | isX &lt;- [isC, isR, isU, isD] ] ++ show (name cncpt)</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="nottickedoff">showX isX = if isX then &quot;X&quot; else &quot; &quot;</span></span>
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>getCrudObjectsForInterface :: CrudInfo -&gt; Interface -&gt; [(A_Concept,Bool,Bool,Bool,Bool)]
+<span class="lineno">   39 </span><span class="decl"><span class="nottickedoff">getCrudObjectsForInterface crudInfo ifc = </span>
+<span class="lineno">   40 </span><span class="spaces">  </span><span class="nottickedoff">case lookup ifc $ crudObjsPerInterface crudInfo of</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="nottickedoff">Nothing       -&gt; fatal 33 $ &quot;NO CRUD objects for interface &quot; ++ show (name ifc)</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="nottickedoff">Just crudObjs -&gt; crudObjs</span></span>
+<span class="lineno">   43 </span>  
+<span class="lineno">   44 </span>mkCrudInfo :: [A_Concept] -&gt; [Declaration] -&gt; [Interface] -&gt; CrudInfo
+<span class="lineno">   45 </span><span class="decl"><span class="nottickedoff">mkCrudInfo  allConceptsPrim allDecls allIfcs =</span>
+<span class="lineno">   46 </span><span class="spaces">  </span><span class="nottickedoff">CrudInfo crudObjs crudObjsPerIfc (getCrudObjsPerConcept crudObjsPerIfc)</span>
+<span class="lineno">   47 </span><span class="spaces">  </span><span class="nottickedoff">where allConcepts = [ c | c &lt;- allConceptsPrim, not $ c == ONE || name c == &quot;SESSION&quot; ]</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="nottickedoff">nonCrudConcpts = [ source d | d &lt;- allDecls, isUni d &amp;&amp; isSur d ] ++</span>
+<span class="lineno">   49 </span><span class="spaces">                         </span><span class="nottickedoff">[ target d | d &lt;- allDecls, isInj d &amp;&amp; isTot d ]</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="nottickedoff">crudCncpts = allConcepts \\ nonCrudConcpts</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="nottickedoff"></span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="nottickedoff">transSurjClosureMap :: Map A_Concept [A_Concept]</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="nottickedoff">transSurjClosureMap = transClosureMap . Map.fromListWith union $</span>
+<span class="lineno">   54 </span><span class="spaces">          </span><span class="nottickedoff">[ (target d, [source d]) | d &lt;- allDecls, isSur d ] ++ -- TODO: no isUni?</span>
+<span class="lineno">   55 </span><span class="spaces">          </span><span class="nottickedoff">[ (source d, [target d]) | d &lt;- allDecls, isTot d ]    -- TODO: no isInj?</span>
+<span class="lineno">   56 </span><span class="spaces">        </span><span class="nottickedoff"></span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="nottickedoff"></span>
+<span class="lineno">   58 </span><span class="spaces">        </span><span class="nottickedoff">-- crud concept together with its target concept in the surjective/total transitive closure of declarations</span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="nottickedoff">crudObjs :: [(A_Concept, [A_Concept])]</span>
+<span class="lineno">   60 </span><span class="spaces">        </span><span class="nottickedoff">crudObjs = [ (crudCncpt, Map.findWithDefault [] crudCncpt transSurjClosureMap) -- TODO: should [] be a fatal? </span>
+<span class="lineno">   61 </span><span class="spaces">                   </span><span class="nottickedoff">| crudCncpt &lt;- crudCncpts ]</span>
+<span class="lineno">   62 </span><span class="spaces">        </span><span class="nottickedoff"></span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="nottickedoff">getCrudUpdateConcpts :: Declaration -&gt; [A_Concept]</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="nottickedoff">getCrudUpdateConcpts decl = </span>
+<span class="lineno">   65 </span><span class="spaces">          </span><span class="nottickedoff">if  isSur decl || isTot decl  -- TODO: no isUni?  -- TODO: no isInj?</span>
+<span class="lineno">   66 </span><span class="spaces">          </span><span class="nottickedoff">then [ cObj | (cObj, cCncpts) &lt;- crudObjs, source decl `elem` cCncpts &amp;&amp; target decl `elem` cCncpts ]    </span>
+<span class="lineno">   67 </span><span class="spaces">          </span><span class="nottickedoff">else []</span>
+<span class="lineno">   68 </span><span class="spaces">          </span><span class="nottickedoff"></span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">crudObjsPerIfc = [ (ifc, getCrudObjsPerIfc ifc) | ifc &lt;- allIfcs ]</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff"></span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">-- Not the most efficient implementation, but it is easy to read, and the total number of concepts will not be enormous.</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="nottickedoff">getCrudObjsPerIfc :: Interface -&gt; [(A_Concept,Bool,Bool,Bool,Bool)]</span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="nottickedoff">getCrudObjsPerIfc ifc = [ (cObj, isC, isR, isU, isD)</span>
+<span class="lineno">   74 </span><span class="spaces">                                </span><span class="nottickedoff">| cObj &lt;- crudCncpts</span>
+<span class="lineno">   75 </span><span class="spaces">                                </span><span class="nottickedoff">, let isC = cObj `elem` crudCreateCncpts</span>
+<span class="lineno">   76 </span><span class="spaces">                                </span><span class="nottickedoff">, let isR = cObj `elem` crudReadCncpts</span>
+<span class="lineno">   77 </span><span class="spaces">                                </span><span class="nottickedoff">, let isU = cObj `elem` crudUpdateCncpts</span>
+<span class="lineno">   78 </span><span class="spaces">                                </span><span class="nottickedoff">, let isD = cObj `elem` crudDeleteCncpts</span>
+<span class="lineno">   79 </span><span class="spaces">                                </span><span class="nottickedoff">, or [isC, isR, isU, isD]</span>
+<span class="lineno">   80 </span><span class="spaces">                                </span><span class="nottickedoff">]                            </span>
+<span class="lineno">   81 </span><span class="spaces">          </span><span class="nottickedoff">where crudCreateCncpts = editableTgts</span>
+<span class="lineno">   82 </span><span class="spaces">                </span><span class="nottickedoff">crudReadCncpts   = concs (relsUsedIn ifc) -- NOTE: this includes interface params, even if they do not appear in any of the field expressions</span>
+<span class="lineno">   83 </span><span class="spaces">                </span><span class="nottickedoff">crudDeleteCncpts = crudCreateCncpts -- We can't currently distinguish between these two.</span>
+<span class="lineno">   84 </span><span class="spaces">                </span><span class="nottickedoff">crudUpdateCncpts = concatMap getCrudUpdateConcpts editableDecls</span>
+<span class="lineno">   85 </span><span class="spaces">                </span><span class="nottickedoff">(editableDecls, editableTgts) = unzip $ getEditableDeclsAndTargets allIfcs ifc</span></span>
+<span class="lineno">   86 </span>                                             
+<span class="lineno">   87 </span>-- NOTE: editable target is not necessarily the target of decl, as it may have been flipped (in which case it's the source)
+<span class="lineno">   88 </span>getEditableDeclsAndTargets :: [Interface] -&gt; Interface -&gt; [(Declaration, A_Concept)]
+<span class="lineno">   89 </span><span class="decl"><span class="nottickedoff">getEditableDeclsAndTargets allIfcs ifc = concatMap editableTarget $ getAllInterfaceExprs allIfcs ifc</span>
+<span class="lineno">   90 </span><span class="spaces">  </span><span class="nottickedoff">where editableTarget expr = </span>
+<span class="lineno">   91 </span><span class="spaces">          </span><span class="nottickedoff">case getExpressionRelation expr of</span>
+<span class="lineno">   92 </span><span class="spaces">            </span><span class="nottickedoff">Nothing                                                              -&gt; []</span>
+<span class="lineno">   93 </span><span class="spaces">            </span><span class="nottickedoff">Just (declSrc, decl, declTgt, isFlipped) | decl `elem` ifcParams ifc -&gt; [(decl, if isFlipped then declSrc else declTgt)]</span>
+<span class="lineno">   94 </span><span class="spaces">                                                     </span><span class="nottickedoff">| otherwise                 -&gt; []</span></span>
+<span class="lineno">   95 </span>
+<span class="lineno">   96 </span>getAllInterfaceExprs :: [Interface] -&gt; Interface -&gt; [Expression]
+<span class="lineno">   97 </span><span class="decl"><span class="nottickedoff">getAllInterfaceExprs allIfcs ifc = getExprs $ ifcObj ifc</span>
+<span class="lineno">   98 </span><span class="spaces">  </span><span class="nottickedoff">where getExprs Obj{objctx=expr, objmsub=subObj} = </span>
+<span class="lineno">   99 </span><span class="spaces">          </span><span class="nottickedoff">expr : case subObj of Nothing                -&gt; []</span>
+<span class="lineno">  100 </span><span class="spaces">                                </span><span class="nottickedoff">Just (InterfaceRef nm) -&gt;</span>
+<span class="lineno">  101 </span><span class="spaces">                                  </span><span class="nottickedoff">case filter (\rIfc -&gt; name rIfc == nm) $ allIfcs of -- Follow interface ref</span>
+<span class="lineno">  102 </span><span class="spaces">                                    </span><span class="nottickedoff">[]      -&gt; fatal 65 $ &quot;Referenced interface &quot; ++ nm ++ &quot; missing&quot;</span>
+<span class="lineno">  103 </span><span class="spaces">                                    </span><span class="nottickedoff">(_:_:_) -&gt; fatal 66 $ &quot;Multiple declarations of referenced interface &quot; ++ nm</span>
+<span class="lineno">  104 </span><span class="spaces">                                    </span><span class="nottickedoff">[i]     -&gt; getAllInterfaceExprs allIfcs i</span>
+<span class="lineno">  105 </span><span class="spaces">                                </span><span class="nottickedoff">Just (Box _ _ objs)    -&gt; concatMap getExprs objs</span></span>
+<span class="lineno">  106 </span>
+<span class="lineno">  107 </span>getCrudObjsPerConcept :: [(Interface, [(A_Concept,Bool,Bool,Bool,Bool)])] -&gt;
+<span class="lineno">  108 </span>                         [(A_Concept, ([Interface], [Interface], [Interface], [Interface]))]
+<span class="lineno">  109 </span><span class="decl"><span class="nottickedoff">getCrudObjsPerConcept crudsPerIfc = sortBy (compare `on` fst)  conceptsAndInterfaces</span>
+<span class="lineno">  110 </span><span class="spaces">  </span><span class="nottickedoff">where conceptsAndInterfaces :: [(A_Concept, ([Interface], [Interface], [Interface], [Interface]))]</span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="nottickedoff">conceptsAndInterfaces = concatMap toIfcPerConcept crudsPerIfc</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="nottickedoff"></span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">toIfcPerConcept :: (Interface, [(A_Concept,Bool,Bool,Bool,Bool)]) -&gt; </span>
+<span class="lineno">  114 </span><span class="spaces">                           </span><span class="nottickedoff">[(A_Concept, ([Interface], [Interface], [Interface], [Interface]))]</span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="nottickedoff">toIfcPerConcept (ifc, ifcCrudObjs) = [ (cncpt, ( if isC then [ifc] else []</span>
+<span class="lineno">  116 </span><span class="spaces">                                                       </span><span class="nottickedoff">, if isR then [ifc] else []</span>
+<span class="lineno">  117 </span><span class="spaces">                                                       </span><span class="nottickedoff">, if isU then [ifc] else []</span>
+<span class="lineno">  118 </span><span class="spaces">                                                       </span><span class="nottickedoff">, if isD then [ifc] else []</span>
+<span class="lineno">  119 </span><span class="spaces">                                                       </span><span class="nottickedoff">)</span>
+<span class="lineno">  120 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
+<span class="lineno">  121 </span><span class="spaces">                                             </span><span class="nottickedoff">| (cncpt, isC, isR, isU, isD) &lt;- ifcCrudObjs</span>
+<span class="lineno">  122 </span><span class="spaces">                                             </span><span class="nottickedoff">]</span></span>
+
+</pre>
+</body>
+</html>

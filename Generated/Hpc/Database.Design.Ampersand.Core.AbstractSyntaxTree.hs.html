@@ -1,0 +1,749 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE FlexibleInstances, UndecidableInstances, OverlappingInstances #-}
+<span class="lineno">    2 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    3 </span>{-# LANGUAGE DeriveGeneric #-}
+<span class="lineno">    4 </span>module Database.Design.Ampersand.Core.AbstractSyntaxTree (
+<span class="lineno">    5 </span>   A_Context(..)
+<span class="lineno">    6 </span> , Meta(..)
+<span class="lineno">    7 </span> , Pattern(..)
+<span class="lineno">    8 </span> , PairView(..)
+<span class="lineno">    9 </span> , PairViewSegment(..)
+<span class="lineno">   10 </span> , Rule(..)
+<span class="lineno">   11 </span> , ruleIsInvariantUniOrInj
+<span class="lineno">   12 </span> , RuleType(..)
+<span class="lineno">   13 </span> , RuleOrigin(..)
+<span class="lineno">   14 </span> , Declaration(..)
+<span class="lineno">   15 </span> , IdentityDef(..)
+<span class="lineno">   16 </span> , IdentitySegment(..)
+<span class="lineno">   17 </span> , ViewDef(..)
+<span class="lineno">   18 </span> , ViewSegment(..)
+<span class="lineno">   19 </span> , A_Gen(..)
+<span class="lineno">   20 </span> , Interface(..)
+<span class="lineno">   21 </span> , getInterfaceByName
+<span class="lineno">   22 </span> , SubInterface(..)
+<span class="lineno">   23 </span> , ObjectDef(..)
+<span class="lineno">   24 </span> , Object(..)
+<span class="lineno">   25 </span> , objAts
+<span class="lineno">   26 </span> , Purpose(..)
+<span class="lineno">   27 </span> , ExplObj(..)
+<span class="lineno">   28 </span> , Expression(..)
+<span class="lineno">   29 </span> , getExpressionRelation
+<span class="lineno">   30 </span> , A_Concept(..)
+<span class="lineno">   31 </span> , A_Markup(..)
+<span class="lineno">   32 </span> , AMeaning(..)
+<span class="lineno">   33 </span> , A_RoleRule(..)
+<span class="lineno">   34 </span> , A_RoleRelation(..)
+<span class="lineno">   35 </span> , Sign(..)
+<span class="lineno">   36 </span> , Population(..)
+<span class="lineno">   37 </span> , Association(..)
+<span class="lineno">   38 </span> , PAclause(..), Event(..), ECArule(..), InsDel(..), Conjunct(..), DnfClause(..)
+<span class="lineno">   39 </span>  -- (Poset.&lt;=) is not exported because it requires hiding/qualifying the Prelude.&lt;= or Poset.&lt;= too much
+<span class="lineno">   40 </span>  -- import directly from Database.Design.Ampersand.Core.Poset when needed
+<span class="lineno">   41 </span> , (&lt;==&gt;),join,meet,greatest,least,maxima,minima,sortWith
+<span class="lineno">   42 </span> , smallerConcepts, largerConcepts, rootConcepts, genericAndSpecifics
+<span class="lineno">   43 </span> , showSign
+<span class="lineno">   44 </span> , aMarkup2String
+<span class="lineno">   45 </span> , module Database.Design.Ampersand.Core.ParseTree  -- export all used constructors of the parsetree, because they have actually become part of the Abstract Syntax Tree.
+<span class="lineno">   46 </span> , (.==.), (.|-.), (./\.), (.\/.), (.-.), (./.), (.\.), (.&lt;&gt;.), (.:.), (.!.), (.*.)
+<span class="lineno">   47 </span>)where
+<span class="lineno">   48 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   49 </span>import Database.Design.Ampersand.Core.ParseTree ( MetaObj(..),Meta(..),Role(..),ConceptDef,Origin(..),Traced(..), ViewHtmlTemplate(..){-, ViewTextTemplate(..)-}
+<span class="lineno">   50 </span>                                                , PairView(..),PairViewSegment(..),Prop(..),Lang,Pairs, PandocFormat, P_Markup(..), PMeaning(..)
+<span class="lineno">   51 </span>                                                , SrcOrTgt(..), isSrc)
+<span class="lineno">   52 </span>import Database.Design.Ampersand.Core.Poset (Poset(..), Sortable(..),greatest,least,maxima,minima,sortWith)
+<span class="lineno">   53 </span>import Database.Design.Ampersand.Misc
+<span class="lineno">   54 </span>import Text.Pandoc hiding (Meta)
+<span class="lineno">   55 </span>import Data.Function
+<span class="lineno">   56 </span>import Data.List (intercalate,nub,delete)
+<span class="lineno">   57 </span>import Data.Typeable
+<span class="lineno">   58 </span>import GHC.Generics (Generic)
+<span class="lineno">   59 </span>import Data.Hashable
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   62 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Core.AbstractSyntaxTree&quot;</span></span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>data A_Context
+<span class="lineno">   65 </span>   = ACtx{ <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxnm</span></span></span> :: String           -- ^ The name of this context
+<span class="lineno">   66 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxpos</span></span></span> :: [Origin]        -- ^ The origin of the context. A context can be a merge of a file including other files c.q. a list of Origin.
+<span class="lineno">   67 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxlang</span></span></span> :: Lang           -- ^ The default language used in this context.
+<span class="lineno">   68 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxmarkup</span></span></span> :: PandocFormat -- ^ The default markup format for free text in this context (currently: LaTeX, ...)
+<span class="lineno">   69 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxthms</span></span></span> :: [String]       -- ^ Names of patterns/processes to be printed in the functional specification. (For partial documents.)
+<span class="lineno">   70 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxpats</span></span></span> :: [Pattern]      -- ^ The patterns defined in this context
+<span class="lineno">   71 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxrs</span></span></span> :: [Rule]           -- ^ All user defined rules in this context, but outside patterns and outside processes
+<span class="lineno">   72 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxds</span></span></span> :: [Declaration]    -- ^ The relations that are declared in this context, outside the scope of patterns
+<span class="lineno">   73 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxpopus</span></span></span> :: [Population]  -- ^ The user defined populations of relations defined in this context, including those from patterns and processes
+<span class="lineno">   74 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxcds</span></span></span> :: [ConceptDef]    -- ^ The concept definitions defined in this context, including those from patterns and processes
+<span class="lineno">   75 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxks</span></span></span> :: [IdentityDef]    -- ^ The identity definitions defined in this context, outside the scope of patterns
+<span class="lineno">   76 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxrrules</span></span></span> :: [A_RoleRule]
+<span class="lineno">   77 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxRRels</span></span></span> :: [A_RoleRelation] -- ^ The assignment of roles to Relations (which role mayEdit what relations)
+<span class="lineno">   78 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxvs</span></span></span> :: [ViewDef]        -- ^ The view definitions defined in this context, outside the scope of patterns
+<span class="lineno">   79 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxgs</span></span></span> :: [A_Gen]          -- ^ The specialization statements defined in this context, outside the scope of patterns
+<span class="lineno">   80 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxgenconcs</span></span></span> :: [[A_Concept]] -- ^ A partitioning of all concepts: the union of all these concepts contains all atoms, and the concept-lists are mutually distinct in terms of atoms in one of the mentioned concepts
+<span class="lineno">   81 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxifcs</span></span></span> :: [Interface]    -- ^ The interfaces defined in this context
+<span class="lineno">   82 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxps</span></span></span> :: [Purpose]        -- ^ The purposes of objects defined in this context, outside the scope of patterns and processes
+<span class="lineno">   83 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxsql</span></span></span> :: [ObjectDef]     -- ^ user defined sqlplugs, taken from the Ampersand script
+<span class="lineno">   84 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxphp</span></span></span> :: [ObjectDef]     -- ^ user defined phpplugs, taken from the Ampersand script
+<span class="lineno">   85 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctxmetas</span></span></span> :: [Meta]        -- ^ used for Pandoc authors (and possibly other things)
+<span class="lineno">   86 </span>         } deriving (<span class="decl"><span class="nottickedoff">Typeable</span></span>)              --deriving (Show) -- voor debugging
+<span class="lineno">   87 </span>instance Show A_Context where
+<span class="lineno">   88 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ c = showString (ctxnm c)</span></span>
+<span class="lineno">   89 </span>instance Eq A_Context where
+<span class="lineno">   90 </span>  <span class="decl"><span class="nottickedoff">c1 == c2  =  name c1 == name c2</span></span>
+<span class="lineno">   91 </span>instance Unique A_Context where
+<span class="lineno">   92 </span>  <span class="decl"><span class="nottickedoff">showUnique = name</span></span>
+<span class="lineno">   93 </span>instance Named A_Context where
+<span class="lineno">   94 </span>  <span class="decl"><span class="nottickedoff">name  = ctxnm</span></span>
+<span class="lineno">   95 </span>
+<span class="lineno">   96 </span>data A_RoleRelation
+<span class="lineno">   97 </span>   = RR { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrRoles</span></span></span> :: [Role]     -- ^ name of a role
+<span class="lineno">   98 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrRels</span></span></span> :: [Declaration]   -- ^ name of a Relation
+<span class="lineno">   99 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrPos</span></span></span> :: Origin       -- ^ position in the Ampersand script
+<span class="lineno">  100 </span>        } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
+<span class="lineno">  101 </span>instance Traced A_RoleRelation where
+<span class="lineno">  102 </span>   <span class="decl"><span class="nottickedoff">origin = rrPos</span></span>
+<span class="lineno">  103 </span>
+<span class="lineno">  104 </span>data Pattern
+<span class="lineno">  105 </span>   = A_Pat { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptnm</span></span></span> :: String         -- ^ Name of this pattern
+<span class="lineno">  106 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptpos</span></span></span> :: Origin        -- ^ the position in the file in which this pattern was declared.
+<span class="lineno">  107 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptend</span></span></span> :: Origin        -- ^ the end position in the file, elements with a position between pos and end are elements of this pattern.
+<span class="lineno">  108 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptrls</span></span></span> :: [Rule]        -- ^ The user defined rules in this pattern
+<span class="lineno">  109 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptgns</span></span></span> :: [A_Gen]       -- ^ The generalizations defined in this pattern
+<span class="lineno">  110 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptdcs</span></span></span> :: [Declaration] -- ^ The relations that are declared in this pattern
+<span class="lineno">  111 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptups</span></span></span> :: [Population]  -- ^ The user defined populations in this pattern
+<span class="lineno">  112 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptids</span></span></span> :: [IdentityDef] -- ^ The identity definitions defined in this pattern
+<span class="lineno">  113 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptvds</span></span></span> :: [ViewDef]     -- ^ The view definitions defined in this pattern
+<span class="lineno">  114 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ptxps</span></span></span> :: [Purpose]     -- ^ The purposes of elements defined in this pattern
+<span class="lineno">  115 </span>           }   deriving (<span class="decl"><span class="nottickedoff">Typeable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)    -- Show for debugging purposes
+<span class="lineno">  116 </span>instance Eq Pattern where
+<span class="lineno">  117 </span>  <span class="decl"><span class="nottickedoff">p==p' = ptnm p==ptnm p'</span></span>
+<span class="lineno">  118 </span>instance Unique Pattern where
+<span class="lineno">  119 </span>  <span class="decl"><span class="nottickedoff">showUnique = name</span></span>
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>instance Named Pattern where
+<span class="lineno">  122 </span> <span class="decl"><span class="nottickedoff">name = ptnm</span></span>
+<span class="lineno">  123 </span>instance Traced Pattern where
+<span class="lineno">  124 </span> <span class="decl"><span class="nottickedoff">origin = ptpos</span></span>
+<span class="lineno">  125 </span>
+<span class="lineno">  126 </span>
+<span class="lineno">  127 </span>data A_RoleRule = A_RoleRule { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">arRoles</span></span></span> :: [Role]
+<span class="lineno">  128 </span>                             , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">arRules</span></span></span> ::  [String] -- the names of the rules 
+<span class="lineno">  129 </span>                             , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">arPos</span></span></span> ::   Origin 
+<span class="lineno">  130 </span>                             } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  131 </span>data A_Markup =
+<span class="lineno">  132 </span>    A_Markup { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">amLang</span></span></span> :: Lang -- No Maybe here!  In the A-structure, it will be defined by the default if the P-structure does not define it. In the P-structure, the language is optional.
+<span class="lineno">  133 </span>             , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">amFormat</span></span></span> :: PandocFormat -- Idem: no Maybe in the A-structure.
+<span class="lineno">  134 </span>             , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">amPandoc</span></span></span> :: [Block]
+<span class="lineno">  135 </span>             } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Prelude.Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  136 </span>
+<span class="lineno">  137 </span>data RuleOrigin = UserDefined     -- This rule was specified explicitly as a rule in the Ampersand script
+<span class="lineno">  138 </span>                | Multiplicity    -- This rule follows implicitly from the Ampersand script (Because of a property) and generated by a computer
+<span class="lineno">  139 </span>                | Identity             -- This rule follows implicitly from the Ampersand script (Because of a identity) and generated by a computer
+<span class="lineno">  140 </span>                deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  141 </span>data Rule =
+<span class="lineno">  142 </span>     Ru { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrnm</span></span></span> :: String                  -- ^ Name of this rule
+<span class="lineno">  143 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrexp</span></span></span> :: Expression              -- ^ The rule expression
+<span class="lineno">  144 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrfps</span></span></span> :: Origin                  -- ^ Position in the Ampersand file
+<span class="lineno">  145 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrmean</span></span></span> :: AMeaning                -- ^ Ampersand generated meaning (for all known languages)
+<span class="lineno">  146 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrmsg</span></span></span> :: [A_Markup]              -- ^ User-specified violation messages, possibly more than one, for multiple languages.
+<span class="lineno">  147 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrviol</span></span></span> :: Maybe (PairView Expression) -- ^ Custom presentation for violations, currently only in a single language
+<span class="lineno">  148 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrtyp</span></span></span> :: Sign                    -- ^ Allocated type
+<span class="lineno">  149 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rrdcl</span></span></span> :: Maybe (Prop,Declaration)  -- ^ The property, if this rule originates from a property on a Declaration
+<span class="lineno">  150 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">r_env</span></span></span> :: String                  -- ^ Name of pattern in which it was defined.
+<span class="lineno">  151 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">r_usr</span></span></span> :: RuleOrigin              -- ^ Where does this rule come from?
+<span class="lineno">  152 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">isSignal</span></span></span> :: Bool                    -- ^ True if this is a signal; False if it is an invariant
+<span class="lineno">  153 </span>        } deriving <span class="decl"><span class="nottickedoff">Typeable</span></span> 
+<span class="lineno">  154 </span>instance Eq Rule where
+<span class="lineno">  155 </span>  <span class="decl"><span class="nottickedoff">r==r' = rrnm r==rrnm r'</span></span>
+<span class="lineno">  156 </span>instance Unique Rule where
+<span class="lineno">  157 </span>  <span class="decl"><span class="nottickedoff">showUnique = rrnm</span></span> 
+<span class="lineno">  158 </span>instance Prelude.Ord Rule where
+<span class="lineno">  159 </span>  <span class="decl"><span class="nottickedoff">compare = Prelude.compare `on` rrnm</span></span>
+<span class="lineno">  160 </span>instance Show Rule where
+<span class="lineno">  161 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ x</span>
+<span class="lineno">  162 </span><span class="spaces">   </span><span class="nottickedoff">= showString $ &quot;RULE &quot;++ (if null (name x) then &quot;&quot; else name x++&quot;: &quot;)++ show (rrexp x)</span></span>
+<span class="lineno">  163 </span>instance Traced Rule where
+<span class="lineno">  164 </span>  <span class="decl"><span class="nottickedoff">origin = rrfps</span></span>
+<span class="lineno">  165 </span>instance Named Rule where
+<span class="lineno">  166 </span>  <span class="decl"><span class="nottickedoff">name   = rrnm</span></span>
+<span class="lineno">  167 </span>instance Association Rule where
+<span class="lineno">  168 </span>  <span class="decl"><span class="nottickedoff">sign   = rrtyp</span></span>
+<span class="lineno">  169 </span>
+<span class="lineno">  170 </span>-- When an invariant rule is univalent or injective, the way it is stored in a table does not allow the univalence or injectivity
+<span class="lineno">  171 </span>-- to be broken. Hence, we need not check these rules in the prototype. (preventing breakage is the responsibility of the front-end)
+<span class="lineno">  172 </span>ruleIsInvariantUniOrInj :: Rule -&gt; Bool
+<span class="lineno">  173 </span><span class="decl"><span class="nottickedoff">ruleIsInvariantUniOrInj rule | not (isSignal rule), Just (p,_) &lt;- rrdcl rule = p `elem` [Uni, Inj]</span>
+<span class="lineno">  174 </span><span class="spaces">                             </span><span class="nottickedoff">| otherwise                                     = False</span></span>
+<span class="lineno">  175 </span>                             -- NOTE: currently all rules coming from properties are invariants, so the not isSignal
+<span class="lineno">  176 </span>                             -- condition is unnecessary, but this will change in the future.    
+<span class="lineno">  177 </span>    
+<span class="lineno">  178 </span>data RuleType = Implication | Equivalence | Truth  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  179 </span>
+<span class="lineno">  180 </span>data Conjunct = Cjct { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rc_id</span></span></span> ::         String -- string that identifies this conjunct ('id' rather than 'name', because 
+<span class="lineno">  181 </span>                                               -- this is an internal id that has no counterpart at the ADL level)
+<span class="lineno">  182 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rc_orgRules</span></span></span> ::   [Rule] -- All rules this conjunct originates from
+<span class="lineno">  183 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rc_conjunct</span></span></span> ::   Expression
+<span class="lineno">  184 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rc_dnfClauses</span></span></span> :: [DnfClause]
+<span class="lineno">  185 </span>                     } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>,<span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  186 </span>
+<span class="lineno">  187 </span>data DnfClause = Dnf { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">antcs</span></span></span> :: [Expression]
+<span class="lineno">  188 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">conss</span></span></span> :: [Expression]
+<span class="lineno">  189 </span>                     }  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>) -- Show is for debugging purposes only.
+<span class="lineno">  190 </span>
+<span class="lineno">  191 </span>instance Eq Conjunct where
+<span class="lineno">  192 </span>  <span class="decl"><span class="nottickedoff">rc==rc' = rc_id rc==rc_id rc'</span></span>
+<span class="lineno">  193 </span>instance Unique Conjunct where
+<span class="lineno">  194 </span>  <span class="decl"><span class="nottickedoff">showUnique = rc_id</span></span>
+<span class="lineno">  195 </span>instance Prelude.Ord Conjunct where
+<span class="lineno">  196 </span>  <span class="decl"><span class="nottickedoff">compare = Prelude.compare `on` rc_id</span></span>
+<span class="lineno">  197 </span>
+<span class="lineno">  198 </span>data Declaration =
+<span class="lineno">  199 </span>  Sgn { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decnm</span></span></span> :: String     -- ^ the name of the declaration
+<span class="lineno">  200 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decsgn</span></span></span> :: Sign       -- ^ the source and target concepts of the declaration
+<span class="lineno">  201 </span>       --multiplicities returns decprps_calc, when it has been calculated. So if you only need the user defined properties do not use multiplicities but decprps
+<span class="lineno">  202 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decprps</span></span></span> :: [Prop]     -- ^ the user defined multiplicity properties (Uni, Tot, Sur, Inj) and algebraic properties (Sym, Asy, Trn, Rfx)
+<span class="lineno">  203 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decprps_calc</span></span></span> :: Maybe [Prop] -- ^ the calculated and user defined multiplicity properties (Uni, Tot, Sur, Inj) and algebraic properties (Sym, Asy, Trn, Rfx, Irf). Note that calculated properties are made by adl2fspec, so in the A-structure decprps and decprps_calc yield exactly the same answer.
+<span class="lineno">  204 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decprL</span></span></span> :: String     -- ^ three strings, which form the pragma. E.g. if pragma consists of the three strings: &quot;Person &quot;, &quot; is married to person &quot;, and &quot; in Vegas.&quot;
+<span class="lineno">  205 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decprM</span></span></span> :: String     -- ^    then a tuple (&quot;Peter&quot;,&quot;Jane&quot;) in the list of links means that Person Peter is married to person Jane in Vegas.
+<span class="lineno">  206 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decprR</span></span></span> :: String
+<span class="lineno">  207 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decMean</span></span></span> :: AMeaning   -- ^ the meaning of a declaration, for each language supported by Ampersand.
+<span class="lineno">  208 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decfpos</span></span></span> :: Origin     -- ^ the position in the Ampersand source file where this declaration is declared. Not all decalartions come from the ampersand souce file.
+<span class="lineno">  209 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">deciss</span></span></span> ::  Bool       -- ^ if true, this is a signal relation; otherwise it is an ordinary relation.
+<span class="lineno">  210 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decusr</span></span></span> ::  Bool       -- ^ if true, this relation is declared by an author in the Ampersand script; otherwise it was generated by Ampersand.
+<span class="lineno">  211 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decpat</span></span></span> ::  String     -- ^ the pattern where this declaration has been declared.
+<span class="lineno">  212 </span>      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">decplug</span></span></span> :: Bool       -- ^ if true, this relation may not be stored in or retrieved from the standard database (it should be gotten from a Plug of some sort instead)
+<span class="lineno">  213 </span>      } |
+<span class="lineno">  214 </span>  Isn
+<span class="lineno">  215 </span>      { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">detyp</span></span></span> :: A_Concept       -- ^ The type
+<span class="lineno">  216 </span>      } |
+<span class="lineno">  217 </span>  Vs
+<span class="lineno">  218 </span>      { decsgn :: Sign
+<span class="lineno">  219 </span>      } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Prelude.Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  220 </span>
+<span class="lineno">  221 </span>instance Eq Declaration where
+<span class="lineno">  222 </span>  <span class="decl"><span class="nottickedoff">d@Sgn{}     == d'@Sgn{}     = decnm d==decnm d' &amp;&amp; decsgn d==decsgn d'</span>
+<span class="lineno">  223 </span><span class="spaces">  </span><span class="nottickedoff">d@Isn{}     == d'@Isn{}     = detyp d==detyp d'</span>
+<span class="lineno">  224 </span><span class="spaces">  </span><span class="nottickedoff">d@Vs{}      == d'@Vs{}      = decsgn d==decsgn d'</span>
+<span class="lineno">  225 </span><span class="spaces">  </span><span class="nottickedoff">_           == _            = False</span></span>
+<span class="lineno">  226 </span>instance Unique Declaration where
+<span class="lineno">  227 </span>  <span class="decl"><span class="nottickedoff">showUnique d = </span>
+<span class="lineno">  228 </span><span class="spaces">    </span><span class="nottickedoff">case d of</span>
+<span class="lineno">  229 </span><span class="spaces">      </span><span class="nottickedoff">Sgn{} -&gt; name d++uniqueShow False (decsgn d)</span>
+<span class="lineno">  230 </span><span class="spaces">      </span><span class="nottickedoff">Isn{} -&gt; &quot;I[&quot;++uniqueShow False (detyp d)++&quot;]&quot;</span>
+<span class="lineno">  231 </span><span class="spaces">      </span><span class="nottickedoff">Vs{}  -&gt; &quot;V&quot;++uniqueShow False (decsgn d)</span></span>
+<span class="lineno">  232 </span>instance Hashable Declaration where
+<span class="lineno">  233 </span>   <span class="decl"><span class="nottickedoff">hashWithSalt s dcl = </span>
+<span class="lineno">  234 </span><span class="spaces">     </span><span class="nottickedoff">s `hashWithSalt` constructorNr `hashWithSalt` (origin dcl)</span>
+<span class="lineno">  235 </span><span class="spaces">     </span><span class="nottickedoff">where constructorNr :: Int</span>
+<span class="lineno">  236 </span><span class="spaces">           </span><span class="nottickedoff">constructorNr </span>
+<span class="lineno">  237 </span><span class="spaces">             </span><span class="nottickedoff">= case dcl of </span>
+<span class="lineno">  238 </span><span class="spaces">                 </span><span class="nottickedoff">Sgn{} -&gt; 0</span>
+<span class="lineno">  239 </span><span class="spaces">                 </span><span class="nottickedoff">Isn{} -&gt; 1</span>
+<span class="lineno">  240 </span><span class="spaces">                 </span><span class="nottickedoff">Vs{}  -&gt; 2</span></span> 
+<span class="lineno">  241 </span>instance Show Declaration where  -- For debugging purposes only (and fatal messages)
+<span class="lineno">  242 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ decl@Sgn{}</span>
+<span class="lineno">  243 </span><span class="spaces">   </span><span class="nottickedoff">= showString (case decl of</span>
+<span class="lineno">  244 </span><span class="spaces">                  </span><span class="nottickedoff">Sgn{} -&gt; name decl++showSign (sign decl)</span>
+<span class="lineno">  245 </span><span class="spaces">                  </span><span class="nottickedoff">Isn{} -&gt; &quot;I[&quot;++show (detyp decl)++&quot;]&quot; -- Isn{} is of type Declaration and it is implicitly defined</span>
+<span class="lineno">  246 </span><span class="spaces">                  </span><span class="nottickedoff">Vs{}  -&gt; &quot;V&quot;++show (decsgn decl) )</span>
+<span class="lineno">  247 </span><span class="spaces"></span><span class="nottickedoff">-- was:</span>
+<span class="lineno">  248 </span><span class="spaces"></span><span class="nottickedoff">--  = showString (unwords ([&quot;RELATION&quot;,decnm decl,show (decsgn decl),show (decprps_calc decl)</span>
+<span class="lineno">  249 </span><span class="spaces"></span><span class="nottickedoff">--                         ,&quot;PRAGMA&quot;,show (decprL decl),show (decprM decl),show (decprR decl)]</span>
+<span class="lineno">  250 </span><span class="spaces"></span><span class="nottickedoff">--                          ++concatMap showMeaning (ameaMrk (decMean decl))</span>
+<span class="lineno">  251 </span><span class="spaces"></span><span class="nottickedoff">--               )        )</span>
+<span class="lineno">  252 </span><span class="spaces"></span><span class="nottickedoff">--         where</span>
+<span class="lineno">  253 </span><span class="spaces"></span><span class="nottickedoff">--            showMeaning m = &quot;MEANING&quot;</span>
+<span class="lineno">  254 </span><span class="spaces"></span><span class="nottickedoff">--                           : [&quot;IN&quot;, show (amLang m)]</span>
+<span class="lineno">  255 </span><span class="spaces"></span><span class="nottickedoff">--                          ++ [show (amFormat m)]</span>
+<span class="lineno">  256 </span><span class="spaces"></span><span class="nottickedoff">--                          ++ [&quot;{+&quot;,aMarkup2String m,&quot;-}&quot;]</span>
+<span class="lineno">  257 </span><span class="spaces"></span><span class="nottickedoff">--                          -- then [] else [&quot;MEANING&quot;,show (decMean decl)] ))</span>
+<span class="lineno">  258 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  259 </span><span class="spaces">  </span><span class="nottickedoff">showsPrec _ d@Isn{}     = showString $ &quot;Isn{detyp=&quot;++show(detyp d)++&quot;}&quot;</span>
+<span class="lineno">  260 </span><span class="spaces">  </span><span class="nottickedoff">showsPrec _ d@Vs{}      = showString $ &quot;V&quot;++showSign(decsgn d)</span></span>
+<span class="lineno">  261 </span>
+<span class="lineno">  262 </span>aMarkup2String :: A_Markup -&gt; String
+<span class="lineno">  263 </span><span class="decl"><span class="nottickedoff">aMarkup2String a = blocks2String (amFormat a) False (amPandoc a)</span></span>
+<span class="lineno">  264 </span>
+<span class="lineno">  265 </span>data AMeaning = AMeaning { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ameaMrk</span></span></span> ::[A_Markup]} deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Prelude.Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  266 </span>
+<span class="lineno">  267 </span>instance Named Declaration where
+<span class="lineno">  268 </span>  <span class="decl"><span class="nottickedoff">name d@Sgn{}   = decnm d</span>
+<span class="lineno">  269 </span><span class="spaces">  </span><span class="nottickedoff">name Isn{}     = &quot;I&quot;</span>
+<span class="lineno">  270 </span><span class="spaces">  </span><span class="nottickedoff">name Vs{}      = &quot;V&quot;</span></span>
+<span class="lineno">  271 </span>instance Association Declaration where
+<span class="lineno">  272 </span>  <span class="decl"><span class="nottickedoff">sign d = case d of</span>
+<span class="lineno">  273 </span><span class="spaces">              </span><span class="nottickedoff">Sgn {}    -&gt; decsgn d</span>
+<span class="lineno">  274 </span><span class="spaces">              </span><span class="nottickedoff">Isn {}    -&gt; Sign (detyp d) (detyp d)</span>
+<span class="lineno">  275 </span><span class="spaces">              </span><span class="nottickedoff">Vs {}     -&gt; decsgn d</span></span>
+<span class="lineno">  276 </span>instance Traced Declaration where
+<span class="lineno">  277 </span>  <span class="decl"><span class="nottickedoff">origin d = case d of</span>
+<span class="lineno">  278 </span><span class="spaces">              </span><span class="nottickedoff">Sgn{}     -&gt; decfpos d</span>
+<span class="lineno">  279 </span><span class="spaces">              </span><span class="nottickedoff">_         -&gt; OriginUnknown</span></span>
+<span class="lineno">  280 </span>
+<span class="lineno">  281 </span>data IdentityDef = Id { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">idPos</span></span></span> :: Origin        -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number).
+<span class="lineno">  282 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">idLbl</span></span></span> :: String        -- ^ the name (or label) of this Identity. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface. It is not an empty string.
+<span class="lineno">  283 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">idCpt</span></span></span> :: A_Concept     -- ^ this expression describes the instances of this object, related to their context
+<span class="lineno">  284 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">identityAts</span></span></span> :: [IdentitySegment]  -- ^ the constituent attributes (i.e. name/expression pairs) of this identity.
+<span class="lineno">  285 </span>                      } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  286 </span>instance Named IdentityDef where
+<span class="lineno">  287 </span>  <span class="decl"><span class="nottickedoff">name = idLbl</span></span>
+<span class="lineno">  288 </span>instance Traced IdentityDef where
+<span class="lineno">  289 </span>  <span class="decl"><span class="nottickedoff">origin = idPos</span></span>
+<span class="lineno">  290 </span>
+<span class="lineno">  291 </span>data IdentitySegment = IdentityExp ObjectDef deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)  -- TODO: refactor to a list of terms
+<span class="lineno">  292 </span>
+<span class="lineno">  293 </span>data ViewDef = Vd { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vdpos</span></span></span> :: Origin          -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number).
+<span class="lineno">  294 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vdlbl</span></span></span> :: String          -- ^ the name (or label) of this View. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface. It is not an empty string.
+<span class="lineno">  295 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vdcpt</span></span></span> :: A_Concept       -- ^ the concept for which this view is applicable
+<span class="lineno">  296 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vdIsDefault</span></span></span> :: Bool      -- ^ whether or not this is the default view for the concept
+<span class="lineno">  297 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vdhtml</span></span></span> :: Maybe ViewHtmlTemplate -- ^ the html template for this view (not required since we may have other kinds of views as well in the future)
+<span class="lineno">  298 </span>--                  , vdtext :: Maybe ViewText -- Future extension
+<span class="lineno">  299 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vdats</span></span></span> :: [ViewSegment]   -- ^ the constituent attributes (i.e. name/expression pairs) of this view.
+<span class="lineno">  300 </span>                  } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  301 </span>instance Named ViewDef where
+<span class="lineno">  302 </span>  <span class="decl"><span class="nottickedoff">name = vdlbl</span></span>
+<span class="lineno">  303 </span>instance Traced ViewDef where
+<span class="lineno">  304 </span>  <span class="decl"><span class="nottickedoff">origin = vdpos</span></span>
+<span class="lineno">  305 </span>
+<span class="lineno">  306 </span>data ViewSegment = ViewExp ObjectDef | ViewText String | ViewHtml String deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  307 </span>
+<span class="lineno">  308 </span>
+<span class="lineno">  309 </span>-- | data structure A_Gen contains the CLASSIFY statements from an Ampersand script
+<span class="lineno">  310 </span>--   CLASSIFY Employee ISA Person   translates to Isa (C &quot;Person&quot;) (C &quot;Employee&quot;)
+<span class="lineno">  311 </span>--   CLASSIFY Workingstudent IS Employee/\Student   translates to IsE orig (C &quot;Workingstudent&quot;) [C &quot;Employee&quot;,C &quot;Student&quot;]
+<span class="lineno">  312 </span>data A_Gen = Isa { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">genspc</span></span></span> :: A_Concept      -- ^ specific concept
+<span class="lineno">  313 </span>                 , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gengen</span></span></span> :: A_Concept      -- ^ generic concept
+<span class="lineno">  314 </span>                 }
+<span class="lineno">  315 </span>           | IsE { genspc :: A_Concept      -- ^ specific concept
+<span class="lineno">  316 </span>                 , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">genrhs</span></span></span> :: [A_Concept]    -- ^ concepts of which the conjunction is equivalent to the specific concept
+<span class="lineno">  317 </span>                 } deriving (<span class="decl"><span class="nottickedoff">Typeable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  318 </span>instance Unique A_Gen where
+<span class="lineno">  319 </span>  <span class="decl"><span class="nottickedoff">showUnique a =</span>
+<span class="lineno">  320 </span><span class="spaces">    </span><span class="nottickedoff">case a of </span>
+<span class="lineno">  321 </span><span class="spaces">      </span><span class="nottickedoff">Isa{} -&gt; uniqueShow False (genspc a)++&quot; ISA &quot;++uniqueShow False (gengen a)</span>
+<span class="lineno">  322 </span><span class="spaces">      </span><span class="nottickedoff">IsE{} -&gt; uniqueShow False (genspc a)++&quot; IS &quot;++intercalate &quot; /\\ &quot; (map (uniqueShow False) (genrhs a))</span></span>
+<span class="lineno">  323 </span>instance Show A_Gen where
+<span class="lineno">  324 </span>  -- This show is used in error messages. It should therefore not display the term's type
+<span class="lineno">  325 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ g =</span>
+<span class="lineno">  326 </span><span class="spaces">    </span><span class="nottickedoff">case g of</span>
+<span class="lineno">  327 </span><span class="spaces">     </span><span class="nottickedoff">Isa{} -&gt; showString (&quot;CLASSIFY &quot;++show (genspc g)++&quot; ISA &quot;++show (gengen g))</span>
+<span class="lineno">  328 </span><span class="spaces">     </span><span class="nottickedoff">IsE{} -&gt; showString (&quot;CLASSIFY &quot;++show (genspc g)++&quot; IS &quot;++intercalate &quot; /\\ &quot; (map show (genrhs g)))</span></span>
+<span class="lineno">  329 </span>
+<span class="lineno">  330 </span>genericAndSpecifics :: A_Gen -&gt; [(A_Concept,A_Concept)]
+<span class="lineno">  331 </span><span class="decl"><span class="nottickedoff">genericAndSpecifics gen = </span>
+<span class="lineno">  332 </span><span class="spaces">    </span><span class="nottickedoff">case gen of</span>
+<span class="lineno">  333 </span><span class="spaces">      </span><span class="nottickedoff">Isa{} -&gt; [(genspc gen, gengen gen)]</span>
+<span class="lineno">  334 </span><span class="spaces">      </span><span class="nottickedoff">IsE{} -&gt; [(genspc gen, g ) | g&lt;-genrhs gen]</span></span>
+<span class="lineno">  335 </span>
+<span class="lineno">  336 </span>-- | this function takes all generalisation relations from the context and a concept and delivers a list of all concepts that are more specific than the given concept.
+<span class="lineno">  337 </span>--   If there are no cycles in the generalization graph,  cpt  cannot be an element of  smallerConcepts gens cpt.
+<span class="lineno">  338 </span>smallerConcepts :: [A_Gen] -&gt; A_Concept -&gt; [A_Concept]
+<span class="lineno">  339 </span><span class="decl"><span class="nottickedoff">smallerConcepts gens cpt</span>
+<span class="lineno">  340 </span><span class="spaces">  </span><span class="nottickedoff">= nub$ oneSmaller ++ concatMap (smallerConcepts gens) oneSmaller</span>
+<span class="lineno">  341 </span><span class="spaces">  </span><span class="nottickedoff">where oneSmaller = delete cpt. nub $ [ genspc g | g@Isa{}&lt;-gens, gengen g==cpt ]++[ genspc g | g@IsE{}&lt;-gens, cpt `elem` genrhs g ]</span></span>
+<span class="lineno">  342 </span>-- | this function takes all generalisation relations from the context and a concept and delivers a list of all concepts that are more generic than the given concept.
+<span class="lineno">  343 </span>largerConcepts :: [A_Gen] -&gt; A_Concept -&gt; [A_Concept]
+<span class="lineno">  344 </span><span class="decl"><span class="nottickedoff">largerConcepts gens cpt</span>
+<span class="lineno">  345 </span><span class="spaces"> </span><span class="nottickedoff">= nub$ oneLarger ++ concatMap (largerConcepts gens) oneLarger</span>
+<span class="lineno">  346 </span><span class="spaces">  </span><span class="nottickedoff">where oneLarger  = delete cpt. nub $[ gengen g | g@Isa{}&lt;-gens, genspc g==cpt ]++[ c | g@IsE{}&lt;-gens, genspc g==cpt, c&lt;-genrhs g ]</span></span>
+<span class="lineno">  347 </span>
+<span class="lineno">  348 </span>-- | this function returns the most generic concepts in the class of a given concept
+<span class="lineno">  349 </span>rootConcepts :: [A_Gen]  -&gt; [A_Concept] -&gt; [A_Concept]
+<span class="lineno">  350 </span><span class="decl"><span class="nottickedoff">rootConcepts gens cpts = [ root | root&lt;-nub $ [ c | cpt&lt;-cpts, c&lt;-largerConcepts gens cpt ] `uni` cpts</span>
+<span class="lineno">  351 </span><span class="spaces">                                </span><span class="nottickedoff">, root `notElem` [ genspc g | g@Isa{}&lt;-gens]++[c | g@IsE{}&lt;-gens, c&lt;-genrhs g ]</span>
+<span class="lineno">  352 </span><span class="spaces">                                </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  353 </span>
+<span class="lineno">  354 </span>data Interface = Ifc { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcParams</span></span></span> ::   [Declaration] -- all relations that can be edited in this interface
+<span class="lineno">  355 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcClass</span></span></span> ::    Maybe String
+<span class="lineno">  356 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcArgs</span></span></span> ::     [[String]]
+<span class="lineno">  357 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcRoles</span></span></span> ::    [Role]        -- all roles for which an interface is available (empty means: available for all roles)
+<span class="lineno">  358 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcObj</span></span></span> ::      ObjectDef     -- NOTE: this top-level ObjectDef is contains the interface itself (ie. name and expression)
+<span class="lineno">  359 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcEcas</span></span></span> ::     [ECArule]     -- All ECArules that are needed to perform computations for maintaining rules
+<span class="lineno">  360 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcControls</span></span></span> :: [Conjunct]    -- All conjuncts that must be evaluated after a transation
+<span class="lineno">  361 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcPos</span></span></span> ::      Origin        -- The position in the file (filename, line- and column number)
+<span class="lineno">  362 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifcPrp</span></span></span> ::      String        -- The purpose of the interface
+<span class="lineno">  363 </span>                     } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
+<span class="lineno">  364 </span>
+<span class="lineno">  365 </span>instance Eq Interface where
+<span class="lineno">  366 </span>  <span class="decl"><span class="nottickedoff">s==s' = name s==name s'</span></span>
+<span class="lineno">  367 </span>instance Named Interface where
+<span class="lineno">  368 </span>  <span class="decl"><span class="nottickedoff">name = name . ifcObj</span></span>
+<span class="lineno">  369 </span>instance Traced Interface where
+<span class="lineno">  370 </span>  <span class="decl"><span class="nottickedoff">origin = ifcPos</span></span>
+<span class="lineno">  371 </span>
+<span class="lineno">  372 </span>-- Utility function for looking up interface refs
+<span class="lineno">  373 </span>getInterfaceByName :: [Interface] -&gt; String -&gt; Interface
+<span class="lineno">  374 </span><span class="decl"><span class="nottickedoff">getInterfaceByName interfaces' nm = case [ ifc | ifc &lt;- interfaces', name ifc == nm ] of</span>
+<span class="lineno">  375 </span><span class="spaces">                                </span><span class="nottickedoff">[]    -&gt; fatal 327 $ &quot;getInterface by name: no interfaces named &quot;++show nm</span>
+<span class="lineno">  376 </span><span class="spaces">                                </span><span class="nottickedoff">[ifc] -&gt; ifc</span>
+<span class="lineno">  377 </span><span class="spaces">                                </span><span class="nottickedoff">_     -&gt; fatal 330 $ &quot;getInterface by name: multiple interfaces named &quot;++show nm</span></span>
+<span class="lineno">  378 </span> 
+<span class="lineno">  379 </span>objAts :: ObjectDef -&gt; [ObjectDef]
+<span class="lineno">  380 </span><span class="decl"><span class="nottickedoff">objAts obj</span>
+<span class="lineno">  381 </span><span class="spaces">  </span><span class="nottickedoff">= case objmsub obj of</span>
+<span class="lineno">  382 </span><span class="spaces">     </span><span class="nottickedoff">Nothing       -&gt; []</span>
+<span class="lineno">  383 </span><span class="spaces">     </span><span class="nottickedoff">Just (InterfaceRef _) -&gt; []</span>
+<span class="lineno">  384 </span><span class="spaces">     </span><span class="nottickedoff">Just (Box _ _ objs)     -&gt; objs</span></span>
+<span class="lineno">  385 </span>
+<span class="lineno">  386 </span>class Object a where
+<span class="lineno">  387 </span> concept :: a -&gt; A_Concept        -- the type of the object
+<span class="lineno">  388 </span> attributes :: a -&gt; [ObjectDef]   -- the objects defined within the object
+<span class="lineno">  389 </span> contextOf :: a -&gt; Expression     -- the context expression
+<span class="lineno">  390 </span>
+<span class="lineno">  391 </span>instance Object ObjectDef where
+<span class="lineno">  392 </span> <span class="decl"><span class="nottickedoff">concept obj = target (objctx obj)</span></span>
+<span class="lineno">  393 </span> <span class="decl"><span class="nottickedoff">attributes  = objAts</span></span>
+<span class="lineno">  394 </span> <span class="decl"><span class="nottickedoff">contextOf   = objctx</span></span>
+<span class="lineno">  395 </span>
+<span class="lineno">  396 </span>data ObjectDef = Obj { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">objnm</span></span></span> ::    String         -- ^ view name of the object definition. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface if it is not an empty string.
+<span class="lineno">  397 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">objpos</span></span></span> ::   Origin         -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number)
+<span class="lineno">  398 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">objctx</span></span></span> ::   Expression     -- ^ this expression describes the instances of this object, related to their context.
+<span class="lineno">  399 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">objmView</span></span></span> :: Maybe String   -- ^ The view that should be used for this object
+<span class="lineno">  400 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">objmsub</span></span></span> ::  Maybe SubInterface    -- ^ the attributes, which are object definitions themselves.
+<span class="lineno">  401 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">objstrs</span></span></span> ::  [[String]]     -- ^ directives that specify the interface.
+<span class="lineno">  402 </span>                     } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)        -- just for debugging (zie ook instance Show ObjectDef)
+<span class="lineno">  403 </span>instance Named ObjectDef where
+<span class="lineno">  404 </span>  <span class="decl"><span class="nottickedoff">name   = objnm</span></span>
+<span class="lineno">  405 </span>instance Traced ObjectDef where
+<span class="lineno">  406 </span>  <span class="decl"><span class="nottickedoff">origin = objpos</span></span>
+<span class="lineno">  407 </span>
+<span class="lineno">  408 </span>data SubInterface = Box A_Concept (Maybe String) [ObjectDef] | InterfaceRef String deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  409 </span>
+<span class="lineno">  410 </span>data InsDel   = Ins | Del
+<span class="lineno">  411 </span>                 deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  412 </span>data ECArule= ECA { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ecaTriggr</span></span></span> :: Event       -- The event on which this rule is activated
+<span class="lineno">  413 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ecaDelta</span></span></span> ::  Declaration -- The delta to be inserted or deleted from this rule. It actually serves very much like a formal parameter.
+<span class="lineno">  414 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ecaAction</span></span></span> :: PAclause    -- The action to be taken when triggered.
+<span class="lineno">  415 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ecaNum</span></span></span> ::    Int         -- A unique number that identifies the ECArule within its scope.
+<span class="lineno">  416 </span>                  }
+<span class="lineno">  417 </span>                  
+<span class="lineno">  418 </span>instance Show ECArule where
+<span class="lineno">  419 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ r = showString (&quot;ON &quot;++show (ecaTriggr r)++&quot; &quot;++show (ecaDelta r)++&quot; do something.&quot;)</span></span>
+<span class="lineno">  420 </span>
+<span class="lineno">  421 </span>instance Eq (ECArule) where
+<span class="lineno">  422 </span>   <span class="decl"><span class="nottickedoff">e==e' = ecaNum e==ecaNum e'</span></span>
+<span class="lineno">  423 </span>
+<span class="lineno">  424 </span>data Event = On { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">eSrt</span></span></span> :: InsDel
+<span class="lineno">  425 </span>                , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">eDcl</span></span></span> :: Declaration
+<span class="lineno">  426 </span>                } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  427 </span>
+<span class="lineno">  428 </span>data PAclause
+<span class="lineno">  429 </span>              = CHC { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paCls</span></span></span> :: [PAclause]                 -- precisely one clause is executed.
+<span class="lineno">  430 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paMotiv</span></span></span> :: [(Expression,[Rule] )]   -- tells which conjunct from which rule is being maintained
+<span class="lineno">  431 </span>                    }
+<span class="lineno">  432 </span>              | GCH { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paGCls</span></span></span> :: [(InsDel,Expression,PAclause)]    -- guarded choice; The rule is maintained if one of the clauses of which the expression is populated is executed.
+<span class="lineno">  433 </span>                    , paMotiv :: [(Expression,[Rule] )]   -- tells which conjunct from which rule is being maintained
+<span class="lineno">  434 </span>                    }
+<span class="lineno">  435 </span>              | ALL { paCls :: [PAclause]                 -- all clauses are executed.
+<span class="lineno">  436 </span>                    , paMotiv :: [(Expression,[Rule] )]
+<span class="lineno">  437 </span>                    }
+<span class="lineno">  438 </span>              | Do  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paSrt</span></span></span> :: InsDel                     -- do Insert or Delete
+<span class="lineno">  439 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paTo</span></span></span> :: Declaration                 -- into toExpr    or from toExpr
+<span class="lineno">  440 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paDelta</span></span></span> :: Expression               -- delta
+<span class="lineno">  441 </span>                    , paMotiv :: [(Expression,[Rule] )]
+<span class="lineno">  442 </span>                    }
+<span class="lineno">  443 </span>              | New { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paCpt</span></span></span> :: A_Concept                  -- make a new instance of type c
+<span class="lineno">  444 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paCl</span></span></span> :: String-&gt;PAclause            -- to be done after creating the concept
+<span class="lineno">  445 </span>                    , paMotiv :: [(Expression,[Rule] )]
+<span class="lineno">  446 </span>                    }
+<span class="lineno">  447 </span>              | Rmv { paCpt :: A_Concept                  -- Remove an instance of type c
+<span class="lineno">  448 </span>                    , paCl :: String-&gt;PAclause            -- to be done afteremoving the concept
+<span class="lineno">  449 </span>                    , paMotiv :: [(Expression,[Rule] )]
+<span class="lineno">  450 </span>                    }
+<span class="lineno">  451 </span>              | Nop { paMotiv :: [(Expression,[Rule] )]   -- tells which conjunct from whichule is being maintained
+<span class="lineno">  452 </span>                    }
+<span class="lineno">  453 </span>              | Blk { paMotiv :: [(Expression,[Rule] )]   -- tells which expression from whichule has caused the blockage
+<span class="lineno">  454 </span>                    }
+<span class="lineno">  455 </span>              | Let { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paExpr</span></span></span> :: PAclause                  -- the expression that represents a condition to be tested.
+<span class="lineno">  456 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paBody</span></span></span> :: PAclause -&gt; PAclause
+<span class="lineno">  457 </span>                    , paMotiv :: [(Expression,[Rule] )]
+<span class="lineno">  458 </span>                    }
+<span class="lineno">  459 </span>              | Ref { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paVar</span></span></span> :: String
+<span class="lineno">  460 </span>                    }
+<span class="lineno">  461 </span>
+<span class="lineno">  462 </span>instance Eq PAclause where
+<span class="lineno">  463 </span>   <span class="decl"><span class="nottickedoff">CHC ds _ == CHC ds' _ = ds==ds'</span>
+<span class="lineno">  464 </span><span class="spaces">   </span><span class="nottickedoff">GCH ds _ == GCH ds' _ = ds==ds'</span>
+<span class="lineno">  465 </span><span class="spaces">   </span><span class="nottickedoff">ALL ds _ == ALL ds' _ = ds==ds'</span>
+<span class="lineno">  466 </span><span class="spaces">   </span><span class="nottickedoff">p@Do{}   ==   p'@Do{} = paSrt p==paSrt p' &amp;&amp; paTo p==paTo p' &amp;&amp; paDelta p==paDelta p'</span>
+<span class="lineno">  467 </span><span class="spaces">   </span><span class="nottickedoff">Nop _    ==     Nop _ = True</span>
+<span class="lineno">  468 </span><span class="spaces">   </span><span class="nottickedoff">p@New{}  ==  p'@New{} = paCpt p==paCpt p'</span>
+<span class="lineno">  469 </span><span class="spaces">   </span><span class="nottickedoff">p@Rmv{}  ==  p'@Rmv{} = paCpt p==paCpt p'</span>
+<span class="lineno">  470 </span><span class="spaces">   </span><span class="nottickedoff">_ == _ = False</span></span>
+<span class="lineno">  471 </span>
+<span class="lineno">  472 </span>-- | Explanation is the intended constructor. It explains the purpose of the object it references.
+<span class="lineno">  473 </span>--   The enrichment process of the parser must map the names (from PPurpose) to the actual objects
+<span class="lineno">  474 </span>data Purpose  = Expl { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">explPos</span></span></span> :: Origin     -- ^ The position in the Ampersand script of this purpose definition
+<span class="lineno">  475 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">explObj</span></span></span> :: ExplObj    -- ^ The object that is explained.
+<span class="lineno">  476 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">explMarkup</span></span></span> :: A_Markup   -- ^ This field contains the text of the explanation including language and markup info.
+<span class="lineno">  477 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">explUserdefd</span></span></span> :: Bool       -- ^ Is this purpose defined in the script?
+<span class="lineno">  478 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">explRefIds</span></span></span> :: [String]     -- ^ The references of the explaination
+<span class="lineno">  479 </span>                     } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  480 </span>instance Eq Purpose where
+<span class="lineno">  481 </span>  <span class="decl"><span class="nottickedoff">x0 == x1  =  explObj x0 == explObj x1 &amp;&amp;  -- TODO: check if this definition is right. </span>
+<span class="lineno">  482 </span><span class="spaces">                                            </span><span class="nottickedoff">-- I(Han) suspect that the Origin should be part of it. </span>
+<span class="lineno">  483 </span><span class="spaces">               </span><span class="nottickedoff">(amLang . explMarkup) x0 == (amLang . explMarkup) x1</span></span>
+<span class="lineno">  484 </span>instance Unique Purpose where
+<span class="lineno">  485 </span>  <span class="decl"><span class="nottickedoff">showUnique p = uniqueShow True (explObj p)++&quot; in &quot;++(show.amLang.explMarkup) p</span>
+<span class="lineno">  486 </span><span class="spaces">                   </span><span class="nottickedoff">++ uniqueShow True (explPos p)</span></span>
+<span class="lineno">  487 </span>instance Traced Purpose where
+<span class="lineno">  488 </span>  <span class="decl"><span class="nottickedoff">origin = explPos</span></span>
+<span class="lineno">  489 </span>
+<span class="lineno">  490 </span>data Population -- The user defined populations
+<span class="lineno">  491 </span>  = PRelPopu { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popdcl</span></span></span> :: Declaration
+<span class="lineno">  492 </span>             , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popps</span></span></span> ::  Pairs     -- The user-defined pairs that populate the relation
+<span class="lineno">  493 </span>             }
+<span class="lineno">  494 </span>  | PCptPopu { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popcpt</span></span></span> :: A_Concept
+<span class="lineno">  495 </span>             , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popas</span></span></span> ::  [String]  -- The user-defined atoms that populate the concept
+<span class="lineno">  496 </span>             } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  497 </span>
+<span class="lineno">  498 </span>data ExplObj = ExplConceptDef ConceptDef
+<span class="lineno">  499 </span>             | ExplDeclaration Declaration
+<span class="lineno">  500 </span>             | ExplRule String
+<span class="lineno">  501 </span>             | ExplIdentityDef String
+<span class="lineno">  502 </span>             | ExplViewDef String
+<span class="lineno">  503 </span>             | ExplPattern String
+<span class="lineno">  504 </span>             | ExplInterface String
+<span class="lineno">  505 </span>             | ExplContext String
+<span class="lineno">  506 </span>          deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span> ,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  507 </span>instance Unique ExplObj where
+<span class="lineno">  508 </span>  <span class="decl"><span class="nottickedoff">showUnique e = &quot;Explanation of &quot;++</span>
+<span class="lineno">  509 </span><span class="spaces">    </span><span class="nottickedoff">case e of </span>
+<span class="lineno">  510 </span><span class="spaces">     </span><span class="nottickedoff">(ExplConceptDef cd) -&gt; uniqueShow True cd</span>
+<span class="lineno">  511 </span><span class="spaces">     </span><span class="nottickedoff">(ExplDeclaration d) -&gt; uniqueShow True d</span>
+<span class="lineno">  512 </span><span class="spaces">     </span><span class="nottickedoff">(ExplRule s)        -&gt; &quot;a Rule named &quot;++s</span>
+<span class="lineno">  513 </span><span class="spaces">     </span><span class="nottickedoff">(ExplIdentityDef s) -&gt; &quot;an Ident named &quot;++s</span>
+<span class="lineno">  514 </span><span class="spaces">     </span><span class="nottickedoff">(ExplViewDef s)     -&gt; &quot;a View named &quot;++s</span>
+<span class="lineno">  515 </span><span class="spaces">     </span><span class="nottickedoff">(ExplPattern s)     -&gt; &quot;a Pattern named &quot;++s</span>
+<span class="lineno">  516 </span><span class="spaces">     </span><span class="nottickedoff">(ExplInterface s)   -&gt; &quot;an Interface named &quot;++s</span>
+<span class="lineno">  517 </span><span class="spaces">     </span><span class="nottickedoff">(ExplContext s)     -&gt; &quot;a Context named &quot;++s</span></span>
+<span class="lineno">  518 </span>     
+<span class="lineno">  519 </span>data Expression
+<span class="lineno">  520 </span>      = EEqu (Expression,Expression)   -- ^ equivalence             =
+<span class="lineno">  521 </span>      | EImp (Expression,Expression)   -- ^ implication             |-
+<span class="lineno">  522 </span>      | EIsc (Expression,Expression)   -- ^ intersection            /\
+<span class="lineno">  523 </span>      | EUni (Expression,Expression)   -- ^ union                   \/
+<span class="lineno">  524 </span>      | EDif (Expression,Expression)   -- ^ difference              -
+<span class="lineno">  525 </span>      | ELrs (Expression,Expression)   -- ^ left residual           /
+<span class="lineno">  526 </span>      | ERrs (Expression,Expression)   -- ^ right residual          \
+<span class="lineno">  527 </span>      | EDia (Expression,Expression)   -- ^ diamond                 &lt;&gt;
+<span class="lineno">  528 </span>      | ECps (Expression,Expression)   -- ^ composition             ;
+<span class="lineno">  529 </span>      | ERad (Expression,Expression)   -- ^ relative addition       !
+<span class="lineno">  530 </span>      | EPrd (Expression,Expression)   -- ^ cartesian product       *
+<span class="lineno">  531 </span>      | EKl0 Expression                -- ^ Rfx.Trn closure         *  (Kleene star)
+<span class="lineno">  532 </span>      | EKl1 Expression                -- ^ Transitive closure      +  (Kleene plus)
+<span class="lineno">  533 </span>      | EFlp Expression                -- ^ conversion (flip, wok)  ~
+<span class="lineno">  534 </span>      | ECpl Expression                -- ^ Complement
+<span class="lineno">  535 </span>      | EBrk Expression                -- ^ bracketed expression ( ... )
+<span class="lineno">  536 </span>      | EDcD Declaration               -- ^ simple declaration
+<span class="lineno">  537 </span>      | EDcI A_Concept                 -- ^ Identity relation
+<span class="lineno">  538 </span>      | EEps A_Concept Sign            -- ^ Epsilon relation (introduced by the system to ensure we compare concepts by equality only.
+<span class="lineno">  539 </span>      | EDcV Sign                      -- ^ Cartesian product relation
+<span class="lineno">  540 </span>      | EMp1 String A_Concept          -- ^ constant (string between single quotes)
+<span class="lineno">  541 </span>      deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff">Prelude.Ord</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>, Generic)
+<span class="lineno">  542 </span>instance Unique Expression where
+<span class="lineno">  543 </span>  <span class="decl"><span class="nottickedoff">showUnique = show</span></span>
+<span class="lineno">  544 </span>(.==.), (.|-.), (./\.), (.\/.), (.-.), (./.), (.\.), (.&lt;&gt;.), (.:.), (.!.), (.*.) :: Expression -&gt; Expression -&gt; Expression
+<span class="lineno">  545 </span>instance Hashable Expression
+<span class="lineno">  546 </span>instance Unique (PairView Expression) where
+<span class="lineno">  547 </span>  <span class="decl"><span class="nottickedoff">showUnique = show</span></span>
+<span class="lineno">  548 </span>instance Unique (PairViewSegment Expression) where
+<span class="lineno">  549 </span>  <span class="decl"><span class="nottickedoff">showUnique = show</span></span>
+<span class="lineno">  550 </span>infixl 1 .==.   -- equivalence
+<span class="lineno">  551 </span>infixl 1 .|-.   -- implication
+<span class="lineno">  552 </span>infixl 2 ./\.   -- intersection
+<span class="lineno">  553 </span>infixl 2 .\/.   -- union
+<span class="lineno">  554 </span>infixl 4 .-.    -- difference
+<span class="lineno">  555 </span>infixl 6 ./.    -- left residual
+<span class="lineno">  556 </span>infixl 6 .\.    -- right residual
+<span class="lineno">  557 </span>infixl 6 .&lt;&gt;.   -- diamond
+<span class="lineno">  558 </span>infixl 8 .:.    -- composition    -- .;. was unavailable, because Haskell's scanner does not recognize it as an operator.
+<span class="lineno">  559 </span>infixl 8 .!.    -- relative addition
+<span class="lineno">  560 </span>infixl 8 .*.    -- cartesian product
+<span class="lineno">  561 </span>
+<span class="lineno">  562 </span>-- SJ 20130118: The fatals are superfluous, but only if the type checker works correctly. For that reason, they are not being removed. Not even for performance reasons.
+<span class="lineno">  563 </span><span class="decl"><span class="nottickedoff">l .==. r = if source l/=source r ||  target l/=target r then fatal 424 (&quot;Cannot equate (with operator \&quot;==\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  564 </span><span class="spaces">           </span><span class="nottickedoff">EEqu (l,r)</span></span>
+<span class="lineno">  565 </span><span class="decl"><span class="nottickedoff">l .|-. r = if source l/=source r ||  target l/=target r then fatal 426 (&quot;Cannot include (with operator \&quot;|-\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  566 </span><span class="spaces">           </span><span class="nottickedoff">EImp (l,r)</span></span>
+<span class="lineno">  567 </span><span class="decl"><span class="nottickedoff">l ./\. r = if source l/=source r ||  target l/=target r then fatal 428 (&quot;Cannot intersect (with operator \&quot;/\\\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  568 </span><span class="spaces">           </span><span class="nottickedoff">EIsc (l,r)</span></span>
+<span class="lineno">  569 </span><span class="decl"><span class="nottickedoff">l .\/. r = if source l/=source r ||  target l/=target r then fatal 430 (&quot;Cannot unite (with operator \&quot;\\/\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  570 </span><span class="spaces">           </span><span class="nottickedoff">EUni (l,r)</span></span>
+<span class="lineno">  571 </span><span class="decl"><span class="nottickedoff">l .-. r  = if source l/=source r ||  target l/=target r then fatal 432 (&quot;Cannot subtract (with operator \&quot;-\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  572 </span><span class="spaces">           </span><span class="nottickedoff">EDif (l,r)</span></span>
+<span class="lineno">  573 </span><span class="decl"><span class="nottickedoff">l ./. r  = if target l/=target r then fatal 434 (&quot;Cannot residuate (with operator \&quot;/\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  574 </span><span class="spaces">           </span><span class="nottickedoff">ELrs (l,r)</span></span>
+<span class="lineno">  575 </span><span class="decl"><span class="nottickedoff">l .\. r  = if source l/=source r then fatal 436 (&quot;Cannot residuate (with operator \&quot;\\\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  576 </span><span class="spaces">           </span><span class="nottickedoff">ERrs (l,r)</span></span>
+<span class="lineno">  577 </span><span class="decl"><span class="nottickedoff">l .&lt;&gt;. r = if source l/=target r then fatal 438 (&quot;Cannot use diamond operator \&quot;&lt;&gt;\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  578 </span><span class="spaces">           </span><span class="nottickedoff">EDia (l,r)</span></span>
+<span class="lineno">  579 </span><span class="decl"><span class="nottickedoff">l .:. r  = if source r/=target l then fatal 440 (&quot;Cannot compose (with operator \&quot;;\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  580 </span><span class="spaces">           </span><span class="nottickedoff">ECps (l,r)</span></span>
+<span class="lineno">  581 </span><span class="decl"><span class="nottickedoff">l .!. r  = if source r/=target l then fatal 442 (&quot;Cannot add (with operator \&quot;!\&quot;) expression l of type &quot;++show (sign l)++&quot;\n   &quot;++show l++&quot;\n   with expression r of type &quot;++show (sign r)++&quot;\n   &quot;++show r++&quot;.&quot;) else</span>
+<span class="lineno">  582 </span><span class="spaces">           </span><span class="nottickedoff">ERad (l,r)</span></span>
+<span class="lineno">  583 </span><span class="decl"><span class="nottickedoff">l .*. r  = -- SJC: always fits! No fatal here..</span>
+<span class="lineno">  584 </span><span class="spaces">           </span><span class="nottickedoff">EPrd (l,r)</span></span>
+<span class="lineno">  585 </span>{- For the operators /, \, ;, ! and * we must not check whether the intermediate types exist.
+<span class="lineno">  586 </span>   Suppose the user says GEN Student ISA Person and GEN Employee ISA Person, then Student `join` Employee has a name (i.e. Person), but Student `meet` Employee
+<span class="lineno">  587 </span>   does not. In that case, -(r!s) (with target r=Student and source s=Employee) is defined, but -r;-s is not.
+<span class="lineno">  588 </span>   So in order to let -(r!s) be equal to -r;-s we must not check for the existence of these types, for the Rotterdam paper already shows that this is fine.
+<span class="lineno">  589 </span>-}
+<span class="lineno">  590 </span>
+<span class="lineno">  591 </span>instance Flippable Expression where
+<span class="lineno">  592 </span>  <span class="decl"><span class="nottickedoff">flp expr = case expr of</span>
+<span class="lineno">  593 </span><span class="spaces">               </span><span class="nottickedoff">EEqu (l,r) -&gt; EEqu (flp l, flp r)</span>
+<span class="lineno">  594 </span><span class="spaces">               </span><span class="nottickedoff">EImp (l,r) -&gt; EImp (flp l, flp r)</span>
+<span class="lineno">  595 </span><span class="spaces">               </span><span class="nottickedoff">EIsc (l,r) -&gt; EIsc (flp l, flp r)</span>
+<span class="lineno">  596 </span><span class="spaces">               </span><span class="nottickedoff">EUni (l,r) -&gt; EUni (flp l, flp r)</span>
+<span class="lineno">  597 </span><span class="spaces">               </span><span class="nottickedoff">EDif (l,r) -&gt; EDif (flp l, flp r)</span>
+<span class="lineno">  598 </span><span class="spaces">               </span><span class="nottickedoff">ELrs (l,r) -&gt; ERrs (flp r, flp l)</span>
+<span class="lineno">  599 </span><span class="spaces">               </span><span class="nottickedoff">ERrs (l,r) -&gt; ELrs (flp r, flp l)</span>
+<span class="lineno">  600 </span><span class="spaces">               </span><span class="nottickedoff">EDia (l,r) -&gt; EDia (flp r, flp l)</span>
+<span class="lineno">  601 </span><span class="spaces">               </span><span class="nottickedoff">ECps (l,r) -&gt; ECps (flp r, flp l)</span>
+<span class="lineno">  602 </span><span class="spaces">               </span><span class="nottickedoff">ERad (l,r) -&gt; ERad (flp r, flp l)</span>
+<span class="lineno">  603 </span><span class="spaces">               </span><span class="nottickedoff">EPrd (l,r) -&gt; EPrd (flp r, flp l)</span>
+<span class="lineno">  604 </span><span class="spaces">               </span><span class="nottickedoff">EFlp e     -&gt; e</span>
+<span class="lineno">  605 </span><span class="spaces">               </span><span class="nottickedoff">ECpl e     -&gt; ECpl (flp e)</span>
+<span class="lineno">  606 </span><span class="spaces">               </span><span class="nottickedoff">EKl0 e     -&gt; EKl0 (flp e)</span>
+<span class="lineno">  607 </span><span class="spaces">               </span><span class="nottickedoff">EKl1 e     -&gt; EKl1 (flp e)</span>
+<span class="lineno">  608 </span><span class="spaces">               </span><span class="nottickedoff">EBrk f     -&gt; EBrk (flp f)</span>
+<span class="lineno">  609 </span><span class="spaces">               </span><span class="nottickedoff">EDcD{}     -&gt; EFlp expr</span>
+<span class="lineno">  610 </span><span class="spaces">               </span><span class="nottickedoff">EDcI{}     -&gt; expr</span>
+<span class="lineno">  611 </span><span class="spaces">               </span><span class="nottickedoff">EEps i sgn -&gt; EEps i (flp sgn)</span>
+<span class="lineno">  612 </span><span class="spaces">               </span><span class="nottickedoff">EDcV sgn   -&gt; EDcV (flp sgn)</span>
+<span class="lineno">  613 </span><span class="spaces">               </span><span class="nottickedoff">EMp1{}     -&gt; expr</span></span>
+<span class="lineno">  614 </span>
+<span class="lineno">  615 </span>instance Association Expression where
+<span class="lineno">  616 </span> <span class="decl"><span class="nottickedoff">sign (EEqu (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  617 </span><span class="spaces"> </span><span class="nottickedoff">sign (EImp (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  618 </span><span class="spaces"> </span><span class="nottickedoff">sign (EIsc (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  619 </span><span class="spaces"> </span><span class="nottickedoff">sign (EUni (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  620 </span><span class="spaces"> </span><span class="nottickedoff">sign (EDif (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  621 </span><span class="spaces"> </span><span class="nottickedoff">sign (ELrs (l,r)) = Sign (source l) (source r)</span>
+<span class="lineno">  622 </span><span class="spaces"> </span><span class="nottickedoff">sign (ERrs (l,r)) = Sign (target l) (target r)</span>
+<span class="lineno">  623 </span><span class="spaces"> </span><span class="nottickedoff">sign (EDia (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  624 </span><span class="spaces"> </span><span class="nottickedoff">sign (ECps (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  625 </span><span class="spaces"> </span><span class="nottickedoff">sign (ERad (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  626 </span><span class="spaces"> </span><span class="nottickedoff">sign (EPrd (l,r)) = Sign (source l) (target r)</span>
+<span class="lineno">  627 </span><span class="spaces"> </span><span class="nottickedoff">sign (EKl0 e)     = sign e</span>
+<span class="lineno">  628 </span><span class="spaces"> </span><span class="nottickedoff">sign (EKl1 e)     = sign e</span>
+<span class="lineno">  629 </span><span class="spaces"> </span><span class="nottickedoff">sign (EFlp e)     = flp (sign e)</span>
+<span class="lineno">  630 </span><span class="spaces"> </span><span class="nottickedoff">sign (ECpl e)     = sign e</span>
+<span class="lineno">  631 </span><span class="spaces"> </span><span class="nottickedoff">sign (EBrk e)     = sign e</span>
+<span class="lineno">  632 </span><span class="spaces"> </span><span class="nottickedoff">sign (EDcD d)     = sign d</span>
+<span class="lineno">  633 </span><span class="spaces"> </span><span class="nottickedoff">sign (EDcI c)     = Sign c c</span>
+<span class="lineno">  634 </span><span class="spaces"> </span><span class="nottickedoff">sign (EEps _ sgn) = sgn</span>
+<span class="lineno">  635 </span><span class="spaces"> </span><span class="nottickedoff">sign (EDcV sgn)   = sgn</span>
+<span class="lineno">  636 </span><span class="spaces"> </span><span class="nottickedoff">sign (EMp1 _ c)   = Sign c c</span></span>
+<span class="lineno">  637 </span>
+<span class="lineno">  638 </span>showSign :: Association a =&gt; a -&gt; String
+<span class="lineno">  639 </span><span class="decl"><span class="nottickedoff">showSign x = let Sign s t = sign x in &quot;[&quot;++name s++&quot;*&quot;++name t++&quot;]&quot;</span></span>
+<span class="lineno">  640 </span>
+<span class="lineno">  641 </span>-- We allow editing on basic relations (Declarations) that may have been flipped, or narrowed/widened by composing with I.
+<span class="lineno">  642 </span>-- Basically, we have a relation that may have several epsilons to its left and its right, and the source/target concepts
+<span class="lineno">  643 </span>-- we use are the concepts in the outermost epsilon, or the source/target concept of the relation, in absence of epsilons.
+<span class="lineno">  644 </span>-- This is used to determine the type of the atoms provided by the outside world through interfaces.
+<span class="lineno">  645 </span>getExpressionRelation :: Expression -&gt; Maybe (A_Concept, Declaration, A_Concept, Bool)
+<span class="lineno">  646 </span><span class="decl"><span class="nottickedoff">getExpressionRelation expr = case getRelation expr of</span>
+<span class="lineno">  647 </span><span class="spaces">   </span><span class="nottickedoff">Just (s,Just d,t,isFlipped)  -&gt; Just (s,d,t,isFlipped)</span>
+<span class="lineno">  648 </span><span class="spaces">   </span><span class="nottickedoff">_                            -&gt; Nothing</span>
+<span class="lineno">  649 </span><span class="spaces"> </span><span class="nottickedoff">where</span>
+<span class="lineno">  650 </span><span class="spaces">    </span><span class="nottickedoff">-- If the expression represents an editable relation, the relation is returned together with the narrowest possible source and target </span>
+<span class="lineno">  651 </span><span class="spaces">    </span><span class="nottickedoff">-- concepts, as well as a boolean that states whether the relation is flipped. </span>
+<span class="lineno">  652 </span><span class="spaces">    </span><span class="nottickedoff">getRelation :: Expression -&gt; Maybe (A_Concept, Maybe Declaration, A_Concept, Bool)</span>
+<span class="lineno">  653 </span><span class="spaces">    </span><span class="nottickedoff">getRelation (ECps (e, EDcI{})) = getRelation e</span>
+<span class="lineno">  654 </span><span class="spaces">    </span><span class="nottickedoff">getRelation (ECps (EDcI{}, e)) = getRelation e</span>
+<span class="lineno">  655 </span><span class="spaces">    </span><span class="nottickedoff">getRelation (ECps (e1, e2))</span>
+<span class="lineno">  656 </span><span class="spaces">      </span><span class="nottickedoff">= case (getRelation e1, getRelation e2) of --note: target e1==source e2</span>
+<span class="lineno">  657 </span><span class="spaces">         </span><span class="nottickedoff">(Just (_,Nothing,i1,_), Just (i2,Nothing,_,_)) -&gt; if i1==target e1 &amp;&amp; i2==source e2 then Just (i1, Nothing, i2, False) else -- i1==i2</span>
+<span class="lineno">  658 </span><span class="spaces">                                                           </span><span class="nottickedoff">if i1==target e1 &amp;&amp; i2/=source e2 then Just (i2, Nothing, i2, False) else</span>
+<span class="lineno">  659 </span><span class="spaces">                                                           </span><span class="nottickedoff">if i1/=target e1 &amp;&amp; i2==source e2 then Just (i1, Nothing, i1, False) else</span>
+<span class="lineno">  660 </span><span class="spaces">                                                           </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  661 </span><span class="spaces">         </span><span class="nottickedoff">(Just (_,Nothing,i,_), Just (s,d,t,isFlipped)) -&gt; if i==target e1                 then Just (s,d,t,isFlipped) else                       </span>
+<span class="lineno">  662 </span><span class="spaces">                                                           </span><span class="nottickedoff">if i/=target e1 &amp;&amp; s==target e1 then Just (i,d,t,isFlipped) else                       </span>
+<span class="lineno">  663 </span><span class="spaces">                                                           </span><span class="nottickedoff">Nothing                                                     </span>
+<span class="lineno">  664 </span><span class="spaces">         </span><span class="nottickedoff">(Just (s,d,t,isFlipped), Just (i,Nothing,_,_)) -&gt; if i==source e2                 then Just (s,d,t,isFlipped) else</span>
+<span class="lineno">  665 </span><span class="spaces">                                                           </span><span class="nottickedoff">if i/=source e2 &amp;&amp; t==source e2 then Just (s,d,i,isFlipped) else        </span>
+<span class="lineno">  666 </span><span class="spaces">                                                           </span><span class="nottickedoff">Nothing                                                                 </span>
+<span class="lineno">  667 </span><span class="spaces">         </span><span class="nottickedoff">_                                              -&gt; Nothing</span>
+<span class="lineno">  668 </span><span class="spaces">    </span><span class="nottickedoff">getRelation (EFlp e)</span>
+<span class="lineno">  669 </span><span class="spaces">     </span><span class="nottickedoff">= case getRelation e of</span>
+<span class="lineno">  670 </span><span class="spaces">         </span><span class="nottickedoff">Just (s,d,t,isFlipped) -&gt; Just (t,d,s,not isFlipped)</span>
+<span class="lineno">  671 </span><span class="spaces">         </span><span class="nottickedoff">Nothing                -&gt; Nothing</span>
+<span class="lineno">  672 </span><span class="spaces">    </span><span class="nottickedoff">getRelation (EDcD d)   = Just (source d, Just d, target d, False)</span>
+<span class="lineno">  673 </span><span class="spaces">    </span><span class="nottickedoff">getRelation (EEps i _) = Just (i, Nothing, i, False)</span>
+<span class="lineno">  674 </span><span class="spaces">    </span><span class="nottickedoff">getRelation _ = Nothing</span></span>
+<span class="lineno">  675 </span>
+<span class="lineno">  676 </span>
+<span class="lineno">  677 </span>-- The following definition of concept is used in the type checker only.
+<span class="lineno">  678 </span>-- It is called Concept, meaning &quot;type checking concept&quot;
+<span class="lineno">  679 </span>
+<span class="lineno">  680 </span>data A_Concept
+<span class="lineno">  681 </span>   = PlainConcept { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cptnm</span></span></span> :: String  -- ^PlainConcept nm represents the set of instances cs by name nm.
+<span class="lineno">  682 </span>                  }
+<span class="lineno">  683 </span>   | ONE  -- ^The universal Singleton: 'I'['Anything'] = 'V'['Anything'*'Anything']
+<span class="lineno">  684 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Prelude.Ord</span></span></span></span></span></span></span></span></span></span>,<span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  685 </span>
+<span class="lineno">  686 </span>instance Eq A_Concept where
+<span class="lineno">  687 </span>   <span class="decl"><span class="nottickedoff">PlainConcept{cptnm=a} == PlainConcept{cptnm=b} = a==b</span>
+<span class="lineno">  688 </span><span class="spaces">   </span><span class="nottickedoff">ONE == ONE = True</span>
+<span class="lineno">  689 </span><span class="spaces">   </span><span class="nottickedoff">_ == _ = False</span></span>
+<span class="lineno">  690 </span>instance Unique A_Concept where
+<span class="lineno">  691 </span>  <span class="decl"><span class="nottickedoff">showUnique = name</span></span>
+<span class="lineno">  692 </span>instance Hashable A_Concept where
+<span class="lineno">  693 </span>  <span class="decl"><span class="nottickedoff">hashWithSalt s cpt =</span>
+<span class="lineno">  694 </span><span class="spaces">     </span><span class="nottickedoff">s `hashWithSalt` (case cpt of</span>
+<span class="lineno">  695 </span><span class="spaces">                        </span><span class="nottickedoff">PlainConcept{} -&gt; (0::Int) `hashWithSalt` name cpt</span>
+<span class="lineno">  696 </span><span class="spaces">                        </span><span class="nottickedoff">ONE            -&gt; (1::Int)</span>
+<span class="lineno">  697 </span><span class="spaces">                      </span><span class="nottickedoff">)</span></span> 
+<span class="lineno">  698 </span>instance Named A_Concept where
+<span class="lineno">  699 </span>  <span class="decl"><span class="nottickedoff">name PlainConcept{cptnm = nm} = nm</span>
+<span class="lineno">  700 </span><span class="spaces">  </span><span class="nottickedoff">name ONE = &quot;ONE&quot;</span></span>
+<span class="lineno">  701 </span>
+<span class="lineno">  702 </span>instance Show A_Concept where
+<span class="lineno">  703 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ c = showString (name c)</span></span>
+<span class="lineno">  704 </span>
+<span class="lineno">  705 </span>data Sign = Sign A_Concept A_Concept deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Prelude.Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>, Generic)
+<span class="lineno">  706 </span>instance Hashable Sign
+<span class="lineno">  707 </span>instance Show Sign where
+<span class="lineno">  708 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ (Sign s t) =</span>
+<span class="lineno">  709 </span><span class="spaces">     </span><span class="nottickedoff">showString (   &quot;[&quot; ++ show s ++ &quot;*&quot; ++ show t ++ &quot;]&quot; )</span></span>
+<span class="lineno">  710 </span>instance Unique Sign where
+<span class="lineno">  711 </span>  <span class="decl"><span class="nottickedoff">showUnique (Sign s t) = &quot;[&quot; ++ uniqueShow False s ++ &quot;*&quot; ++ uniqueShow False t ++ &quot;]&quot;</span></span>
+<span class="lineno">  712 </span>instance Association Sign where
+<span class="lineno">  713 </span>  <span class="decl"><span class="nottickedoff">source (Sign s _) = s</span></span>
+<span class="lineno">  714 </span>  <span class="decl"><span class="nottickedoff">target (Sign _ t) = t</span></span>
+<span class="lineno">  715 </span>  <span class="decl"><span class="nottickedoff">sign sgn = sgn</span></span>
+<span class="lineno">  716 </span>
+<span class="lineno">  717 </span>instance Flippable Sign where
+<span class="lineno">  718 </span> <span class="decl"><span class="nottickedoff">flp (Sign s t) = Sign t s</span></span>
+<span class="lineno">  719 </span>
+<span class="lineno">  720 </span>class Association rel where
+<span class="lineno">  721 </span>  source, target :: rel -&gt; A_Concept      -- e.g. Declaration -&gt; Concept
+<span class="lineno">  722 </span>  <span class="decl"><span class="nottickedoff">source x        = source (sign x)</span></span>
+<span class="lineno">  723 </span>  <span class="decl"><span class="nottickedoff">target x        = target (sign x)</span></span>
+<span class="lineno">  724 </span>  sign :: rel -&gt; Sign
+<span class="lineno">  725 </span>  isEndo :: rel  -&gt; Bool
+<span class="lineno">  726 </span>  <span class="decl"><span class="nottickedoff">isEndo s        = source s == target s</span></span>
+<span class="lineno">  727 </span>
+<span class="lineno">  728 </span>
+<span class="lineno">  729 </span>  
+
+</pre>
+</body>
+</html>

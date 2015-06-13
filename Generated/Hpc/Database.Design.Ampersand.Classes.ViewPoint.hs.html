@@ -1,0 +1,118 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.Classes.ViewPoint (Language(..)) where
+<span class="lineno">    2 </span>import Database.Design.Ampersand.Core.ParseTree
+<span class="lineno">    3 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">    4 </span>import Prelude hiding (Ord(..))
+<span class="lineno">    5 </span>import Database.Design.Ampersand.ADL1.Rule
+<span class="lineno">    6 </span>import Database.Design.Ampersand.Classes.Relational  (Relational(multiplicities))
+<span class="lineno">    7 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">    8 </span>import Database.Design.Ampersand.Misc.Explain
+<span class="lineno">    9 </span>import Data.Maybe
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   12 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Classes.ViewPoint&quot;</span></span>
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>-- Language exists because there are many data structures that behave like an ontology, such as Pattern, P_Context, and Rule.
+<span class="lineno">   15 </span>-- These data structures are accessed by means of a common set of functions (e.g. rules, relations, etc.)
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>class Language a where
+<span class="lineno">   18 </span>  relsDefdIn :: a -&gt; [Declaration]   -- ^ all relations that are declared in the scope of this viewpoint.
+<span class="lineno">   19 </span>                                     --   These are user defined relations and all generated relarations,
+<span class="lineno">   20 </span>                                     --   i.e. one relation for each GEN and one for each signal rule.
+<span class="lineno">   21 </span>                                     --   Don't confuse relsDefdIn with relsUsedIn, which gives the relations that are
+<span class="lineno">   22 </span>                                     --   used in a.)
+<span class="lineno">   23 </span>  udefrules :: a -&gt; [Rule]           -- ^ all user defined rules that are maintained within this viewpoint,
+<span class="lineno">   24 </span>                                     --   which are not multiplicity- and not identity rules.
+<span class="lineno">   25 </span>  multrules :: a -&gt; [Rule]           -- ^ all multiplicityrules that are maintained within this viewpoint.
+<span class="lineno">   26 </span>  <span class="decl"><span class="nottickedoff">multrules x   = catMaybes [rulefromProp p d |d&lt;-relsDefdIn x, p&lt;-multiplicities d]</span></span>
+<span class="lineno">   27 </span>  identityRules :: a -&gt; [Rule]       -- all identity rules that are maintained within this viewpoint.
+<span class="lineno">   28 </span>  <span class="decl"><span class="nottickedoff">identityRules x    = concatMap rulesFromIdentity (identities x)</span></span>
+<span class="lineno">   29 </span>  allRules :: a -&gt; [Rule]
+<span class="lineno">   30 </span>  <span class="decl"><span class="nottickedoff">allRules x = udefrules x ++ multrules x ++ identityRules x</span></span>
+<span class="lineno">   31 </span>  identities :: a -&gt; [IdentityDef]   -- ^ all keys that are defined in a
+<span class="lineno">   32 </span>  viewDefs :: a -&gt; [ViewDef]         -- ^ all views that are defined in a
+<span class="lineno">   33 </span>  gens :: a -&gt; [A_Gen]               -- ^ all generalizations that are valid within this viewpoint
+<span class="lineno">   34 </span>  patterns :: a -&gt; [Pattern]         -- ^ all patterns that are used in this viewpoint
+<span class="lineno">   35 </span>
+<span class="lineno">   36 </span> 
+<span class="lineno">   37 </span>rulesFromIdentity :: IdentityDef -&gt; [Rule]
+<span class="lineno">   38 </span><span class="decl"><span class="nottickedoff">rulesFromIdentity identity</span>
+<span class="lineno">   39 </span><span class="spaces"> </span><span class="nottickedoff">= [ if null (identityAts identity) then fatal 81 (&quot;Moving into foldr1 with empty list (identityAts identity).&quot;) else</span>
+<span class="lineno">   40 </span><span class="spaces">     </span><span class="nottickedoff">mkKeyRule</span>
+<span class="lineno">   41 </span><span class="spaces">      </span><span class="nottickedoff">( foldr1 (./\.) [  expr .:. flp expr | IdentityExp att &lt;- identityAts identity, let expr=objctx att ]</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="nottickedoff">.|-. EDcI (idCpt identity)) ]</span>
+<span class="lineno">   43 </span><span class="spaces"> </span><span class="nottickedoff">{-    diamond e1 e2 = (flp e1 .\. e2) ./\. (e1 ./. flp e2)  -}</span>
+<span class="lineno">   44 </span><span class="spaces"> </span><span class="nottickedoff">where ruleName = &quot;identity_&quot; ++ name identity</span>
+<span class="lineno">   45 </span><span class="spaces">       </span><span class="nottickedoff">meaningEN = &quot;Identity rule&quot; ++ &quot;, following from identity &quot;++name identity</span>
+<span class="lineno">   46 </span><span class="spaces">       </span><span class="nottickedoff">meaningNL = &quot;Identiteitsregel&quot; ++ &quot;, volgend uit identiteit &quot;++name identity</span>
+<span class="lineno">   47 </span><span class="spaces">       </span><span class="nottickedoff">mkKeyRule expression =</span>
+<span class="lineno">   48 </span><span class="spaces">         </span><span class="nottickedoff">Ru { rrnm   = ruleName</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="nottickedoff">, rrexp  = expression</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="nottickedoff">, rrfps  = origin identity     -- position in source file</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="nottickedoff">, rrmean = AMeaning</span>
+<span class="lineno">   52 </span><span class="spaces">                         </span><span class="nottickedoff">[ A_Markup English ReST (string2Blocks ReST meaningEN)</span>
+<span class="lineno">   53 </span><span class="spaces">                         </span><span class="nottickedoff">, A_Markup Dutch ReST (string2Blocks ReST meaningNL)</span>
+<span class="lineno">   54 </span><span class="spaces">                         </span><span class="nottickedoff">]</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="nottickedoff">, rrmsg  = []</span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="nottickedoff">, rrviol = Nothing</span>
+<span class="lineno">   57 </span><span class="spaces">            </span><span class="nottickedoff">, rrtyp  = sign expression</span>
+<span class="lineno">   58 </span><span class="spaces">            </span><span class="nottickedoff">, rrdcl  = Nothing        -- This rule was not generated from a property of some declaration.</span>
+<span class="lineno">   59 </span><span class="spaces">            </span><span class="nottickedoff">, r_env  = &quot;&quot;             -- For traceability: The name of the pattern. Unknown at this position but it may be changed by the environment.</span>
+<span class="lineno">   60 </span><span class="spaces">            </span><span class="nottickedoff">, r_usr  = Identity            -- This rule was not specified as a rule in the Ampersand script, but has been generated by a computer</span>
+<span class="lineno">   61 </span><span class="spaces">            </span><span class="nottickedoff">, isSignal  = False          -- This is not a signal rule</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="nottickedoff">}</span></span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>instance Language a =&gt; Language [a] where
+<span class="lineno">   65 </span>  <span class="decl"><span class="nottickedoff">relsDefdIn  = concatMap relsDefdIn</span></span>
+<span class="lineno">   66 </span>  <span class="decl"><span class="nottickedoff">udefrules   = concatMap udefrules</span></span>
+<span class="lineno">   67 </span>  <span class="decl"><span class="nottickedoff">identities  = concatMap identities</span></span>
+<span class="lineno">   68 </span>  <span class="decl"><span class="nottickedoff">viewDefs    = concatMap viewDefs</span></span>
+<span class="lineno">   69 </span>  <span class="decl"><span class="nottickedoff">gens        = concatMap gens</span></span>
+<span class="lineno">   70 </span>  <span class="decl"><span class="nottickedoff">patterns    = concatMap patterns</span></span>
+<span class="lineno">   71 </span>
+<span class="lineno">   72 </span>instance Language A_Context where
+<span class="lineno">   73 </span>  <span class="decl"><span class="nottickedoff">relsDefdIn context = uniteRels (concatMap relsDefdIn (patterns context)</span>
+<span class="lineno">   74 </span><span class="spaces">                                </span><span class="nottickedoff">++ ctxds context)</span>
+<span class="lineno">   75 </span><span class="spaces">     </span><span class="nottickedoff">where</span>
+<span class="lineno">   76 </span><span class="spaces">      </span><span class="nottickedoff">-- relations with the same name, but different properties (decprps,pragma,decpopu,etc.) may exist and need to be united</span>
+<span class="lineno">   77 </span><span class="spaces">      </span><span class="nottickedoff">-- decpopu, decprps and decprps_calc are united, all others are taken from the head.</span>
+<span class="lineno">   78 </span><span class="spaces">      </span><span class="nottickedoff">uniteRels :: [Declaration] -&gt; [Declaration]</span>
+<span class="lineno">   79 </span><span class="spaces">      </span><span class="nottickedoff">uniteRels [] = []</span>
+<span class="lineno">   80 </span><span class="spaces">      </span><span class="nottickedoff">uniteRels ds = [ d | cl&lt;-eqClass (==) ds</span>
+<span class="lineno">   81 </span><span class="spaces">                         </span><span class="nottickedoff">, let d=(head cl){ decprps      = (foldr1 uni.map decprps) cl</span>
+<span class="lineno">   82 </span><span class="spaces">                                          </span><span class="nottickedoff">, decprps_calc = Nothing -- Calculation is only done in ADL2Fspc. -- was:(foldr1 uni.map decprps_calc) cl</span>
+<span class="lineno">   83 </span><span class="spaces">                                          </span><span class="nottickedoff">}]</span></span>
+<span class="lineno">   84 </span>  <span class="decl"><span class="nottickedoff">udefrules    context = concatMap udefrules  (ctxpats context) ++ ctxrs context</span></span>
+<span class="lineno">   85 </span>  <span class="decl"><span class="nottickedoff">identities   context = concatMap identities (ctxpats context) ++ ctxks context</span></span>
+<span class="lineno">   86 </span>  <span class="decl"><span class="nottickedoff">viewDefs     context = concatMap viewDefs   (ctxpats context) ++ ctxvs context</span></span>
+<span class="lineno">   87 </span>  <span class="decl"><span class="nottickedoff">gens         context = concatMap gens       (ctxpats context) ++ ctxgs context</span></span>
+<span class="lineno">   88 </span>  <span class="decl"><span class="nottickedoff">patterns             = ctxpats</span></span>
+<span class="lineno">   89 </span>
+<span class="lineno">   90 </span>instance Language Pattern where
+<span class="lineno">   91 </span>  <span class="decl"><span class="nottickedoff">relsDefdIn pat = ptdcs pat</span></span>
+<span class="lineno">   92 </span>  <span class="decl"><span class="nottickedoff">udefrules      = ptrls</span></span>   -- all user defined rules in this pattern
+<span class="lineno">   93 </span>--  invariants pat = [r |r&lt;-ptrls pat, not (isSignal r)]
+<span class="lineno">   94 </span>  <span class="decl"><span class="nottickedoff">identities     = ptids</span></span>
+<span class="lineno">   95 </span>  <span class="decl"><span class="nottickedoff">viewDefs       = ptvds</span></span>
+<span class="lineno">   96 </span>  <span class="decl"><span class="nottickedoff">gens           = ptgns</span></span>
+<span class="lineno">   97 </span>  <span class="decl"><span class="nottickedoff">patterns   pat = [pat]</span></span>
+<span class="lineno">   98 </span>
+
+</pre>
+</body>
+</html>

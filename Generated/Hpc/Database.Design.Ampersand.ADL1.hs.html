@@ -1,0 +1,91 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.ADL1
+<span class="lineno">    2 </span>   ( module Database.Design.Ampersand.Core.ParseTree
+<span class="lineno">    3 </span>   , module Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">    4 </span>   , module Database.Design.Ampersand.ADL1.Expression
+<span class="lineno">    5 </span>   , module Database.Design.Ampersand.ADL1.ECArule
+<span class="lineno">    6 </span>   , module Database.Design.Ampersand.ADL1.Rule
+<span class="lineno">    7 </span>   )
+<span class="lineno">    8 </span>where
+<span class="lineno">    9 </span>import Database.Design.Ampersand.Core.ParseTree (
+<span class="lineno">   10 </span>           PPurpose(..), PRef2Obj(..)
+<span class="lineno">   11 </span>         , Paire, Pairs, mkPair , srcPaire, trgPaire
+<span class="lineno">   12 </span>         , FilePos(..), Origin(..), Traced(..)
+<span class="lineno">   13 </span>         , Prop(..)
+<span class="lineno">   14 </span>         , P_Concept(..)
+<span class="lineno">   15 </span>         , P_Sign(..)
+<span class="lineno">   16 </span>         , P_Context(..), mergeContexts
+<span class="lineno">   17 </span>         , Meta(..)
+<span class="lineno">   18 </span>         , MetaObj(..)
+<span class="lineno">   19 </span>         , P_RoleRelation(..), P_RoleRule(..)
+<span class="lineno">   20 </span>         , P_Pattern(..)
+<span class="lineno">   21 </span>         , PairView(..), PairViewSegment(..)
+<span class="lineno">   22 </span>         , SrcOrTgt(..)
+<span class="lineno">   23 </span>         , P_Rule(..)
+<span class="lineno">   24 </span>         , P_IdentDef, P_IdentSegment
+<span class="lineno">   25 </span>         , P_ViewDef, P_ViewSegment
+<span class="lineno">   26 </span>         , P_Population(..)
+<span class="lineno">   27 </span>         , P_ObjectDef
+<span class="lineno">   28 </span>         , P_Interface(..)
+<span class="lineno">   29 </span>         , P_SubInterface
+<span class="lineno">   30 </span>         , Term(..)
+<span class="lineno">   31 </span>         , TermPrim(..), P_NamedRel(..)
+<span class="lineno">   32 </span>         , P_Gen(..)
+<span class="lineno">   33 </span>         , P_Declaration(..)
+<span class="lineno">   34 </span>         , ConceptDef(..)
+<span class="lineno">   35 </span>         , gen_concs
+<span class="lineno">   36 </span>         )
+<span class="lineno">   37 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree (
+<span class="lineno">   38 </span>          A_Concept(..)
+<span class="lineno">   39 </span>         ,Sign(..),showSign
+<span class="lineno">   40 </span>         , (&lt;==&gt;),meet,join
+<span class="lineno">   41 </span>         ,A_Context(..)
+<span class="lineno">   42 </span>         ,Association(..)
+<span class="lineno">   43 </span>         ,Expression(..)
+<span class="lineno">   44 </span>         ,A_Gen(..)
+<span class="lineno">   45 </span>         ,A_Markup(..)
+<span class="lineno">   46 </span>         ,IdentityDef(..)
+<span class="lineno">   47 </span>         ,IdentitySegment(..)
+<span class="lineno">   48 </span>         ,ViewDef(..)
+<span class="lineno">   49 </span>         ,ViewSegment(..)
+<span class="lineno">   50 </span>         ,ObjectDef(..)
+<span class="lineno">   51 </span>         ,SubInterface(..)
+<span class="lineno">   52 </span>         ,Declaration(..),decusr
+<span class="lineno">   53 </span>         ,Interface(..)
+<span class="lineno">   54 </span>         ,Pattern(..)
+<span class="lineno">   55 </span>         ,Rule(..)
+<span class="lineno">   56 </span>         ,RuleType(..)
+<span class="lineno">   57 </span>         ,A_RoleRelation(..)
+<span class="lineno">   58 </span>         ,Population(..)
+<span class="lineno">   59 </span>         ,Purpose(..), ExplObj(..)
+<span class="lineno">   60 </span>         , (.==.), (.|-.), (./\.), (.\/.), (.-.), (./.), (.\.), (.&lt;&gt;.), (.:.), (.!.), (.*.)
+<span class="lineno">   61 </span>         )
+<span class="lineno">   62 </span>import Database.Design.Ampersand.ADL1.Expression
+<span class="lineno">   63 </span>         ( notCpl, isCpl, deMorganERad, deMorganECps, deMorganEUni, deMorganEIsc
+<span class="lineno">   64 </span>         , exprIsc2list, exprUni2list, exprCps2list, exprRad2list, exprPrd2list
+<span class="lineno">   65 </span>         , insParentheses)
+<span class="lineno">   66 </span>import Database.Design.Ampersand.ADL1.ECArule (
+<span class="lineno">   67 </span>         isAll, isCHC, isBlk, isNop, isDo, eventsFrom)
+<span class="lineno">   68 </span>import Database.Design.Ampersand.ADL1.Rule (
+<span class="lineno">   69 </span>          rulefromProp, ruleviolations
+<span class="lineno">   70 </span>         ,consequent,antecedent,hasantecedent)
+<span class="lineno">   71 </span>
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>-- | This module does some string manipulation based on natural languages
+<span class="lineno">    2 </span>module Database.Design.Ampersand.Misc.Languages
+<span class="lineno">    3 </span>         ( Lang(English,Dutch)
+<span class="lineno">    4 </span>         , allLangs
+<span class="lineno">    5 </span>         , plural
+<span class="lineno">    6 </span>         ) where
+<span class="lineno">    7 </span>              
+<span class="lineno">    8 </span>import Data.Char (toLower)
+<span class="lineno">    9 </span>import Data.List (isSuffixOf)
+<span class="lineno">   10 </span>import Database.Design.Ampersand.Core.ParseTree      (Lang(..))
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>allLangs :: [Lang]
+<span class="lineno">   13 </span><span class="decl"><span class="nottickedoff">allLangs = [Dutch,English]</span></span> -- All supported natural languages in Ampersand
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>-- | Returns the plural of a given word based on a specific language
+<span class="lineno">   16 </span>plural :: Lang -&gt; String -&gt; String
+<span class="lineno">   17 </span><span class="decl"><span class="nottickedoff">plural English str</span>
+<span class="lineno">   18 </span><span class="spaces">  </span><span class="nottickedoff">| null str = str</span>
+<span class="lineno">   19 </span><span class="spaces">  </span><span class="nottickedoff">| last str=='y' = init str++&quot;ies&quot;</span>
+<span class="lineno">   20 </span><span class="spaces">  </span><span class="nottickedoff">| last str=='s' = str++&quot;es&quot;</span>
+<span class="lineno">   21 </span><span class="spaces">  </span><span class="nottickedoff">| last str=='x' = str++&quot;es&quot;</span>
+<span class="lineno">   22 </span><span class="spaces">  </span><span class="nottickedoff">| last str=='f' = init str++&quot;ves&quot;</span>
+<span class="lineno">   23 </span><span class="spaces">  </span><span class="nottickedoff">| otherwise     = head ([p |(s,p)&lt;-exceptions, s==str]++[str++&quot;s&quot;])</span>
+<span class="lineno">   24 </span><span class="spaces">  </span><span class="nottickedoff">where exceptions = [(&quot;child&quot;,&quot;children&quot;),(&quot;Child&quot;,&quot;Children&quot;),(&quot;mouse&quot;,&quot;mice&quot;),(&quot;Mouse&quot;,&quot;Mice&quot;),(&quot;sheep&quot;,&quot;sheep&quot;),(&quot;Sheep&quot;,&quot;Sheep&quot;)]</span>
+<span class="lineno">   25 </span><span class="spaces"></span><span class="nottickedoff">plural Dutch str</span>
+<span class="lineno">   26 </span><span class="spaces">  </span><span class="nottickedoff">| null str = str</span>
+<span class="lineno">   27 </span><span class="spaces">  </span><span class="nottickedoff">| not (null matches)    = head matches</span>
+<span class="lineno">   28 </span><span class="spaces">  </span><span class="nottickedoff">| take 3 (reverse str)== reverse &quot;ium&quot; = (reverse.drop 3.reverse) str++&quot;ia&quot;</span>
+<span class="lineno">   29 </span><span class="spaces">  </span><span class="nottickedoff">| take 2 (reverse str) `elem` map reverse [&quot;el&quot;, &quot;em&quot;, &quot;en&quot;, &quot;er&quot;, &quot;um&quot;, &quot;ie&quot;] = str++&quot;s&quot;</span>
+<span class="lineno">   30 </span><span class="spaces">  </span><span class="nottickedoff">| &quot;ij&quot; `isSuffixOf` str = str++&quot;en&quot;</span>
+<span class="lineno">   31 </span><span class="spaces">  </span><span class="nottickedoff">| &quot;io&quot; `isSuffixOf` str = str++&quot;'s&quot;</span>
+<span class="lineno">   32 </span><span class="spaces">  </span><span class="nottickedoff">| klinker (last str)    = str++&quot;s&quot;</span>
+<span class="lineno">   33 </span><span class="spaces">  </span><span class="nottickedoff">| (take 2.drop 1.reverse) str `elem` [&quot;aa&quot;,&quot;oo&quot;,&quot;ee&quot;,&quot;uu&quot;] = (reverse.drop 2.reverse) str++mede (drop (length str-1) str)++&quot;en&quot;</span>
+<span class="lineno">   34 </span><span class="spaces">  </span><span class="nottickedoff">| otherwise                  = str++&quot;en&quot;</span>
+<span class="lineno">   35 </span><span class="spaces">  </span><span class="nottickedoff">where mede &quot;f&quot; = &quot;v&quot;</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="nottickedoff">mede &quot;s&quot; = &quot;z&quot;</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="nottickedoff">mede x = x</span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="nottickedoff">klinker c = c `elem` &quot;aeiou&quot;</span>
+<span class="lineno">   39 </span><span class="spaces">        </span><span class="nottickedoff">matches = [(reverse.drop (length s).reverse) str++p |(s,p) &lt;-exceptions, (map toLower.reverse.take (length s).reverse) str==s]</span>
+<span class="lineno">   40 </span><span class="spaces">        </span><span class="nottickedoff">exceptions = [ (&quot;aanbod&quot;, &quot;aanbiedingen&quot;)</span>
+<span class="lineno">   41 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;beleg&quot;, &quot;belegeringen&quot;)</span>
+<span class="lineno">   42 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;dank&quot;, &quot;dankbetuigingen&quot;)</span>
+<span class="lineno">   43 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;gedrag&quot;, &quot;gedragingen&quot;)</span>
+<span class="lineno">   44 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;genot&quot;, &quot;genietingen&quot;)</span>
+<span class="lineno">   45 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;lof&quot;, &quot;loftuitingen&quot;)</span>
+<span class="lineno">   46 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;lende&quot;, &quot;lendenen&quot;)</span>
+<span class="lineno">   47 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;onderzoek&quot;, &quot;onderzoekingen&quot;)</span>
+<span class="lineno">   48 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;archiefstuk&quot;, &quot;archiefbescheiden&quot;)</span>
+<span class="lineno">   49 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;titel&quot;, &quot;titels&quot;)</span>
+<span class="lineno">   50 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;plan&quot;, &quot;plannen&quot;)</span>
+<span class="lineno">   51 </span><span class="spaces">                     </span><span class="nottickedoff">, (&quot;kind&quot;, &quot;kinderen&quot;)</span>
+<span class="lineno">   52 </span><span class="spaces">                     </span><span class="nottickedoff">]</span></span>
+
+</pre>
+</body>
+</html>

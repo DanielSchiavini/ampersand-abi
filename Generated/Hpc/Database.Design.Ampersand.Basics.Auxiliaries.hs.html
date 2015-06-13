@@ -1,0 +1,144 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE ScopedTypeVariables #-}
+<span class="lineno">    2 </span>module Database.Design.Ampersand.Basics.Auxiliaries 
+<span class="lineno">    3 </span>         ( module Database.Design.Ampersand.Basics.Auxiliaries
+<span class="lineno">    4 </span>         , module Debug.Trace) where
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>import Data.List
+<span class="lineno">    7 </span>import Data.Graph (stronglyConnComp, SCC(CyclicSCC))
+<span class="lineno">    8 </span>import Data.Maybe (fromMaybe)
+<span class="lineno">    9 </span>import Data.Map (Map) 
+<span class="lineno">   10 </span>import qualified Data.Map as Map 
+<span class="lineno">   11 </span>import Data.Set (Set)
+<span class="lineno">   12 </span>import qualified Data.Set as Set 
+<span class="lineno">   13 </span>import Debug.Trace
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>-- | The 'eqClass' function takes an equality test function and a list and returns a list of lists such
+<span class="lineno">   16 </span>-- that each sublist in the result contains only equal elements, and all equal elements are in
+<span class="lineno">   17 </span>-- the same sublist.  For example,
+<span class="lineno">   18 </span>--
+<span class="lineno">   19 </span>-- Example&gt; eqClass &quot;Mississippi&quot; = [&quot;M&quot;,&quot;iiii&quot;,&quot;ssss&quot;,&quot;pp&quot;]
+<span class="lineno">   20 </span>--
+<span class="lineno">   21 </span>eqClass :: (a -&gt; a -&gt; Bool) -&gt; [a] -&gt; [[a]]
+<span class="lineno">   22 </span><span class="decl"><span class="nottickedoff">eqClass _ [] = []</span>
+<span class="lineno">   23 </span><span class="spaces"></span><span class="nottickedoff">eqClass f (x:xs) = (x:[e |e&lt;-xs, f x e]) : eqClass f [e |e&lt;-xs, not (f x e)]</span></span>
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>-- | eqCl is used for gathering things that are equal wrt some criterion f.
+<span class="lineno">   26 </span>--   For instance, if you want to have persons with the same name:
+<span class="lineno">   27 </span>--    'eqCl name persons' produces a list,in which each element is a list of persons with the same name.
+<span class="lineno">   28 </span>-- Example&gt; eqCl (=='s') &quot;Mississippi&quot; = &quot;ssss&quot;
+<span class="lineno">   29 </span>
+<span class="lineno">   30 </span>eqCl :: Eq b =&gt; (a -&gt; b) -&gt; [a] -&gt; [[a]]
+<span class="lineno">   31 </span><span class="decl"><span class="nottickedoff">eqCl _ [] = []</span>
+<span class="lineno">   32 </span><span class="spaces"></span><span class="nottickedoff">eqCl f (x:xs) = (x:[e |e&lt;-xs, f x==f e]) : eqCl f [e |e&lt;-xs, f x/=f e]</span></span>
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>-- | getCycles returns a list of cycles in the edges list (each edge is a pair of a from-vertex
+<span class="lineno">   35 </span>--   and a list of to-vertices)
+<span class="lineno">   36 </span>getCycles :: Eq a =&gt; [(a, [a])] -&gt; [[a]]
+<span class="lineno">   37 </span><span class="decl"><span class="nottickedoff">getCycles edges =</span>
+<span class="lineno">   38 </span><span class="spaces">  </span><span class="nottickedoff">let allVertices = nub . concat $ [ from : to | (from, to) &lt;- edges ]</span>
+<span class="lineno">   39 </span><span class="spaces">      </span><span class="nottickedoff">keyFor v = fromMaybe (error &quot;FATAL&quot;) $ elemIndex v allVertices</span>
+<span class="lineno">   40 </span><span class="spaces">      </span><span class="nottickedoff">graphEdges = [ (v, keyFor v , map keyFor vs)  | (v, vs) &lt;- edges ]</span>
+<span class="lineno">   41 </span><span class="spaces">  </span><span class="nottickedoff">in  [ vs | CyclicSCC vs &lt;- stronglyConnComp graphEdges ]</span></span>
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>-- |  Warshall's transitive closure algorithm
+<span class="lineno">   45 </span>transClosureMap :: (Eq a, Ord a) =&gt; Map a [a] -&gt; Map a [a]
+<span class="lineno">   46 </span><span class="decl"><span class="nottickedoff">transClosureMap xs</span>
+<span class="lineno">   47 </span><span class="spaces">  </span><span class="nottickedoff">= foldl f xs (Map.keys xs `intersect` nub (concat (Map.elems xs)))</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">   49 </span><span class="spaces">     </span><span class="nottickedoff">f :: (Eq a, Ord a) =&gt; Map a [a] -&gt; a -&gt; Map a [a]   -- The type is given for documentation purposes only</span>
+<span class="lineno">   50 </span><span class="spaces">     </span><span class="nottickedoff">f q x = Map.unionWith union q (Map.fromListWith union [(a, q Map.! x) | (a, bs) &lt;- Map.assocs q, x `elem` bs])</span></span>
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>-- The following function can be used to determine how much of a set of alternative expression is already determined
+<span class="lineno">   53 </span>-- | The 'combinations' function returns all possible combinations of lists of list.
+<span class="lineno">   54 </span>-- For example,
+<span class="lineno">   55 </span>--
+<span class="lineno">   56 </span>-- &gt; combinations [[1,2,3],[10,20],[4]] == [[1,10,4],[1,20,4],[2,10,4],[2,20,4],[3,10,4],[3,20,4]]
+<span class="lineno">   57 </span>combinations :: [[a]] -&gt; [[a]]
+<span class="lineno">   58 </span><span class="decl"><span class="nottickedoff">combinations []       = [[]]</span>
+<span class="lineno">   59 </span><span class="spaces"></span><span class="nottickedoff">combinations (es:ess) = [ x:xs | x&lt;-es, xs&lt;-combinations ess]</span></span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>-- Convert list of a's with associated b's to a list of b's with associated a's.
+<span class="lineno">   62 </span>-- Each b in the result is unique, and so is each a per b, eg.: 
+<span class="lineno">   63 </span>-- converse [(1,[2,2,3]),(1,[3,4]),(2,[4,5])]  == [(2,[1]),(3,[1]),(4,[1,2]),(5,[2])]
+<span class="lineno">   64 </span>converse :: forall a b . (Ord a, Ord b) =&gt; [(a, [b])] -&gt; [(b, [a])]
+<span class="lineno">   65 </span><span class="decl"><span class="nottickedoff">converse aBss = let asPerB ::(Ord a, Ord b) =&gt;  Map b (Set a)</span>
+<span class="lineno">   66 </span><span class="spaces">                    </span><span class="nottickedoff">asPerB = foldl (.) id [ Map.insertWith Set.union b (Set.singleton a)  | (a,bs) &lt;- aBss, b &lt;- bs ] $ Map.empty</span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="nottickedoff">in Map.toList $ fmap Set.toList asPerB</span></span> -- first convert each Set to a list, and then the whole Map to a list of tuples
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>commaEng :: String -&gt; [String] -&gt; String
+<span class="lineno">   70 </span><span class="decl"><span class="nottickedoff">commaEng str [a,b,c] = a++&quot;, &quot;++b++&quot;, &quot;++str++&quot; &quot;++c</span>
+<span class="lineno">   71 </span><span class="spaces"></span><span class="nottickedoff">commaEng str [a,b]   = a++&quot; &quot;++str++&quot; &quot;++b</span>
+<span class="lineno">   72 </span><span class="spaces"></span><span class="nottickedoff">commaEng _   [a]     = a</span>
+<span class="lineno">   73 </span><span class="spaces"></span><span class="nottickedoff">commaEng str (a:as)  = a++&quot;, &quot;++commaEng str as</span>
+<span class="lineno">   74 </span><span class="spaces"></span><span class="nottickedoff">commaEng _   []      = &quot;&quot;</span></span>
+<span class="lineno">   75 </span>
+<span class="lineno">   76 </span>commaNL :: String -&gt; [String] -&gt; String
+<span class="lineno">   77 </span><span class="decl"><span class="nottickedoff">commaNL str [a,b]  = a++&quot; &quot;++str++&quot; &quot;++b</span>
+<span class="lineno">   78 </span><span class="spaces"></span><span class="nottickedoff">commaNL  _  [a]    = a</span>
+<span class="lineno">   79 </span><span class="spaces"></span><span class="nottickedoff">commaNL str (a:as) = a++&quot;, &quot;++commaNL str as</span>
+<span class="lineno">   80 </span><span class="spaces"></span><span class="nottickedoff">commaNL  _  []     = &quot;&quot;</span></span>
+<span class="lineno">   81 </span>
+<span class="lineno">   82 </span>fst3 :: (a,b,c)-&gt;a
+<span class="lineno">   83 </span>snd3 :: (a,b,c)-&gt;b
+<span class="lineno">   84 </span>thd3 :: (a,b,c)-&gt;c
+<span class="lineno">   85 </span><span class="decl"><span class="nottickedoff">fst3 (a,_,_) = a</span></span>
+<span class="lineno">   86 </span><span class="decl"><span class="nottickedoff">snd3 (_,b,_) = b</span></span>
+<span class="lineno">   87 </span><span class="decl"><span class="nottickedoff">thd3 (_,_,c) = c</span></span>
+<span class="lineno">   88 </span>
+<span class="lineno">   89 </span>class Flippable a where
+<span class="lineno">   90 </span>  flp :: a -&gt; a
+<span class="lineno">   91 </span>
+<span class="lineno">   92 </span>
+<span class="lineno">   93 </span>-- Trace shorthands
+<span class="lineno">   94 </span>
+<span class="lineno">   95 </span>showTrace :: Show a =&gt; a -&gt; a
+<span class="lineno">   96 </span><span class="decl"><span class="nottickedoff">showTrace a = traceShowId a</span></span>
+<span class="lineno">   97 </span>
+<span class="lineno">   98 </span>showTraceTag :: Show a =&gt; String -&gt; a -&gt; a
+<span class="lineno">   99 </span><span class="decl"><span class="nottickedoff">showTraceTag tag x = trace (tag ++ &quot;: &quot; ++ show x) x</span></span>
+<span class="lineno">  100 </span>
+<span class="lineno">  101 </span>
+<span class="lineno">  102 </span>-- Code formatting utils
+<span class="lineno">  103 </span>
+<span class="lineno">  104 </span>blockParenthesize :: String -&gt; String -&gt; String -&gt; [[String]] -&gt; [String]
+<span class="lineno">  105 </span><span class="decl"><span class="nottickedoff">blockParenthesize open close sep liness =</span>
+<span class="lineno">  106 </span><span class="spaces">  </span><span class="nottickedoff">case liness of</span>
+<span class="lineno">  107 </span><span class="spaces">    </span><span class="nottickedoff">[] -&gt; [open ++ close]</span>
+<span class="lineno">  108 </span><span class="spaces">    </span><span class="nottickedoff">_  -&gt; concat [ zipWith (++) (pre:repeat &quot;  &quot;) linez</span>
+<span class="lineno">  109 </span><span class="spaces">                 </span><span class="nottickedoff">| (pre, linez) &lt;- zip ((open++&quot; &quot;): repeat (sep++&quot; &quot;)) liness ] ++ [close]</span></span>
+<span class="lineno">  110 </span>-- [[&quot;line&quot;], [&quot;line1&quot;, &quot;line2&quot;, &quot;line3&quot;],[&quot;linea&quot;, &quot;lineb&quot;] -&gt;
+<span class="lineno">  111 </span>-- ( line
+<span class="lineno">  112 </span>-- , line1
+<span class="lineno">  113 </span>--   line2
+<span class="lineno">  114 </span>--   line3
+<span class="lineno">  115 </span>-- , linea
+<span class="lineno">  116 </span>--   lineb
+<span class="lineno">  117 </span>-- )
+<span class="lineno">  118 </span>
+<span class="lineno">  119 </span>addToLastLine :: String -&gt; [String] -&gt; [String]
+<span class="lineno">  120 </span><span class="decl"><span class="nottickedoff">addToLastLine str [] = [str]</span>
+<span class="lineno">  121 </span><span class="spaces"></span><span class="nottickedoff">addToLastLine str liness = init liness ++ [last liness ++ str]</span></span>
+<span class="lineno">  122 </span>
+<span class="lineno">  123 </span>indent :: Int -&gt; [String] -&gt; [String]
+<span class="lineno">  124 </span><span class="decl"><span class="nottickedoff">indent n liness = [ replicate n ' ' ++ line | line &lt;- liness ]</span></span>
+
+</pre>
+</body>
+</html>

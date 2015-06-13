@@ -1,0 +1,379 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE FlexibleInstances #-}
+<span class="lineno">    3 </span>{- | The intentions behind FSpec (SJ 30 dec 2008):
+<span class="lineno">    4 </span>Generation of functional specifications is the core functionality of Ampersand.
+<span class="lineno">    5 </span>All items in a specification are generated into the following data structure, FSpec.
+<span class="lineno">    6 </span>It is built by compiling an Ampersand script and translating that to FSpec.
+<span class="lineno">    7 </span>In the future, other ways of 'filling' FSpec are foreseen.
+<span class="lineno">    8 </span>All generators (such as the code generator, the proof generator, the atlas generator, etc.)
+<span class="lineno">    9 </span>are merely different ways to show FSpec.
+<span class="lineno">   10 </span>-}
+<span class="lineno">   11 </span>module Database.Design.Ampersand.FSpec.FSpec
+<span class="lineno">   12 </span>          ( FSpec(..), concDefs, Atom(..), A_Pair(..)
+<span class="lineno">   13 </span>          , Fswitchboard(..), Quad(..)
+<span class="lineno">   14 </span>          , FSid(..)
+<span class="lineno">   15 </span>--        , InsDel(..)
+<span class="lineno">   16 </span>          , ECArule(..)
+<span class="lineno">   17 </span>--        , Event(..)
+<span class="lineno">   18 </span>--        , PAclause(..)
+<span class="lineno">   19 </span>          , Activity(..)
+<span class="lineno">   20 </span>          , PlugSQL(..),plugFields
+<span class="lineno">   21 </span>          , lookupCpt, getConceptTableFor
+<span class="lineno">   22 </span>          , metaValues
+<span class="lineno">   23 </span>          , SqlField(..)
+<span class="lineno">   24 </span>          , Object(..)
+<span class="lineno">   25 </span>          , PlugInfo(..)
+<span class="lineno">   26 </span>          , SqlType(..)
+<span class="lineno">   27 </span>          , SqlFieldUsage(..)
+<span class="lineno">   28 </span>          , getGeneralizations, getSpecializations
+<span class="lineno">   29 </span>          , lookupView, getDefaultViewForConcept
+<span class="lineno">   30 </span>          , Conjunct(..),DnfClause(..), dnf2expr, notCpl
+<span class="lineno">   31 </span>          , Language(..)
+<span class="lineno">   32 </span>          ) where
+<span class="lineno">   33 </span>          
+<span class="lineno">   34 </span>import Data.List
+<span class="lineno">   35 </span>import Data.Typeable
+<span class="lineno">   36 </span>import Database.Design.Ampersand.ADL1.Pair
+<span class="lineno">   37 </span>import Database.Design.Ampersand.ADL1.Expression (notCpl)
+<span class="lineno">   38 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   39 </span>import Database.Design.Ampersand.Classes
+<span class="lineno">   40 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">   41 </span>import Database.Design.Ampersand.FSpec.Crud
+<span class="lineno">   42 </span>import Database.Design.Ampersand.Misc.Options (Options)
+<span class="lineno">   43 </span>import Text.Pandoc.Builder (Blocks)
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   46 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;FSpec.FSpec&quot;</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>data FSpec = FSpec { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fsName</span></span></span> ::       String                   -- ^ The name of the specification, taken from the Ampersand script
+<span class="lineno">   49 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">originalContext</span></span></span> :: A_Context             -- ^ the original context. (for showADL)  
+<span class="lineno">   50 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">getOpts</span></span></span> ::      Options                  -- ^ The command line options that were used when this FSpec was compiled  by Ampersand.
+<span class="lineno">   51 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fspos</span></span></span> ::        [Origin]                 -- ^ The origin of the FSpec. An FSpec can be a merge of a file including other files c.q. a list of Origin.
+<span class="lineno">   52 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">themes</span></span></span> ::       [String]                 -- ^ The names of patterns/processes to be printed in the functional specification. (for making partial documentation)
+<span class="lineno">   53 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pattsInScope</span></span></span> :: [Pattern]
+<span class="lineno">   54 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rulesInScope</span></span></span> :: [Rule]
+<span class="lineno">   55 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">declsInScope</span></span></span> :: [Declaration]
+<span class="lineno">   56 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">concsInScope</span></span></span> :: [A_Concept]
+<span class="lineno">   57 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cDefsInScope</span></span></span> :: [ConceptDef]
+<span class="lineno">   58 </span>                     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gensInScope</span></span></span> ::  [A_Gen]
+<span class="lineno">   59 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fsLang</span></span></span> ::       Lang                     -- ^ The default language for this specification (always specified, so no Maybe here!).
+<span class="lineno">   60 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vplugInfos</span></span></span> ::   [PlugInfo]               -- ^ All plugs defined in the Ampersand script
+<span class="lineno">   61 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">plugInfos</span></span></span> ::    [PlugInfo]               -- ^ All plugs (defined and derived)
+<span class="lineno">   62 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">interfaceS</span></span></span> ::   [Interface]              -- ^ All interfaces defined in the Ampersand script
+<span class="lineno">   63 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">interfaceG</span></span></span> ::   [Interface]              -- ^ All interfaces derived from the basic ontology (the Lonneker interface)
+<span class="lineno">   64 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fSwitchboard</span></span></span> :: Fswitchboard             -- ^ The code to be executed to maintain the truth of invariants
+<span class="lineno">   65 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fDeriveProofs</span></span></span> :: Blocks                  -- ^ The proofs in Pandoc format
+<span class="lineno">   66 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fActivities</span></span></span> ::  [Activity]               -- ^ generated: One Activity for every ObjectDef in interfaceG and interfaceS
+<span class="lineno">   67 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fRoleRels</span></span></span> ::    [(Role,Declaration)]     -- ^ the relation saying which roles may change the population of which relation.
+<span class="lineno">   68 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fRoleRuls</span></span></span> ::    [(Role,Rule)]            -- ^ the relation saying which roles may change the population of which relation.
+<span class="lineno">   69 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fRoles</span></span></span> ::       [Role]                   -- ^ All roles mentioned in this context.
+<span class="lineno">   70 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fallRules</span></span></span> ::    [Rule]
+<span class="lineno">   71 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vrules</span></span></span> ::       [Rule]                   -- ^ All user defined rules that apply in the entire FSpec
+<span class="lineno">   72 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">grules</span></span></span> ::       [Rule]                   -- ^ All rules that are generated: multiplicity rules and identity rules
+<span class="lineno">   73 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">invariants</span></span></span> ::   [Rule]                   -- ^ All invariant rules
+<span class="lineno">   74 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allUsedDecls</span></span></span> :: [Declaration]            -- ^ All relations that are used in the fSpec
+<span class="lineno">   75 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allDecls</span></span></span> ::     [Declaration]            -- ^ All relations that are declared in the fSpec
+<span class="lineno">   76 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vrels</span></span></span> ::        [Declaration]            -- ^ All user defined and generated relations plus all defined and computed totals.
+<span class="lineno">   77 </span>                                                              --   The generated relations are all generalizations and
+<span class="lineno">   78 </span>                                                              --   one declaration for each signal.
+<span class="lineno">   79 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allConcepts</span></span></span> ::  [A_Concept]              -- ^ All concepts in the fSpec
+<span class="lineno">   80 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">kernels</span></span></span> ::      [[A_Concept]]            -- ^ All concepts, grouped by their classifications
+<span class="lineno">   81 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vIndices</span></span></span> ::     [IdentityDef]            -- ^ All keys that apply in the entire FSpec
+<span class="lineno">   82 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vviews</span></span></span> ::       [ViewDef]                -- ^ All views that apply in the entire FSpec
+<span class="lineno">   83 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vgens</span></span></span> ::        [A_Gen]                  -- ^ All gens that apply in the entire FSpec
+<span class="lineno">   84 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vconjs</span></span></span> ::       [Conjunct]               -- ^ All conjuncts generated (by ADL2FSpec)
+<span class="lineno">   85 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allConjsPerRule</span></span></span> :: [(Rule,[Conjunct])]   -- ^ Maps each rule onto the conjuncts it consists of (note that a single conjunct may be part of several rules) 
+<span class="lineno">   86 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allConjsPerDecl</span></span></span> :: [(Declaration, [Conjunct])]   -- ^ Maps each declaration to the conjuncts it appears in   
+<span class="lineno">   87 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allConjsPerConcept</span></span></span> :: [(A_Concept, [Conjunct])]  -- ^ Maps each concept to the conjuncts it appears in (as source or targent of a constituent relation)
+<span class="lineno">   88 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vquads</span></span></span> ::       [Quad]                   -- ^ All quads generated (by ADL2FSpec)
+<span class="lineno">   89 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vEcas</span></span></span> ::        [ECArule]                -- ^ All ECA rules generated (by ADL2FSpec)
+<span class="lineno">   90 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fsisa</span></span></span> ::        [(A_Concept, A_Concept)] -- ^ generated: The data structure containing the generalization structure of concepts
+<span class="lineno">   91 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vpatterns</span></span></span> ::    [Pattern]                -- ^ All patterns taken from the Ampersand script
+<span class="lineno">   92 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">conceptDefs</span></span></span> ::  [ConceptDef]             -- ^ All concept definitions defined throughout a context, including those inside patterns and processes
+<span class="lineno">   93 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fSexpls</span></span></span> ::      [Purpose]                -- ^ All purposes that have been declared at the top level of the current specification, but not in the processes, patterns and interfaces.
+<span class="lineno">   94 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">metas</span></span></span> ::        [Meta]                   -- ^ All meta relations from the entire context
+<span class="lineno">   95 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">crudInfo</span></span></span> ::     CrudInfo                 -- ^ Information for CRUD matrices 
+<span class="lineno">   96 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">initialPops</span></span></span> ::  [Population]             -- ^ All user defined populations of relations and concepts
+<span class="lineno">   97 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allAtoms</span></span></span> ::     [Atom]
+<span class="lineno">   98 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allLinks</span></span></span> ::     [A_Pair]
+<span class="lineno">   99 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">initialConjunctSignals</span></span></span> :: [(Conjunct,[Paire])] -- ^ All conjuncts that have process-rule violations.
+<span class="lineno">  100 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allViolations</span></span></span> :: [(Rule,[Paire])]        -- ^ All invariant rules with violations.
+<span class="lineno">  101 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allExprs</span></span></span> ::     [Expression]             -- ^ All expressions in the fSpec
+<span class="lineno">  102 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">allSigns</span></span></span> ::     [Sign]                   -- ^ All Signs in the fSpec
+<span class="lineno">  103 </span>                   } deriving <span class="decl"><span class="nottickedoff">Typeable</span></span>
+<span class="lineno">  104 </span>instance Eq FSpec where
+<span class="lineno">  105 </span> <span class="decl"><span class="nottickedoff">f == f' = name f == name f'</span></span>
+<span class="lineno">  106 </span>instance Unique FSpec where
+<span class="lineno">  107 </span> <span class="decl"><span class="nottickedoff">showUnique = name</span></span>
+<span class="lineno">  108 </span>metaValues :: String -&gt; FSpec -&gt; [String]
+<span class="lineno">  109 </span><span class="decl"><span class="nottickedoff">metaValues key fSpec = [mtVal m | m &lt;-metas fSpec, mtName m == key]</span></span>
+<span class="lineno">  110 </span>
+<span class="lineno">  111 </span>data Atom = Atom { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">atmRoots</span></span></span> :: [A_Concept] -- The root concept(s) of the atom.
+<span class="lineno">  112 </span>                 , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">atmIn</span></span></span> ::    [A_Concept] -- all concepts the atom is in. (Based on generalizations)
+<span class="lineno">  113 </span>                 , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">atmVal</span></span></span> ::   String
+<span class="lineno">  114 </span>                 } deriving (<span class="decl"><span class="nottickedoff">Typeable</span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  115 </span>instance Unique Atom where
+<span class="lineno">  116 </span>  <span class="decl"><span class="nottickedoff">showUnique a = atmVal a++&quot; in &quot;</span>
+<span class="lineno">  117 </span><span class="spaces">         </span><span class="nottickedoff">++case atmRoots a of</span>
+<span class="lineno">  118 </span><span class="spaces">             </span><span class="nottickedoff">[]  -&gt; fatal 110 &quot;an atom must have at least one root concept&quot;</span>
+<span class="lineno">  119 </span><span class="spaces">             </span><span class="nottickedoff">[x] -&gt; uniqueShow True x</span>
+<span class="lineno">  120 </span><span class="spaces">             </span><span class="nottickedoff">xs  -&gt; &quot;[&quot;++intercalate &quot;, &quot; (map (uniqueShow True) xs)++&quot;]&quot;</span></span>
+<span class="lineno">  121 </span>
+<span class="lineno">  122 </span>data A_Pair = Pair { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">lnkDcl</span></span></span> :: Declaration
+<span class="lineno">  123 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">lnkLeft</span></span></span> :: Atom
+<span class="lineno">  124 </span>                   , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">lnkRight</span></span></span> :: Atom
+<span class="lineno">  125 </span>                   } deriving (<span class="decl"><span class="nottickedoff">Typeable</span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  126 </span>instance Association A_Pair where
+<span class="lineno">  127 </span>  <span class="decl"><span class="nottickedoff">sign = sign . lnkDcl</span></span>
+<span class="lineno">  128 </span>instance Unique A_Pair where
+<span class="lineno">  129 </span>  <span class="decl"><span class="nottickedoff">showUnique x = uniqueShow False (lnkDcl x)</span>
+<span class="lineno">  130 </span><span class="spaces">              </span><span class="nottickedoff">++ uniqueShow False (lnkLeft x)</span>
+<span class="lineno">  131 </span><span class="spaces">              </span><span class="nottickedoff">++ uniqueShow False (lnkRight x)</span></span>
+<span class="lineno">  132 </span>concDefs :: FSpec -&gt; A_Concept -&gt; [ConceptDef]
+<span class="lineno">  133 </span><span class="decl"><span class="nottickedoff">concDefs fSpec c = [ cdef | cdef&lt;-conceptDefs fSpec, name cdef==name c ]</span></span>
+<span class="lineno">  134 </span>
+<span class="lineno">  135 </span>instance ConceptStructure FSpec where
+<span class="lineno">  136 </span>  <span class="decl"><span class="nottickedoff">concs     fSpec = allConcepts fSpec</span></span>                     -- The set of all concepts used in this FSpec
+<span class="lineno">  137 </span>  <span class="decl"><span class="nottickedoff">expressionsIn fSpec = allExprs fSpec</span></span>
+<span class="lineno">  138 </span>
+<span class="lineno">  139 </span>-- | A list of ECA rules, which is used for automated functionality.
+<span class="lineno">  140 </span>data Fswitchboard
+<span class="lineno">  141 </span>  = Fswtch { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fsbEvIn</span></span></span> :: [Event]
+<span class="lineno">  142 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fsbEvOut</span></span></span> :: [Event]
+<span class="lineno">  143 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fsbConjs</span></span></span> :: [(Rule, Expression)]
+<span class="lineno">  144 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fsbECAs</span></span></span> :: [ECArule]
+<span class="lineno">  145 </span>           }
+<span class="lineno">  146 </span>
+<span class="lineno">  147 </span>--type Fields = [Field]
+<span class="lineno">  148 </span>--data Field  = Att { fld_name :: String        -- The name of this field
+<span class="lineno">  149 </span>--                  , fld_sub :: Fields        -- all sub-fields
+<span class="lineno">  150 </span>--                  , fld_expr :: Expression    -- The expression by which this field is attached to the interface
+<span class="lineno">  151 </span>--                  , fld_rel :: Relation      -- The relation to which the database table is attached.
+<span class="lineno">  152 </span>--                  , fld_editable :: Bool          -- can this field be changed by the user of this interface?
+<span class="lineno">  153 </span>--                  , fld_list :: Bool          -- can there be multiple values in this field?
+<span class="lineno">  154 </span>--                  , fld_must :: Bool          -- is this field obligatory?
+<span class="lineno">  155 </span>--                  , fld_new :: Bool          -- can new elements be filled in? (if no, only existing elements can be selected)
+<span class="lineno">  156 </span>--                  , fld_sLevel :: Int           -- The (recursive) depth of the current servlet wrt the entire interface. This is used for documentation.
+<span class="lineno">  157 </span>--                  , fld_insAble :: Bool          -- can the user insert in this field?
+<span class="lineno">  158 </span>--                  , fld_onIns :: ECArule       -- the PAclause to be executed after an insert on this field
+<span class="lineno">  159 </span>--                  , fld_delAble :: Bool          -- can the user delete this field?
+<span class="lineno">  160 </span>--                  , fld_onDel :: ECArule       -- the PAclause to be executed after a delete on this field
+<span class="lineno">  161 </span>--                  }
+<span class="lineno">  162 </span>
+<span class="lineno">  163 </span>{- from http://www.w3.org/TR/wsdl20/#InterfaceOperation
+<span class="lineno">  164 </span> - &quot;The properties of the Interface Operation component are as follows:
+<span class="lineno">  165 </span> - ...
+<span class="lineno">  166 </span> - * {interface message references} OPTIONAL. A set of Interface Message Reference components for the ordinary messages the operation accepts or sends.
+<span class="lineno">  167 </span> - ...&quot;
+<span class="lineno">  168 </span>-}
+<span class="lineno">  169 </span>
+<span class="lineno">  170 </span>data FSid = FS_id String     -- Identifiers in the Functional Specification Language contain strings that do not contain any spaces.
+<span class="lineno">  171 </span>        --  | NoName           -- some identified objects have no name...
+<span class="lineno">  172 </span>instance Named FSpec where
+<span class="lineno">  173 </span>  <span class="decl"><span class="nottickedoff">name = fsName</span></span>
+<span class="lineno">  174 </span>
+<span class="lineno">  175 </span>instance Named FSid where
+<span class="lineno">  176 </span>  <span class="decl"><span class="nottickedoff">name (FS_id nm) = nm</span></span>
+<span class="lineno">  177 </span>
+<span class="lineno">  178 </span>data Activity = Act { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">actRule</span></span></span> ::   Rule
+<span class="lineno">  179 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">actTrig</span></span></span> ::   [Declaration]
+<span class="lineno">  180 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">actAffect</span></span></span> :: [Declaration]
+<span class="lineno">  181 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">actQuads</span></span></span> ::  [Quad]
+<span class="lineno">  182 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">actEcas</span></span></span> ::   [ECArule]
+<span class="lineno">  183 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">actPurp</span></span></span> ::   [Purpose]
+<span class="lineno">  184 </span>                    } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
+<span class="lineno">  185 </span>
+<span class="lineno">  186 </span>instance Named Activity where
+<span class="lineno">  187 </span>  <span class="decl"><span class="nottickedoff">name act = name (actRule act)</span></span>
+<span class="lineno">  188 </span>-- | A Quad is used in the &quot;switchboard&quot; of rules. It represents a &quot;proto-rule&quot; with the following meaning:
+<span class="lineno">  189 </span>--   whenever qDcl is affected (i.e. tuples in qDcl are inserted or deleted), qRule may have to be restored using functionality from qConjuncts.
+<span class="lineno">  190 </span>--   The rule is taken along for traceability.
+<span class="lineno">  191 </span>
+<span class="lineno">  192 </span>instance ConceptStructure Activity where
+<span class="lineno">  193 </span> <span class="decl"><span class="nottickedoff">concs         act = concs (actRule act) `uni` concs (actAffect act)</span></span>
+<span class="lineno">  194 </span> <span class="decl"><span class="nottickedoff">expressionsIn act = expressionsIn (actRule act)</span></span>
+<span class="lineno">  195 </span>
+<span class="lineno">  196 </span>data Quad = Quad { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">qDcl</span></span></span> ::       Declaration   -- The relation that, when affected, triggers a restore action.
+<span class="lineno">  197 </span>                 , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">qRule</span></span></span> ::      Rule          -- The rule from which qConjuncts is derived.
+<span class="lineno">  198 </span>                 , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">qConjuncts</span></span></span> :: [Conjunct]    -- The conjuncts, with clauses included
+<span class="lineno">  199 </span>                 } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
+<span class="lineno">  200 </span>
+<span class="lineno">  201 </span>instance Eq Quad where
+<span class="lineno">  202 </span>  <span class="decl"><span class="nottickedoff">q == q'  = qDcl q == qDcl q' &amp;&amp; qRule q == qRule q'</span></span>
+<span class="lineno">  203 </span>
+<span class="lineno">  204 </span>instance Eq Activity where
+<span class="lineno">  205 </span>  <span class="decl"><span class="nottickedoff">a == a'  = actRule a == actRule a'</span></span>
+<span class="lineno">  206 </span>
+<span class="lineno">  207 </span>--
+<span class="lineno">  208 </span>dnf2expr :: DnfClause -&gt; Expression
+<span class="lineno">  209 </span><span class="decl"><span class="nottickedoff">dnf2expr dnf</span>
+<span class="lineno">  210 </span><span class="spaces"> </span><span class="nottickedoff">= case (antcs dnf, conss dnf) of</span>
+<span class="lineno">  211 </span><span class="spaces">    </span><span class="nottickedoff">([],[]) -&gt; fatal 327 &quot;empty dnf clause&quot;</span>
+<span class="lineno">  212 </span><span class="spaces">    </span><span class="nottickedoff">([],cs ) -&gt; foldr1 (.\/.) cs</span>
+<span class="lineno">  213 </span><span class="spaces">    </span><span class="nottickedoff">(as,[]) -&gt; notCpl (foldr1 (./\.) as)</span>
+<span class="lineno">  214 </span><span class="spaces">    </span><span class="nottickedoff">(as,cs) -&gt; notCpl (foldr1 (./\.) as) .\/. (foldr1 (.\/.) cs)</span></span>
+<span class="lineno">  215 </span>
+<span class="lineno">  216 </span>data PlugInfo = InternalPlug PlugSQL
+<span class="lineno">  217 </span>              | ExternalPlug ObjectDef
+<span class="lineno">  218 </span>                deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>,<span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  219 </span>instance Named PlugInfo where
+<span class="lineno">  220 </span>  <span class="decl"><span class="nottickedoff">name (InternalPlug psql) = name psql</span>
+<span class="lineno">  221 </span><span class="spaces">  </span><span class="nottickedoff">name (ExternalPlug obj)  = name obj</span></span>
+<span class="lineno">  222 </span>instance Unique PlugInfo where
+<span class="lineno">  223 </span>  <span class="decl"><span class="nottickedoff">showUnique (InternalPlug psql) = &quot;SQLTable &quot;++name psql</span>
+<span class="lineno">  224 </span><span class="spaces">  </span><span class="nottickedoff">showUnique (ExternalPlug obj ) = &quot;Object &quot;++name obj++show (origin obj)</span></span>
+<span class="lineno">  225 </span>instance ConceptStructure PlugInfo where
+<span class="lineno">  226 </span>  <span class="decl"><span class="nottickedoff">concs   (InternalPlug psql) = concs   psql</span>
+<span class="lineno">  227 </span><span class="spaces">  </span><span class="nottickedoff">concs   (ExternalPlug obj)  = concs   obj</span></span>
+<span class="lineno">  228 </span>  <span class="decl"><span class="nottickedoff">expressionsIn (InternalPlug psql) = expressionsIn psql</span>
+<span class="lineno">  229 </span><span class="spaces">  </span><span class="nottickedoff">expressionsIn (ExternalPlug obj)  = expressionsIn obj</span></span>
+<span class="lineno">  230 </span>instance ConceptStructure PlugSQL where
+<span class="lineno">  231 </span>  <span class="decl"><span class="nottickedoff">concs     p = concs   (plugFields p)</span></span>
+<span class="lineno">  232 </span>  <span class="decl"><span class="nottickedoff">expressionsIn   p = expressionsIn (plugFields p)</span></span>
+<span class="lineno">  233 </span>
+<span class="lineno">  234 </span>data PlugSQL
+<span class="lineno">  235 </span>   -- | stores a related collection of relations: a kernel of concepts and attribute relations of this kernel
+<span class="lineno">  236 </span>   --   i.e. a list of SqlField given some A -&gt; [target r | r::A*B,isUni r,isTot r, isInj r]
+<span class="lineno">  237 </span>   --                                        ++ [target r | r::A*B,isUni r, not(isTot r), not(isSur r)]
+<span class="lineno">  238 </span>   --     kernel = A closure of concepts A,B for which there exists a r::A-&gt;B[INJ]
+<span class="lineno">  239 </span>   --              (r=fldexpr of kernel field holding instances of B, in practice r is I or a makeRelation(flipped declaration))
+<span class="lineno">  240 </span>   --      attribute relations = All concepts B, A in kernel for which there exists a r::A*B[UNI] and r not TOT and SUR
+<span class="lineno">  241 </span>   --              (r=fldexpr of attMor field, in practice r is a makeRelation(declaration))
+<span class="lineno">  242 </span> = TblSQL  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">sqlname</span></span></span> :: String
+<span class="lineno">  243 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fields</span></span></span> :: [SqlField]                          -- ^ the first field is the concept table of the most general concept (e.g. Person)
+<span class="lineno">  244 </span>                                                           --   then follow concept tables of specializations. Together with the first field this is called the &quot;kernel&quot;
+<span class="lineno">  245 </span>                                                           --   the remaining fields represent attributes.
+<span class="lineno">  246 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cLkpTbl</span></span></span> :: [(A_Concept,SqlField)]             -- ^ lookup table that links all kernel concepts to fields in the plug
+<span class="lineno">  247 </span>                                                           -- cLkpTbl is een lijst concepten die in deze plug opgeslagen zitten, en hoe je ze eruit kunt halen
+<span class="lineno">  248 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">mLkpTbl</span></span></span> :: [(Expression,SqlField,SqlField)]   -- ^ lookup table that links concepts to column names in the plug (kernel+attRels)
+<span class="lineno">  249 </span>                                                           -- mLkpTbl is een lijst met relaties die in deze plug opgeslagen zitten, en hoe je ze eruit kunt halen
+<span class="lineno">  250 </span>           }
+<span class="lineno">  251 </span>   -- | stores one relation r in two ordered columns
+<span class="lineno">  252 </span>   --   i.e. a tuple of SqlField -&gt; (source r,target r) with (fldexpr=I/\r;r~, fldexpr=r)
+<span class="lineno">  253 </span>   --   (note: if r TOT then (I/\r;r~ = I). Thus, the concept (source r) is stored in this plug too)
+<span class="lineno">  254 </span>   --   with tblcontents = [[Just x,Just y] |(x,y)&lt;-contents r].
+<span class="lineno">  255 </span>   --   Typical for BinSQL is that it has exactly two columns that are not unique and may not contain NULL values
+<span class="lineno">  256 </span> | BinSQL  { sqlname :: String
+<span class="lineno">  257 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">columns</span></span></span> :: (SqlField,SqlField)
+<span class="lineno">  258 </span>           , cLkpTbl :: [(A_Concept,SqlField)] --given that mLkp cannot be (UNI or INJ) (because then r would be in a TblSQL plug)
+<span class="lineno">  259 </span>                                                --if mLkp is TOT, then the concept (source mLkp) is stored in this plug
+<span class="lineno">  260 </span>                                                --if mLkp is SUR, then the concept (target mLkp) is stored in this plug
+<span class="lineno">  261 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">mLkp</span></span></span> :: Expression -- the relation links concepts implemented by this plug
+<span class="lineno">  262 </span>           }
+<span class="lineno">  263 </span> -- |stores one concept c in one column
+<span class="lineno">  264 </span> --  i.e. a SqlField -&gt; c
+<span class="lineno">  265 </span> --  with tblcontents = [[Just x] |(x,_)&lt;-contents c].
+<span class="lineno">  266 </span> --  Typical for ScalarSQL is that it has exactly one column that is unique and may not contain NULL values i.e. fldexpr=I[c]
+<span class="lineno">  267 </span> | ScalarSQL
+<span class="lineno">  268 </span>           { sqlname :: String
+<span class="lineno">  269 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">sqlColumn</span></span></span> :: SqlField
+<span class="lineno">  270 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cLkp</span></span></span> :: A_Concept -- the concept implemented by this plug
+<span class="lineno">  271 </span>           }
+<span class="lineno">  272 </span>   deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  273 </span>instance Named PlugSQL where
+<span class="lineno">  274 </span>  <span class="decl"><span class="nottickedoff">name = sqlname</span></span>
+<span class="lineno">  275 </span>instance Eq PlugSQL where
+<span class="lineno">  276 </span>  <span class="decl"><span class="nottickedoff">x==y = name x==name y</span></span>
+<span class="lineno">  277 </span>instance Unique PlugSQL where
+<span class="lineno">  278 </span>  <span class="decl"><span class="nottickedoff">showUnique = name</span></span>
+<span class="lineno">  279 </span>instance Ord PlugSQL where
+<span class="lineno">  280 </span>  <span class="decl"><span class="nottickedoff">compare x y = compare (name x) (name y)</span></span>
+<span class="lineno">  281 </span>
+<span class="lineno">  282 </span>plugFields :: PlugSQL-&gt;[SqlField]
+<span class="lineno">  283 </span><span class="decl"><span class="nottickedoff">plugFields plug = case plug of</span>
+<span class="lineno">  284 </span><span class="spaces">    </span><span class="nottickedoff">TblSQL{}    -&gt; fields plug</span>
+<span class="lineno">  285 </span><span class="spaces">    </span><span class="nottickedoff">BinSQL{}    -&gt; [fst(columns plug),snd(columns plug)]</span>
+<span class="lineno">  286 </span><span class="spaces">    </span><span class="nottickedoff">ScalarSQL{} -&gt; [sqlColumn plug]</span></span>
+<span class="lineno">  287 </span>
+<span class="lineno">  288 </span>-- | This returns all column/table pairs that serve as a concept table for cpt. When adding/removing atoms, all of these
+<span class="lineno">  289 </span>-- columns need to be updated
+<span class="lineno">  290 </span>lookupCpt :: FSpec -&gt; A_Concept -&gt; [(PlugSQL,SqlField)]
+<span class="lineno">  291 </span><span class="decl"><span class="nottickedoff">lookupCpt fSpec cpt = [(plug,fld) |InternalPlug plug@TblSQL{}&lt;-plugInfos fSpec, (c,fld)&lt;-cLkpTbl plug,c==cpt]++</span>
+<span class="lineno">  292 </span><span class="spaces">                 </span><span class="nottickedoff">[(plug,fld) |InternalPlug plug@BinSQL{}&lt;-plugInfos fSpec, (c,fld)&lt;-cLkpTbl plug,c==cpt]++</span>
+<span class="lineno">  293 </span><span class="spaces">                 </span><span class="nottickedoff">[(plug,sqlColumn plug) |InternalPlug plug@ScalarSQL{}&lt;-plugInfos fSpec, cLkp plug==cpt]</span></span>
+<span class="lineno">  294 </span>
+<span class="lineno">  295 </span>-- Convenience function that returns the name of the table that contains the concept table (or more accurately concept column) for c
+<span class="lineno">  296 </span>getConceptTableFor :: FSpec -&gt; A_Concept -&gt; String
+<span class="lineno">  297 </span><span class="decl"><span class="nottickedoff">getConceptTableFor fSpec c = case lookupCpt fSpec c of</span>
+<span class="lineno">  298 </span><span class="spaces">                               </span><span class="nottickedoff">[]      -&gt; fatal 297 $ &quot;tableFor: No concept table for &quot; ++ name c</span>
+<span class="lineno">  299 </span><span class="spaces">                               </span><span class="nottickedoff">(t,_):_ -&gt; name t</span></span> -- in case there are more, we use the first one
+<span class="lineno">  300 </span>
+<span class="lineno">  301 </span>data SqlFieldUsage = TableKey Bool A_Concept  -- The field is the (primary) key of the table. (The boolean tells whether or not it is primary)
+<span class="lineno">  302 </span>                   | ForeignKey A_Concept  -- The field is a reference (containing the primary key value of) a TblSQL
+<span class="lineno">  303 </span>                   | PlainAttr             -- None of the above
+<span class="lineno">  304 </span>                   deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  305 </span>
+<span class="lineno">  306 </span>data SqlField = Fld { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fldname</span></span></span> :: String
+<span class="lineno">  307 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fldexpr</span></span></span> :: Expression     -- ^ De target van de expressie geeft de waarden weer in de SQL-tabel-kolom.
+<span class="lineno">  308 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fldtype</span></span></span> :: SqlType
+<span class="lineno">  309 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">flduse</span></span></span> ::  SqlFieldUsage
+<span class="lineno">  310 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">fldnull</span></span></span> :: Bool           -- ^ True if there can be empty field-values (intended for data dictionary of DB-implementation)
+<span class="lineno">  311 </span>                    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">flduniq</span></span></span> :: Bool           -- ^ True if all field-values are unique? (intended for data dictionary of DB-implementation)
+<span class="lineno">  312 </span>                    } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>,<span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">  313 </span>instance Named SqlField where
+<span class="lineno">  314 </span>  <span class="decl"><span class="nottickedoff">name = fldname</span></span>
+<span class="lineno">  315 </span>instance Unique (PlugSQL,SqlField) where
+<span class="lineno">  316 </span>  <span class="decl"><span class="nottickedoff">showUnique (p,f) = showUnique p++&quot;.&quot;++fldname f</span></span>
+<span class="lineno">  317 </span>instance Ord SqlField where
+<span class="lineno">  318 </span>  <span class="decl"><span class="nottickedoff">compare x y = compare (fldname x) (fldname y)</span></span>
+<span class="lineno">  319 </span>instance ConceptStructure SqlField where
+<span class="lineno">  320 </span>  <span class="decl"><span class="nottickedoff">concs     f = [target e' |let e'=fldexpr f,isSur e']</span></span>
+<span class="lineno">  321 </span>  <span class="decl"><span class="nottickedoff">expressionsIn   f = expressionsIn   (fldexpr f)</span></span>
+<span class="lineno">  322 </span>
+<span class="lineno">  323 </span>data SqlType = SQLChar    Int
+<span class="lineno">  324 </span>             | SQLBlob              -- cannot compare, but can show (as a file)
+<span class="lineno">  325 </span>             | SQLPass              -- password, encrypted: cannot show, but can compare
+<span class="lineno">  326 </span>             | SQLSingle
+<span class="lineno">  327 </span>             | SQLDouble
+<span class="lineno">  328 </span>             | SQLText              -- cannot compare, but can show (as a text)
+<span class="lineno">  329 </span>             | SQLuInt    Int
+<span class="lineno">  330 </span>             | SQLsInt    Int
+<span class="lineno">  331 </span>             | SQLId                -- autoincrement integer
+<span class="lineno">  332 </span>             | SQLVarchar Int
+<span class="lineno">  333 </span>             | SQLBool              -- exists y/n
+<span class="lineno">  334 </span>             deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  335 </span>
+<span class="lineno">  336 </span>getGeneralizations :: FSpec -&gt; A_Concept -&gt; [A_Concept]
+<span class="lineno">  337 </span><span class="decl"><span class="nottickedoff">getGeneralizations fSpec = largerConcepts (vgens fSpec)</span></span>
+<span class="lineno">  338 </span>
+<span class="lineno">  339 </span>getSpecializations :: FSpec -&gt; A_Concept -&gt; [A_Concept]
+<span class="lineno">  340 </span><span class="decl"><span class="nottickedoff">getSpecializations fSpec = smallerConcepts (vgens fSpec)</span></span>
+<span class="lineno">  341 </span>
+<span class="lineno">  342 </span>-- Lookup view by id in fSpec.
+<span class="lineno">  343 </span>lookupView :: FSpec -&gt; String -&gt; ViewDef
+<span class="lineno">  344 </span><span class="decl"><span class="nottickedoff">lookupView fSpec viewId =</span>
+<span class="lineno">  345 </span><span class="spaces">  </span><span class="nottickedoff">case filter (\v -&gt; vdlbl v == viewId) $ vviews fSpec of</span>
+<span class="lineno">  346 </span><span class="spaces">    </span><span class="nottickedoff">[]   -&gt; fatal 174 $ &quot;Undeclared view &quot; ++ show viewId ++ &quot;.&quot; -- Will be caught by static analysis</span>
+<span class="lineno">  347 </span><span class="spaces">    </span><span class="nottickedoff">[vd] -&gt; vd</span>
+<span class="lineno">  348 </span><span class="spaces">    </span><span class="nottickedoff">vds  -&gt; fatal 176 $ &quot;Multiple views with id &quot; ++ show viewId ++ &quot;: &quot; ++ show (map vdlbl vds)</span></span> -- Will be caught by static analysis
+<span class="lineno">  349 </span>
+<span class="lineno">  350 </span>-- Return the default view for concpt, which is either the view for concpt itself (if it has one) or the view for
+<span class="lineno">  351 </span>-- concpt's smallest superconcept that has a view. Return Nothing if there is no default view.
+<span class="lineno">  352 </span>getDefaultViewForConcept :: FSpec -&gt; A_Concept -&gt; Maybe ViewDef
+<span class="lineno">  353 </span><span class="decl"><span class="nottickedoff">getDefaultViewForConcept fSpec concpt =</span>
+<span class="lineno">  354 </span><span class="spaces">  </span><span class="nottickedoff">case [ vd </span>
+<span class="lineno">  355 </span><span class="spaces">       </span><span class="nottickedoff">| vd@Vd{vdcpt = c, vdIsDefault = True} &lt;- vviews fSpec</span>
+<span class="lineno">  356 </span><span class="spaces">       </span><span class="nottickedoff">,  c `elem` (concpt : largerConcepts (vgens fSpec) concpt) </span>
+<span class="lineno">  357 </span><span class="spaces">       </span><span class="nottickedoff">] of</span>
+<span class="lineno">  358 </span><span class="spaces">    </span><span class="nottickedoff">[]     -&gt; Nothing</span>
+<span class="lineno">  359 </span><span class="spaces">    </span><span class="nottickedoff">(vd:_) -&gt; Just vd</span></span>
+
+</pre>
+</body>
+</html>

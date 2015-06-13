@@ -1,0 +1,505 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE FlexibleInstances #-}
+<span class="lineno">    2 </span>  -- The purpose of ShowADL is to print things in Ampersand source format.
+<span class="lineno">    3 </span>  -- Rule: The semantics of each fSpec produced by the compiler is identical to the semantics  of (parse (showADL fSpec)).
+<span class="lineno">    4 </span>  -- Rule: The standard show is used only for simple error messages during testing.
+<span class="lineno">    5 </span>  -- Question (SJC): If STRING is the code produced by showADL, would STRING == showADL (parse STRING) (context (parse STRING)) be true?
+<span class="lineno">    6 </span>  -- Answer (SJ):   No, not for every STRING. Yet, for every fSpec we want  semantics fSpec == semantics (parse (showADL fSpec)).
+<span class="lineno">    7 </span>  --                Note that 'parse' and 'semantics' do not exist in this shape, so the actual expression is slightly more complicated.
+<span class="lineno">    8 </span>  --
+<span class="lineno">    9 </span>  -- Every Expression should be disambiguated before printing to ensure unambiguity.
+<span class="lineno">   10 </span>module Database.Design.Ampersand.FSpec.ShowADL
+<span class="lineno">   11 </span>    ( ShowADL(..), LanguageDependent(..), showPAclause, showREL)
+<span class="lineno">   12 </span>where
+<span class="lineno">   13 </span>import Database.Design.Ampersand.Core.ParseTree
+<span class="lineno">   14 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">   15 </span>import Database.Design.Ampersand.Basics      (fatalMsg,Collection(..),Named(..))
+<span class="lineno">   16 </span>import Database.Design.Ampersand.Classes
+<span class="lineno">   17 </span>import Database.Design.Ampersand.ADL1 (insParentheses)
+<span class="lineno">   18 </span>import Database.Design.Ampersand.FSpec.FSpec
+<span class="lineno">   19 </span>import Data.List
+<span class="lineno">   20 </span>import Prelude
+<span class="lineno">   21 </span>--import Debug.Trace
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   24 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;FSpec.ShowADL&quot;</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>class ShowADL a where
+<span class="lineno">   27 </span> showADL :: a -&gt; String
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>-- there are data types yielding language dependent data like an Expression
+<span class="lineno">   30 </span>-- the LanguageDependent class provides function(s) to map language dependent functions on those data if any.
+<span class="lineno">   31 </span>-- for example to print all expressions in a data structure with a practical amount of type directives
+<span class="lineno">   32 </span>-- (instances have been created when needed)
+<span class="lineno">   33 </span>--
+<span class="lineno">   34 </span>-- LanguageDependent is part of ShowAdl because the only application at time of writing is to disambiguate expressions for the purpose of printing
+<span class="lineno">   35 </span>-- SJ 31-12-2012: Since 'disambiguate' has become obsolete, do we still need this?
+<span class="lineno">   36 </span>class LanguageDependent a where
+<span class="lineno">   37 </span>  mapexprs :: (Language l, ConceptStructure l, Named l) =&gt; (l -&gt; Expression -&gt; Expression) -&gt; l -&gt; a -&gt; a
+<span class="lineno">   38 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ = id</span></span>
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>instance LanguageDependent a =&gt; LanguageDependent (Maybe a) where
+<span class="lineno">   41 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ Nothing  = Nothing</span>
+<span class="lineno">   42 </span><span class="spaces">  </span><span class="nottickedoff">mapexprs f l (Just x) = Just $ mapexprs f l x</span></span>
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>instance LanguageDependent (a, Expression) where
+<span class="lineno">   45 </span>  <span class="decl"><span class="nottickedoff">mapexprs f l (x,e) = (x, f l e)</span></span>
+<span class="lineno">   46 </span>instance LanguageDependent Rule where
+<span class="lineno">   47 </span>  <span class="decl"><span class="nottickedoff">mapexprs f l rul = rul{rrexp = f l (rrexp rul)}</span></span>
+<span class="lineno">   48 </span>instance LanguageDependent Interface where
+<span class="lineno">   49 </span>  <span class="decl"><span class="nottickedoff">mapexprs f l ifc = ifc{ifcObj = mapexprs f l (ifcObj ifc)}</span></span>
+<span class="lineno">   50 </span>instance LanguageDependent ObjectDef where
+<span class="lineno">   51 </span>  <span class="decl"><span class="nottickedoff">mapexprs f l obj = obj{objctx = f l (objctx obj), objmsub = mapexprs f l $ objmsub obj}</span></span>
+<span class="lineno">   52 </span>instance LanguageDependent SubInterface where
+<span class="lineno">   53 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ iref@(InterfaceRef _) = iref</span>
+<span class="lineno">   54 </span><span class="spaces">  </span><span class="nottickedoff">mapexprs f l (Box o cl objs) = Box o cl $ map (mapexprs f l) objs</span></span>
+<span class="lineno">   55 </span>instance LanguageDependent Declaration where
+<span class="lineno">   56 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ = id</span></span>
+<span class="lineno">   57 </span>instance LanguageDependent ECArule where
+<span class="lineno">   58 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ = id</span></span>
+<span class="lineno">   59 </span>instance LanguageDependent Event where
+<span class="lineno">   60 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ = id</span></span>
+<span class="lineno">   61 </span>--------------------------------------------------------------
+<span class="lineno">   62 </span>instance ShowADL (P_SubIfc a) where
+<span class="lineno">   63 </span>  <span class="decl"><span class="nottickedoff">showADL (P_Box{}) = &quot;BOX&quot;</span>
+<span class="lineno">   64 </span><span class="spaces">  </span><span class="nottickedoff">showADL (P_InterfaceRef _ nm) = &quot; INTERFACE &quot;++showstr nm</span></span>
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>instance ShowADL ObjectDef where
+<span class="lineno">   67 </span>-- WHY (HJ)? In deze instance van ShowADL worden diverse zaken gebruikt die ik hier niet zou verwachten.
+<span class="lineno">   68 </span>--              Het vertroebelt de code ook een beetje, want nu moeten er dingen als 'source' en
+<span class="lineno">   69 </span>--              'target' hier al bekend zijn.
+<span class="lineno">   70 </span>--              Dat lijkt me hier nog niet op z'n plaats, als je alleen maar wat wilt kunnen 'prettyprinten'.
+<span class="lineno">   71 </span>-- BECAUSE (SJ): Dit blijft nog even zo, omdat showADL gebruikt wordt in het genereren van interfaces.
+<span class="lineno">   72 </span>--              Zolang we dat nog niet onder de knie hebben blijft de code wat troebel.
+<span class="lineno">   73 </span> <span class="decl"><span class="nottickedoff">showADL obj = &quot; : &quot;++showADL (objctx obj)++</span>
+<span class="lineno">   74 </span><span class="spaces">               </span><span class="nottickedoff">recur &quot;\n  &quot; (objmsub obj)</span>
+<span class="lineno">   75 </span><span class="spaces">  </span><span class="nottickedoff">where recur :: String -&gt; Maybe SubInterface -&gt; String</span>
+<span class="lineno">   76 </span><span class="spaces">        </span><span class="nottickedoff">recur _   Nothing = &quot;&quot;</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="nottickedoff">recur ind (Just (InterfaceRef nm)) = ind++&quot; INTERFACE &quot;++showstr nm</span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="nottickedoff">recur ind (Just (Box _ cl objs))</span>
+<span class="lineno">   79 </span><span class="spaces">         </span><span class="nottickedoff">= ind++&quot; BOX&quot; ++ showClass cl ++ &quot; [ &quot;++</span>
+<span class="lineno">   80 </span><span class="spaces">           </span><span class="nottickedoff">intercalate (ind++&quot;     , &quot;)</span>
+<span class="lineno">   81 </span><span class="spaces">                               </span><span class="nottickedoff">[ showstr (name o)++</span>
+<span class="lineno">   82 </span><span class="spaces">                                  </span><span class="nottickedoff">(if null (objstrs o) then &quot;&quot; else &quot; {&quot;++intercalate &quot;, &quot; [showstr (unwords ss) | ss&lt;-objstrs o]++&quot;}&quot;)++</span>
+<span class="lineno">   83 </span><span class="spaces">                                  </span><span class="nottickedoff">&quot; : &quot;++showADL (objctx o)++</span>
+<span class="lineno">   84 </span><span class="spaces">                                  </span><span class="nottickedoff">recur (ind++&quot;      &quot;) (objmsub o)</span>
+<span class="lineno">   85 </span><span class="spaces">                               </span><span class="nottickedoff">| o&lt;-objs</span>
+<span class="lineno">   86 </span><span class="spaces">                               </span><span class="nottickedoff">]++</span>
+<span class="lineno">   87 </span><span class="spaces">           </span><span class="nottickedoff">ind++&quot;     ]&quot;</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="nottickedoff">showClass Nothing = &quot;&quot;</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="nottickedoff">showClass (Just cl) = &quot;&lt;&quot; ++ cl ++ &quot;&gt;&quot;</span></span> -- TODO: parser cannot handle these class annotations yet
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>instance ShowADL Meta where
+<span class="lineno">   92 </span> <span class="decl"><span class="nottickedoff">showADL (Meta _ metaObj nm val) =</span>
+<span class="lineno">   93 </span><span class="spaces">   </span><span class="nottickedoff">&quot;META &quot;++(if null $ showADL metaObj then &quot;&quot; else showADL metaObj++&quot; &quot;) ++show nm++&quot; &quot;++show val</span></span>
+<span class="lineno">   94 </span>
+<span class="lineno">   95 </span>instance ShowADL MetaObj where
+<span class="lineno">   96 </span> <span class="decl"><span class="nottickedoff">showADL ContextMeta = &quot;&quot;</span></span>
+<span class="lineno">   97 </span>
+<span class="lineno">   98 </span>instance ShowADL Purpose where
+<span class="lineno">   99 </span> <span class="decl"><span class="nottickedoff">showADL expl = &quot;PURPOSE &quot;++showADL (explObj expl)</span>
+<span class="lineno">  100 </span><span class="spaces">                </span><span class="nottickedoff">++&quot; &quot;++showADL (amLang (explMarkup expl))</span>
+<span class="lineno">  101 </span><span class="spaces">                </span><span class="nottickedoff">++&quot; &quot;++showADL (amFormat (explMarkup expl))</span>
+<span class="lineno">  102 </span><span class="spaces">                </span><span class="nottickedoff">++(if null (explRefIds expl) then &quot;&quot; else &quot; REF &quot;++intercalate &quot;;&quot; (explRefIds expl))</span>
+<span class="lineno">  103 </span><span class="spaces">                </span><span class="nottickedoff">++ &quot;{+&quot;++aMarkup2String (explMarkup expl)++&quot;-}&quot;</span></span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>instance ShowADL PandocFormat where
+<span class="lineno">  106 </span> <span class="decl"><span class="nottickedoff">showADL LaTeX = &quot;LATEX &quot;</span>
+<span class="lineno">  107 </span><span class="spaces"> </span><span class="nottickedoff">showADL HTML  = &quot;HTML &quot;</span>
+<span class="lineno">  108 </span><span class="spaces"> </span><span class="nottickedoff">showADL ReST  = &quot;REST &quot;</span>
+<span class="lineno">  109 </span><span class="spaces"> </span><span class="nottickedoff">showADL Markdown = &quot;MARKDOWN &quot;</span></span>
+<span class="lineno">  110 </span>
+<span class="lineno">  111 </span>instance ShowADL A_Markup where
+<span class="lineno">  112 </span> <span class="decl"><span class="nottickedoff">showADL m</span>
+<span class="lineno">  113 </span><span class="spaces">     </span><span class="nottickedoff">= showADL (amLang m)</span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="nottickedoff">++ &quot; &quot;++showADL (amFormat m)</span>
+<span class="lineno">  115 </span><span class="spaces">    </span><span class="nottickedoff">++ &quot;{+&quot;++aMarkup2String m++&quot;-}&quot;</span></span>
+<span class="lineno">  116 </span>
+<span class="lineno">  117 </span>instance ShowADL Lang where
+<span class="lineno">  118 </span> <span class="decl"><span class="nottickedoff">showADL Dutch   = &quot;IN DUTCH&quot;</span>
+<span class="lineno">  119 </span><span class="spaces"> </span><span class="nottickedoff">showADL English = &quot;IN ENGLISH&quot;</span></span>
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>instance ShowADL ExplObj where
+<span class="lineno">  122 </span> <span class="decl"><span class="nottickedoff">showADL e = case e of</span>
+<span class="lineno">  123 </span><span class="spaces">      </span><span class="nottickedoff">ExplConceptDef cd  -&gt; &quot;CONCEPT &quot;++cdcpt cd</span>
+<span class="lineno">  124 </span><span class="spaces">      </span><span class="nottickedoff">ExplDeclaration d  -&gt; &quot;RELATION &quot;++show (name d)</span>
+<span class="lineno">  125 </span><span class="spaces">      </span><span class="nottickedoff">ExplRule str       -&gt; &quot;RULE &quot;++showstr str</span>
+<span class="lineno">  126 </span><span class="spaces">      </span><span class="nottickedoff">ExplIdentityDef str-&gt; &quot;IDENT &quot;++showstr str</span>
+<span class="lineno">  127 </span><span class="spaces">      </span><span class="nottickedoff">ExplViewDef str    -&gt; &quot;VIEW &quot;++showstr str</span>
+<span class="lineno">  128 </span><span class="spaces">      </span><span class="nottickedoff">ExplPattern str    -&gt; &quot;PATTERN &quot;++ showstr str</span>
+<span class="lineno">  129 </span><span class="spaces">      </span><span class="nottickedoff">ExplInterface str  -&gt; &quot;INTERFACE &quot;++showstr str</span>
+<span class="lineno">  130 </span><span class="spaces">      </span><span class="nottickedoff">ExplContext str    -&gt; &quot;CONTEXT &quot;++showstr str</span></span>
+<span class="lineno">  131 </span>
+<span class="lineno">  132 </span>showstr :: String -&gt; String
+<span class="lineno">  133 </span><span class="decl"><span class="nottickedoff">showstr str = &quot;\&quot;&quot;++str++&quot;\&quot;&quot;</span></span>
+<span class="lineno">  134 </span>
+<span class="lineno">  135 </span>
+<span class="lineno">  136 </span>-- TODO: making these tuples instance of ShowADL is very hacky
+<span class="lineno">  137 </span>instance ShowADL (String,Rule) where
+<span class="lineno">  138 </span> <span class="decl"><span class="nottickedoff">showADL (role,rul) = &quot;ROLE &quot;++role++&quot; MAINTAINS &quot;++show (name rul)</span></span>
+<span class="lineno">  139 </span>
+<span class="lineno">  140 </span>instance ShowADL (String,Declaration) where
+<span class="lineno">  141 </span> <span class="decl"><span class="nottickedoff">showADL           (role,rel) = &quot;ROLE &quot;++role++&quot; EDITS &quot;++showADL rel</span></span>
+<span class="lineno">  142 </span>
+<span class="lineno">  143 </span>instance ShowADL (String,Interface) where
+<span class="lineno">  144 </span> <span class="decl"><span class="nottickedoff">showADL (role,ifc) = &quot;ROLE &quot;++role++&quot; USES &quot;++show (name ifc)</span></span>
+<span class="lineno">  145 </span>
+<span class="lineno">  146 </span>instance ShowADL Pattern where
+<span class="lineno">  147 </span>-- TODO: This function is VERY outdated
+<span class="lineno">  148 </span> <span class="decl"><span class="nottickedoff">showADL pat</span>
+<span class="lineno">  149 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;PATTERN &quot; ++ showstr (name pat) ++ &quot;\n&quot;</span>
+<span class="lineno">  150 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ptrls pat)  then &quot;&quot; else &quot;\n  &quot; ++intercalate &quot;\n  &quot; (map showADL (ptrls pat)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  151 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ptgns pat)  then &quot;&quot; else &quot;\n  &quot; ++intercalate &quot;\n  &quot; (map showADL (ptgns pat)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  152 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ptdcs pat)  then &quot;&quot; else &quot;\n  &quot; ++intercalate &quot;\n  &quot; (map showADL (ptdcs pat)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  153 </span><span class="spaces"></span><span class="nottickedoff">-- concept definitions are not printed, because we have no way of telling where they come from....</span>
+<span class="lineno">  154 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ptids pat)  then &quot;&quot; else &quot;\n  &quot; ++intercalate &quot;\n  &quot; (map showADL (ptids pat)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  155 </span><span class="spaces">    </span><span class="nottickedoff">++ &quot;ENDPATTERN&quot;</span></span>
+<span class="lineno">  156 </span>
+<span class="lineno">  157 </span>instance ShowADL (PairViewSegment Expression) where
+<span class="lineno">  158 </span> <span class="decl"><span class="nottickedoff">showADL (PairViewText _ str)       = &quot;TXT &quot; ++ show str</span>
+<span class="lineno">  159 </span><span class="spaces"> </span><span class="nottickedoff">showADL (PairViewExp _ srcOrTgt e) = showADL srcOrTgt ++ &quot; &quot; ++ showADL e</span></span>
+<span class="lineno">  160 </span>
+<span class="lineno">  161 </span>instance ShowADL SrcOrTgt where
+<span class="lineno">  162 </span> <span class="decl"><span class="nottickedoff">showADL Src = &quot;SRC&quot;</span>
+<span class="lineno">  163 </span><span class="spaces"> </span><span class="nottickedoff">showADL Tgt = &quot;TGT&quot;</span></span>
+<span class="lineno">  164 </span>
+<span class="lineno">  165 </span>instance ShowADL Rule where
+<span class="lineno">  166 </span> <span class="decl"><span class="nottickedoff">showADL r</span>
+<span class="lineno">  167 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;RULE \&quot;&quot;++rrnm r++&quot;\&quot; : &quot;++showADL (rrexp r)</span>
+<span class="lineno">  168 </span><span class="spaces">     </span><span class="nottickedoff">++ concat [&quot;\n     MEANING &quot;++showADL mng | mng &lt;- ameaMrk $ rrmean r ]</span>
+<span class="lineno">  169 </span><span class="spaces">     </span><span class="nottickedoff">++ concat [&quot;\n     MESSAGE &quot;++showADL msg | msg &lt;- rrmsg r]</span>
+<span class="lineno">  170 </span><span class="spaces">     </span><span class="nottickedoff">++ case rrviol r of</span>
+<span class="lineno">  171 </span><span class="spaces">          </span><span class="nottickedoff">Nothing                -&gt; &quot;&quot;</span>
+<span class="lineno">  172 </span><span class="spaces">          </span><span class="nottickedoff">Just (PairView pvSegs) -&gt; &quot;\n     VIOLATION (&quot;++intercalate &quot;, &quot; (map showADL pvSegs)++&quot;)&quot;</span></span>
+<span class="lineno">  173 </span>
+<span class="lineno">  174 </span>instance ShowADL A_Gen where
+<span class="lineno">  175 </span> <span class="decl"><span class="nottickedoff">showADL g =</span>
+<span class="lineno">  176 </span><span class="spaces">   </span><span class="nottickedoff">case g of</span>
+<span class="lineno">  177 </span><span class="spaces">    </span><span class="nottickedoff">Isa{} -&gt; &quot;CLASSIFY &quot;++showADL (genspc g)++&quot; ISA &quot;++showADL (gengen g)</span>
+<span class="lineno">  178 </span><span class="spaces">    </span><span class="nottickedoff">IsE{} -&gt; &quot;CLASSIFY &quot;++showADL (genspc g)++&quot; IS &quot;++intercalate &quot; /\\ &quot; (map showADL (genrhs g))</span></span>
+<span class="lineno">  179 </span>
+<span class="lineno">  180 </span>instance ShowADL A_RoleRelation where
+<span class="lineno">  181 </span> <span class="decl"><span class="nottickedoff">showADL r</span>
+<span class="lineno">  182 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;ROLE &quot;++intercalate &quot;, &quot; (map show (rrRoles r))++&quot; EDITS &quot;++intercalate &quot;, &quot; (map showADL (rrRels r))</span></span>
+<span class="lineno">  183 </span>
+<span class="lineno">  184 </span>instance ShowADL P_RoleRule where
+<span class="lineno">  185 </span> <span class="decl"><span class="nottickedoff">showADL r </span>
+<span class="lineno">  186 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;ROLE &quot;++intercalate &quot;, &quot; (map show (mRoles r))++&quot; MAINTAINS &quot;++intercalate &quot;, &quot; (map show (mRules r))</span></span>
+<span class="lineno">  187 </span>
+<span class="lineno">  188 </span>instance ShowADL Interface where
+<span class="lineno">  189 </span> <span class="decl"><span class="nottickedoff">showADL ifc</span>
+<span class="lineno">  190 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;INTERFACE &quot;++showstr(name ifc)</span>
+<span class="lineno">  191 </span><span class="spaces">          </span><span class="nottickedoff">++ maybe &quot;&quot; ((&quot; CLASS &quot;++) . showstr) (ifcClass ifc)</span>
+<span class="lineno">  192 </span><span class="spaces">          </span><span class="nottickedoff">++(if null (ifcParams ifc) then &quot;&quot; else &quot;(&quot;++intercalate &quot;, &quot; [showADL r | r&lt;-ifcParams ifc]++&quot;)&quot;)</span>
+<span class="lineno">  193 </span><span class="spaces">          </span><span class="nottickedoff">++(if null (ifcArgs ifc) then &quot;&quot; else &quot;{&quot;++intercalate &quot;, &quot; [showstr(unwords strs) | strs&lt;-ifcArgs ifc]++&quot;}&quot;)</span>
+<span class="lineno">  194 </span><span class="spaces">          </span><span class="nottickedoff">++(if null (ifcRoles ifc) then &quot;&quot; else &quot; FOR &quot;++intercalate &quot;, &quot; (map name (ifcRoles ifc)))</span>
+<span class="lineno">  195 </span><span class="spaces">          </span><span class="nottickedoff">++showADL (ifcObj ifc)</span></span>
+<span class="lineno">  196 </span>
+<span class="lineno">  197 </span>instance ShowADL IdentityDef where
+<span class="lineno">  198 </span> <span class="decl"><span class="nottickedoff">showADL identity</span>
+<span class="lineno">  199 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;IDENT &quot;++idLbl identity</span>
+<span class="lineno">  200 </span><span class="spaces">          </span><span class="nottickedoff">++ &quot;: &quot; ++name (idCpt identity)</span>
+<span class="lineno">  201 </span><span class="spaces">          </span><span class="nottickedoff">++ &quot;(&quot; ++intercalate &quot;, &quot; (map showADL $ identityAts identity) ++ &quot;)&quot;</span></span>
+<span class="lineno">  202 </span>
+<span class="lineno">  203 </span>instance ShowADL IdentitySegment where
+<span class="lineno">  204 </span> <span class="decl"><span class="nottickedoff">showADL (IdentityExp objDef) = (if null (name objDef) then &quot;&quot; else &quot;\&quot;&quot;++name objDef++&quot;\&quot;:&quot;) ++ showADL (objctx objDef)</span></span>
+<span class="lineno">  205 </span>
+<span class="lineno">  206 </span>instance ShowADL ViewDef where
+<span class="lineno">  207 </span> <span class="decl"><span class="nottickedoff">showADL vd</span>
+<span class="lineno">  208 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;VIEW &quot;++vdlbl vd</span>
+<span class="lineno">  209 </span><span class="spaces">          </span><span class="nottickedoff">++ &quot;: &quot; ++name (vdcpt vd)</span>
+<span class="lineno">  210 </span><span class="spaces">          </span><span class="nottickedoff">++ &quot;(&quot; ++intercalate &quot;, &quot; (map showADL $ vdats vd) ++ &quot;)&quot;</span></span>
+<span class="lineno">  211 </span>
+<span class="lineno">  212 </span>instance ShowADL ViewSegment where
+<span class="lineno">  213 </span> <span class="decl"><span class="nottickedoff">showADL (ViewExp objDef) = (if null (name objDef) then &quot;&quot; else &quot;\&quot;&quot;++name objDef++&quot;\&quot;:&quot;) ++ showADL (objctx objDef)</span>
+<span class="lineno">  214 </span><span class="spaces"> </span><span class="nottickedoff">showADL (ViewText str) = &quot;TXT &quot; ++ show str</span>
+<span class="lineno">  215 </span><span class="spaces"> </span><span class="nottickedoff">showADL (ViewHtml str) = &quot;PRIMHTML &quot; ++ show str</span></span>
+<span class="lineno">  216 </span>
+<span class="lineno">  217 </span>-- showADL Relation only prints complete signatures to ensure unambiguity.
+<span class="lineno">  218 </span>-- therefore, when printing expressions, do not apply this function to print relations, but apply one that prints names only
+<span class="lineno">  219 </span>--instance ShowADL Relation where
+<span class="lineno">  220 </span>-- showADL rel = show rel
+<span class="lineno">  221 </span>
+<span class="lineno">  222 </span>instance ShowADL Expression where
+<span class="lineno">  223 </span> <span class="decl"><span class="nottickedoff">showADL = showExpr (&quot; = &quot;, &quot; |- &quot;, &quot; /\\ &quot;, &quot; \\/ &quot;, &quot; - &quot;, &quot; / &quot;, &quot; \\ &quot;, &quot; &lt;&gt; &quot;, &quot;;&quot;, &quot;!&quot;, &quot;*&quot;, &quot;*&quot;, &quot;+&quot;, &quot;~&quot;, (&quot;-&quot;++), &quot;(&quot;, &quot;)&quot;, &quot;[&quot;, &quot;*&quot;, &quot;]&quot;)</span>
+<span class="lineno">  224 </span><span class="spaces"></span><span class="nottickedoff">-- NOTE: retain space after \\, because of unexpected side effects if it is used just before an 'r' or 'n'....</span>
+<span class="lineno">  225 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
+<span class="lineno">  226 </span><span class="spaces">     </span><span class="nottickedoff">showExpr :: (String,String,String,String,String,String,String,String,String,String,String,String,String,String,String -&gt; String,String,String,String,String,String)</span>
+<span class="lineno">  227 </span><span class="spaces">            </span><span class="nottickedoff">-&gt; Expression -&gt; String</span>
+<span class="lineno">  228 </span><span class="spaces">     </span><span class="nottickedoff">showExpr    (equi,  impl,  inter, union',diff,  lresi, rresi, rDia, rMul  , rAdd , rPrd ,closK0,closK1,flp',  compl,           lpar,  rpar,  lbr,   star,  rbr)  expr</span>
+<span class="lineno">  229 </span><span class="spaces">      </span><span class="nottickedoff">= showchar (insParentheses expr)</span>
+<span class="lineno">  230 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
+<span class="lineno">  231 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EEqu (l,r)) = showchar l++equi++showchar r</span>
+<span class="lineno">  232 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EImp (l,r)) = showchar l++impl++showchar r</span>
+<span class="lineno">  233 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EIsc (l,r)) = showchar l++inter++showchar r</span>
+<span class="lineno">  234 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EUni (l,r)) = showchar l++union'++showchar r</span>
+<span class="lineno">  235 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDif (l,r)) = showchar l++diff ++showchar r</span>
+<span class="lineno">  236 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ELrs (l,r)) = showchar l++lresi++showchar r</span>
+<span class="lineno">  237 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ERrs (l,r)) = showchar l++rresi++showchar r</span>
+<span class="lineno">  238 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDia (l,r)) = showchar l++rDia++showchar r</span>
+<span class="lineno">  239 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ECps (l,r)) = showchar l++rMul++showchar r</span>
+<span class="lineno">  240 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ERad (l,r)) = showchar l++rAdd++showchar r</span>
+<span class="lineno">  241 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EPrd (l,r)) = showchar l++rPrd++showchar r</span>
+<span class="lineno">  242 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EKl0 e)     = showchar e++closK0</span>
+<span class="lineno">  243 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EKl1 e)     = showchar e++closK1</span>
+<span class="lineno">  244 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EFlp e)     = showchar e++flp'</span>
+<span class="lineno">  245 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ECpl e)     = compl (showchar e)</span>
+<span class="lineno">  246 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EBrk e)     = lpar++showchar e++rpar</span>
+<span class="lineno">  247 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDcD dcl)   = name dcl</span>
+<span class="lineno">  248 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDcI c)     = &quot;I&quot;++lbr++name c++rbr</span>
+<span class="lineno">  249 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EEps i _)   = &quot;I{-Eps-}&quot;++lbr++name i++rbr --HJO, 20140622: Modified this, because the output must comply to Ampersand syntax.</span>
+<span class="lineno">  250 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDcV sgn)   = &quot;V&quot;++lbr++name (source sgn)++star++name (target sgn)++rbr</span>
+<span class="lineno">  251 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EMp1 a c)   = &quot;'&quot;++a++&quot;'&quot;++lbr++name c++rbr</span></span>
+<span class="lineno">  252 </span>
+<span class="lineno">  253 </span>instance ShowADL DnfClause where
+<span class="lineno">  254 </span> <span class="decl"><span class="nottickedoff">showADL dnfClause = showADL (dnf2expr dnfClause)</span></span>
+<span class="lineno">  255 </span>
+<span class="lineno">  256 </span>instance ShowADL Declaration where
+<span class="lineno">  257 </span> <span class="decl"><span class="nottickedoff">showADL decl =</span>
+<span class="lineno">  258 </span><span class="spaces">  </span><span class="nottickedoff">case decl of</span>
+<span class="lineno">  259 </span><span class="spaces">     </span><span class="nottickedoff">Sgn{} -&gt; name decl++&quot; :: &quot;++name (source decl)++(if null ([Uni,Tot]&gt;-multiplicities decl) then &quot; -&gt; &quot; else &quot; * &quot;)++name (target decl)++</span>
+<span class="lineno">  260 </span><span class="spaces">              </span><span class="nottickedoff">(let mults=if null ([Uni,Tot]&gt;-multiplicities decl) then multiplicities decl&gt;-[Uni,Tot] else multiplicities decl in</span>
+<span class="lineno">  261 </span><span class="spaces">               </span><span class="nottickedoff">if null mults then &quot;&quot; else &quot;[&quot;++intercalate &quot;,&quot; (map showADL mults)++&quot;]&quot;)++</span>
+<span class="lineno">  262 </span><span class="spaces">              </span><span class="nottickedoff">(if null(decprL decl++decprM decl++decprR decl) then &quot;&quot; else</span>
+<span class="lineno">  263 </span><span class="spaces">               </span><span class="nottickedoff">&quot; PRAGMA &quot;++unwords (map show [decprL decl,decprM decl,decprR decl]))</span>
+<span class="lineno">  264 </span><span class="spaces">               </span><span class="nottickedoff">++ concatMap meaning (ameaMrk (decMean decl))</span>
+<span class="lineno">  265 </span><span class="spaces">     </span><span class="nottickedoff">Isn{} -&gt; &quot;I[&quot;++show (detyp decl)++&quot;]&quot; -- Isn{} is of type Declaration and it is implicitly defined</span>
+<span class="lineno">  266 </span><span class="spaces">     </span><span class="nottickedoff">Vs{}  -&gt; &quot;V&quot;++show (decsgn decl)      -- Vs{}  is of type Declaration and it is implicitly defined</span>
+<span class="lineno">  267 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
+<span class="lineno">  268 </span><span class="spaces">     </span><span class="nottickedoff">meaning :: A_Markup -&gt; String</span>
+<span class="lineno">  269 </span><span class="spaces">     </span><span class="nottickedoff">meaning pmkup = &quot; MEANING &quot;++showADL pmkup</span></span>
+<span class="lineno">  270 </span>
+<span class="lineno">  271 </span>showREL :: Declaration-&gt; String
+<span class="lineno">  272 </span><span class="decl"><span class="nottickedoff">showREL decl = show decl</span></span>
+<span class="lineno">  273 </span>{-
+<span class="lineno">  274 </span>  case decl of
+<span class="lineno">  275 </span>     Sgn{} -&gt; name decl++showSign (sign decl)
+<span class="lineno">  276 </span>     Isn{} -&gt; &quot;I[&quot;++show (detyp decl)++&quot;]&quot; -- Isn{} is of type Declaration and it is implicitly defined
+<span class="lineno">  277 </span>     Vs{}  -&gt; &quot;V&quot;++show (decsgn decl)
+<span class="lineno">  278 </span>-}
+<span class="lineno">  279 </span>
+<span class="lineno">  280 </span>instance ShowADL P_Markup where
+<span class="lineno">  281 </span> <span class="decl"><span class="nottickedoff">showADL (P_Markup lng fmt str) = case lng of</span>
+<span class="lineno">  282 </span><span class="spaces">                                     </span><span class="nottickedoff">Nothing -&gt; &quot;&quot;</span>
+<span class="lineno">  283 </span><span class="spaces">                                     </span><span class="nottickedoff">Just l  -&gt; &quot;IN &quot;++show l++&quot; &quot;</span>
+<span class="lineno">  284 </span><span class="spaces">                                 </span><span class="nottickedoff">++</span>
+<span class="lineno">  285 </span><span class="spaces">                                  </span><span class="nottickedoff">case fmt of</span>
+<span class="lineno">  286 </span><span class="spaces">                                     </span><span class="nottickedoff">Nothing -&gt; &quot;&quot;</span>
+<span class="lineno">  287 </span><span class="spaces">                                     </span><span class="nottickedoff">Just f  -&gt; &quot; &quot;++show f++&quot; &quot;</span>
+<span class="lineno">  288 </span><span class="spaces">                                 </span><span class="nottickedoff">++</span>
+<span class="lineno">  289 </span><span class="spaces">                                  </span><span class="nottickedoff">&quot;{+&quot;++str++&quot;-} &quot;</span></span>
+<span class="lineno">  290 </span>
+<span class="lineno">  291 </span>instance ShowADL Prop where
+<span class="lineno">  292 </span> <span class="decl"><span class="nottickedoff">showADL = show</span></span>
+<span class="lineno">  293 </span>
+<span class="lineno">  294 </span>instance ShowADL A_Concept where
+<span class="lineno">  295 </span> <span class="decl"><span class="nottickedoff">showADL c = show (name c)</span></span>
+<span class="lineno">  296 </span>
+<span class="lineno">  297 </span>instance ShowADL ConceptDef where
+<span class="lineno">  298 </span> <span class="decl"><span class="nottickedoff">showADL cd</span>
+<span class="lineno">  299 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;\n  CONCEPT &quot;++show (cdcpt cd)++&quot; &quot;++show (cddef cd)++&quot; &quot;++(if null (cdref cd) then &quot;&quot; else show (cdref cd))</span></span>
+<span class="lineno">  300 </span>
+<span class="lineno">  301 </span>instance ShowADL A_Context where
+<span class="lineno">  302 </span> <span class="decl"><span class="nottickedoff">showADL context</span>
+<span class="lineno">  303 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;CONTEXT &quot; ++name context</span>
+<span class="lineno">  304 </span><span class="spaces">    </span><span class="nottickedoff">++ &quot; &quot; ++ (showADL (ctxlang context))</span>
+<span class="lineno">  305 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxmetas context) then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n\n&quot; (map showADL (ctxmetas context))++ &quot;\n&quot;)</span>
+<span class="lineno">  306 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxifcs context)  then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n\n&quot; (map showADL (ctxifcs context)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  307 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxpats context)  then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n\n&quot; (map showADL (ctxpats context)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  308 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxrs context)    then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n&quot;   (map showADL (ctxrs context))   ++ &quot;\n&quot;)</span>
+<span class="lineno">  309 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxds context)    then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n&quot;   (map showADL (ctxds context))   ++ &quot;\n&quot;)</span>
+<span class="lineno">  310 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxks context)    then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n&quot;   (map showADL (ctxks context))   ++ &quot;\n&quot;)</span>
+<span class="lineno">  311 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxgs context)    then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n&quot;   (map showADL (ctxgs context))   ++ &quot;\n&quot;)</span>
+<span class="lineno">  312 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxcds context)   then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n&quot;   (map showADL (ctxcds context))  ++ &quot;\n&quot;)</span>
+<span class="lineno">  313 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxpopus context) then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n&quot;   (map showADL (ctxpopus context))++ &quot;\n&quot;)</span>
+<span class="lineno">  314 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxsql context)   then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n\n&quot; (map showADL (ctxsql context)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  315 </span><span class="spaces">    </span><span class="nottickedoff">++ (if null (ctxphp context)   then &quot;&quot; else &quot;\n&quot;      ++intercalate &quot;\n\n&quot; (map showADL (ctxphp context)) ++ &quot;\n&quot;)</span>
+<span class="lineno">  316 </span><span class="spaces">    </span><span class="nottickedoff">++ &quot;\n\nENDCONTEXT&quot;</span></span>
+<span class="lineno">  317 </span>
+<span class="lineno">  318 </span>instance ShowADL (Maybe String) where
+<span class="lineno">  319 </span>  <span class="decl"><span class="nottickedoff">showADL _ = &quot;&quot;</span></span>
+<span class="lineno">  320 </span>instance ShowADL ECArule where
+<span class="lineno">  321 </span>  <span class="decl"><span class="nottickedoff">showADL eca = &quot;ECA #&quot;++show (ecaNum eca)</span></span>
+<span class="lineno">  322 </span>
+<span class="lineno">  323 </span>instance ShowADL Event where
+<span class="lineno">  324 </span>  <span class="decl"><span class="nottickedoff">showADL ev = &quot; On &quot; ++show (eSrt ev)++&quot; &quot;++showREL (eDcl ev)</span></span>
+<span class="lineno">  325 </span>
+<span class="lineno">  326 </span>instance (ShowADL a, ShowADL b) =&gt; ShowADL (a,b) where
+<span class="lineno">  327 </span> <span class="decl"><span class="nottickedoff">showADL (a,b) = &quot;(&quot; ++ showADL a ++ &quot;, &quot; ++ showADL b ++ &quot;)&quot;</span></span>
+<span class="lineno">  328 </span>
+<span class="lineno">  329 </span>instance ShowADL P_Population where
+<span class="lineno">  330 </span> <span class="decl"><span class="nottickedoff">showADL pop</span>
+<span class="lineno">  331 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;POPULATION &quot;++name pop</span>
+<span class="lineno">  332 </span><span class="spaces">  </span><span class="nottickedoff">++ case pop of</span>
+<span class="lineno">  333 </span><span class="spaces">        </span><span class="nottickedoff">P_TRelPop{} -&gt; &quot;[&quot;++(name.pSrc.p_type) pop++&quot;*&quot;++(name.pTgt.p_type) pop++&quot;]&quot;</span>
+<span class="lineno">  334 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; &quot;&quot;</span>
+<span class="lineno">  335 </span><span class="spaces">  </span><span class="nottickedoff">++ &quot; CONTAINS\n&quot;</span>
+<span class="lineno">  336 </span><span class="spaces">  </span><span class="nottickedoff">++ if (case pop of</span>
+<span class="lineno">  337 </span><span class="spaces">            </span><span class="nottickedoff">P_RelPopu{} -&gt; null (p_popps pop)</span>
+<span class="lineno">  338 </span><span class="spaces">            </span><span class="nottickedoff">P_TRelPop{} -&gt; null (p_popps pop)</span>
+<span class="lineno">  339 </span><span class="spaces">            </span><span class="nottickedoff">P_CptPopu{} -&gt; null (p_popas pop)</span>
+<span class="lineno">  340 </span><span class="spaces">        </span><span class="nottickedoff">)</span>
+<span class="lineno">  341 </span><span class="spaces">     </span><span class="nottickedoff">then &quot;&quot;</span>
+<span class="lineno">  342 </span><span class="spaces">     </span><span class="nottickedoff">else indent++&quot;[ &quot;++intercalate (&quot;\n&quot;++indent++&quot;, &quot;) showContent++indent++&quot;]&quot;</span>
+<span class="lineno">  343 </span><span class="spaces">    </span><span class="nottickedoff">where indent = &quot;   &quot;</span>
+<span class="lineno">  344 </span><span class="spaces">          </span><span class="nottickedoff">showContent = case pop of</span>
+<span class="lineno">  345 </span><span class="spaces">                          </span><span class="nottickedoff">P_RelPopu{} -&gt; map showPaire (p_popps pop)</span>
+<span class="lineno">  346 </span><span class="spaces">                          </span><span class="nottickedoff">P_TRelPop{} -&gt; map showPaire (p_popps pop)</span>
+<span class="lineno">  347 </span><span class="spaces">                          </span><span class="nottickedoff">P_CptPopu{} -&gt; map showAtom  (p_popas pop)</span></span>
+<span class="lineno">  348 </span>showPaire :: Paire -&gt; String
+<span class="lineno">  349 </span><span class="decl"><span class="nottickedoff">showPaire p = showAtom (srcPaire p)++&quot;, &quot;++ showAtom (trgPaire p)</span></span>
+<span class="lineno">  350 </span>instance ShowADL Paire where
+<span class="lineno">  351 </span> <span class="decl"><span class="nottickedoff">showADL p = &quot;(&quot;++showAtom (srcPaire p)++&quot;,&quot;++ showAtom (trgPaire p)++&quot;)&quot;</span></span>
+<span class="lineno">  352 </span>instance ShowADL Pairs where
+<span class="lineno">  353 </span> <span class="decl"><span class="nottickedoff">showADL ps = &quot;[&quot;++intercalate &quot;, &quot; (map showADL ps)++&quot;]&quot;</span></span>
+<span class="lineno">  354 </span>  
+<span class="lineno">  355 </span>instance ShowADL Population where
+<span class="lineno">  356 </span> <span class="decl"><span class="nottickedoff">showADL pop</span>
+<span class="lineno">  357 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;POPULATION &quot;</span>
+<span class="lineno">  358 </span><span class="spaces">  </span><span class="nottickedoff">++ case pop of</span>
+<span class="lineno">  359 </span><span class="spaces">        </span><span class="nottickedoff">PRelPopu{} -&gt; (name.popdcl) pop++(show.sign.popdcl) pop</span>
+<span class="lineno">  360 </span><span class="spaces">        </span><span class="nottickedoff">PCptPopu{} -&gt; (name.popcpt) pop</span>
+<span class="lineno">  361 </span><span class="spaces">  </span><span class="nottickedoff">++ &quot; CONTAINS\n&quot;</span>
+<span class="lineno">  362 </span><span class="spaces">  </span><span class="nottickedoff">++ if (case pop of</span>
+<span class="lineno">  363 </span><span class="spaces">            </span><span class="nottickedoff">PRelPopu{} -&gt; null (popps pop)</span>
+<span class="lineno">  364 </span><span class="spaces">            </span><span class="nottickedoff">PCptPopu{} -&gt; null (popas pop)</span>
+<span class="lineno">  365 </span><span class="spaces">        </span><span class="nottickedoff">)</span>
+<span class="lineno">  366 </span><span class="spaces">     </span><span class="nottickedoff">then &quot;&quot;</span>
+<span class="lineno">  367 </span><span class="spaces">     </span><span class="nottickedoff">else indent++&quot;[ &quot;++intercalate (&quot;\n&quot;++indent++&quot;, &quot;) showContent++indent++&quot;]&quot;</span>
+<span class="lineno">  368 </span><span class="spaces">    </span><span class="nottickedoff">where indent = &quot;   &quot;</span>
+<span class="lineno">  369 </span><span class="spaces">          </span><span class="nottickedoff">showContent = case pop of</span>
+<span class="lineno">  370 </span><span class="spaces">                          </span><span class="nottickedoff">PRelPopu{} -&gt; map showPaire (popps pop)</span>
+<span class="lineno">  371 </span><span class="spaces">                          </span><span class="nottickedoff">PCptPopu{} -&gt; map showAtom  (popas pop)</span></span>
+<span class="lineno">  372 </span>
+<span class="lineno">  373 </span>-- showADL (PRelPopu r pairs)
+<span class="lineno">  374 </span>--  = &quot;POPULATION &quot;++showADL r++&quot; CONTAINS\n&quot;++
+<span class="lineno">  375 </span>--    indent++&quot;[ &quot;++intercalate (&quot;\n&quot;++indent++&quot;, &quot;) (map (\(x,y)-&gt; showatom x++&quot; * &quot;++ showatom y) pairs)++indent++&quot;]&quot;
+<span class="lineno">  376 </span>--    where indent = &quot;   &quot;
+<span class="lineno">  377 </span>
+<span class="lineno">  378 </span>showAtom :: String -&gt; String
+<span class="lineno">  379 </span><span class="decl"><span class="nottickedoff">showAtom x = &quot;'&quot;++[if c=='\'' then '`' else c|c&lt;-x]++&quot;'&quot;</span></span>
+<span class="lineno">  380 </span>
+<span class="lineno">  381 </span>instance ShowADL TermPrim where
+<span class="lineno">  382 </span> <span class="decl"><span class="nottickedoff">showADL (PI _)                                   = &quot;I&quot;</span>
+<span class="lineno">  383 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Pid _ c)                                = &quot;I[&quot;++showADL c++&quot;]&quot;</span>
+<span class="lineno">  384 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Patm _ a Nothing)                       = &quot;'&quot;++a++&quot;'&quot;</span>
+<span class="lineno">  385 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Patm _ a (Just c))                      = &quot;'&quot;++a++&quot;'[&quot;++show c++&quot;]&quot;</span>
+<span class="lineno">  386 </span><span class="spaces"> </span><span class="nottickedoff">showADL (PVee _)                                 = &quot;V&quot;</span>
+<span class="lineno">  387 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Pfull _ s t)                            = &quot;V[&quot;++show s++&quot;*&quot;++show t++&quot;]&quot;</span>
+<span class="lineno">  388 </span><span class="spaces"> </span><span class="nottickedoff">showADL (PNamedR rel)                            = showADL rel</span></span>
+<span class="lineno">  389 </span> 
+<span class="lineno">  390 </span>instance ShowADL P_NamedRel where
+<span class="lineno">  391 </span> <span class="decl"><span class="nottickedoff">showADL (PNamedRel _ rel mSgn)                    = rel++maybe &quot;&quot; showsign mSgn</span>
+<span class="lineno">  392 </span><span class="spaces">  </span><span class="nottickedoff">where     showsign (P_Sign src trg)                         = &quot;[&quot;++showADL src++&quot;*&quot;++showADL trg++&quot;]&quot;</span></span>
+<span class="lineno">  393 </span>
+<span class="lineno">  394 </span>--used to compose error messages at p2a time
+<span class="lineno">  395 </span>instance (ShowADL a, Traced a) =&gt; ShowADL (Term a) where
+<span class="lineno">  396 </span> <span class="decl"><span class="nottickedoff">showADL = showPExpr (&quot; = &quot;, &quot; |- &quot;, &quot; /\\ &quot;, &quot; \\/ &quot;, &quot; - &quot;, &quot; / &quot;, &quot; \\ &quot;, &quot;&lt;&gt;&quot;, &quot;;&quot;, &quot;!&quot;, &quot;*&quot;, &quot;*&quot;, &quot;+&quot;, &quot;~&quot;, &quot;(&quot;, &quot;)&quot;)</span>
+<span class="lineno">  397 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
+<span class="lineno">  398 </span><span class="spaces">    </span><span class="nottickedoff">showPExpr (equi,impl,inter,union',diff,lresi,rresi,rDia,rMul,rAdd,rPrd,closK0,closK1,flp',lpar,rpar) expr</span>
+<span class="lineno">  399 </span><span class="spaces">     </span><span class="nottickedoff">= showchar (insP_Parentheses expr)</span>
+<span class="lineno">  400 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
+<span class="lineno">  401 </span><span class="spaces">       </span><span class="nottickedoff">showchar (Prim a) = showADL a</span>
+<span class="lineno">  402 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PEqu _ l r)                             = showchar l++equi++showchar r</span>
+<span class="lineno">  403 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PImp _ l r)                             = showchar l++impl++showchar r</span>
+<span class="lineno">  404 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PIsc _ l r)                             = showchar l++inter++showchar r</span>
+<span class="lineno">  405 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PUni _ l r)                             = showchar l++union'++showchar r</span>
+<span class="lineno">  406 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PDif _ l r)                             = showchar l++diff ++showchar r</span>
+<span class="lineno">  407 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PLrs _ l r)                             = showchar l++lresi++showchar r</span>
+<span class="lineno">  408 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PRrs _ l r)                             = showchar l++rresi++showchar r</span>
+<span class="lineno">  409 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PDia _ l r)                             = showchar l++rDia++showchar r</span>
+<span class="lineno">  410 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PCps _ l r)                             = showchar l++rMul++showchar r</span>
+<span class="lineno">  411 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PRad _ l r)                             = showchar l++rAdd++showchar r</span>
+<span class="lineno">  412 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PPrd _ l r)                             = showchar l++rPrd++showchar r</span>
+<span class="lineno">  413 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PKl0 _ e)                               = showchar e++closK0</span>
+<span class="lineno">  414 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PKl1 _ e)                               = showchar e++closK1</span>
+<span class="lineno">  415 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PFlp _ e)                               = showchar e++flp'</span>
+<span class="lineno">  416 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PCpl _ e)                               = '-':showchar e</span>
+<span class="lineno">  417 </span><span class="spaces">       </span><span class="nottickedoff">showchar (PBrk _ e)                               = lpar++showchar e++rpar</span></span>
+<span class="lineno">  418 </span>
+<span class="lineno">  419 </span>insP_Parentheses :: (Traced a) =&gt; Term a -&gt; Term a
+<span class="lineno">  420 </span><span class="decl"><span class="nottickedoff">insP_Parentheses = insPar 0</span>
+<span class="lineno">  421 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
+<span class="lineno">  422 </span><span class="spaces">       </span><span class="nottickedoff">wrap :: (Traced a) =&gt; Integer -&gt; Integer -&gt; Term a -&gt; Term a</span>
+<span class="lineno">  423 </span><span class="spaces">       </span><span class="nottickedoff">wrap i j e' = if i&lt;=j then e' else PBrk (origin e') e'</span>
+<span class="lineno">  424 </span><span class="spaces">       </span><span class="nottickedoff">insPar :: (Traced a) =&gt; Integer -&gt; Term a -&gt; Term a</span>
+<span class="lineno">  425 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PEqu o l r) = wrap i     0 (PEqu o (insPar 1 l) (insPar 1 r))</span>
+<span class="lineno">  426 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PImp o l r) = wrap i     0 (PImp o (insPar 1 l) (insPar 1 r))</span>
+<span class="lineno">  427 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PIsc o l r) = wrap (i+1) 2 (PIsc o (insPar 2 l) (insPar 2 r))</span>
+<span class="lineno">  428 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PUni o l r) = wrap (i+1) 2 (PUni o (insPar 2 l) (insPar 2 r))</span>
+<span class="lineno">  429 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PDif o l r) = wrap i     4 (PDif o (insPar 5 l) (insPar 5 r))</span>
+<span class="lineno">  430 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PLrs o l r) = wrap i     6 (PLrs o (insPar 7 l) (insPar 7 r))</span>
+<span class="lineno">  431 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PRrs o l r) = wrap i     6 (PRrs o (insPar 7 l) (insPar 7 r))</span>
+<span class="lineno">  432 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PDia o l r) = wrap i     6 (PDia o (insPar 7 l) (insPar 7 r))</span>
+<span class="lineno">  433 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PCps o l r) = wrap (i+1) 8 (PCps o (insPar 8 l) (insPar 8 r))</span>
+<span class="lineno">  434 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PRad o l r) = wrap (i+1) 8 (PRad o (insPar 8 l) (insPar 8 r))</span>
+<span class="lineno">  435 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PPrd o l r) = wrap (i+1) 8 (PPrd o (insPar 8 l) (insPar 8 r))</span>
+<span class="lineno">  436 </span><span class="spaces">       </span><span class="nottickedoff">insPar _ (PKl0 o e)   = PKl0 o (insPar 10 e)</span>
+<span class="lineno">  437 </span><span class="spaces">       </span><span class="nottickedoff">insPar _ (PKl1 o e)   = PKl1 o (insPar 10 e)</span>
+<span class="lineno">  438 </span><span class="spaces">       </span><span class="nottickedoff">insPar _ (PFlp o e)   = PFlp o (insPar 10 e)</span>
+<span class="lineno">  439 </span><span class="spaces">       </span><span class="nottickedoff">insPar _ (PCpl o e)   = PCpl o (insPar 10 e)</span>
+<span class="lineno">  440 </span><span class="spaces">       </span><span class="nottickedoff">insPar i (PBrk _ e)   = insPar i e</span>
+<span class="lineno">  441 </span><span class="spaces">       </span><span class="nottickedoff">insPar _ x            = x</span></span>
+<span class="lineno">  442 </span>
+<span class="lineno">  443 </span>--used to compose error messages at p2a time
+<span class="lineno">  444 </span>instance ShowADL P_Concept where
+<span class="lineno">  445 </span> <span class="decl"><span class="nottickedoff">showADL = name</span></span>
+<span class="lineno">  446 </span>
+<span class="lineno">  447 </span>instance ShowADL PAclause where
+<span class="lineno">  448 </span>    <span class="decl"><span class="nottickedoff">showADL = showPAclause &quot;\n &quot;</span></span>
+<span class="lineno">  449 </span>
+<span class="lineno">  450 </span>showPAclause :: String -&gt; PAclause -&gt; String
+<span class="lineno">  451 </span><span class="decl"><span class="nottickedoff">showPAclause indent pa@Do{}</span>
+<span class="lineno">  452 </span><span class="spaces">       </span><span class="nottickedoff">= ( case paSrt pa of</span>
+<span class="lineno">  453 </span><span class="spaces">            </span><span class="nottickedoff">Ins -&gt; &quot;INSERT INTO &quot;</span>
+<span class="lineno">  454 </span><span class="spaces">            </span><span class="nottickedoff">Del -&gt; &quot;DELETE FROM &quot;)++</span>
+<span class="lineno">  455 </span><span class="spaces">         </span><span class="nottickedoff">showREL (paTo pa) ++</span>
+<span class="lineno">  456 </span><span class="spaces">         </span><span class="nottickedoff">indent++&quot; SELECTFROM &quot;++</span>
+<span class="lineno">  457 </span><span class="spaces">         </span><span class="nottickedoff">showADL (paDelta pa)++</span>
+<span class="lineno">  458 </span><span class="spaces">         </span><span class="nottickedoff">indent++motivate indent &quot;TO MAINTAIN &quot; (paMotiv pa)</span>
+<span class="lineno">  459 </span><span class="spaces"></span><span class="nottickedoff">showPAclause indent (New c clause cj_ruls)</span>
+<span class="lineno">  460 </span><span class="spaces">       </span><span class="nottickedoff">= &quot;NEW x:&quot;++show c++&quot;;&quot;++indent'++showPAclause indent' (clause &quot;x&quot;)++motivate indent &quot;MAINTAINING&quot; cj_ruls</span>
+<span class="lineno">  461 </span><span class="spaces">         </span><span class="nottickedoff">where indent'  = indent++&quot;  &quot;</span>
+<span class="lineno">  462 </span><span class="spaces"></span><span class="nottickedoff">showPAclause indent (Rmv c clause cj_ruls)</span>
+<span class="lineno">  463 </span><span class="spaces">       </span><span class="nottickedoff">= &quot;REMOVE x:&quot;++show c++&quot;;&quot;++indent'++showPAclause indent' (clause &quot;x&quot;)++motivate indent &quot;MAINTAINING&quot; cj_ruls</span>
+<span class="lineno">  464 </span><span class="spaces">         </span><span class="nottickedoff">where indent'  = indent++&quot;  &quot;</span>
+<span class="lineno">  465 </span><span class="spaces"></span><span class="nottickedoff">showPAclause indent (CHC ds cj_ruls)</span>
+<span class="lineno">  466 </span><span class="spaces">       </span><span class="nottickedoff">= &quot;ONE OF &quot;++intercalate indent' [showPAclause indent' d | d&lt;-ds]++motivate indent &quot;MAINTAINING&quot; cj_ruls</span>
+<span class="lineno">  467 </span><span class="spaces">         </span><span class="nottickedoff">where indent'  = indent++&quot;       &quot;</span>
+<span class="lineno">  468 </span><span class="spaces"></span><span class="nottickedoff">showPAclause indent (GCH ds cj_ruls)</span>
+<span class="lineno">  469 </span><span class="spaces">       </span><span class="nottickedoff">= &quot;ONE NONEMPTY ALTERNATIVE OF &quot;++intercalate indent'</span>
+<span class="lineno">  470 </span><span class="spaces">         </span><span class="nottickedoff">[&quot;PICK a,b FROM &quot;++showADL links++indent'++&quot;THEN &quot;++showPAclause (indent'++&quot;     &quot;) p| (_,links,p)&lt;-ds]++</span>
+<span class="lineno">  471 </span><span class="spaces">         </span><span class="nottickedoff">motivate indent &quot;MAINTAINING&quot; cj_ruls</span>
+<span class="lineno">  472 </span><span class="spaces">         </span><span class="nottickedoff">where indent'  = indent++&quot;       &quot;</span>
+<span class="lineno">  473 </span><span class="spaces"></span><span class="nottickedoff">showPAclause indent (ALL ds cj_ruls)</span>
+<span class="lineno">  474 </span><span class="spaces">       </span><span class="nottickedoff">= &quot;ALL of &quot;++intercalate indent' [showPAclause indent' d | d&lt;-ds]++motivate indent &quot;MAINTAINING&quot; cj_ruls</span>
+<span class="lineno">  475 </span><span class="spaces">         </span><span class="nottickedoff">where indent'  = indent++&quot;       &quot;</span>
+<span class="lineno">  476 </span><span class="spaces"></span><span class="nottickedoff">showPAclause indent (Nop cj_ruls)</span>
+<span class="lineno">  477 </span><span class="spaces">       </span><span class="nottickedoff">= &quot;DO NOTHING&quot;++motivate indent &quot;TO MAINTAIN&quot; cj_ruls</span>
+<span class="lineno">  478 </span><span class="spaces"></span><span class="nottickedoff">showPAclause indent (Blk cj_ruls)</span>
+<span class="lineno">  479 </span><span class="spaces">       </span><span class="nottickedoff">= &quot;BLOCK&quot;++motivate indent &quot;CANNOT CHANGE&quot; cj_ruls</span>
+<span class="lineno">  480 </span><span class="spaces"></span><span class="nottickedoff">showPAclause  _ (Let _ _ _)  = fatal 55 &quot;showPAclause is missing for `Let`. Contact your dealer!&quot;</span>
+<span class="lineno">  481 </span><span class="spaces"></span><span class="nottickedoff">showPAclause  _ (Ref _)      = fatal 56 &quot;showPAclause is missing for `Ref`. Contact your dealer!&quot;</span></span>
+<span class="lineno">  482 </span>
+<span class="lineno">  483 </span>motivate :: [Char] -&gt; [Char] -&gt; [(Expression, [Rule])] -&gt; [Char]
+<span class="lineno">  484 </span><span class="decl"><span class="nottickedoff">motivate indent motive motives = concat [ indent++showConj cj_rul | cj_rul&lt;-motives ]</span>
+<span class="lineno">  485 </span><span class="spaces">   </span><span class="nottickedoff">where showConj (conj,rs) = &quot;(&quot;++motive++&quot; &quot;++showADL conj++&quot; FROM &quot;++intercalate &quot;, &quot; (map name rs) ++&quot;)&quot;</span></span>
+
+</pre>
+</body>
+</html>

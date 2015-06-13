@@ -1,0 +1,316 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-warn-orphans #-}
+<span class="lineno">    2 </span>-- SJC: is it possible to move this to the prototype part of ampersand? I mean,
+<span class="lineno">    3 </span>--      do functions like plugFields and plug-path really need to be here?
+<span class="lineno">    4 </span>--      perhaps we can at least move the largest part?
+<span class="lineno">    5 </span>module Database.Design.Ampersand.FSpec.Plug
+<span class="lineno">    6 </span>     (Plugable(..), PlugInfo(..)
+<span class="lineno">    7 </span>     ,SqlField(..)
+<span class="lineno">    8 </span>     ,SqlFieldUsage(..)
+<span class="lineno">    9 </span>     ,SqlType(..)
+<span class="lineno">   10 </span>     ,showSQL
+<span class="lineno">   11 </span>     ,plugpath
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>     ,tblcontents
+<span class="lineno">   14 </span>     ,fldauto
+<span class="lineno">   15 </span>     ,PlugSQL(..)
+<span class="lineno">   16 </span>     )
+<span class="lineno">   17 </span>where
+<span class="lineno">   18 </span>import Database.Design.Ampersand.ADL1
+<span class="lineno">   19 </span>import Database.Design.Ampersand.Classes (fullContents,atomsOf,Relational(..))
+<span class="lineno">   20 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   21 </span>import Data.List
+<span class="lineno">   22 </span>import GHC.Exts (sortWith)
+<span class="lineno">   23 </span>import Database.Design.Ampersand.FSpec.FSpec
+<span class="lineno">   24 </span>import Prelude hiding (Ordering(..))
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   27 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;FSpec.Plug&quot;</span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>----------------------------------------------
+<span class="lineno">   30 </span>--Plug
+<span class="lineno">   31 </span>----------------------------------------------
+<span class="lineno">   32 </span>--TODO151210 -&gt; define what a plug is and what it should do
+<span class="lineno">   33 </span>--Plugs are of the class Object just like Activities(??? =&gt; PHP plug isn't an instance of Object)
+<span class="lineno">   34 </span>--An Object is an entity to do things with like reading, updating, creating,deleting.
+<span class="lineno">   35 </span>--A Interface is an Object using only Plugs for reading and writing data; a Plug is a data service maintaining the rules for one object:
+<span class="lineno">   36 </span>-- + GEN Interface,Plug ISA Object
+<span class="lineno">   37 </span>-- + cando::Operation*Object
+<span class="lineno">   38 </span>-- + uses::Interface*Plug [TOT].
+<span class="lineno">   39 </span>-- + maintains::Plug*Rule.
+<span class="lineno">   40 </span>-- + signals::Interface*SignalRule.
+<span class="lineno">   41 </span>--
+<span class="lineno">   42 </span>--Plugs can currently be implemented in PHP or SQL.
+<span class="lineno">   43 </span>--type Plugs = [Plug]
+<span class="lineno">   44 </span>--data Plug = PlugSql PlugSQL | PlugPhp PlugPHP deriving (Show,Eq)
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>class (Named p, Eq p, Show p) =&gt; Plugable p where
+<span class="lineno">   47 </span>  makePlug :: PlugInfo -&gt; p
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>instance Plugable PlugSQL where
+<span class="lineno">   50 </span>  <span class="decl"><span class="nottickedoff">makePlug (InternalPlug p) = p</span>
+<span class="lineno">   51 </span><span class="spaces">  </span><span class="nottickedoff">makePlug (ExternalPlug _) = fatal 112 &quot;external plug is not Plugable&quot;</span></span>
+<span class="lineno">   52 </span>
+<span class="lineno">   53 </span>----------------------------------------------
+<span class="lineno">   54 </span>--PlugSQL
+<span class="lineno">   55 </span>----------------------------------------------
+<span class="lineno">   56 </span>--TblSQL, BinSQL, and ScalarSQL hold different entities. See their definition FSpec.hs
+<span class="lineno">   57 </span>
+<span class="lineno">   58 </span>--           all kernel fields can be related to an imaginary concept ID for the plug (a SqlField with type=SQLID)
+<span class="lineno">   59 </span>--             i.e. For all kernel fields k1,k2, where concept k1=A, concept k2=B, fldexpr k1=r~, fldexpr k2=s~
+<span class="lineno">   60 </span>--                  You can imagine :
+<span class="lineno">   61 </span>--                    - a relation value::ID-&gt;A[INJ] or value::ID-&gt;A[INJ,SUR]
+<span class="lineno">   62 </span>--                    - a relation value::ID-&gt;B[INJ] or value::ID-&gt;B[INJ,SUR]
+<span class="lineno">   63 </span>--                    such that s~=value~;value;r~ and r~=value~;value;s~
+<span class="lineno">   64 </span>--                    because value is at least uni,tot,inj, all NULL in k0 imply NULL in k1 xor v.v.
+<span class="lineno">   65 </span>--                    if value also sur then all NULL in k0 imply NULL in k1 and v.v.
+<span class="lineno">   66 </span>--           Without such an ID, the surjective or total property between any two kernel fields is required.
+<span class="lineno">   67 </span>--           Because you can imagine an ID concept the surjective or total property between two kernel field has become a design choice.
+<span class="lineno">   68 </span>--
+<span class="lineno">   69 </span>--           With or without ID we choose to keep kernel = A closure of concepts A,B for which there exists a r::A-&gt;B[INJ] instead of r::A*B[UNI,INJ]
+<span class="lineno">   70 </span>--           By making this choice:
+<span class="lineno">   71 </span>--             - nice database table size
+<span class="lineno">   72 </span>--             - we do not need the imaginary concept ID  (and relation value::ID-&gt;A[INJ] or value::ID-&gt;A[INJ,SUR]), because:
+<span class="lineno">   73 </span>--                  with ID    -&gt; there will always be one or more kernel field k1 such that (value;(fldexpr k1)~)[UNI,INJ,TOT,SUR].
+<span class="lineno">   74 </span>--                                any of those k1 can serve as ID of the plug (a.k.a. concept p / source p)
+<span class="lineno">   75 </span>--                  without ID -&gt; any of those k1 can still serve as ID of the plug (a.k.a. concept p / source p)
+<span class="lineno">   76 </span>--               In other words, the imaginary concept is never needed
+<span class="lineno">   77 </span>--                               because there always is an existing one with the correct properties by definition of kernel.
+<span class="lineno">   78 </span>--               Implementation without optional ID:
+<span class="lineno">   79 </span>--                        -&gt; fldexpr of some kernel field k1 will be r~
+<span class="lineno">   80 </span>--                           k1 holds the target of r~
+<span class="lineno">   81 </span>--                           the source of r~ is a kernel concept too
+<span class="lineno">   82 </span>--                           r~ may be I
+<span class="lineno">   83 </span>--                        -&gt; fldexpr of some attMor field a1 will be s
+<span class="lineno">   84 </span>--                           a1 holds the target of s
+<span class="lineno">   85 </span>--                           the source of s is a kernel concept
+<span class="lineno">   86 </span>--                        -&gt; sqlRelFields r = (r,k1,a1) (or (r,k1,k2)) in mLkpTbl
+<span class="lineno">   87 </span>--                           is used to generate SQL code and PHP-objects without needing the ID field.
+<span class="lineno">   88 </span>--                           The ID field can be ignored and does not have to be generated because r=(fldexpr k1)~;(fldexpr a1)
+<span class="lineno">   89 </span>--                           You could generate the ID-field with autonum if you want, because it will not be used
+<span class="lineno">   90 </span>--                        -&gt; TODO151210 -&gt; sqlRelFields e where e is not in mLkpTbl
+<span class="lineno">   91 </span>--                           option1) Generate the ID field (see entityfield)
+<span class="lineno">   92 </span>--                                    sqlRelFields e = (e, idfld;k1, idfld;a1) where e=(fldexpr k1)~;value~;value;(fldexpr a1)
+<span class="lineno">   93 </span>--                                    remark: binary tables can be binary tables without kernels, but with ID field
+<span class="lineno">   94 </span>--                                            (or from a different perspective: ID is the only kernel field)
+<span class="lineno">   95 </span>--                                            sqlRelFields r = (r,idfld/\r;r~,idfld;m1) where r = (idfld/\r;r~)~;idfld;(fldexpr m1)
+<span class="lineno">   96 </span>--                                            (sqlRelFields r~  to get the target of r)
+<span class="lineno">   97 </span>--                                            (scalar tables can of course also have an ID field)
+<span class="lineno">   98 </span>--                           option2) sqlRelFields e = (e, k1;k2;..kn, a1)
+<span class="lineno">   99 </span>--                                    where e=(fldexpr kn)~;..;(fldexpr k2)~;(fldexpr k1)~;(fldexpr k1)(fldexpr k2);..;(fldexpr kn);(fldexpr a1)
+<span class="lineno">  100 </span>--                           If I am right the function isTrue tries to support sqlRelFields e by ignoring the type error in kn;a1.
+<span class="lineno">  101 </span>--                           That is wrong!
+<span class="lineno">  102 </span>
+<span class="lineno">  103 </span>--the entityfield is not implemented as part of the data type PlugSQL
+<span class="lineno">  104 </span>--It is a constant which may or may not be used (you may always imagine it)
+<span class="lineno">  105 </span>--TODO151210 -&gt; generate the entityfield if options = --autoid -p
+<span class="lineno">  106 </span>--REMARK151210 -&gt; one would expect I[entityconcept p],
+<span class="lineno">  107 </span>--                but any p (as instance of Object) has one always existing concept p suitable to replace entityconcept p.
+<span class="lineno">  108 </span>--                concept p and entityconcept p are related uni,tot,inj,sur.
+<span class="lineno">  109 </span>
+<span class="lineno">  110 </span>--the entity stored in a plug is an imaginary concept, that is uni,tot,inj,sur with (concept p)
+<span class="lineno">  111 </span>--REMARK: there is a (concept p) because all kernel fields are related SUR with (concept p)
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>--Maintain rule: Object ObjectDef = Object (makeUserDefinedSqlPlug :: ObjectDef -&gt; PlugSQL)
+<span class="lineno">  114 </span>--TODO151210 -&gt; Build a check which checks this rule for userdefined/showADL generated plugs(::[ObjectDef])
+<span class="lineno">  115 </span>--TODO151210 -&gt; The ObjectDef of a BinSQL plug for relation r is that:
+<span class="lineno">  116 </span>--           1) SQLPLUG mybinplug: r      , or
+<span class="lineno">  117 </span>--           2) SQLPLUG labelforsourcem : I /\ r;r~ --(or just I if r is TOT)
+<span class="lineno">  118 </span>--               = [labelfortargetm : r]
+<span class="lineno">  119 </span>--           The first option has been implemented in instance ObjectPlugSQL i.e. attributes=[], ctx=ERel r _
+<span class="lineno">  120 </span>instance Object PlugSQL where
+<span class="lineno">  121 </span> <span class="decl"><span class="nottickedoff">concept p = case p of</span>
+<span class="lineno">  122 </span><span class="spaces">   </span><span class="nottickedoff">TblSQL{mLkpTbl = []} -&gt; fatal 263 $ &quot;empty lookup table for plug &quot;++name p++&quot;.&quot;</span>
+<span class="lineno">  123 </span><span class="spaces">   </span><span class="nottickedoff">TblSQL{}             -&gt; --TODO151210-&gt; deze functieimplementatie zou beter moeten matchen met onderstaande beschrijving</span>
+<span class="lineno">  124 </span><span class="spaces">                            </span><span class="nottickedoff">--        nu wordt aangenomen dat de source van het 1e rel in mLkpTbl de source van de plug is.</span>
+<span class="lineno">  125 </span><span class="spaces">                            </span><span class="nottickedoff">--a relation between kernel concepts r::A*B is at least [UNI,INJ]</span>
+<span class="lineno">  126 </span><span class="spaces">                            </span><span class="nottickedoff">--to be able to point out one concept to be the source we are looking for one without NULLs in its field</span>
+<span class="lineno">  127 </span><span class="spaces">                            </span><span class="nottickedoff">-- i.e. there is a concept A such that</span>
+<span class="lineno">  128 </span><span class="spaces">                            </span><span class="nottickedoff">--      for all kernel field expr (s~)::B*C[UNI,INJ]:</span>
+<span class="lineno">  129 </span><span class="spaces">                            </span><span class="nottickedoff">--      s~ is total and there exists an expr::A*B[UNI,INJ,TOT,SUR] (possibly A=B =&gt; I[A][UNI,INJ,TOT,SUR])</span>
+<span class="lineno">  130 </span><span class="spaces">                            </span><span class="nottickedoff">--If A is such a concept,</span>
+<span class="lineno">  131 </span><span class="spaces">                            </span><span class="nottickedoff">--   and A is not B,</span>
+<span class="lineno">  132 </span><span class="spaces">                            </span><span class="nottickedoff">--   and there exist an expr::A*B[UNI,INJ,TOT,SUR]</span>
+<span class="lineno">  133 </span><span class="spaces">                            </span><span class="nottickedoff">--then (concept PlugSQL{}) may be A or B</span>
+<span class="lineno">  134 </span><span class="spaces">                            </span><span class="nottickedoff">--REMARK -&gt; (source p) used to be implemented as (source . fldexpr . head . fields) p. That is different!</span>
+<span class="lineno">  135 </span><span class="spaces">                            </span><span class="nottickedoff">head [source r |(r,_,_)&lt;-mLkpTbl p]</span>
+<span class="lineno">  136 </span><span class="spaces">   </span><span class="nottickedoff">BinSQL{} -&gt; source (mLkp p) --REMARK151210 -&gt; the concept is actually ID such that I[ID]=I[source r]/\r;r~</span>
+<span class="lineno">  137 </span><span class="spaces">   </span><span class="nottickedoff">ScalarSQL{} -&gt; cLkp p</span></span>
+<span class="lineno">  138 </span>-- Usually source a==concept p. Otherwise, the attribute computation is somewhat more complicated. See ADL2FSpec for explanation about kernels.
+<span class="lineno">  139 </span> <span class="decl"><span class="nottickedoff">attributes p@TblSQL{}</span>
+<span class="lineno">  140 </span><span class="spaces">  </span><span class="nottickedoff">= [ Obj (fldname tFld)                                                        -- objnm</span>
+<span class="lineno">  141 </span><span class="spaces">          </span><span class="nottickedoff">(Origin &quot;This object is generated by attributes (Object PlugSQL)&quot;)    -- objpos</span>
+<span class="lineno">  142 </span><span class="spaces">          </span><span class="nottickedoff">(if source a==concept p then a  else f (source a) [[a]])              -- objctx</span>
+<span class="lineno">  143 </span><span class="spaces">          </span><span class="nottickedoff">Nothing </span>
+<span class="lineno">  144 </span><span class="spaces">          </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  145 </span><span class="spaces">          </span><span class="nottickedoff">[]                                                            -- objats and objstrs</span>
+<span class="lineno">  146 </span><span class="spaces">    </span><span class="nottickedoff">| (a,_,tFld)&lt;-mLkpTbl p]</span>
+<span class="lineno">  147 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  148 </span><span class="spaces">     </span><span class="nottickedoff">f c mms</span>
+<span class="lineno">  149 </span><span class="spaces">      </span><span class="nottickedoff">= case sortWith length stop of</span>
+<span class="lineno">  150 </span><span class="spaces">         </span><span class="nottickedoff">[]  -&gt; f c mms'  -- a path from c to a is not found (yet), so add another step to the recursion</span>
+<span class="lineno">  151 </span><span class="spaces">         </span><span class="nottickedoff">(hd:_) -&gt; case hd of</span>
+<span class="lineno">  152 </span><span class="spaces">                    </span><span class="nottickedoff">[]  -&gt; fatal 201 &quot;Empty head should be impossible.&quot;</span>
+<span class="lineno">  153 </span><span class="spaces">                    </span><span class="nottickedoff">_  -&gt; case [(l,r) | (l,r)&lt;-zip (init hd) (tail hd), target l/=source r] of</span>
+<span class="lineno">  154 </span><span class="spaces">                            </span><span class="nottickedoff">[] -&gt; foldr1 (.:.) hd  -- pick the shortest path and turn it into an expression.</span>
+<span class="lineno">  155 </span><span class="spaces">                            </span><span class="nottickedoff">lrs -&gt; fatal 204 (&quot;illegal compositions &quot; ++show lrs)</span>
+<span class="lineno">  156 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
+<span class="lineno">  157 </span><span class="spaces">        </span><span class="nottickedoff">mms' = if [] `elem` mms</span>
+<span class="lineno">  158 </span><span class="spaces">               </span><span class="nottickedoff">then fatal 295 &quot;null in mms.&quot;</span>
+<span class="lineno">  159 </span><span class="spaces">               </span><span class="nottickedoff">else [a:ms | ms&lt;-mms, (a,_,_)&lt;-mLkpTbl p, target a==source (head ms)]</span>
+<span class="lineno">  160 </span><span class="spaces">        </span><span class="nottickedoff">stop = if [] `elem` mms'</span>
+<span class="lineno">  161 </span><span class="spaces">               </span><span class="nottickedoff">then fatal 298 &quot;null in mms'.&quot;</span>
+<span class="lineno">  162 </span><span class="spaces">               </span><span class="nottickedoff">else [ms | ms&lt;-mms', source (head ms)==c]  -- contains all found paths from c to a</span>
+<span class="lineno">  163 </span><span class="spaces"> </span><span class="nottickedoff">attributes _ = []</span></span> --no attributes for BinSQL and ScalarSQL
+<span class="lineno">  164 </span> <span class="decl"><span class="nottickedoff">contextOf p@BinSQL{} = mLkp p</span>
+<span class="lineno">  165 </span><span class="spaces"> </span><span class="nottickedoff">contextOf p = EDcI (concept p)</span></span>
+<span class="lineno">  166 </span>
+<span class="lineno">  167 </span>fldauto::SqlField-&gt;Bool -- is the field auto increment?
+<span class="lineno">  168 </span><span class="decl"><span class="nottickedoff">fldauto f = (fldtype f==SQLId) &amp;&amp; not (fldnull f) &amp;&amp; flduniq f</span></span> -- &amp;&amp; isIdent (fldexpr f)
+<span class="lineno">  169 </span>
+<span class="lineno">  170 </span>showSQL :: SqlType -&gt; String
+<span class="lineno">  171 </span><span class="decl"><span class="nottickedoff">showSQL (SQLChar    n) = &quot;CHAR(&quot;++show n++&quot;)&quot;</span>
+<span class="lineno">  172 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLBlob     ) = &quot;BLOB&quot;</span>
+<span class="lineno">  173 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLPass     ) = &quot;VARCHAR(255)&quot;</span>
+<span class="lineno">  174 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLSingle   ) = &quot;FLOAT&quot; -- todo</span>
+<span class="lineno">  175 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLDouble   ) = &quot;FLOAT&quot;</span>
+<span class="lineno">  176 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLText     ) = &quot;TEXT&quot;</span>
+<span class="lineno">  177 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLuInt    n) = &quot;INT(&quot;++show n++&quot;) UNSIGNED&quot;</span>
+<span class="lineno">  178 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLsInt    n) = &quot;INT(&quot;++show n++&quot;)&quot;</span>
+<span class="lineno">  179 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLId       ) = &quot;INT&quot;</span>
+<span class="lineno">  180 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLVarchar n) = &quot;VARCHAR(&quot;++show n++&quot;)&quot;</span>
+<span class="lineno">  181 </span><span class="spaces"></span><span class="nottickedoff">showSQL (SQLBool     ) = &quot;BOOLEAN&quot;</span></span>
+<span class="lineno">  182 </span>
+<span class="lineno">  183 </span>-- Every kernel field is a key, kernel fields are in cLkpTbl or the column of ScalarSQL (which has one column only)
+<span class="lineno">  184 </span>-- isPlugIndex refers to UNIQUE key -- TODO: this is wrong
+<span class="lineno">  185 </span>--isPlugIndex may contain NULL, but their key (the entityfield of the plug) must be unique for a kernel field (isPlugIndex=True)
+<span class="lineno">  186 </span>--the field that is isIdent and isPlugIndex (i.e. concept plug), or any similar (uni,inj,sur,tot) field is also UNIQUE key
+<span class="lineno">  187 </span>--IdentityDefs define UNIQUE key (fld1,fld2,..,fldn)
+<span class="lineno">  188 </span>--REMARK -&gt; a kernel field does not have to be in cLkpTbl, in that cast there is another kernel field that is
+<span class="lineno">  189 </span>--          thus I must check whether fldexpr isUni &amp;&amp; isInj &amp;&amp; isSur
+<span class="lineno">  190 </span>isPlugIndex :: PlugSQL-&gt;SqlField-&gt;Bool
+<span class="lineno">  191 </span><span class="decl"><span class="nottickedoff">isPlugIndex plug f =</span>
+<span class="lineno">  192 </span><span class="spaces">  </span><span class="nottickedoff">case plug of</span>
+<span class="lineno">  193 </span><span class="spaces">    </span><span class="nottickedoff">ScalarSQL{} -&gt; sqlColumn plug==f</span>
+<span class="lineno">  194 </span><span class="spaces">    </span><span class="nottickedoff">BinSQL{}  --mLkp is not uni or inj by definition of BinSQL, if mLkp total then the (fldexpr srcfld)=I/\r;r~=I i.e. a key for this plug</span>
+<span class="lineno">  195 </span><span class="spaces">     </span><span class="nottickedoff">| isUni(mLkp plug) || isInj(mLkp plug) -&gt; fatal 366 &quot;BinSQL may not store a univalent or injective rel, use TblSQL instead.&quot;</span>
+<span class="lineno">  196 </span><span class="spaces">     </span><span class="nottickedoff">| otherwise                            -&gt; False --binary does not have key, but I could do a SELECT DISTINCT iff f==fst(columns plug) &amp;&amp; (isTot(mLkp plug))</span>
+<span class="lineno">  197 </span><span class="spaces">    </span><span class="nottickedoff">TblSQL{}    -&gt; elem f (fields plug) &amp;&amp; isUni(fldexpr f) &amp;&amp; isInj(fldexpr f) &amp;&amp; isSur(fldexpr f)</span></span>
+<span class="lineno">  198 </span>
+<span class="lineno">  199 </span>
+<span class="lineno">  200 </span>
+<span class="lineno">  201 </span>composeCheck :: Expression -&gt; Expression -&gt; Expression
+<span class="lineno">  202 </span><span class="decl"><span class="nottickedoff">composeCheck l r</span>
+<span class="lineno">  203 </span><span class="spaces"> </span><span class="nottickedoff">= if target l/=source r then fatal 316 (&quot;\nl: &quot;++show l++&quot;with target &quot;++show (target l)++&quot;\nl: &quot;++show r++&quot;with source &quot;++show (source r)) else</span>
+<span class="lineno">  204 </span><span class="spaces">   </span><span class="nottickedoff">l .:. r</span></span>
+<span class="lineno">  205 </span>
+<span class="lineno">  206 </span>--composition from srcfld to trgfld, if there is an expression for that
+<span class="lineno">  207 </span>plugpath :: PlugSQL -&gt; SqlField -&gt; SqlField -&gt; Maybe Expression
+<span class="lineno">  208 </span><span class="decl"><span class="nottickedoff">plugpath p srcfld trgfld =</span>
+<span class="lineno">  209 </span><span class="spaces"> </span><span class="nottickedoff">case p of</span>
+<span class="lineno">  210 </span><span class="spaces">  </span><span class="nottickedoff">BinSQL{}</span>
+<span class="lineno">  211 </span><span class="spaces">   </span><span class="nottickedoff">| srcfld==trgfld -&gt; let tm=mLkp p --(note: mLkp p is the relation from fst to snd column of BinSQL)</span>
+<span class="lineno">  212 </span><span class="spaces">                       </span><span class="nottickedoff">in if srcfld==fst(columns p)</span>
+<span class="lineno">  213 </span><span class="spaces">                          </span><span class="nottickedoff">then Just$ tm .:. flp tm --domain of r</span>
+<span class="lineno">  214 </span><span class="spaces">                          </span><span class="nottickedoff">else Just$ flp tm .:. tm --codomain of r</span>
+<span class="lineno">  215 </span><span class="spaces">   </span><span class="nottickedoff">| srcfld==fst(columns p) &amp;&amp; trgfld==snd(columns p) -&gt; Just$ fldexpr trgfld</span>
+<span class="lineno">  216 </span><span class="spaces">   </span><span class="nottickedoff">| trgfld==fst(columns p) &amp;&amp; srcfld==snd(columns p) -&gt; Just$ flp(fldexpr srcfld)</span>
+<span class="lineno">  217 </span><span class="spaces">   </span><span class="nottickedoff">| otherwise -&gt; fatal 444 $ &quot;BinSQL has only two fields:&quot;++show(fldname srcfld,fldname trgfld,name p)</span>
+<span class="lineno">  218 </span><span class="spaces">  </span><span class="nottickedoff">ScalarSQL{}</span>
+<span class="lineno">  219 </span><span class="spaces">   </span><span class="nottickedoff">| srcfld==trgfld -&gt; Just$ fldexpr trgfld</span>
+<span class="lineno">  220 </span><span class="spaces">   </span><span class="nottickedoff">| otherwise -&gt; fatal 447 $ &quot;scalarSQL has only one field:&quot;++show(fldname srcfld,fldname trgfld,name p)</span>
+<span class="lineno">  221 </span><span class="spaces">  </span><span class="nottickedoff">TblSQL{}</span>
+<span class="lineno">  222 </span><span class="spaces">   </span><span class="nottickedoff">| srcfld==trgfld &amp;&amp; isPlugIndex p trgfld -&gt; Just$ EDcI (target (fldexpr trgfld))</span>
+<span class="lineno">  223 </span><span class="spaces">   </span><span class="nottickedoff">| srcfld==trgfld &amp;&amp; not(isPlugIndex p trgfld) -&gt; Just$ composeCheck (flp (fldexpr srcfld)) (fldexpr trgfld) --codomain of r of morAtt</span>
+<span class="lineno">  224 </span><span class="spaces">   </span><span class="nottickedoff">| (not . null) (paths srcfld trgfld)</span>
+<span class="lineno">  225 </span><span class="spaces">      </span><span class="nottickedoff">-&gt; case head (paths srcfld trgfld) of</span>
+<span class="lineno">  226 </span><span class="spaces">          </span><span class="nottickedoff">[]    -&gt; fatal 338 (&quot;Empty head (paths srcfld trgfld) should be impossible.&quot;)</span>
+<span class="lineno">  227 </span><span class="spaces">          </span><span class="nottickedoff">ps    -&gt; Just$ foldr1 composeCheck ps</span>
+<span class="lineno">  228 </span><span class="spaces">   </span><span class="nottickedoff">--bijective kernel fields, which are bijective with ID of plug have fldexpr=I[X].</span>
+<span class="lineno">  229 </span><span class="spaces">   </span><span class="nottickedoff">--thus, path closures of these kernel fields are disjoint (path closure=set of fields reachable by paths),</span>
+<span class="lineno">  230 </span><span class="spaces">   </span><span class="nottickedoff">--      because these kernel fields connect to themselves by r=I[X] (i.e. end of path).</span>
+<span class="lineno">  231 </span><span class="spaces">   </span><span class="nottickedoff">--connect two paths over I[X] (I[X];srce)~;(I[X];trge) =&gt; filter I[X] =&gt; srcpath~;trgpath</span>
+<span class="lineno">  232 </span><span class="spaces">   </span><span class="nottickedoff">| (not.null) (pathsoverIs srcfld trgfld) -&gt; Just$      foldr1 composeCheck (head (pathsoverIs srcfld trgfld))</span>
+<span class="lineno">  233 </span><span class="spaces">   </span><span class="nottickedoff">| (not.null) (pathsoverIs trgfld srcfld) -&gt; Just$ flp (foldr1 composeCheck (head (pathsoverIs trgfld srcfld)))</span>
+<span class="lineno">  234 </span><span class="spaces">   </span><span class="nottickedoff">| otherwise -&gt; Nothing</span>
+<span class="lineno">  235 </span><span class="spaces">  </span><span class="nottickedoff">--paths from s to t by connecting r from mLkpTbl</span>
+<span class="lineno">  236 </span><span class="spaces">  </span><span class="nottickedoff">--the (r,srcfld,trgfld) from mLkpTbl form paths longer paths if connected: (trgfld m1==srcfld m2) =&gt; (m1;m2,srcfld m1,trgfld m2)</span>
+<span class="lineno">  237 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">  238 </span><span class="spaces">  </span><span class="nottickedoff">paths s t = [e |(e,es,et)&lt;-eLkpTbl p,s==es,t==et]</span>
+<span class="lineno">  239 </span><span class="spaces">  </span><span class="nottickedoff">--paths from I to field t</span>
+<span class="lineno">  240 </span><span class="spaces">  </span><span class="nottickedoff">pathsfromIs t = [(e,es,et) |(e,es,et)&lt;-eLkpTbl p,et==t,not (null e),isIdent(head e)]</span>
+<span class="lineno">  241 </span><span class="spaces">  </span><span class="nottickedoff">--paths from s to t over I[X]</span>
+<span class="lineno">  242 </span><span class="spaces">  </span><span class="nottickedoff">pathsoverIs s t = [flpsrce++tail trge</span>
+<span class="lineno">  243 </span><span class="spaces">                    </span><span class="nottickedoff">|(srce,srces,_)&lt;-pathsfromIs s</span>
+<span class="lineno">  244 </span><span class="spaces">                    </span><span class="nottickedoff">,(trge,trges,_)&lt;-pathsfromIs t</span>
+<span class="lineno">  245 </span><span class="spaces">                    </span><span class="nottickedoff">,srces==trges, let flpsrce = (map flp.reverse.tail) srce]</span></span>
+<span class="lineno">  246 </span>
+<span class="lineno">  247 </span>--the expression LkpTbl of a plug is the transitive closure of the mLkpTbl of the plug
+<span class="lineno">  248 </span>--Warshall's transitive closure algorithm clos1 :: (Eq a) =&gt; [(a,a)] -&gt; [(a,a)] is extended to combine paths i.e. r++r'
+<span class="lineno">  249 </span>--[Expression] implies a 'composition' from a kernel SqlField to another SqlField
+<span class="lineno">  250 </span>--use plugpath to get the Expression from srcfld to trgfld
+<span class="lineno">  251 </span>--plugpath also combines expressions with head I like (I;tail1)~;(I;tail2) &lt;=&gt; tail1;tail2
+<span class="lineno">  252 </span>eLkpTbl::PlugSQL -&gt; [([Expression],SqlField,SqlField)]
+<span class="lineno">  253 </span><span class="decl"><span class="nottickedoff">eLkpTbl p = clos1 [([r],s,t)|(r,s,t)&lt;-mLkpTbl p]</span>
+<span class="lineno">  254 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">  255 </span><span class="spaces">  </span><span class="nottickedoff">clos1 :: [([Expression],SqlField,SqlField)] -&gt; [([Expression],SqlField,SqlField)]     -- e.g. a list of SqlField pairs</span>
+<span class="lineno">  256 </span><span class="spaces">  </span><span class="nottickedoff">clos1 xs</span>
+<span class="lineno">  257 </span><span class="spaces">     </span><span class="nottickedoff">= foldl f xs (nub (map (\(_,x,_)-&gt;x) xs) `isc` nub (map (\(_,_,x)-&gt;x) xs))</span>
+<span class="lineno">  258 </span><span class="spaces">       </span><span class="nottickedoff">where</span>
+<span class="lineno">  259 </span><span class="spaces">        </span><span class="nottickedoff">f q x = q `uni` [( r++r' , a, b') | (r ,a, b) &lt;- q, b == x, (r', a', b') &lt;- q, a' == x]</span></span>
+<span class="lineno">  260 </span>
+<span class="lineno">  261 </span>
+<span class="lineno">  262 </span>-- | tblcontents is meant to compute the contents of an entity table.
+<span class="lineno">  263 </span>--   It yields a list of records. Values in the records may be absent, which is why Maybe String is used rather than String.
+<span class="lineno">  264 </span>type TblRecord = [Maybe String]
+<span class="lineno">  265 </span>tblcontents :: [A_Gen] -&gt; [Population] -&gt; PlugSQL -&gt; [TblRecord]
+<span class="lineno">  266 </span><span class="decl"><span class="nottickedoff">tblcontents gs udp plug</span>
+<span class="lineno">  267 </span><span class="spaces">   </span><span class="nottickedoff">= case plug of</span>
+<span class="lineno">  268 </span><span class="spaces">     </span><span class="nottickedoff">ScalarSQL{} -&gt; [[Just x] | x&lt;-atomsOf gs udp (cLkp plug)]</span>
+<span class="lineno">  269 </span><span class="spaces">     </span><span class="nottickedoff">BinSQL{}    -&gt; [[(Just . srcPaire) p,(Just . trgPaire) p] |p&lt;-fullContents gs udp (mLkp plug)]</span>
+<span class="lineno">  270 </span><span class="spaces">     </span><span class="nottickedoff">TblSQL{}    -&gt; </span>
+<span class="lineno">  271 </span><span class="spaces"> </span><span class="nottickedoff">--TODO15122010 -&gt; remove the assumptions (see comment data PlugSQL)</span>
+<span class="lineno">  272 </span><span class="spaces"> </span><span class="nottickedoff">--fields are assumed to be in the order kernel+other,</span>
+<span class="lineno">  273 </span><span class="spaces"> </span><span class="nottickedoff">--where NULL in a kernel field implies NULL in the following kernel fields</span>
+<span class="lineno">  274 </span><span class="spaces"> </span><span class="nottickedoff">--and the first field is unique and not null</span>
+<span class="lineno">  275 </span><span class="spaces"> </span><span class="nottickedoff">--(r,s,t)&lt;-mLkpTbl: s is assumed to be in the kernel, fldexpr t is expected to hold r or (flp r), s and t are assumed to be different</span>
+<span class="lineno">  276 </span><span class="spaces">       </span><span class="nottickedoff">case fields plug of </span>
+<span class="lineno">  277 </span><span class="spaces">         </span><span class="nottickedoff">[]   -&gt; fatal 593 &quot;no fields in plug.&quot;</span>
+<span class="lineno">  278 </span><span class="spaces">         </span><span class="nottickedoff">f:fs -&gt; transpose</span>
+<span class="lineno">  279 </span><span class="spaces">                 </span><span class="nottickedoff">( map Just cAtoms</span>
+<span class="lineno">  280 </span><span class="spaces">                 </span><span class="nottickedoff">: [case fExp of</span>
+<span class="lineno">  281 </span><span class="spaces">                       </span><span class="nottickedoff">EDcI c -&gt; [ if a `elem` atomsOf gs udp c then Just a else Nothing | a&lt;-cAtoms ]</span>
+<span class="lineno">  282 </span><span class="spaces">                       </span><span class="nottickedoff">_      -&gt; [ (lkp a . fullContents gs udp) fExp | a&lt;-cAtoms ]</span>
+<span class="lineno">  283 </span><span class="spaces">                   </span><span class="nottickedoff">| fld&lt;-fs, let fExp=fldexpr fld</span>
+<span class="lineno">  284 </span><span class="spaces">                   </span><span class="nottickedoff">]</span>
+<span class="lineno">  285 </span><span class="spaces">                 </span><span class="nottickedoff">)</span>
+<span class="lineno">  286 </span><span class="spaces">                 </span><span class="nottickedoff">where</span>
+<span class="lineno">  287 </span><span class="spaces">                   </span><span class="nottickedoff">cAtoms = (atomsOf gs udp . source . fldexpr) f</span>
+<span class="lineno">  288 </span><span class="spaces">                   </span><span class="nottickedoff">lkp a pairs</span>
+<span class="lineno">  289 </span><span class="spaces">                    </span><span class="nottickedoff">= case [ p | p&lt;-pairs, a==srcPaire p ] of</span>
+<span class="lineno">  290 </span><span class="spaces">                       </span><span class="nottickedoff">[] -&gt; Nothing</span>
+<span class="lineno">  291 </span><span class="spaces">                       </span><span class="nottickedoff">[p] -&gt; Just (trgPaire p)</span>
+<span class="lineno">  292 </span><span class="spaces">                       </span><span class="nottickedoff">ps -&gt; fatal 428 (&quot;(this could happen when using --dev flag, when there are violations)\n&quot;++</span>
+<span class="lineno">  293 </span><span class="spaces">                               </span><span class="nottickedoff">&quot;Looking for: '&quot;++a++&quot;'.\n&quot;++</span>
+<span class="lineno">  294 </span><span class="spaces">                               </span><span class="nottickedoff">&quot;Multiple values in one field: \n&quot;++</span>
+<span class="lineno">  295 </span><span class="spaces">                               </span><span class="nottickedoff">&quot;  [ &quot;++intercalate &quot;\n  , &quot; (map show ps)++&quot;\n  ]&quot;)</span>
+<span class="lineno">  296 </span><span class="spaces">                       </span><span class="nottickedoff"></span></span>
+
+</pre>
+</body>
+</html>

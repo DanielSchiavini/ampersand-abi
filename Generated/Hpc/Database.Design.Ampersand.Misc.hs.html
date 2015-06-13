@@ -1,0 +1,33 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.Misc
+<span class="lineno">    2 </span>   ( module Database.Design.Ampersand.Misc.Languages
+<span class="lineno">    3 </span>   , module Database.Design.Ampersand.Misc.Options
+<span class="lineno">    4 </span>   , module Database.Design.Ampersand.Misc.Explain
+<span class="lineno">    5 </span>   ) where
+<span class="lineno">    6 </span>import Database.Design.Ampersand.Misc.Languages
+<span class="lineno">    7 </span>       (Lang(..), plural, allLangs)
+<span class="lineno">    8 </span>import Database.Design.Ampersand.Misc.Options
+<span class="lineno">    9 </span>       (getOptions, Options(..),
+<span class="lineno">   10 </span>        verboseLn, verbose, DocTheme(..), FSpecFormat(..),
+<span class="lineno">   11 </span>        FileFormat(..), helpNVersionTexts)
+<span class="lineno">   12 </span>import Database.Design.Ampersand.Misc.Explain
+<span class="lineno">   13 </span>       (string2Blocks, blocks2String, PandocFormat(..))
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE TypeSynonymInstances #-}
+<span class="lineno">    2 </span>{-# LANGUAGE FlexibleInstances #-}
+<span class="lineno">    3 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    4 </span>module Database.Design.Ampersand.ADL1.Pair
+<span class="lineno">    5 </span>                    ( Paire(..),Pairs
+<span class="lineno">    6 </span>                    , mkPair
+<span class="lineno">    7 </span>                    )
+<span class="lineno">    8 </span>where
+<span class="lineno">    9 </span>import Data.Typeable
+<span class="lineno">   10 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>type Pairs = [Paire]
+<span class="lineno">   13 </span>--srcPaire :: Paire -&gt; String
+<span class="lineno">   14 </span>--trgPaire :: Paire -&gt; String
+<span class="lineno">   15 </span>--type Paire = (String,String)
+<span class="lineno">   16 </span>--mkPair :: String -&gt; String -&gt; Paire
+<span class="lineno">   17 </span>--mkPair a b = (a,b)
+<span class="lineno">   18 </span>--srcPaire = fst
+<span class="lineno">   19 </span>--trgPaire = snd
+<span class="lineno">   20 </span>data Paire = Paire {<span class="nottickedoff"><span class="decl"><span class="nottickedoff">srcPaire</span></span></span> ::String  --TODO introduction of AtomValue, and replace these messy Strings
+<span class="lineno">   21 </span>                   ,<span class="nottickedoff"><span class="decl"><span class="nottickedoff">trgPaire</span></span></span> ::String
+<span class="lineno">   22 </span>                   } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span> ,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">   23 </span>mkPair :: String -&gt; String -&gt; Paire
+<span class="lineno">   24 </span><span class="decl"><span class="istickedoff">mkPair = Paire</span></span>
+<span class="lineno">   25 </span>instance Unique Paire where
+<span class="lineno">   26 </span>  <span class="decl"><span class="nottickedoff">showUnique p = &quot;(&quot;++srcPaire p++&quot;,&quot;++trgPaire p++&quot;)&quot;</span></span>
+
+</pre>
+</body>
+</html>

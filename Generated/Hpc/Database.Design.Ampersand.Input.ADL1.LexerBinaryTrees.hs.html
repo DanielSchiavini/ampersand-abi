@@ -1,0 +1,87 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.Input.ADL1.LexerBinaryTrees
+<span class="lineno">    2 </span>   ( BinSearchTree(..)
+<span class="lineno">    3 </span>   , tab2tree
+<span class="lineno">    4 </span>   , btFind
+<span class="lineno">    5 </span>   , btLocateIn
+<span class="lineno">    6 </span>   )
+<span class="lineno">    7 </span>   where
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>   data BinSearchTree av
+<span class="lineno">   10 </span>    = Node (BinSearchTree av) av (BinSearchTree av)
+<span class="lineno">   11 </span>    | Nil
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>   tab2tree :: [av] -&gt; BinSearchTree av
+<span class="lineno">   14 </span>   <span class="decl"><span class="istickedoff">tab2tree tab = tree</span>
+<span class="lineno">   15 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   16 </span><span class="spaces">     </span><span class="istickedoff">(tree,[]) = sl2bst (length tab) tab</span>
+<span class="lineno">   17 </span><span class="spaces">     </span><span class="istickedoff">sl2bst 0 list     = (Nil   , list)</span>
+<span class="lineno">   18 </span><span class="spaces">     </span><span class="istickedoff">sl2bst n list</span>
+<span class="lineno">   19 </span><span class="spaces">      </span><span class="istickedoff">= let</span>
+<span class="lineno">   20 </span><span class="spaces">         </span><span class="istickedoff">ll = (n - 1) `div` 2 ; rl = n - 1 - ll</span>
+<span class="lineno">   21 </span><span class="spaces">         </span><span class="istickedoff">(lt,a:list1) = sl2bst ll list</span>
+<span class="lineno">   22 </span><span class="spaces">         </span><span class="istickedoff">(rt,  list2) = sl2bst rl list1</span>
+<span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">in (Node lt a rt, list2)</span></span>
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>   btFind :: (a -&gt; b -&gt; Ordering) -&gt; BinSearchTree (a, c) -&gt; b -&gt; Maybe c
+<span class="lineno">   26 </span>   btLocateIn :: (a -&gt; b -&gt; Ordering) -&gt; BinSearchTree a      -&gt; b -&gt; Maybe a
+<span class="lineno">   27 </span>   <span class="decl"><span class="nottickedoff">btFind     = btLookup fst snd</span></span>
+<span class="lineno">   28 </span>   <span class="decl"><span class="istickedoff">btLocateIn = btLookup id <span class="nottickedoff">id</span></span></span>
+<span class="lineno">   29 </span>   btLookup :: (d -&gt; a) -&gt; (d -&gt; c) -&gt; (a -&gt; b -&gt; Ordering) -&gt; BinSearchTree d -&gt; b -&gt; Maybe c
+<span class="lineno">   30 </span>   <span class="decl"><span class="istickedoff">btLookup  key val cmp (Node Nil  kv Nil)</span>
+<span class="lineno">   31 </span><span class="spaces">     </span><span class="istickedoff">=  let comp = cmp (key kv)</span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">r    = val kv</span></span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">in \i -&gt; case comp i of</span>
+<span class="lineno">   34 </span><span class="spaces">                 </span><span class="istickedoff">LT -&gt; Nothing</span>
+<span class="lineno">   35 </span><span class="spaces">                 </span><span class="istickedoff">EQ -&gt; Just <span class="nottickedoff">r</span></span>
+<span class="lineno">   36 </span><span class="spaces">                 </span><span class="istickedoff">GT -&gt; Nothing</span>
+<span class="lineno">   37 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   38 </span><span class="spaces">   </span><span class="istickedoff">btLookup key val cmp (Node left kv Nil)</span>
+<span class="lineno">   39 </span><span class="spaces">     </span><span class="istickedoff">=  <span class="nottickedoff">let comp = cmp (key kv)</span></span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">findleft = btLookup key val cmp left</span></span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">r    = val kv</span></span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">in \i -&gt; case comp i of</span></span>
+<span class="lineno">   43 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">LT -&gt; Nothing</span></span>
+<span class="lineno">   44 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">EQ -&gt; Just r</span></span>
+<span class="lineno">   45 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">GT -&gt; findleft i</span></span>
+<span class="lineno">   46 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   47 </span><span class="spaces">   </span><span class="istickedoff">btLookup key val cmp (Node Nil kv right )</span>
+<span class="lineno">   48 </span><span class="spaces">     </span><span class="istickedoff">=  let comp      = cmp (key kv)</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="istickedoff">findright = btLookup key <span class="nottickedoff">val</span> cmp right</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">r         = val kv</span></span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">in \i -&gt; case comp i of</span>
+<span class="lineno">   52 </span><span class="spaces">                     </span><span class="istickedoff">LT -&gt; findright i</span>
+<span class="lineno">   53 </span><span class="spaces">                     </span><span class="istickedoff">EQ -&gt; Just <span class="nottickedoff">r</span></span>
+<span class="lineno">   54 </span><span class="spaces">                     </span><span class="istickedoff">GT -&gt; Nothing</span>
+<span class="lineno">   55 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   56 </span><span class="spaces">   </span><span class="istickedoff">btLookup key val cmp (Node left kv right)</span>
+<span class="lineno">   57 </span><span class="spaces">     </span><span class="istickedoff">=  let comp = cmp (key kv)</span>
+<span class="lineno">   58 </span><span class="spaces">            </span><span class="istickedoff">findleft  = btLookup key <span class="nottickedoff">val</span> cmp left</span>
+<span class="lineno">   59 </span><span class="spaces">            </span><span class="istickedoff">findright = btLookup key <span class="nottickedoff">val</span> cmp right</span>
+<span class="lineno">   60 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">r    = val kv</span></span>
+<span class="lineno">   61 </span><span class="spaces">        </span><span class="istickedoff">in \i -&gt; case comp i of</span>
+<span class="lineno">   62 </span><span class="spaces">                 </span><span class="istickedoff">LT -&gt; findright i</span>
+<span class="lineno">   63 </span><span class="spaces">                 </span><span class="istickedoff">EQ -&gt; Just <span class="nottickedoff">r</span></span>
+<span class="lineno">   64 </span><span class="spaces">                 </span><span class="istickedoff">GT -&gt; findleft i</span>
+<span class="lineno">   65 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   66 </span><span class="spaces">   </span><span class="istickedoff">btLookup _ _ _ Nil   =  <span class="nottickedoff">const Nothing</span></span></span>
+<span class="lineno">   67 </span>
+
+</pre>
+</body>
+</html>

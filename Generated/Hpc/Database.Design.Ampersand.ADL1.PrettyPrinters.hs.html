@@ -1,0 +1,404 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-warn-orphans #-}
+<span class="lineno">    2 </span>module Database.Design.Ampersand.ADL1.PrettyPrinters
+<span class="lineno">    3 </span>where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Text.PrettyPrint.Leijen
+<span class="lineno">    6 </span>import Database.Design.Ampersand.Core.ParseTree
+<span class="lineno">    7 </span>import Database.Design.Ampersand.Input.ADL1.Lexer(keywords)
+<span class="lineno">    8 </span>import Database.Design.Ampersand.ADL1.Pair (Paire(..))
+<span class="lineno">    9 </span>import Data.List (intercalate,intersperse)
+<span class="lineno">   10 </span>import Data.List.Utils (replace)
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>prettyPrint :: Pretty a =&gt; a -&gt; String
+<span class="lineno">   13 </span><span class="decl"><span class="istickedoff">prettyPrint x = displayS (renderPretty rfrac col_width doc) &quot;&quot;</span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">where col_width = 120</span>
+<span class="lineno">   15 </span><span class="spaces">              </span><span class="istickedoff">rfrac = 0.4</span>
+<span class="lineno">   16 </span><span class="spaces">              </span><span class="istickedoff">doc = pretty x</span></span>
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>(&lt;~&gt;) :: Pretty b =&gt; Doc -&gt; b -&gt; Doc
+<span class="lineno">   19 </span><span class="decl"><span class="istickedoff">(&lt;~&gt;) a b = a &lt;+&gt; pretty b</span></span>
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>(&lt;+\&gt;) :: Doc -&gt; Doc -&gt; Doc
+<span class="lineno">   22 </span><span class="decl"><span class="istickedoff">(&lt;+\&gt;) a b = a &lt;$$&gt; b</span></span>
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>(&lt;~\&gt;) :: Pretty b =&gt; Doc -&gt; b -&gt; Doc
+<span class="lineno">   25 </span><span class="decl"><span class="istickedoff">(&lt;~\&gt;) a b = a &lt;+\&gt; pretty b</span></span>
+<span class="lineno">   26 </span>
+<span class="lineno">   27 </span>perline :: Pretty a =&gt; [a] -&gt; Doc
+<span class="lineno">   28 </span><span class="decl"><span class="istickedoff">perline = vsep . map pretty</span></span>
+<span class="lineno">   29 </span>
+<span class="lineno">   30 </span>perlinePrefix :: Pretty a =&gt; String -&gt; [a] -&gt; Doc
+<span class="lineno">   31 </span><span class="decl"><span class="istickedoff">perlinePrefix pref xs = vsep $ map addPrefix xs</span>
+<span class="lineno">   32 </span><span class="spaces">           </span><span class="istickedoff">where addPrefix x = text pref &lt;+&gt; pretty x</span></span>
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>quoteWith :: String -&gt; String -&gt; String -&gt; Doc
+<span class="lineno">   35 </span><span class="decl"><span class="nottickedoff">quoteWith l r x = enclose (text l) (text r) (text x)</span></span>
+<span class="lineno">   36 </span>
+<span class="lineno">   37 </span>quote :: String -&gt; Doc
+<span class="lineno">   38 </span><span class="decl"><span class="istickedoff">quote = dquotes.text.escapeAll</span>
+<span class="lineno">   39 </span><span class="spaces">        </span><span class="istickedoff">where escapeAll = escapeQuote.escapeBreaklines.escapeSlash</span>
+<span class="lineno">   40 </span><span class="spaces">              </span><span class="istickedoff">escapeQuote = escape &quot;\&quot;&quot;</span>
+<span class="lineno">   41 </span><span class="spaces">              </span><span class="istickedoff">escapeBreaklines = replace &quot;\n&quot; <span class="nottickedoff">&quot;\\n&quot;</span></span>
+<span class="lineno">   42 </span><span class="spaces">              </span><span class="istickedoff">escapeSlash = escape &quot;\\&quot;</span>
+<span class="lineno">   43 </span><span class="spaces">              </span><span class="istickedoff">escape x = replace x (&quot;\\&quot; ++ x)</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>quoteAll :: [String] -&gt; [Doc]
+<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">quoteAll = map quote</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>quotePurpose :: String -&gt; Doc
+<span class="lineno">   49 </span><span class="decl"><span class="istickedoff">quotePurpose p = text &quot;{+&quot; &lt;/&gt; escapeExpl p &lt;/&gt; text &quot;-}&quot;</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">where escapeExpl = text.escapeCommentStart.escapeLineComment.escapeExplEnd</span>
+<span class="lineno">   51 </span><span class="spaces">              </span><span class="istickedoff">escapeCommentStart = escape &quot;{-&quot;</span>
+<span class="lineno">   52 </span><span class="spaces">              </span><span class="istickedoff">escapeLineComment = escape &quot;--&quot;</span>
+<span class="lineno">   53 </span><span class="spaces">              </span><span class="istickedoff">escapeExplEnd = escape &quot;-}&quot;</span>
+<span class="lineno">   54 </span><span class="spaces">              </span><span class="istickedoff">escape x = replace x <span class="nottickedoff">(intersperse ' ' x)</span></span></span>
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>isId :: String -&gt; Bool
+<span class="lineno">   57 </span><span class="decl"><span class="istickedoff">isId a = not (null a) &amp;&amp; all isIdChar a &amp;&amp; isFirstIdChar(head a) &amp;&amp; a `notElem` keywords</span>
+<span class="lineno">   58 </span><span class="spaces">       </span><span class="istickedoff">where isFirstIdChar x = elem x $ &quot;_&quot;++['a'..'z']++['A'..'Z']</span>
+<span class="lineno">   59 </span><span class="spaces">             </span><span class="istickedoff">isIdChar x = isFirstIdChar x || elem x ['0'..'9']</span></span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>isUpperId :: String -&gt; Bool
+<span class="lineno">   62 </span><span class="decl"><span class="istickedoff">isUpperId xs = isId xs &amp;&amp; head xs `elem` ['A'..'Z']</span></span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>maybeQuote :: String -&gt; Doc
+<span class="lineno">   65 </span><span class="decl"><span class="istickedoff">maybeQuote a = if isId a then text a else quote a</span></span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>-- adds quotes unless it's an upper identifier
+<span class="lineno">   68 </span>quoteConcept :: String -&gt; Doc
+<span class="lineno">   69 </span><span class="decl"><span class="istickedoff">quoteConcept a = if isUpperId a then text a else quote a</span></span>
+<span class="lineno">   70 </span>
+<span class="lineno">   71 </span>prettyhsep :: Pretty a =&gt; [a] -&gt; Doc
+<span class="lineno">   72 </span><span class="decl"><span class="istickedoff">prettyhsep = hsep . map pretty</span></span>
+<span class="lineno">   73 </span>
+<span class="lineno">   74 </span>commas :: [Doc] -&gt; Doc
+<span class="lineno">   75 </span><span class="decl"><span class="istickedoff">commas = encloseSep empty empty comma</span></span>
+<span class="lineno">   76 </span>
+<span class="lineno">   77 </span>listOf :: Pretty a =&gt; [a] -&gt; Doc
+<span class="lineno">   78 </span><span class="decl"><span class="istickedoff">listOf = commas . map pretty</span></span>
+<span class="lineno">   79 </span>
+<span class="lineno">   80 </span>prettyPair :: Paire -&gt; Doc
+<span class="lineno">   81 </span><span class="decl"><span class="istickedoff">prettyPair (Paire src trg) = quote src &lt;+&gt; text &quot;*&quot; &lt;+&gt; quote trg</span></span>
+<span class="lineno">   82 </span>
+<span class="lineno">   83 </span>listOfLists :: [[String]] -&gt; Doc
+<span class="lineno">   84 </span><span class="decl"><span class="istickedoff">listOfLists xs = commas $ map (hsep.quoteAll) xs</span></span>
+<span class="lineno">   85 </span>
+<span class="lineno">   86 </span>separate :: Pretty a =&gt; String -&gt; [a] -&gt; Doc
+<span class="lineno">   87 </span><span class="decl"><span class="istickedoff">separate d xs = encloseSep empty empty (text d) $ map pretty xs</span></span>
+<span class="lineno">   88 </span>
+<span class="lineno">   89 </span>--TODO: This replace shouldn't be necessary, I don't know why quotes are getting into the Prel
+<span class="lineno">   90 </span>-- Example to test: AmpersandData\FormalAmpersand\AST.adl
+<span class="lineno">   91 </span>takeQuote :: String -&gt; String
+<span class="lineno">   92 </span><span class="decl"><span class="istickedoff">takeQuote = replace &quot;\&quot;&quot; <span class="nottickedoff">&quot;&quot;</span></span></span>
+<span class="lineno">   93 </span>
+<span class="lineno">   94 </span>labelArgs :: [[String]] -&gt; Doc
+<span class="lineno">   95 </span><span class="decl"><span class="istickedoff">labelArgs args = if null args || all null args</span>
+<span class="lineno">   96 </span><span class="spaces">                 </span><span class="istickedoff">then empty</span>
+<span class="lineno">   97 </span><span class="spaces">                 </span><span class="istickedoff">else braces $ listOfLists args</span></span>
+<span class="lineno">   98 </span>
+<span class="lineno">   99 </span>prettyLabel :: String -&gt; [[String]] -&gt; Doc
+<span class="lineno">  100 </span><span class="decl"><span class="istickedoff">prettyLabel nm strs = maybeQuote nm &lt;+&gt; labelArgs strs</span></span>
+<span class="lineno">  101 </span>
+<span class="lineno">  102 </span>instance Pretty P_Context where
+<span class="lineno">  103 </span>    <span class="decl"><span class="istickedoff">pretty (PCtx nm _ lang markup thms pats rs ds cs ks rrules rrels vs gs ifcs ps pops sql php metas) =</span>
+<span class="lineno">  104 </span><span class="spaces">               </span><span class="istickedoff">text &quot;CONTEXT&quot;</span>
+<span class="lineno">  105 </span><span class="spaces">               </span><span class="istickedoff">&lt;+&gt; quoteConcept nm</span>
+<span class="lineno">  106 </span><span class="spaces">               </span><span class="istickedoff">&lt;~&gt; lang</span>
+<span class="lineno">  107 </span><span class="spaces">               </span><span class="istickedoff">&lt;~&gt; markup</span>
+<span class="lineno">  108 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline metas</span>
+<span class="lineno">  109 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; themes</span>
+<span class="lineno">  110 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline ps</span>
+<span class="lineno">  111 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline pats</span>
+<span class="lineno">  112 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline rs</span>
+<span class="lineno">  113 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline ds</span>
+<span class="lineno">  114 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline cs</span>
+<span class="lineno">  115 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline ks</span>
+<span class="lineno">  116 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline rrules</span>
+<span class="lineno">  117 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline rrels</span>
+<span class="lineno">  118 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline vs</span>
+<span class="lineno">  119 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline gs</span>
+<span class="lineno">  120 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline ifcs</span>
+<span class="lineno">  121 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perline pops</span>
+<span class="lineno">  122 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perlinePrefix &quot;SQLPLUG&quot; sql</span>
+<span class="lineno">  123 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; perlinePrefix &quot;PHPPLUG&quot; php</span>
+<span class="lineno">  124 </span><span class="spaces">               </span><span class="istickedoff">&lt;+\&gt; text &quot;ENDCONTEXT&quot;</span>
+<span class="lineno">  125 </span><span class="spaces">             </span><span class="istickedoff">where themes | null thms = empty</span>
+<span class="lineno">  126 </span><span class="spaces">                          </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = text &quot;THEMES&quot; &lt;+&gt; commas (map quoteConcept thms)</span></span>
+<span class="lineno">  127 </span>
+<span class="lineno">  128 </span>instance Pretty Meta where
+<span class="lineno">  129 </span>    <span class="decl"><span class="istickedoff">pretty (Meta _ obj name val) =</span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">text &quot;META&quot; &lt;~&gt; obj &lt;+&gt; quote name &lt;+&gt; quote val</span></span>
+<span class="lineno">  131 </span>
+<span class="lineno">  132 </span>instance Pretty MetaObj where
+<span class="lineno">  133 </span>    <span class="decl"><span class="istickedoff">pretty ContextMeta = empty</span></span> -- for the context meta we don't need a keyword
+<span class="lineno">  134 </span>
+<span class="lineno">  135 </span>instance Pretty P_RoleRelation where
+<span class="lineno">  136 </span>    <span class="decl"><span class="istickedoff">pretty (P_RR _ roles rels) =</span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">text &quot;ROLE&quot; &lt;+&gt; listOf roles &lt;+&gt; text &quot;EDITS&quot; &lt;+&gt; listOf rels</span></span>
+<span class="lineno">  138 </span>
+<span class="lineno">  139 </span>instance Pretty P_RoleRule where
+<span class="lineno">  140 </span>    <span class="decl"><span class="istickedoff">pretty (Maintain _ roles rules) =</span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">text &quot;ROLE&quot; &lt;+&gt; listOf roles &lt;+&gt; text &quot;MAINTAINS&quot; &lt;+&gt; commas (map maybeQuote rules)</span></span>
+<span class="lineno">  142 </span>
+<span class="lineno">  143 </span>instance Pretty Role where
+<span class="lineno">  144 </span>    <span class="decl"><span class="istickedoff">pretty (Role name) = maybeQuote name</span></span>
+<span class="lineno">  145 </span>
+<span class="lineno">  146 </span>instance Pretty P_Pattern where
+<span class="lineno">  147 </span>    <span class="decl"><span class="istickedoff">pretty (P_Pat _ nm rls gns dcs rruls rrels cds ids vds xps pop _) =</span>
+<span class="lineno">  148 </span><span class="spaces">          </span><span class="istickedoff">text keyword</span>
+<span class="lineno">  149 </span><span class="spaces">          </span><span class="istickedoff">&lt;+&gt;  quoteConcept nm</span>
+<span class="lineno">  150 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline rls</span>
+<span class="lineno">  151 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline gns</span>
+<span class="lineno">  152 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline dcs</span>
+<span class="lineno">  153 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline rruls</span>
+<span class="lineno">  154 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline rrels</span>
+<span class="lineno">  155 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline cds</span>
+<span class="lineno">  156 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline ids</span>
+<span class="lineno">  157 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline vds</span>
+<span class="lineno">  158 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline xps</span>
+<span class="lineno">  159 </span><span class="spaces">          </span><span class="istickedoff">&lt;+\&gt; perline pop</span>
+<span class="lineno">  160 </span><span class="spaces">          </span><span class="istickedoff">&lt;+&gt;  text (&quot;END&quot;++keyword)</span>
+<span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff">where keyword = if null rruls &amp;&amp; null rrels then &quot;PATTERN&quot; else &quot;PROCESS&quot;</span></span>
+<span class="lineno">  162 </span>
+<span class="lineno">  163 </span>instance Pretty P_Declaration where
+<span class="lineno">  164 </span>    <span class="decl"><span class="istickedoff">pretty (P_Sgn nm sign prps pragma mean popu _ plug) =</span>
+<span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff">text &quot;RELATION&quot; &lt;+&gt; text nm &lt;~&gt; sign &lt;+&gt; props &lt;+&gt; byplug &lt;+\&gt; pragmas &lt;+\&gt; prettyhsep mean &lt;+\&gt; content</span>
+<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff">where props   = if <span class="tickonlyfalse">prps == [Sym, Asy]</span> then <span class="nottickedoff">text &quot;[PROP]&quot;</span></span>
+<span class="lineno">  167 </span><span class="spaces">                        </span><span class="istickedoff">else text &quot;[&quot; &lt;&gt; listOf prps &lt;&gt; text &quot;]&quot;</span>
+<span class="lineno">  168 </span><span class="spaces">              </span><span class="istickedoff">byplug  | plug        = text &quot;BYPLUG&quot;</span>
+<span class="lineno">  169 </span><span class="spaces">                      </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>   = empty</span>
+<span class="lineno">  170 </span><span class="spaces">              </span><span class="istickedoff">pragmas | null pragma = empty</span>
+<span class="lineno">  171 </span><span class="spaces">                      </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>   = text &quot;PRAGMA&quot; &lt;+&gt; hsep (map quote pragma)</span>
+<span class="lineno">  172 </span><span class="spaces">              </span><span class="istickedoff">content | null popu   = empty</span>
+<span class="lineno">  173 </span><span class="spaces">                      </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>   = text &quot;=\n[&quot; &lt;+&gt; commas (map prettyPair popu) &lt;+&gt; text &quot;]&quot;</span></span>
+<span class="lineno">  174 </span>
+<span class="lineno">  175 </span>instance Pretty a =&gt; Pretty (Term a) where
+<span class="lineno">  176 </span>   <span class="decl"><span class="istickedoff">pretty p = case p of</span>
+<span class="lineno">  177 </span><span class="spaces">       </span><span class="istickedoff">Prim a -&gt; pretty a</span>
+<span class="lineno">  178 </span><span class="spaces">       </span><span class="istickedoff">-- level 0 (rule)</span>
+<span class="lineno">  179 </span><span class="spaces">       </span><span class="istickedoff">PEqu _ t1 t2 -&gt; two t1 t2 &quot;=&quot;</span>
+<span class="lineno">  180 </span><span class="spaces">       </span><span class="istickedoff">PImp _ t1 t2 -&gt; two t1 t2 &quot; |- &quot;</span>
+<span class="lineno">  181 </span><span class="spaces">       </span><span class="istickedoff">-- level 1</span>
+<span class="lineno">  182 </span><span class="spaces">       </span><span class="istickedoff">PIsc _ t1 t2 -&gt; two t1 t2 &quot;/\\&quot;</span>
+<span class="lineno">  183 </span><span class="spaces">       </span><span class="istickedoff">PUni _ t1 t2 -&gt; two t1 t2 &quot;\\/&quot;</span>
+<span class="lineno">  184 </span><span class="spaces">       </span><span class="istickedoff">-- level 2</span>
+<span class="lineno">  185 </span><span class="spaces">       </span><span class="istickedoff">PDif _ t1 t2 -&gt; two t1 t2 &quot;-&quot;</span>
+<span class="lineno">  186 </span><span class="spaces">       </span><span class="istickedoff">-- level 3</span>
+<span class="lineno">  187 </span><span class="spaces">       </span><span class="istickedoff">PLrs _ t1 t2 -&gt; two t1 t2 &quot;/&quot;</span>
+<span class="lineno">  188 </span><span class="spaces">       </span><span class="istickedoff">PRrs _ t1 t2 -&gt; two t1 t2 &quot;\\&quot;</span>
+<span class="lineno">  189 </span><span class="spaces">       </span><span class="istickedoff">PDia _ t1 t2 -&gt; two t1 t2 &quot;&lt;&gt;&quot;</span>
+<span class="lineno">  190 </span><span class="spaces">       </span><span class="istickedoff">-- level 4</span>
+<span class="lineno">  191 </span><span class="spaces">       </span><span class="istickedoff">PCps _ t1 t2 -&gt; two t1 t2 &quot;;&quot;</span>
+<span class="lineno">  192 </span><span class="spaces">       </span><span class="istickedoff">PRad _ t1 t2 -&gt; two t1 t2 &quot;!&quot;</span>
+<span class="lineno">  193 </span><span class="spaces">       </span><span class="istickedoff">PPrd _ t1 t2 -&gt; two t1 t2 &quot;#&quot;</span>
+<span class="lineno">  194 </span><span class="spaces">       </span><span class="istickedoff">-- level 5</span>
+<span class="lineno">  195 </span><span class="spaces">       </span><span class="istickedoff">PKl0 _ t -&gt; pos t &quot;*&quot;</span>
+<span class="lineno">  196 </span><span class="spaces">       </span><span class="istickedoff">PKl1 _ t -&gt; pos t &quot;+&quot;</span>
+<span class="lineno">  197 </span><span class="spaces">       </span><span class="istickedoff">PFlp _ t -&gt; pos t &quot;~&quot;</span>
+<span class="lineno">  198 </span><span class="spaces">       </span><span class="istickedoff">PCpl _ t -&gt; pre t &quot; -&quot; -- a double dash can happen when combined with PDif, therefore the extra space</span>
+<span class="lineno">  199 </span><span class="spaces">       </span><span class="istickedoff">-- level 6</span>
+<span class="lineno">  200 </span><span class="spaces">       </span><span class="istickedoff">PBrk _ t -&gt; parens $ pretty t</span>
+<span class="lineno">  201 </span><span class="spaces">       </span><span class="istickedoff"></span>
+<span class="lineno">  202 </span><span class="spaces">       </span><span class="istickedoff">where pos t op     = pretty t &lt;&gt; text op</span>
+<span class="lineno">  203 </span><span class="spaces">             </span><span class="istickedoff">pre t op     = text op &lt;&gt; pretty t</span>
+<span class="lineno">  204 </span><span class="spaces">             </span><span class="istickedoff">two t1 t2 op = pretty t1 &lt;&gt; text op &lt;&gt; pretty t2</span></span>
+<span class="lineno">  205 </span>
+<span class="lineno">  206 </span>instance Pretty TermPrim where
+<span class="lineno">  207 </span>    <span class="decl"><span class="istickedoff">pretty p = case p of</span>
+<span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff">PI _ -&gt; text &quot;I&quot;</span>
+<span class="lineno">  209 </span><span class="spaces">        </span><span class="istickedoff">Pid _ concept -&gt; text &quot;I[&quot; &lt;&gt; pretty concept &lt;&gt; text &quot;]&quot;</span>
+<span class="lineno">  210 </span><span class="spaces">        </span><span class="istickedoff">Patm _ str (Just concept) -&gt; singleQuote str &lt;&gt; text &quot;[&quot; &lt;&gt; pretty concept &lt;&gt; text &quot;]&quot;</span>
+<span class="lineno">  211 </span><span class="spaces">        </span><span class="istickedoff">Patm _ str Nothing -&gt; singleQuote str</span>
+<span class="lineno">  212 </span><span class="spaces">        </span><span class="istickedoff">PVee _ -&gt; text &quot;V&quot;</span>
+<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">Pfull _ s1 s2 -&gt; text &quot;V&quot; &lt;~&gt; P_Sign s1 s2</span>
+<span class="lineno">  214 </span><span class="spaces">        </span><span class="istickedoff">PNamedR rel -&gt; pretty rel</span>
+<span class="lineno">  215 </span><span class="spaces">      </span><span class="istickedoff">where singleQuote = squotes . text</span></span>
+<span class="lineno">  216 </span>
+<span class="lineno">  217 </span>instance Pretty P_NamedRel where
+<span class="lineno">  218 </span>    <span class="decl"><span class="istickedoff">pretty (PNamedRel _ str mpSign) = text (takeQuote str) &lt;~&gt; mpSign</span></span>
+<span class="lineno">  219 </span>
+<span class="lineno">  220 </span>instance Pretty a =&gt; Pretty (PairView a) where
+<span class="lineno">  221 </span>    <span class="decl"><span class="istickedoff">pretty (PairView ss) = text &quot;VIOLATION&quot; &lt;+&gt; parens (listOf ss)</span></span>
+<span class="lineno">  222 </span>
+<span class="lineno">  223 </span>instance Pretty a =&gt; Pretty (PairViewSegment a) where
+<span class="lineno">  224 </span>    <span class="decl"><span class="istickedoff">pretty (PairViewText _ str) = text &quot;TXT&quot; &lt;+&gt; quote str</span>
+<span class="lineno">  225 </span><span class="spaces">    </span><span class="istickedoff">pretty (PairViewExp _ srcTgt term) = pretty srcTgt &lt;~&gt; term</span></span>
+<span class="lineno">  226 </span>
+<span class="lineno">  227 </span>instance Pretty SrcOrTgt where
+<span class="lineno">  228 </span>    <span class="decl"><span class="istickedoff">pretty Src = text &quot;SRC&quot;</span>
+<span class="lineno">  229 </span><span class="spaces">    </span><span class="istickedoff">pretty Tgt = text &quot;TGT&quot;</span></span>
+<span class="lineno">  230 </span>
+<span class="lineno">  231 </span>instance Pretty a =&gt; Pretty (P_Rule a) where
+<span class="lineno">  232 </span>    <span class="decl"><span class="istickedoff">pretty (P_Ru _ nm expr mean msg viol) =</span>
+<span class="lineno">  233 </span><span class="spaces">                </span><span class="istickedoff">text &quot;RULE&quot; &lt;+&gt; name &lt;~&gt;</span>
+<span class="lineno">  234 </span><span class="spaces">                </span><span class="istickedoff">expr &lt;+\&gt;</span>
+<span class="lineno">  235 </span><span class="spaces">                </span><span class="istickedoff">perline mean &lt;+\&gt;</span>
+<span class="lineno">  236 </span><span class="spaces">                </span><span class="istickedoff">perline msg &lt;~\&gt;</span>
+<span class="lineno">  237 </span><span class="spaces">                </span><span class="istickedoff">viol</span>
+<span class="lineno">  238 </span><span class="spaces">            </span><span class="istickedoff">where name = if null nm then empty</span>
+<span class="lineno">  239 </span><span class="spaces">                         </span><span class="istickedoff">else maybeQuote nm &lt;&gt; text &quot;:&quot;</span></span>
+<span class="lineno">  240 </span>
+<span class="lineno">  241 </span>instance Pretty ConceptDef where
+<span class="lineno">  242 </span>    <span class="decl"><span class="istickedoff">pretty (Cd _ cpt plug def typ ref _) -- from, the last argument, is not used in the parser</span>
+<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff">= text &quot;CONCEPT&quot; &lt;+&gt; quoteConcept cpt &lt;+&gt; (if plug then text &quot;BYPLUG&quot; else empty)</span>
+<span class="lineno">  244 </span><span class="spaces">               </span><span class="istickedoff">&lt;+&gt; quote def &lt;+&gt; type_ &lt;+&gt; maybeText ref</span>
+<span class="lineno">  245 </span><span class="spaces">        </span><span class="istickedoff">where type_ = if null typ then empty</span>
+<span class="lineno">  246 </span><span class="spaces">                      </span><span class="istickedoff">else text &quot;TYPE&quot; &lt;+&gt; quote typ</span>
+<span class="lineno">  247 </span><span class="spaces">              </span><span class="istickedoff">maybeText txt = if null txt then empty</span>
+<span class="lineno">  248 </span><span class="spaces">                              </span><span class="istickedoff">else quote txt</span></span>
+<span class="lineno">  249 </span>
+<span class="lineno">  250 </span>instance Pretty P_Population where
+<span class="lineno">  251 </span>    <span class="decl"><span class="istickedoff">pretty p = case p of</span>
+<span class="lineno">  252 </span><span class="spaces">                </span><span class="istickedoff">P_RelPopu _ nm    cs -&gt; text &quot;POPULATION&quot; &lt;+&gt; maybeQuote (takeQuote nm)        &lt;+&gt; text &quot;CONTAINS&quot; &lt;+&gt; contents cs</span>
+<span class="lineno">  253 </span><span class="spaces">                </span><span class="istickedoff">P_TRelPop _ nm tp cs -&gt; text &quot;POPULATION&quot; &lt;+&gt; maybeQuote (takeQuote nm) &lt;~&gt; tp &lt;+&gt; text &quot;CONTAINS&quot; &lt;+&gt; contents cs</span>
+<span class="lineno">  254 </span><span class="spaces">                </span><span class="istickedoff">P_CptPopu _ nm    ps -&gt; text &quot;POPULATION&quot; &lt;+&gt; quoteConcept nm  &lt;+&gt; text &quot;CONTAINS&quot; &lt;+&gt; list (quoteAll ps)</span>
+<span class="lineno">  255 </span><span class="spaces">               </span><span class="istickedoff">where contents = list . map prettyPair</span></span>
+<span class="lineno">  256 </span>
+<span class="lineno">  257 </span>instance Pretty P_Interface where
+<span class="lineno">  258 </span>    <span class="decl"><span class="istickedoff">pretty (P_Ifc name klass prms args roles obj _ _) =</span>
+<span class="lineno">  259 </span><span class="spaces">        </span><span class="istickedoff">text &quot;INTERFACE&quot; &lt;+&gt; maybeQuote name &lt;+&gt; class_</span>
+<span class="lineno">  260 </span><span class="spaces">               </span><span class="istickedoff">&lt;+&gt; params &lt;+&gt; labelArgs args &lt;+&gt; iroles</span>
+<span class="lineno">  261 </span><span class="spaces">               </span><span class="istickedoff">&lt;+&gt; text &quot;:&quot; &lt;~\&gt; obj_ctx obj &lt;~&gt; obj_msub obj</span>
+<span class="lineno">  262 </span><span class="spaces">                 </span><span class="istickedoff">where class_ = case klass of</span>
+<span class="lineno">  263 </span><span class="spaces">                                     </span><span class="istickedoff">Nothing  -&gt; empty</span>
+<span class="lineno">  264 </span><span class="spaces">                                     </span><span class="istickedoff">Just str -&gt; text &quot;CLASS&quot; &lt;+&gt; quoteConcept str</span>
+<span class="lineno">  265 </span><span class="spaces">                       </span><span class="istickedoff">params = if null prms then empty</span>
+<span class="lineno">  266 </span><span class="spaces">                                </span><span class="istickedoff">else parens $ listOf prms</span>
+<span class="lineno">  267 </span><span class="spaces">                       </span><span class="istickedoff">iroles = if null roles then empty</span>
+<span class="lineno">  268 </span><span class="spaces">                                </span><span class="istickedoff">else text &quot;FOR&quot; &lt;+&gt; listOf roles</span></span>
+<span class="lineno">  269 </span>
+<span class="lineno">  270 </span>instance Pretty a =&gt; Pretty (P_ObjDef a) where
+<span class="lineno">  271 </span>    <span class="decl"><span class="istickedoff">pretty (P_Obj nm _ ctx mView msub strs) =</span>
+<span class="lineno">  272 </span><span class="spaces">        </span><span class="istickedoff">prettyLabel nm strs &lt;+&gt; text &quot;:&quot;</span>
+<span class="lineno">  273 </span><span class="spaces">                 </span><span class="istickedoff">&lt;~&gt; ctx &lt;+&gt; view mView &lt;~&gt; msub</span>
+<span class="lineno">  274 </span><span class="spaces">        </span><span class="istickedoff">where view Nothing  = empty</span>
+<span class="lineno">  275 </span><span class="spaces">              </span><span class="istickedoff">view (Just v) = <span class="nottickedoff">text (&quot;&lt;&quot; ++ v ++ &quot;&gt;&quot;)</span></span></span>
+<span class="lineno">  276 </span>
+<span class="lineno">  277 </span>instance Pretty a =&gt; Pretty (P_SubIfc a) where
+<span class="lineno">  278 </span>    <span class="decl"><span class="istickedoff">pretty p = case p of</span>
+<span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff">P_Box _ c bs         -&gt; box_type c &lt;+&gt; text &quot;[&quot; &lt;&gt; listOf bs &lt;&gt; text &quot;]&quot;</span>
+<span class="lineno">  280 </span><span class="spaces">                </span><span class="istickedoff">P_InterfaceRef _ str -&gt; text &quot;INTERFACE&quot; &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  281 </span><span class="spaces">            </span><span class="istickedoff">where box_type Nothing  = text &quot;BOX&quot;</span>
+<span class="lineno">  282 </span><span class="spaces">                  </span><span class="istickedoff">box_type (Just x) = text x</span></span> -- ROWS, COLS, TABS
+<span class="lineno">  283 </span>
+<span class="lineno">  284 </span>instance Pretty a =&gt; Pretty (P_IdentDf a) where
+<span class="lineno">  285 </span>    <span class="decl"><span class="istickedoff">pretty (P_Id _ lbl cpt ats) =</span>
+<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff">text &quot;IDENT&quot; &lt;+&gt; maybeQuote lbl &lt;+&gt; text &quot;:&quot; &lt;~&gt; cpt &lt;+&gt; parens (listOf ats)</span></span>
+<span class="lineno">  287 </span>
+<span class="lineno">  288 </span>instance Pretty a =&gt; Pretty (P_IdentSegmnt a) where
+<span class="lineno">  289 </span>    <span class="decl"><span class="istickedoff">pretty (P_IdentExp (P_Obj nm _ ctx mView _ strs)) =</span>
+<span class="lineno">  290 </span><span class="spaces">              </span><span class="istickedoff">if <span class="tickonlyfalse">null nm</span></span>
+<span class="lineno">  291 </span><span class="spaces">              </span><span class="istickedoff">then <span class="nottickedoff">pretty ctx</span> -- no label</span>
+<span class="lineno">  292 </span><span class="spaces">              </span><span class="istickedoff">else prettyLabel nm strs &lt;&gt; text &quot;:&quot; &lt;~&gt; ctx &lt;+&gt; view mView</span>
+<span class="lineno">  293 </span><span class="spaces">        </span><span class="istickedoff">where view Nothing  = empty</span>
+<span class="lineno">  294 </span><span class="spaces">              </span><span class="istickedoff">view (Just v) = <span class="nottickedoff">pretty v</span></span></span>
+<span class="lineno">  295 </span>
+<span class="lineno">  296 </span>instance Pretty a =&gt; Pretty (P_ViewD a) where
+<span class="lineno">  297 </span>    <span class="decl"><span class="istickedoff">pretty (P_Vd _ lbl cpt True Nothing ats) = -- legacy syntax</span>
+<span class="lineno">  298 </span><span class="spaces">        </span><span class="istickedoff">text &quot;VIEW&quot; &lt;+&gt; maybeQuote lbl   &lt;+&gt; text &quot;:&quot;</span>
+<span class="lineno">  299 </span><span class="spaces">                    </span><span class="istickedoff">&lt;~&gt; cpt &lt;+&gt; parens (listOf ats)</span>
+<span class="lineno">  300 </span><span class="spaces">    </span><span class="istickedoff">pretty (P_Vd _ lbl cpt isDefault html ats) = -- new syntax</span>
+<span class="lineno">  301 </span><span class="spaces">        </span><span class="istickedoff">text &quot;VIEW&quot; &lt;+&gt; maybeQuote lbl  &lt;+&gt; text &quot;:&quot;</span>
+<span class="lineno">  302 </span><span class="spaces">                    </span><span class="istickedoff">&lt;~&gt; cpt &lt;+&gt; (if isDefault then text &quot;DEFAULT&quot; else empty)</span>
+<span class="lineno">  303 </span><span class="spaces">                    </span><span class="istickedoff">&lt;+&gt; braces (listOf ats) &lt;~&gt; html &lt;+&gt; text &quot;ENDVIEW&quot;</span></span>
+<span class="lineno">  304 </span>
+<span class="lineno">  305 </span>instance Pretty ViewHtmlTemplate where
+<span class="lineno">  306 </span>    <span class="decl"><span class="istickedoff">pretty (ViewHtmlTemplateFile str) = text &quot;HTML&quot; &lt;+&gt; text &quot;TEMPLATE&quot; &lt;+&gt; quote str</span></span>
+<span class="lineno">  307 </span>
+<span class="lineno">  308 </span>instance Pretty a =&gt; Pretty (P_ViewSegmt a) where
+<span class="lineno">  309 </span>    <span class="decl"><span class="istickedoff">pretty (P_ViewExp (P_Obj nm _ ctx _ _ _))</span>
+<span class="lineno">  310 </span><span class="spaces">                            </span><span class="istickedoff">= maybeQuote nm &lt;+&gt; text &quot;:&quot; &lt;~&gt; ctx</span>
+<span class="lineno">  311 </span><span class="spaces">    </span><span class="istickedoff">pretty (P_ViewText txt) = text &quot;TXT&quot; &lt;+&gt; quote txt</span>
+<span class="lineno">  312 </span><span class="spaces">    </span><span class="istickedoff">pretty (P_ViewHtml htm) = text &quot;PRIMHTML&quot; &lt;+&gt; quote htm</span></span>
+<span class="lineno">  313 </span>                        
+<span class="lineno">  314 </span>instance Pretty PPurpose where
+<span class="lineno">  315 </span>    <span class="decl"><span class="istickedoff">pretty (PRef2 _ obj markup refIds) =</span>
+<span class="lineno">  316 </span><span class="spaces">             </span><span class="istickedoff">text &quot;PURPOSE&quot; &lt;~&gt; obj &lt;~&gt; lang &lt;+&gt; refs refIds</span>
+<span class="lineno">  317 </span><span class="spaces">             </span><span class="istickedoff">&lt;+\&gt; quotePurpose (mString markup)</span>
+<span class="lineno">  318 </span><span class="spaces">        </span><span class="istickedoff">where lang = mFormat markup</span>
+<span class="lineno">  319 </span><span class="spaces">              </span><span class="istickedoff">refs rs = if null rs then empty</span>
+<span class="lineno">  320 </span><span class="spaces">                        </span><span class="istickedoff">else text &quot;REF&quot; &lt;+&gt; quote (intercalate &quot;; &quot; rs)</span></span>
+<span class="lineno">  321 </span>
+<span class="lineno">  322 </span>instance Pretty PRef2Obj where
+<span class="lineno">  323 </span>    <span class="decl"><span class="istickedoff">pretty p = case p of</span>
+<span class="lineno">  324 </span><span class="spaces">        </span><span class="istickedoff">PRef2ConceptDef str       -&gt; text &quot;CONCEPT&quot;   &lt;+&gt; quoteConcept str</span>
+<span class="lineno">  325 </span><span class="spaces">        </span><span class="istickedoff">PRef2Declaration namedRel -&gt; text &quot;RELATION&quot;  &lt;~&gt; namedRel</span>
+<span class="lineno">  326 </span><span class="spaces">        </span><span class="istickedoff">PRef2Rule str             -&gt; text &quot;RULE&quot;      &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  327 </span><span class="spaces">        </span><span class="istickedoff">PRef2IdentityDef str      -&gt; text &quot;IDENT&quot;     &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  328 </span><span class="spaces">        </span><span class="istickedoff">PRef2ViewDef str          -&gt; text &quot;VIEW&quot;      &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  329 </span><span class="spaces">        </span><span class="istickedoff">PRef2Pattern str          -&gt; text &quot;PATTERN&quot;   &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  330 </span><span class="spaces">        </span><span class="istickedoff">PRef2Interface str        -&gt; text &quot;INTERFACE&quot; &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  331 </span><span class="spaces">        </span><span class="istickedoff">PRef2Context str          -&gt; text &quot;CONTEXT&quot;   &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  332 </span><span class="spaces">        </span><span class="istickedoff">PRef2Fspc str             -&gt; <span class="nottickedoff">text &quot;PRef2Fspc&quot; &lt;+&gt; maybeQuote str</span></span></span>
+<span class="lineno">  333 </span>
+<span class="lineno">  334 </span>instance Pretty PMeaning where
+<span class="lineno">  335 </span>    <span class="decl"><span class="istickedoff">pretty (PMeaning markup) = text &quot;MEANING&quot; &lt;~&gt; markup</span></span>
+<span class="lineno">  336 </span>
+<span class="lineno">  337 </span>instance Pretty PMessage where
+<span class="lineno">  338 </span>    <span class="decl"><span class="istickedoff">pretty (PMessage markup) = text &quot;MESSAGE&quot; &lt;~&gt; markup</span></span>
+<span class="lineno">  339 </span>
+<span class="lineno">  340 </span>instance Pretty P_Concept where
+<span class="lineno">  341 </span>    <span class="decl"><span class="istickedoff">pretty (PCpt name) = quoteConcept name</span>
+<span class="lineno">  342 </span><span class="spaces">    </span><span class="istickedoff">pretty P_Singleton = text &quot;ONE&quot;</span></span>
+<span class="lineno">  343 </span>
+<span class="lineno">  344 </span>instance Pretty P_Sign where
+<span class="lineno">  345 </span>    <span class="decl"><span class="istickedoff">pretty (P_Sign src tgt) = brackets (pretty src &lt;&gt; maybeTgt)</span>
+<span class="lineno">  346 </span><span class="spaces">        </span><span class="istickedoff">where maybeTgt = if src `equal` tgt then empty</span>
+<span class="lineno">  347 </span><span class="spaces">                         </span><span class="istickedoff">else text &quot;*&quot; &lt;&gt; pretty tgt</span>
+<span class="lineno">  348 </span><span class="spaces">              </span><span class="istickedoff">equal (PCpt x) (PCpt y) = x == y</span>
+<span class="lineno">  349 </span><span class="spaces">              </span><span class="istickedoff">equal P_Singleton P_Singleton = True</span>
+<span class="lineno">  350 </span><span class="spaces">              </span><span class="istickedoff">equal _ _ = False</span></span>
+<span class="lineno">  351 </span>
+<span class="lineno">  352 </span>instance Pretty P_Gen where
+<span class="lineno">  353 </span>    <span class="decl"><span class="istickedoff">pretty p = case p of</span>
+<span class="lineno">  354 </span><span class="spaces">            </span><span class="istickedoff">PGen _ spc gen -&gt; text &quot;CLASSIFY&quot; &lt;~&gt; spc &lt;+&gt; text &quot;ISA&quot; &lt;~&gt; gen</span>
+<span class="lineno">  355 </span><span class="spaces">            </span><span class="istickedoff">P_Cy _ spc rhs -&gt; text &quot;CLASSIFY&quot; &lt;~&gt; spc &lt;+&gt; text &quot;IS&quot;  &lt;+&gt; separate &quot;/\\&quot; rhs</span></span>
+<span class="lineno">  356 </span>
+<span class="lineno">  357 </span>instance Pretty Lang where
+<span class="lineno">  358 </span>    <span class="decl"><span class="istickedoff">pretty Dutch   = text &quot;IN DUTCH&quot;</span>
+<span class="lineno">  359 </span><span class="spaces">    </span><span class="istickedoff">pretty English = text &quot;IN ENGLISH&quot;</span></span>
+<span class="lineno">  360 </span>
+<span class="lineno">  361 </span>instance Pretty P_Markup where
+<span class="lineno">  362 </span>    <span class="decl"><span class="istickedoff">pretty (P_Markup lang format str) =</span>
+<span class="lineno">  363 </span><span class="spaces">        </span><span class="istickedoff">pretty lang &lt;~&gt; format &lt;+\&gt; quotePurpose str</span></span>
+<span class="lineno">  364 </span>
+<span class="lineno">  365 </span>instance Pretty PandocFormat where
+<span class="lineno">  366 </span>    <span class="decl"><span class="istickedoff">pretty p = case p of</span>
+<span class="lineno">  367 </span><span class="spaces">        </span><span class="istickedoff">ReST     -&gt; text &quot;REST&quot;</span>
+<span class="lineno">  368 </span><span class="spaces">        </span><span class="istickedoff">HTML     -&gt; text &quot;HTML&quot;</span>
+<span class="lineno">  369 </span><span class="spaces">        </span><span class="istickedoff">LaTeX    -&gt; text &quot;LATEX&quot;</span>
+<span class="lineno">  370 </span><span class="spaces">        </span><span class="istickedoff">Markdown -&gt; text &quot;MARKDOWN&quot;</span></span>
+<span class="lineno">  371 </span>
+<span class="lineno">  372 </span>instance Pretty Prop where
+<span class="lineno">  373 </span>    <span class="decl"><span class="istickedoff">pretty p = text $ case p of</span>
+<span class="lineno">  374 </span><span class="spaces">                </span><span class="istickedoff">Uni -&gt; &quot;UNI&quot;</span>
+<span class="lineno">  375 </span><span class="spaces">                </span><span class="istickedoff">Inj -&gt; &quot;INJ&quot;</span>
+<span class="lineno">  376 </span><span class="spaces">                </span><span class="istickedoff">Sur -&gt; &quot;SUR&quot;</span>
+<span class="lineno">  377 </span><span class="spaces">                </span><span class="istickedoff">Tot -&gt; &quot;TOT&quot;</span>
+<span class="lineno">  378 </span><span class="spaces">                </span><span class="istickedoff">Sym -&gt; &quot;SYM&quot;</span>
+<span class="lineno">  379 </span><span class="spaces">                </span><span class="istickedoff">Asy -&gt; &quot;ASY&quot;</span>
+<span class="lineno">  380 </span><span class="spaces">                </span><span class="istickedoff">Trn -&gt; &quot;TRN&quot;</span>
+<span class="lineno">  381 </span><span class="spaces">                </span><span class="istickedoff">Rfx -&gt; &quot;RFX&quot;</span>
+<span class="lineno">  382 </span><span class="spaces">                </span><span class="istickedoff">Irf -&gt; &quot;IRF&quot;</span>
+<span class="lineno">  383 </span><span class="spaces">                </span><span class="istickedoff">Aut -&gt; &quot;AUT&quot;</span>
+<span class="lineno">  384 </span><span class="spaces">                </span><span class="istickedoff">Prop -&gt; &quot;PROP&quot;</span></span>
+
+</pre>
+</body>
+</html>

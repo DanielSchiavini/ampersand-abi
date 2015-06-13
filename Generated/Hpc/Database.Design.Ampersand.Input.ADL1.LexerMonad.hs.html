@@ -1,0 +1,137 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-| Module      :  LexerMonad
+<span class="lineno">    2 </span>    License     :  GPL
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>    Maintainer  :  helium@cs.uu.nl
+<span class="lineno">    5 </span>    Stability   :  experimental
+<span class="lineno">    6 </span>    Portability :  portable
+<span class="lineno">    7 </span>-}
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>module Database.Design.Ampersand.Input.ADL1.LexerMonad
+<span class="lineno">   10 </span>    ( LexerMonad
+<span class="lineno">   11 </span>    , getPos, incPos, nextPos, addPos
+<span class="lineno">   12 </span>    , openBracket, closeBracket, checkBracketsAtEOF
+<span class="lineno">   13 </span>    , lexerError, lexerWarning
+<span class="lineno">   14 </span>    , runLexerMonad
+<span class="lineno">   15 </span>    , getOpts
+<span class="lineno">   16 </span>    ) where
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>import Database.Design.Ampersand.Input.ADL1.LexerMessage
+<span class="lineno">   19 </span>import Database.Design.Ampersand.Input.ADL1.FilePos
+<span class="lineno">   20 </span>import Database.Design.Ampersand.Misc
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>import Control.Applicative
+<span class="lineno">   23 </span>import Control.Monad
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>type Bracket = (FilePos, Char)
+<span class="lineno">   26 </span>
+<span class="lineno">   27 </span>-- Output monad: [LexerWarning]
+<span class="lineno">   28 </span>-- State monad: FilePos and [Bracket]
+<span class="lineno">   29 </span>newtype LexerMonad a =
+<span class="lineno">   30 </span>    LM ([Options] -&gt; FilePos -&gt; [Bracket] -&gt;
+<span class="lineno">   31 </span>        Either LexerError (a, [LexerWarning], FilePos, [Bracket]))
+<span class="lineno">   32 </span>
+<span class="lineno">   33 </span>unLM :: LexerMonad t -&gt; [Options] -&gt; FilePos -&gt; [Bracket]
+<span class="lineno">   34 </span>          -&gt; Either LexerError (t, [LexerWarning], FilePos, [Bracket])
+<span class="lineno">   35 </span><span class="decl"><span class="istickedoff">unLM (LM x) = x</span></span>
+<span class="lineno">   36 </span>
+<span class="lineno">   37 </span>bindLM :: LexerMonad a -&gt; (a -&gt; LexerMonad b) -&gt; LexerMonad b
+<span class="lineno">   38 </span><span class="decl"><span class="istickedoff">bindLM (LM f) g =</span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">LM (\opts pos brackets -&gt;</span>
+<span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">case f <span class="nottickedoff">opts</span> <span class="nottickedoff">pos</span> <span class="nottickedoff">brackets</span> of</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">Left err</span></span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">Right (a, warnings, pos2, brackets2) -&gt;</span>
+<span class="lineno">   43 </span><span class="spaces">                </span><span class="istickedoff">case unLM (g a) <span class="nottickedoff">opts</span> <span class="nottickedoff">pos2</span> <span class="nottickedoff">brackets2</span> of</span>
+<span class="lineno">   44 </span><span class="spaces">                    </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">Left err</span></span>
+<span class="lineno">   45 </span><span class="spaces">                    </span><span class="istickedoff">Right (b, moreWarnings, pos3, brackets3) -&gt;</span>
+<span class="lineno">   46 </span><span class="spaces">                        </span><span class="istickedoff">Right (b, <span class="nottickedoff">warnings ++ moreWarnings</span>, <span class="nottickedoff">pos3</span>, <span class="nottickedoff">brackets3</span>))</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>returnLM :: a -&gt; LexerMonad a
+<span class="lineno">   49 </span><span class="decl"><span class="istickedoff">returnLM x = LM (\_ pos brackets -&gt; Right (x, <span class="nottickedoff">[]</span>, <span class="nottickedoff">pos</span>, <span class="nottickedoff">brackets</span>))</span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>instance Monad LexerMonad where
+<span class="lineno">   52 </span>    <span class="decl"><span class="istickedoff">(&gt;&gt;=) = bindLM</span></span>
+<span class="lineno">   53 </span>    <span class="decl"><span class="istickedoff">return = returnLM</span></span>
+<span class="lineno">   54 </span>
+<span class="lineno">   55 </span>instance Functor LexerMonad where
+<span class="lineno">   56 </span>    -- fmap :: (a -&gt; b) -&gt; LexerMonad a -&gt; LexerMonad b
+<span class="lineno">   57 </span>    <span class="decl"><span class="nottickedoff">fmap ab la = do { a &lt;- la; return (ab a) }</span></span>
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>instance Applicative LexerMonad where
+<span class="lineno">   60 </span>    <span class="decl"><span class="nottickedoff">pure = returnLM</span></span>
+<span class="lineno">   61 </span>    <span class="decl"><span class="nottickedoff">(&lt;*&gt;) = ap</span></span>
+<span class="lineno">   62 </span>
+<span class="lineno">   63 </span>runLexerMonad :: [Options] -&gt; FilePath -&gt; LexerMonad a -&gt; Either LexerError (a, [LexerWarning])
+<span class="lineno">   64 </span><span class="decl"><span class="istickedoff">runLexerMonad opts file (LM f) =</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="istickedoff">case f <span class="nottickedoff">opts</span> <span class="nottickedoff">(initPos file)</span> <span class="nottickedoff">[]</span> of</span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">Left err</span></span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">Right (a, warnings, _, _) -&gt; Right (a, <span class="nottickedoff">keepOneTabWarning warnings</span>)</span></span>
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>-- TODO: These methods are not being used anywhere
+<span class="lineno">   70 </span>getOpts :: LexerMonad [Options]
+<span class="lineno">   71 </span><span class="decl"><span class="nottickedoff">getOpts = LM (\opts pos brackets -&gt; Right (opts, [], pos, brackets))</span></span>
+<span class="lineno">   72 </span>
+<span class="lineno">   73 </span>getPos :: LexerMonad FilePos
+<span class="lineno">   74 </span><span class="decl"><span class="nottickedoff">getPos = LM (\_ pos brackets -&gt; Right (pos, [], pos, brackets))</span></span>
+<span class="lineno">   75 </span>
+<span class="lineno">   76 </span>incPos :: Int -&gt; LexerMonad ()
+<span class="lineno">   77 </span><span class="decl"><span class="nottickedoff">incPos i = LM (\_ pos brackets -&gt; Right ((), [], addPos i pos, brackets))</span></span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>nextPos :: Char -&gt; LexerMonad ()
+<span class="lineno">   80 </span><span class="decl"><span class="nottickedoff">nextPos c = LM (\_ pos brackets -&gt; Right ( (), [], updatePos pos c, brackets ))</span></span>
+<span class="lineno">   81 </span>
+<span class="lineno">   82 </span>lexerError :: LexerErrorInfo -&gt; FilePos -&gt; LexerMonad a
+<span class="lineno">   83 </span><span class="decl"><span class="nottickedoff">lexerError err pos =</span>
+<span class="lineno">   84 </span><span class="spaces">    </span><span class="nottickedoff">LM (\_ _ _ -&gt; Left (LexerError pos err))</span></span>
+<span class="lineno">   85 </span>
+<span class="lineno">   86 </span>lexerWarning :: LexerWarningInfo -&gt; FilePos -&gt; LexerMonad ()
+<span class="lineno">   87 </span><span class="decl"><span class="nottickedoff">lexerWarning warning warningPos =</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="nottickedoff">LM (\_ pos brackets -&gt;</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="nottickedoff">Right ((), [LexerWarning warningPos warning], pos, brackets))</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>openBracket :: Char -&gt; LexerMonad ()
+<span class="lineno">   92 </span><span class="decl"><span class="nottickedoff">openBracket c = LM (\_ pos brackets -&gt;</span>
+<span class="lineno">   93 </span><span class="spaces">    </span><span class="nottickedoff">Right ( (), [], pos, (pos, c) : brackets ))</span></span>
+<span class="lineno">   94 </span>
+<span class="lineno">   95 </span>closeBracket :: Char -&gt; LexerMonad ()
+<span class="lineno">   96 </span><span class="decl"><span class="nottickedoff">closeBracket c = LM (\_ pos brackets -&gt;</span>
+<span class="lineno">   97 </span><span class="spaces">    </span><span class="nottickedoff">case brackets of</span>
+<span class="lineno">   98 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; Left (LexerError pos (TooManyClose c))</span>
+<span class="lineno">   99 </span><span class="spaces">        </span><span class="nottickedoff">(pos2, c2):rest</span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="nottickedoff">| matchBracket c2 c -&gt;</span>
+<span class="lineno">  101 </span><span class="spaces">                </span><span class="nottickedoff">Right ((), [], pos, rest)</span>
+<span class="lineno">  102 </span><span class="spaces">            </span><span class="nottickedoff">| otherwise -&gt;</span>
+<span class="lineno">  103 </span><span class="spaces">                </span><span class="nottickedoff">Left (LexerError pos (UnexpectedClose c pos2 c2))</span>
+<span class="lineno">  104 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  105 </span>
+<span class="lineno">  106 </span>checkBracketsAtEOF :: LexerMonad ()
+<span class="lineno">  107 </span><span class="decl"><span class="nottickedoff">checkBracketsAtEOF = LM (\_ pos brackets -&gt;</span>
+<span class="lineno">  108 </span><span class="spaces">    </span><span class="nottickedoff">case brackets of</span>
+<span class="lineno">  109 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; Right ((), [], pos, [])</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="nottickedoff">_  -&gt; Left (LexerError pos (StillOpenAtEOF brackets))</span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>matchBracket :: Char -&gt; Char -&gt; Bool
+<span class="lineno">  114 </span><span class="decl"><span class="nottickedoff">matchBracket '(' ')' = True</span>
+<span class="lineno">  115 </span><span class="spaces"></span><span class="nottickedoff">matchBracket '[' ']' = True</span>
+<span class="lineno">  116 </span><span class="spaces"></span><span class="nottickedoff">matchBracket '{' '}' = True</span>
+<span class="lineno">  117 </span><span class="spaces"></span><span class="nottickedoff">matchBracket _ _ = False</span></span>
+
+</pre>
+</body>
+</html>

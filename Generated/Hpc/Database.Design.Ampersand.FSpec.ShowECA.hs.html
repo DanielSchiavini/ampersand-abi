@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.FSpec.ShowECA (showECA) where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">    4 </span>import Database.Design.Ampersand.FSpec.ShowADL (showPAclause, showREL)
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>class ECA a where
+<span class="lineno">    7 </span>  showECA :: String -&gt; a -&gt; String
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>instance ECA ECArule where
+<span class="lineno">   10 </span>  <span class="decl"><span class="nottickedoff">showECA indent er = showECA indent (ecaTriggr er) ++ &quot; EXECUTE    -- (ECA rule &quot;</span>
+<span class="lineno">   11 </span><span class="spaces">                                                    </span><span class="nottickedoff">++ show (ecaNum er)</span>
+<span class="lineno">   12 </span><span class="spaces">                                                    </span><span class="nottickedoff">++ &quot;)&quot;</span>
+<span class="lineno">   13 </span><span class="spaces">                                                    </span><span class="nottickedoff">++</span>
+<span class="lineno">   14 </span><span class="spaces">                     </span><span class="nottickedoff">indent ++ showECA indent (ecaAction er)</span></span>
+<span class="lineno">   15 </span>instance ECA Event where
+<span class="lineno">   16 </span>  <span class="decl"><span class="nottickedoff">showECA _ (On Ins rel) = &quot;ON INSERT Delta IN &quot; ++ showREL rel</span>
+<span class="lineno">   17 </span><span class="spaces">  </span><span class="nottickedoff">showECA _ (On Del rel) = &quot;ON DELETE Delta FROM &quot; ++ showREL rel</span></span>
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>instance ECA PAclause where
+<span class="lineno">   20 </span>  <span class="decl"><span class="nottickedoff">showECA indent = showPAclause indent</span></span>
+
+</pre>
+</body>
+</html>

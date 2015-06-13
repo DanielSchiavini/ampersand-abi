@@ -1,0 +1,133 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{- Based on http://hackage.haskell.org/package/altfloat-0.3.1  -}
+<span class="lineno">    2 </span>{-
+<span class="lineno">    3 </span> - Copyright (C) 2009-2010 Nick Bowler.
+<span class="lineno">    4 </span> -
+<span class="lineno">    5 </span> - License BSD2:  2-clause BSD license.  See LICENSE for full terms.
+<span class="lineno">    6 </span> - This is free software: you are free to change and redistribute it.
+<span class="lineno">    7 </span> - There is NO WARRANTY, to the extent permitted by law.
+<span class="lineno">    8 </span> -}
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>{-# LANGUAGE FlexibleInstances, OverlappingInstances, UndecidableInstances #-}
+<span class="lineno">   11 </span>module Database.Design.Ampersand.Core.Poset.Internal where
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>import qualified Prelude
+<span class="lineno">   14 </span>import Prelude hiding (Ordering(..), Ord(..))
+<span class="lineno">   15 </span>import Data.Monoid
+<span class="lineno">   16 </span>import Database.Design.Ampersand.Basics (fatalMsg)
+<span class="lineno">   17 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   18 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Core.Poset.Internal&quot;</span></span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>data Ordering = LT | EQ | GT | CP | NC
+<span class="lineno">   21 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Read</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Bounded</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Enum</span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>-- Lexicographic ordering.
+<span class="lineno">   24 </span>instance Monoid Ordering where
+<span class="lineno">   25 </span>    <span class="decl"><span class="nottickedoff">mempty = EQ</span></span>
+<span class="lineno">   26 </span>    <span class="decl"><span class="nottickedoff">mappend EQ x = x</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="nottickedoff">mappend NC _ = NC</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="nottickedoff">mappend LT _ = LT</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="nottickedoff">mappend GT _ = GT</span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="nottickedoff">mappend CP _ = NC</span></span>
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>-- | Internal-use function to convert our Ordering to the ordinary one.
+<span class="lineno">   33 </span>totalOrder :: Ordering -&gt; Prelude.Ordering
+<span class="lineno">   34 </span><span class="decl"><span class="nottickedoff">totalOrder LT = Prelude.LT</span>
+<span class="lineno">   35 </span><span class="spaces"></span><span class="nottickedoff">totalOrder EQ = Prelude.EQ</span>
+<span class="lineno">   36 </span><span class="spaces"></span><span class="nottickedoff">totalOrder GT = Prelude.GT</span>
+<span class="lineno">   37 </span><span class="spaces"></span><span class="nottickedoff">totalOrder NC = fatal 36 &quot;Uncomparable elements in total order.&quot;</span>
+<span class="lineno">   38 </span><span class="spaces"></span><span class="nottickedoff">totalOrder CP = fatal 37 &quot;Uncomparable elements in total order.&quot;</span></span>
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>-- | Internal-use function to convert the ordinary Ordering to ours.
+<span class="lineno">   41 </span>partialOrder :: Prelude.Ordering -&gt; Ordering
+<span class="lineno">   42 </span><span class="decl"><span class="nottickedoff">partialOrder Prelude.LT = LT</span>
+<span class="lineno">   43 </span><span class="spaces"></span><span class="nottickedoff">partialOrder Prelude.EQ = EQ</span>
+<span class="lineno">   44 </span><span class="spaces"></span><span class="nottickedoff">partialOrder Prelude.GT = GT</span></span>
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>-- | Class for partially ordered data types.  Instances should satisfy the
+<span class="lineno">   47 </span>-- following laws for all values a, b and c:
+<span class="lineno">   48 </span>--
+<span class="lineno">   49 </span>-- * @a &lt;= a@.
+<span class="lineno">   50 </span>--
+<span class="lineno">   51 </span>-- * @a &lt;= b@ and @b &lt;= a@ implies @a == b@.
+<span class="lineno">   52 </span>--
+<span class="lineno">   53 </span>-- * @a &lt;= b@ and @b &lt;= c@ implies @a &lt;= c@.
+<span class="lineno">   54 </span>--
+<span class="lineno">   55 </span>-- But note that the floating point instances don't satisfy the first rule.
+<span class="lineno">   56 </span>--
+<span class="lineno">   57 </span>-- Minimal complete definition: 'compare' or '&lt;='.
+<span class="lineno">   58 </span>class Eq a =&gt; Poset a where
+<span class="lineno">   59 </span>    compare :: a -&gt; a -&gt; Ordering
+<span class="lineno">   60 </span>    -- | Is comparable to.
+<span class="lineno">   61 </span>    (&lt;==&gt;) :: a -&gt; a -&gt; Bool
+<span class="lineno">   62 </span>    -- | Is not comparable to.
+<span class="lineno">   63 </span>    (&lt;/=&gt;) :: a -&gt; a -&gt; Bool
+<span class="lineno">   64 </span>    (&lt;) :: a -&gt; a -&gt; Bool
+<span class="lineno">   65 </span>    (&lt;=) :: a -&gt; a -&gt; Bool
+<span class="lineno">   66 </span>    (&gt;=) :: a -&gt; a -&gt; Bool
+<span class="lineno">   67 </span>    (&gt;) :: a -&gt; a -&gt; Bool
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>    <span class="decl"><span class="nottickedoff">a `compare` b</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">| a == b = EQ</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">| a &lt;= b &amp;&amp; b &lt;= a = EQ</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="nottickedoff">| a &lt;= b = LT</span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="nottickedoff">| b &lt;= a = GT</span>
+<span class="lineno">   74 </span><span class="spaces">        </span><span class="nottickedoff">| otherwise = NC</span></span>
+<span class="lineno">   75 </span>
+<span class="lineno">   76 </span>    <span class="decl"><span class="nottickedoff">a &lt;    b = a `compare` b == LT</span></span>
+<span class="lineno">   77 </span>    <span class="decl"><span class="nottickedoff">a &gt;    b = a `compare` b == GT</span></span>
+<span class="lineno">   78 </span>    <span class="decl"><span class="nottickedoff">a &lt;==&gt; b = a `compare` b /= NC</span></span>
+<span class="lineno">   79 </span>    <span class="decl"><span class="nottickedoff">a &lt;/=&gt; b = a `compare` b == NC</span></span>
+<span class="lineno">   80 </span>    <span class="decl"><span class="nottickedoff">a &lt;=   b = a &lt; b || a `compare` b == EQ</span></span>
+<span class="lineno">   81 </span>    <span class="decl"><span class="nottickedoff">a &gt;=   b = a &gt; b || a `compare` b == EQ</span></span>
+<span class="lineno">   82 </span>
+<span class="lineno">   83 </span>-- | Class for partially ordered data types where sorting makes sense.
+<span class="lineno">   84 </span>-- This includes all totally ordered sets and floating point types.  Instances
+<span class="lineno">   85 </span>-- should satisfy the following laws:
+<span class="lineno">   86 </span>--
+<span class="lineno">   87 </span>-- * The set of elements for which 'isOrdered' returns true is totally ordered.
+<span class="lineno">   88 </span>--
+<span class="lineno">   89 </span>-- * The max (or min) of an insignificant element and a significant element
+<span class="lineno">   90 </span>-- is the significant one.
+<span class="lineno">   91 </span>--
+<span class="lineno">   92 </span>-- * The result of sorting a list should contain only significant elements.
+<span class="lineno">   93 </span>--
+<span class="lineno">   94 </span>-- * @max a b@ = @max b a@
+<span class="lineno">   95 </span>--
+<span class="lineno">   96 </span>-- * @min a b@ = @min b a@
+<span class="lineno">   97 </span>--
+<span class="lineno">   98 </span>-- The idea comes from floating point types, where non-comparable elements
+<span class="lineno">   99 </span>-- (NaNs) are the exception rather than the rule.  For these types, we can
+<span class="lineno">  100 </span>-- define 'max', 'min' and 'sortBy' to ignore insignificant elements.  Thus, a
+<span class="lineno">  101 </span>-- sort of floating point values will discard all NaNs and order the remaining
+<span class="lineno">  102 </span>-- elements.
+<span class="lineno">  103 </span>--
+<span class="lineno">  104 </span>-- Minimal complete definition: 'isOrdered'
+<span class="lineno">  105 </span>class Poset a =&gt; Sortable a where
+<span class="lineno">  106 </span>    sortBy :: (a -&gt; a -&gt; Ordering) -&gt; [a] -&gt; [a]
+<span class="lineno">  107 </span>    join :: a -&gt; a -&gt; a
+<span class="lineno">  108 </span>    meet :: a -&gt; a -&gt; a
+<span class="lineno">  109 </span>
+<span class="lineno">  110 </span>-- | Class for totally ordered data types.  Instances should satisfy
+<span class="lineno">  111 </span>-- @isOrdered a = True@ for all @a@.
+<span class="lineno">  112 </span>class Poset a =&gt; Ord a
+<span class="lineno">  113 </span>
+
+</pre>
+</body>
+</html>

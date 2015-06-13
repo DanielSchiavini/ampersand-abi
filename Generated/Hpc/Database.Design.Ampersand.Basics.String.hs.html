@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>  -- | This module contains some common String funcions
+<span class="lineno">    2 </span>module Database.Design.Ampersand.Basics.String (unCap,upCap,escapeNonAlphaNum) where
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>import Data.Char
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>-- | Converts the first character of a string to lowercase, with the exception that there is a second character, which is uppercase.
+<span class="lineno">    7 </span>-- uncap &quot;AbcDe&quot; == &quot;abcDe&quot;
+<span class="lineno">    8 </span>-- uncap &quot;ABcDE&quot; == &quot;ABcDE&quot;
+<span class="lineno">    9 </span>unCap :: String -&gt; String
+<span class="lineno">   10 </span><span class="decl"><span class="nottickedoff">unCap [] = []</span>
+<span class="lineno">   11 </span><span class="spaces"></span><span class="nottickedoff">unCap [h] = [toLower h]</span>
+<span class="lineno">   12 </span><span class="spaces"></span><span class="nottickedoff">unCap (h:h':t) | isUpper h' = h:h':t</span>
+<span class="lineno">   13 </span><span class="spaces">               </span><span class="nottickedoff">| otherwise  = toLower h:h':t</span></span>
+<span class="lineno">   14 </span>-- | Converts the first character of a string to uppercase
+<span class="lineno">   15 </span>upCap :: String -&gt; String
+<span class="lineno">   16 </span><span class="decl"><span class="nottickedoff">upCap [] = []</span>
+<span class="lineno">   17 </span><span class="spaces"></span><span class="nottickedoff">upCap (h:t) = toUpper h:t</span></span>
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>-- | escape anything except regular characters and digits to _&lt;character code&gt;
+<span class="lineno">   20 </span>-- e.g. escapeNonAlphaNum &quot;a_é&quot; = &quot;a_95_233&quot;
+<span class="lineno">   21 </span>escapeNonAlphaNum :: String -&gt; String
+<span class="lineno">   22 </span><span class="decl"><span class="nottickedoff">escapeNonAlphaNum = concatMap escapeNonAlphaNumChar</span>
+<span class="lineno">   23 </span><span class="spaces"> </span><span class="nottickedoff">where escapeNonAlphaNumChar c</span>
+<span class="lineno">   24 </span><span class="spaces">         </span><span class="nottickedoff">| isAlphaNum c &amp;&amp; isAscii c = [c]</span>
+<span class="lineno">   25 </span><span class="spaces">         </span><span class="nottickedoff">| otherwise                 = '_' : show (ord c)</span></span>
+<span class="lineno">   26 </span>   
+
+</pre>
+</body>
+</html>

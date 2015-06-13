@@ -1,0 +1,229 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.Classes.Relational
+<span class="lineno">    2 </span>   (Relational(..)
+<span class="lineno">    3 </span>   ) where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Data.Maybe
+<span class="lineno">    6 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">    7 </span>import Database.Design.Ampersand.ADL1.Expression
+<span class="lineno">    8 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>--fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   11 </span>--fatal = fatalMsg &quot;Classes.Relational&quot;
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>class Association r =&gt; Relational r where
+<span class="lineno">   14 </span>    multiplicities :: r -&gt; [Prop]
+<span class="lineno">   15 </span>    isProp :: r -&gt; Bool  -- &gt; tells whether the argument is a property
+<span class="lineno">   16 </span>    isImin :: r -&gt; Bool  -- &gt; tells whether the argument is equivalent to I-
+<span class="lineno">   17 </span>    isTrue :: r -&gt; Bool  -- &gt; tells whether the argument is equivalent to V
+<span class="lineno">   18 </span>    isFalse :: r -&gt; Bool  -- &gt; tells whether the argument is equivalent to V-
+<span class="lineno">   19 </span>    isFunction :: r -&gt; Bool
+<span class="lineno">   20 </span>    <span class="decl"><span class="nottickedoff">isFunction r   = null ([Uni,Tot]&gt;-multiplicities r)</span></span>
+<span class="lineno">   21 </span>    isTot :: r -&gt; Bool  --
+<span class="lineno">   22 </span>    <span class="decl"><span class="nottickedoff">isTot r = Tot `elem` multiplicities r</span></span>
+<span class="lineno">   23 </span>    isUni :: r -&gt; Bool  --
+<span class="lineno">   24 </span>    <span class="decl"><span class="nottickedoff">isUni r = Uni `elem` multiplicities r</span></span>
+<span class="lineno">   25 </span>    isSur :: r -&gt; Bool  --
+<span class="lineno">   26 </span>    <span class="decl"><span class="nottickedoff">isSur r = Sur `elem` multiplicities r</span></span>
+<span class="lineno">   27 </span>    isInj :: r -&gt; Bool  --
+<span class="lineno">   28 </span>    <span class="decl"><span class="nottickedoff">isInj r = Inj `elem` multiplicities r</span></span>
+<span class="lineno">   29 </span>    isRfx :: r -&gt; Bool  --
+<span class="lineno">   30 </span>    <span class="decl"><span class="nottickedoff">isRfx r = Rfx `elem` multiplicities r</span></span>
+<span class="lineno">   31 </span>    isIrf :: r -&gt; Bool  --
+<span class="lineno">   32 </span>    <span class="decl"><span class="nottickedoff">isIrf r = Irf `elem` multiplicities r</span></span>
+<span class="lineno">   33 </span>    isTrn :: r -&gt; Bool  --
+<span class="lineno">   34 </span>    <span class="decl"><span class="nottickedoff">isTrn r = Trn `elem` multiplicities r</span></span>
+<span class="lineno">   35 </span>    isSym :: r -&gt; Bool  --
+<span class="lineno">   36 </span>    <span class="decl"><span class="nottickedoff">isSym r = Sym `elem` multiplicities r</span></span>
+<span class="lineno">   37 </span>    isAsy :: r -&gt; Bool  --
+<span class="lineno">   38 </span>    <span class="decl"><span class="nottickedoff">isAsy r = Asy `elem` multiplicities r</span></span>
+<span class="lineno">   39 </span>    isIdent :: r -&gt; Bool  -- &gt; tells whether the argument is equivalent to I
+<span class="lineno">   40 </span>    isEpsilon :: r -&gt; Bool  -- &gt; tells whether the argument is equivalent to I
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>--instance Relational Relation where
+<span class="lineno">   43 </span>--    multiplicities rel
+<span class="lineno">   44 </span>--      = case rel of
+<span class="lineno">   45 </span>--           Rel{}               -&gt; multiplicities (reldcl rel)
+<span class="lineno">   46 </span>--           V {}                -&gt; [Tot]
+<span class="lineno">   47 </span>--                                ++[Sur]
+<span class="lineno">   48 </span>--                                ++[Inj | isSingleton (source rel)]
+<span class="lineno">   49 </span>--                                ++[Uni | isSingleton (target rel)]
+<span class="lineno">   50 </span>--                                ++[Asy | isEndo rel, isSingleton (source rel)]
+<span class="lineno">   51 </span>--                                ++[Sym | isEndo rel]
+<span class="lineno">   52 </span>--                                ++[Rfx | isEndo rel]
+<span class="lineno">   53 </span>--                                ++[Trn | isEndo rel]
+<span class="lineno">   54 </span>--           I{}                 -&gt; [Uni,Tot,Inj,Sur,Sym,Asy,Trn,Rfx]
+<span class="lineno">   55 </span>--    isProp rel = case rel of
+<span class="lineno">   56 </span>--           Rel{}               -&gt; null ([Asy,Sym]&gt;-multiplicities (reldcl rel))
+<span class="lineno">   57 </span>--           V{}                 -&gt; isEndo rel &amp;&amp; isSingleton (source rel)
+<span class="lineno">   58 </span>--           I{}                 -&gt; True
+<span class="lineno">   59 </span>--    isImin rel  = isImin (makeDeclaration rel)   -- &gt; tells whether the argument is equivalent to I-
+<span class="lineno">   60 </span>--    isTrue rel = case rel of
+<span class="lineno">   61 </span>--           Rel{}               -&gt; False
+<span class="lineno">   62 </span>--           V{}                 -&gt; True
+<span class="lineno">   63 </span>--           I{}                 -&gt; False
+<span class="lineno">   64 </span>--    isFalse _   = False
+<span class="lineno">   65 </span>--    isIdent rel = case rel of       -- &gt; tells whether the argument is equivalent to I
+<span class="lineno">   66 </span>--                   Rel{} -&gt; False
+<span class="lineno">   67 </span>--                   V{}   -&gt; isEndo rel &amp;&amp; isSingleton (source rel)
+<span class="lineno">   68 </span>--                   I{}   -&gt; True
+<span class="lineno">   69 </span>
+<span class="lineno">   70 </span>instance Relational Declaration where
+<span class="lineno">   71 </span>    <span class="decl"><span class="nottickedoff">multiplicities d = case d of</span>
+<span class="lineno">   72 </span><span class="spaces">           </span><span class="nottickedoff">Sgn {}       -&gt; case decprps_calc d of</span>
+<span class="lineno">   73 </span><span class="spaces">                             </span><span class="nottickedoff">Nothing -&gt; decprps d</span>
+<span class="lineno">   74 </span><span class="spaces">                             </span><span class="nottickedoff">Just ps -&gt; ps</span>
+<span class="lineno">   75 </span><span class="spaces">           </span><span class="nottickedoff">Isn{}        -&gt; [Uni,Tot,Inj,Sur,Sym,Asy,Trn,Rfx]</span>
+<span class="lineno">   76 </span><span class="spaces">           </span><span class="nottickedoff">Vs{}         -&gt; [Tot,Sur]</span></span>
+<span class="lineno">   77 </span>    <span class="decl"><span class="nottickedoff">isProp d = case d of         -- &gt; tells whether the argument is a property.</span>
+<span class="lineno">   78 </span><span class="spaces">           </span><span class="nottickedoff">Sgn {}       -&gt; null ([Asy,Sym]&gt;-multiplicities d)</span>
+<span class="lineno">   79 </span><span class="spaces">           </span><span class="nottickedoff">Isn{}        -&gt; True</span>
+<span class="lineno">   80 </span><span class="spaces">           </span><span class="nottickedoff">Vs{}         -&gt; isEndo (sign d) &amp;&amp; isSingleton (source d)</span></span>
+<span class="lineno">   81 </span>    <span class="decl"><span class="nottickedoff">isImin _ = False</span></span>  -- LET OP: Dit kan natuurlijk niet goed zijn, maar is gedetecteerd bij revision 913, toen straffeloos de Iscompl{} kon worden verwijderd.
+<span class="lineno">   82 </span>    <span class="decl"><span class="nottickedoff">isTrue d = case d of</span>
+<span class="lineno">   83 </span><span class="spaces">           </span><span class="nottickedoff">Vs{}         -&gt; True</span>
+<span class="lineno">   84 </span><span class="spaces">           </span><span class="nottickedoff">_            -&gt; False</span></span>
+<span class="lineno">   85 </span>    <span class="decl"><span class="nottickedoff">isFalse _ = False</span></span>
+<span class="lineno">   86 </span>    <span class="decl"><span class="nottickedoff">isIdent d = case d of</span>
+<span class="lineno">   87 </span><span class="spaces">                 </span><span class="nottickedoff">Isn{} -&gt; True   -- &gt; tells whether the argument is equivalent to I</span>
+<span class="lineno">   88 </span><span class="spaces">                 </span><span class="nottickedoff">_     -&gt; False</span></span>
+<span class="lineno">   89 </span>    <span class="decl"><span class="nottickedoff">isEpsilon _ = False</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>isSingleton :: A_Concept -&gt; Bool
+<span class="lineno">   92 </span><span class="decl"><span class="nottickedoff">isSingleton ONE = True</span>
+<span class="lineno">   93 </span><span class="spaces"></span><span class="nottickedoff">isSingleton _   = False</span></span>
+<span class="lineno">   94 </span>
+<span class="lineno">   95 </span>-- The function &quot;multiplicities&quot; does not only provide the multiplicities provided by the Ampersand user,
+<span class="lineno">   96 </span>-- but tries to derive the most obvious multiplicity constraints as well. The more multiplicity constraints are known,
+<span class="lineno">   97 </span>-- the better the data structure that is derived.
+<span class="lineno">   98 </span>-- Not every constraint that can be proven is obtained by this function. This does not hurt Ampersand.
+<span class="lineno">   99 </span>instance Relational Expression where        -- TODO: see if we can find more multiplicity constraints...
+<span class="lineno">  100 </span> <span class="decl"><span class="nottickedoff">multiplicities expr = case expr of</span>
+<span class="lineno">  101 </span><span class="spaces">     </span><span class="nottickedoff">EDcD dcl   -&gt; multiplicities dcl</span>
+<span class="lineno">  102 </span><span class="spaces">     </span><span class="nottickedoff">EDcI{}     -&gt; [Uni,Tot,Inj,Sur,Sym,Asy,Trn,Rfx]</span>
+<span class="lineno">  103 </span><span class="spaces">     </span><span class="nottickedoff">EEps a sgn -&gt; [Tot | a == source sgn]++[Sur | a == target sgn] ++ [Uni,Inj]</span>
+<span class="lineno">  104 </span><span class="spaces">     </span><span class="nottickedoff">EDcV sgn   -&gt; [Tot]</span>
+<span class="lineno">  105 </span><span class="spaces">                 </span><span class="nottickedoff">++[Sur]</span>
+<span class="lineno">  106 </span><span class="spaces">                 </span><span class="nottickedoff">++[Inj | isSingleton (source sgn)]</span>
+<span class="lineno">  107 </span><span class="spaces">                 </span><span class="nottickedoff">++[Uni | isSingleton (target sgn)]</span>
+<span class="lineno">  108 </span><span class="spaces">                 </span><span class="nottickedoff">++[Asy | isEndo sgn, isSingleton (source sgn)]</span>
+<span class="lineno">  109 </span><span class="spaces">                 </span><span class="nottickedoff">++[Sym | isEndo sgn]</span>
+<span class="lineno">  110 </span><span class="spaces">                 </span><span class="nottickedoff">++[Rfx | isEndo sgn]</span>
+<span class="lineno">  111 </span><span class="spaces">                 </span><span class="nottickedoff">++[Trn | isEndo sgn]</span>
+<span class="lineno">  112 </span><span class="spaces">     </span><span class="nottickedoff">EBrk f     -&gt; multiplicities f</span>
+<span class="lineno">  113 </span><span class="spaces">     </span><span class="nottickedoff">ECps (l,r) -&gt; [m | m&lt;-multiplicities l `isc` multiplicities r, m `elem` [Uni,Tot,Inj,Sur]] -- endo properties can be used and deduced by and from rules: many rules are multiplicities (TODO)</span>
+<span class="lineno">  114 </span><span class="spaces">     </span><span class="nottickedoff">EPrd (l,r) -&gt; [Tot | isTot l]++[Sur | isSur r]++[Rfx | isRfx l&amp;&amp;isRfx r]++[Trn]</span>
+<span class="lineno">  115 </span><span class="spaces">     </span><span class="nottickedoff">EKl0 e'    -&gt; [Rfx,Trn] `uni` (multiplicities e'&gt;-[Uni,Inj])</span>
+<span class="lineno">  116 </span><span class="spaces">     </span><span class="nottickedoff">EKl1 e'    -&gt; [    Trn] `uni` (multiplicities e'&gt;-[Uni,Inj])</span>
+<span class="lineno">  117 </span><span class="spaces">     </span><span class="nottickedoff">ECpl e'    -&gt; [p |p&lt;-multiplicities e', p==Sym]</span>
+<span class="lineno">  118 </span><span class="spaces">     </span><span class="nottickedoff">EFlp e'    -&gt; [fromMaybe m $ lookup m [(Uni,Inj),(Inj,Uni),(Sur,Tot),(Tot,Sur)] | m &lt;- multiplicities e'] -- switch Uni&lt;-&gt;Inj and Sur&lt;-&gt;Tot, keeping the others the same</span>
+<span class="lineno">  119 </span><span class="spaces">     </span><span class="nottickedoff">EMp1{}     -&gt; [Uni,Inj,Sym,Asy,Trn]</span>
+<span class="lineno">  120 </span><span class="spaces">     </span><span class="nottickedoff">_          -&gt; []</span></span>
+<span class="lineno">  121 </span>
+<span class="lineno">  122 </span> -- |  isTrue e == True   means that e is true, i.e. the population of e is (source e * target e).
+<span class="lineno">  123 </span> --    isTrue e == False  does not mean anything.
+<span class="lineno">  124 </span> --    the function isTrue is meant to produce a quick answer, without any form of theorem proving.
+<span class="lineno">  125 </span> <span class="decl"><span class="nottickedoff">isTrue expr</span>
+<span class="lineno">  126 </span><span class="spaces">  </span><span class="nottickedoff">= case expr of</span>
+<span class="lineno">  127 </span><span class="spaces">     </span><span class="nottickedoff">EEqu (l,r) -&gt; l == r</span>
+<span class="lineno">  128 </span><span class="spaces">     </span><span class="nottickedoff">EImp (l,_) -&gt; isTrue l</span>
+<span class="lineno">  129 </span><span class="spaces">     </span><span class="nottickedoff">EIsc (l,r) -&gt; isTrue l &amp;&amp; isTrue r</span>
+<span class="lineno">  130 </span><span class="spaces">     </span><span class="nottickedoff">EUni (l,r) -&gt; isTrue l || isTrue r</span>
+<span class="lineno">  131 </span><span class="spaces">     </span><span class="nottickedoff">EDif (l,r) -&gt; isTrue l &amp;&amp; isFalse r</span>
+<span class="lineno">  132 </span><span class="spaces">     </span><span class="nottickedoff">ECps (l,r) | null ([Uni,Tot]&gt;-multiplicities l) -&gt; isTrue r</span>
+<span class="lineno">  133 </span><span class="spaces">                </span><span class="nottickedoff">| null ([Sur,Inj]&gt;-multiplicities r) -&gt; isTrue l</span>
+<span class="lineno">  134 </span><span class="spaces">                </span><span class="nottickedoff">| otherwise                          -&gt; isTrue l &amp;&amp; isTrue r</span>
+<span class="lineno">  135 </span><span class="spaces">     </span><span class="nottickedoff">EPrd (l,r) -&gt; isTrue l &amp;&amp; isTrue r || isTot l &amp;&amp; isSur r || isRfx l &amp;&amp; isRfx r</span>
+<span class="lineno">  136 </span><span class="spaces">     </span><span class="nottickedoff">EKl0 e     -&gt; isTrue e</span>
+<span class="lineno">  137 </span><span class="spaces">     </span><span class="nottickedoff">EKl1 e     -&gt; isTrue e</span>
+<span class="lineno">  138 </span><span class="spaces">     </span><span class="nottickedoff">EFlp e     -&gt; isTrue e</span>
+<span class="lineno">  139 </span><span class="spaces">     </span><span class="nottickedoff">ECpl e     -&gt; isFalse e</span>
+<span class="lineno">  140 </span><span class="spaces">     </span><span class="nottickedoff">EDcD{}     -&gt; False</span>
+<span class="lineno">  141 </span><span class="spaces">     </span><span class="nottickedoff">EDcI c     -&gt; isSingleton c</span>
+<span class="lineno">  142 </span><span class="spaces">     </span><span class="nottickedoff">EEps i _   -&gt; isSingleton i</span>
+<span class="lineno">  143 </span><span class="spaces">     </span><span class="nottickedoff">EDcV{}     -&gt; True</span>
+<span class="lineno">  144 </span><span class="spaces">     </span><span class="nottickedoff">EBrk e     -&gt; isTrue e</span>
+<span class="lineno">  145 </span><span class="spaces">     </span><span class="nottickedoff">_          -&gt; False</span></span>  -- TODO: find richer answers for ERrs, ELrs, EDia, ERad, and EMp1
+<span class="lineno">  146 </span>
+<span class="lineno">  147 </span> -- |  isFalse e == True   means that e is false, i.e. the population of e is empty.
+<span class="lineno">  148 </span> --    isFalse e == False  does not mean anything.
+<span class="lineno">  149 </span> --    the function isFalse is meant to produce a quick answer, without any form of theorem proving.
+<span class="lineno">  150 </span> <span class="decl"><span class="nottickedoff">isFalse expr</span>
+<span class="lineno">  151 </span><span class="spaces">  </span><span class="nottickedoff">= case expr of</span>
+<span class="lineno">  152 </span><span class="spaces">     </span><span class="nottickedoff">EEqu (l,r) -&gt; l == notCpl r</span>
+<span class="lineno">  153 </span><span class="spaces">     </span><span class="nottickedoff">EImp (_,r) -&gt; isFalse r</span>
+<span class="lineno">  154 </span><span class="spaces">     </span><span class="nottickedoff">EIsc (l,r) -&gt; isFalse r || isFalse l</span>
+<span class="lineno">  155 </span><span class="spaces">     </span><span class="nottickedoff">EUni (l,r) -&gt; isFalse r &amp;&amp; isFalse l</span>
+<span class="lineno">  156 </span><span class="spaces">     </span><span class="nottickedoff">EDif (l,r) -&gt; isFalse l || isTrue r</span>
+<span class="lineno">  157 </span><span class="spaces">     </span><span class="nottickedoff">ECps (l,r) -&gt; isFalse r || isFalse l</span>
+<span class="lineno">  158 </span><span class="spaces">     </span><span class="nottickedoff">EPrd (l,r) -&gt; isFalse r || isFalse l</span>
+<span class="lineno">  159 </span><span class="spaces">     </span><span class="nottickedoff">EKl0 e     -&gt; isFalse e</span>
+<span class="lineno">  160 </span><span class="spaces">     </span><span class="nottickedoff">EKl1 e     -&gt; isFalse e</span>
+<span class="lineno">  161 </span><span class="spaces">     </span><span class="nottickedoff">EFlp e     -&gt; isFalse e</span>
+<span class="lineno">  162 </span><span class="spaces">     </span><span class="nottickedoff">ECpl e     -&gt; isTrue e</span>
+<span class="lineno">  163 </span><span class="spaces">     </span><span class="nottickedoff">EDcD{}     -&gt; False</span>
+<span class="lineno">  164 </span><span class="spaces">     </span><span class="nottickedoff">EDcI{}     -&gt; False</span>
+<span class="lineno">  165 </span><span class="spaces">     </span><span class="nottickedoff">EEps{}     -&gt; False</span>
+<span class="lineno">  166 </span><span class="spaces">     </span><span class="nottickedoff">EDcV{}     -&gt; False</span>
+<span class="lineno">  167 </span><span class="spaces">     </span><span class="nottickedoff">EBrk e     -&gt; isFalse e</span>
+<span class="lineno">  168 </span><span class="spaces">     </span><span class="nottickedoff">_          -&gt; False</span></span>  -- TODO: find richer answers for ERrs, ELrs, EDia, and ERad
+<span class="lineno">  169 </span>
+<span class="lineno">  170 </span> <span class="decl"><span class="nottickedoff">isProp expr = null ([Asy,Sym]&gt;-multiplicities expr)</span></span>
+<span class="lineno">  171 </span>
+<span class="lineno">  172 </span> -- |  The function isIdent tries to establish whether an expression is an identity relation.
+<span class="lineno">  173 </span> --    It does a little bit more than just test on ERel I _.
+<span class="lineno">  174 </span> --    If it returns False, this must be interpreted as: the expression is definitely not I, an may not be equal to I as far as the computer can tell on face value.
+<span class="lineno">  175 </span> <span class="decl"><span class="nottickedoff">isIdent expr = case expr of</span>
+<span class="lineno">  176 </span><span class="spaces">     </span><span class="nottickedoff">EEqu (l,r) -&gt; isIdent (EIsc (EImp (l,r), EImp (r,l)))    -- TODO: maybe derive something better?</span>
+<span class="lineno">  177 </span><span class="spaces">     </span><span class="nottickedoff">EImp (l,r) -&gt; isIdent (EUni (ECpl l, r))                     -- TODO: maybe derive something better?</span>
+<span class="lineno">  178 </span><span class="spaces">     </span><span class="nottickedoff">EIsc (l,r) -&gt; isIdent l &amp;&amp; isIdent r</span>
+<span class="lineno">  179 </span><span class="spaces">     </span><span class="nottickedoff">EUni (l,r) -&gt; isIdent l &amp;&amp; isIdent r</span>
+<span class="lineno">  180 </span><span class="spaces">     </span><span class="nottickedoff">EDif (l,r) -&gt; isIdent l &amp;&amp; isFalse r</span>
+<span class="lineno">  181 </span><span class="spaces">     </span><span class="nottickedoff">ECps (l,r) -&gt; isIdent l &amp;&amp; isIdent r</span>
+<span class="lineno">  182 </span><span class="spaces">     </span><span class="nottickedoff">EKl0 e     -&gt; isIdent e || isFalse e</span>
+<span class="lineno">  183 </span><span class="spaces">     </span><span class="nottickedoff">EKl1 e     -&gt; isIdent e</span>
+<span class="lineno">  184 </span><span class="spaces">     </span><span class="nottickedoff">ECpl e     -&gt; isImin e</span>
+<span class="lineno">  185 </span><span class="spaces">     </span><span class="nottickedoff">EDcD{}     -&gt; False</span>
+<span class="lineno">  186 </span><span class="spaces">     </span><span class="nottickedoff">EDcI{}     -&gt; True</span>
+<span class="lineno">  187 </span><span class="spaces">     </span><span class="nottickedoff">EEps{}     -&gt; False</span>
+<span class="lineno">  188 </span><span class="spaces">     </span><span class="nottickedoff">EDcV sgn   -&gt; isEndo sgn &amp;&amp; isSingleton (source sgn)</span>
+<span class="lineno">  189 </span><span class="spaces">     </span><span class="nottickedoff">EBrk f     -&gt; isIdent f</span>
+<span class="lineno">  190 </span><span class="spaces">     </span><span class="nottickedoff">EFlp f     -&gt; isIdent f</span>
+<span class="lineno">  191 </span><span class="spaces">     </span><span class="nottickedoff">_          -&gt; False</span></span>  -- TODO: find richer answers for ELrs, ERrs, EDia, EPrd, and ERad
+<span class="lineno">  192 </span> <span class="decl"><span class="nottickedoff">isEpsilon e = case e of</span>
+<span class="lineno">  193 </span><span class="spaces">                </span><span class="nottickedoff">EEps{} -&gt; True</span>
+<span class="lineno">  194 </span><span class="spaces">                </span><span class="nottickedoff">_      -&gt; False</span></span>
+<span class="lineno">  195 </span>
+<span class="lineno">  196 </span> <span class="decl"><span class="nottickedoff">isImin expr' = case expr' of       -- &gt; tells whether the argument is equivalent to I-</span>
+<span class="lineno">  197 </span><span class="spaces">     </span><span class="nottickedoff">EEqu (l,r) -&gt; isImin (EIsc (EImp (l,r), EImp (r,l)))       -- TODO: maybe derive something better?</span>
+<span class="lineno">  198 </span><span class="spaces">     </span><span class="nottickedoff">EImp (l,r) -&gt; isImin (EUni (ECpl l, r))                  -- TODO: maybe derive something better?</span>
+<span class="lineno">  199 </span><span class="spaces">     </span><span class="nottickedoff">EIsc (l,r) -&gt; isImin l &amp;&amp; isImin r</span>
+<span class="lineno">  200 </span><span class="spaces">     </span><span class="nottickedoff">EUni (l,r) -&gt; isImin l &amp;&amp; isImin r</span>
+<span class="lineno">  201 </span><span class="spaces">     </span><span class="nottickedoff">EDif (l,r) -&gt; isImin l &amp;&amp; isFalse r</span>
+<span class="lineno">  202 </span><span class="spaces">     </span><span class="nottickedoff">ECpl e     -&gt; isIdent e</span>
+<span class="lineno">  203 </span><span class="spaces">     </span><span class="nottickedoff">EDcD dcl   -&gt; isImin dcl</span>
+<span class="lineno">  204 </span><span class="spaces">     </span><span class="nottickedoff">EDcI{}     -&gt; False</span>
+<span class="lineno">  205 </span><span class="spaces">     </span><span class="nottickedoff">EEps{}     -&gt; False</span>
+<span class="lineno">  206 </span><span class="spaces">     </span><span class="nottickedoff">EDcV{}     -&gt; False</span>
+<span class="lineno">  207 </span><span class="spaces">     </span><span class="nottickedoff">EBrk f     -&gt; isImin f</span>
+<span class="lineno">  208 </span><span class="spaces">     </span><span class="nottickedoff">EFlp f     -&gt; isImin f</span>
+<span class="lineno">  209 </span><span class="spaces">     </span><span class="nottickedoff">_          -&gt; False</span></span>  -- TODO: find richer answers for ELrs, ERrs, and EDia
+
+</pre>
+</body>
+</html>

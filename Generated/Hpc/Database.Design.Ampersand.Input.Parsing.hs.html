@@ -1,0 +1,129 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE ScopedTypeVariables #-}
+<span class="lineno">    2 </span>-- This module provides an interface to be able to parse a script and to
+<span class="lineno">    3 </span>-- return an FSpec, as tuned by the command line options.
+<span class="lineno">    4 </span>-- This might include that RAP is included in the returned FSpec.
+<span class="lineno">    5 </span>module Database.Design.Ampersand.Input.Parsing (
+<span class="lineno">    6 </span>    parseADL, parseADL1pExpr, parseRule, parseCtx, runParser
+<span class="lineno">    7 </span>) where
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>import Control.Applicative
+<span class="lineno">   10 </span>import Data.List
+<span class="lineno">   11 </span>import Data.Traversable (sequenceA)
+<span class="lineno">   12 </span>import Database.Design.Ampersand.ADL1
+<span class="lineno">   13 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   14 </span>import Database.Design.Ampersand.Input.ADL1.CtxError
+<span class="lineno">   15 </span>import Database.Design.Ampersand.Input.ADL1.Lexer
+<span class="lineno">   16 </span>import Database.Design.Ampersand.Input.ADL1.Parser
+<span class="lineno">   17 </span>import Database.Design.Ampersand.Misc
+<span class="lineno">   18 </span>import Prelude hiding (putStrLn, writeFile) -- make sure everything is UTF8
+<span class="lineno">   19 </span>import System.Directory
+<span class="lineno">   20 </span>import System.FilePath
+<span class="lineno">   21 </span>import Text.Parsec.Error (Message(..), showErrorMessages, errorMessages, ParseError, errorPos)
+<span class="lineno">   22 </span>import Text.Parsec.Prim (runP)
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   25 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Parsing&quot;</span></span>
+<span class="lineno">   26 </span>
+<span class="lineno">   27 </span>-- Parse an Ampersand file and all transitive includes
+<span class="lineno">   28 </span>parseADL ::  Options -&gt; FilePath -&gt; IO (Guarded P_Context)
+<span class="lineno">   29 </span><span class="decl"><span class="istickedoff">parseADL opts filePath =</span>
+<span class="lineno">   30 </span><span class="spaces">  </span><span class="istickedoff">whenCheckedIO (parseSingleADL opts filePath) $ \(ctxt, filePaths) -&gt;</span>
+<span class="lineno">   31 </span><span class="spaces">    </span><span class="istickedoff">whenCheckedIO (parseADLs opts [filePath] filePaths) $ \ctxts -&gt;</span>
+<span class="lineno">   32 </span><span class="spaces">      </span><span class="istickedoff">return $ Checked $ <span class="nottickedoff">foldl mergeContexts ctxt ctxts</span></span></span>
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>parseADLs :: Options -&gt; [FilePath] -&gt; [FilePath] -&gt; IO (Guarded [P_Context])
+<span class="lineno">   35 </span><span class="decl"><span class="istickedoff">parseADLs _    _               []        = return $ Checked <span class="nottickedoff">[]</span></span>
+<span class="lineno">   36 </span><span class="spaces"></span><span class="istickedoff">parseADLs opts parsedFilePaths filePaths =</span>
+<span class="lineno">   37 </span><span class="spaces"> </span><span class="istickedoff">do { let filePathsToParse = nub filePaths \\ parsedFilePaths</span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">; whenCheckedIO (sequenceA &lt;$&gt; mapM (parseSingleADL opts) filePathsToParse) $ \ctxtNewFilePathss -&gt;</span>
+<span class="lineno">   39 </span><span class="spaces">       </span><span class="istickedoff">do { let (ctxts, newFilessToParse) = unzip ctxtNewFilePathss</span>
+<span class="lineno">   40 </span><span class="spaces">          </span><span class="istickedoff">; whenCheckedIO (parseADLs opts (parsedFilePaths ++ filePaths) $ concat newFilessToParse) $ \ctxts' -&gt;</span>
+<span class="lineno">   41 </span><span class="spaces">              </span><span class="istickedoff">return $ Checked $ <span class="nottickedoff">ctxts ++ ctxts'</span></span>
+<span class="lineno">   42 </span><span class="spaces">          </span><span class="istickedoff">}</span>
+<span class="lineno">   43 </span><span class="spaces">    </span><span class="istickedoff">}</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>-- Parse an Ampersand file, but not its includes (which are simply returned as a list)
+<span class="lineno">   46 </span>parseSingleADL :: Options -&gt; FilePath -&gt; IO (Guarded (P_Context, [FilePath]))
+<span class="lineno">   47 </span><span class="decl"><span class="istickedoff">parseSingleADL opts filePath =</span>
+<span class="lineno">   48 </span><span class="spaces"> </span><span class="istickedoff">do { verboseLn opts $ <span class="nottickedoff">&quot;Reading file &quot; ++ filePath</span></span>
+<span class="lineno">   49 </span><span class="spaces">    </span><span class="istickedoff">; mFileContents &lt;- readUTF8File filePath</span>
+<span class="lineno">   50 </span><span class="spaces">    </span><span class="istickedoff">; case mFileContents of</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">return $ makeError (&quot;ERROR reading file &quot; ++ filePath ++ &quot;:\n&quot; ++ err)</span></span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="istickedoff">Right fileContents -&gt;</span>
+<span class="lineno">   53 </span><span class="spaces">             </span><span class="istickedoff">whenCheckedIO (return $ parseCtx <span class="nottickedoff">filePath</span> fileContents) $ \(ctxts, relativePaths) -&gt; </span>
+<span class="lineno">   54 </span><span class="spaces">                   </span><span class="istickedoff">do filePaths &lt;- mapM normalizePath relativePaths</span>
+<span class="lineno">   55 </span><span class="spaces">                      </span><span class="istickedoff">return (Checked (<span class="nottickedoff">ctxts</span>, filePaths))</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="istickedoff">}</span>
+<span class="lineno">   57 </span><span class="spaces"> </span><span class="istickedoff">where normalizePath relativePath = canonicalizePath $ takeDirectory filePath &lt;/&gt; relativePath</span></span> 
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>parseErrors :: Lang -&gt; ParseError -&gt; [CtxError]
+<span class="lineno">   60 </span><span class="decl"><span class="nottickedoff">parseErrors lang err = [PE (Message msg)]</span>
+<span class="lineno">   61 </span><span class="spaces">                </span><span class="nottickedoff">where msg :: String</span>
+<span class="lineno">   62 </span><span class="spaces">                      </span><span class="nottickedoff">msg = show (errorPos err) ++ &quot;:&quot; ++ showLang lang (errorMessages err)</span>
+<span class="lineno">   63 </span><span class="spaces">                      </span><span class="nottickedoff">showLang :: Lang -&gt; [Message] -&gt; String</span>
+<span class="lineno">   64 </span><span class="spaces">                      </span><span class="nottickedoff">showLang English = showErrorMessages &quot;or&quot; &quot;unknown parse error&quot;   &quot;expecting&quot; &quot;unexpected&quot; &quot;end of input&quot;</span>
+<span class="lineno">   65 </span><span class="spaces">                      </span><span class="nottickedoff">showLang Dutch   = showErrorMessages &quot;of&quot; &quot;onbekende parsingfout&quot; &quot;verwacht&quot;  &quot;onverwacht&quot; &quot;einde van de invoer&quot;</span></span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>parse :: AmpParser a -&gt; FilePath -&gt; [Token] -&gt; Guarded a
+<span class="lineno">   68 </span><span class="decl"><span class="istickedoff">parse p fn ts =</span>
+<span class="lineno">   69 </span><span class="spaces">      </span><span class="istickedoff">-- runP :: Parsec s u a -&gt; u -&gt; FilePath -&gt; s -&gt; Either ParseError a </span>
+<span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">case runP p pos <span class="nottickedoff">fn</span> ts of</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">--TODO: Add language support to the parser errors</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">Errors $ parseErrors English err</span></span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff">Right a -&gt; Checked a</span>
+<span class="lineno">   74 </span><span class="spaces">    </span><span class="istickedoff">where pos | <span class="tickonlyfalse">null ts</span>   = <span class="nottickedoff">initPos fn</span></span>
+<span class="lineno">   75 </span><span class="spaces">              </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = tokPos (head ts)</span></span>
+<span class="lineno">   76 </span>
+<span class="lineno">   77 </span>--TODO: Give the errors in a better way
+<span class="lineno">   78 </span>lexerErrors :: LexerError -&gt; [CtxError]
+<span class="lineno">   79 </span><span class="decl"><span class="nottickedoff">lexerErrors err = [PE (Message (&quot;Lexer error &quot;++show err))]</span></span>
+<span class="lineno">   80 </span>
+<span class="lineno">   81 </span>runParser :: AmpParser a -&gt; Filename -&gt; String -&gt; Guarded a
+<span class="lineno">   82 </span><span class="decl"><span class="istickedoff">runParser parser filename input =</span>
+<span class="lineno">   83 </span><span class="spaces">  </span><span class="istickedoff">-- lexer :: [Options] -&gt; String -&gt; [Char] -&gt; Either LexerError ([Token], [LexerWarning])</span>
+<span class="lineno">   84 </span><span class="spaces">  </span><span class="istickedoff">--TODO: Give options to the lexer</span>
+<span class="lineno">   85 </span><span class="spaces">  </span><span class="istickedoff">let lexed = lexer <span class="nottickedoff">[]</span> filename input</span>
+<span class="lineno">   86 </span><span class="spaces">  </span><span class="istickedoff">in case lexed of</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">Errors $ lexerErrors err</span></span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">--TODO: Do something with the warnings. The warnings cannot be shown with the current Guarded data type</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">Right (tokens, _)  -&gt; whenChecked (parse parser <span class="nottickedoff">filename</span> tokens) Checked</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>-- In order to read derivation rules, we use the Ampersand parser.
+<span class="lineno">   92 </span>-- Since it is applied on static code only, error messagea may be produced as fatals.
+<span class="lineno">   93 </span>parseRule :: String -&gt; Term TermPrim
+<span class="lineno">   94 </span><span class="decl"><span class="nottickedoff">parseRule str</span>
+<span class="lineno">   95 </span><span class="spaces">   </span><span class="nottickedoff">= case  runParser pRule &quot;inside Haskell code&quot; str of</span>
+<span class="lineno">   96 </span><span class="spaces">       </span><span class="nottickedoff">Checked result -&gt; result</span>
+<span class="lineno">   97 </span><span class="spaces">       </span><span class="nottickedoff">Errors  msg    -&gt; fatal 274 (&quot;Parse errors in &quot;++str++&quot;:\n   &quot;++show msg)</span></span>
+<span class="lineno">   98 </span>
+<span class="lineno">   99 </span>-- | Parse isolated ADL1 expression strings
+<span class="lineno">  100 </span>parseADL1pExpr :: String            -- ^ The string to be parsed
+<span class="lineno">  101 </span>               -&gt; FilePath          -- ^ The name of the file (used for error messages)
+<span class="lineno">  102 </span>               -&gt; Either String (Term TermPrim)  -- ^ The result: Either an error message,  or a good result
+<span class="lineno">  103 </span><span class="decl"><span class="nottickedoff">parseADL1pExpr str fn =</span>
+<span class="lineno">  104 </span><span class="spaces">  </span><span class="nottickedoff">case runParser pTerm fn str of</span>
+<span class="lineno">  105 </span><span class="spaces">      </span><span class="nottickedoff">Checked result -&gt; Right result</span>
+<span class="lineno">  106 </span><span class="spaces">      </span><span class="nottickedoff">Errors  msg    -&gt; Left $ &quot;Parse errors:\n&quot;++show msg</span></span>
+<span class="lineno">  107 </span>
+<span class="lineno">  108 </span>parseCtx :: FilePath -&gt; String -&gt; Guarded (P_Context, [String])
+<span class="lineno">  109 </span><span class="decl"><span class="istickedoff">parseCtx = runParser pContext</span></span>
+
+</pre>
+</body>
+</html>

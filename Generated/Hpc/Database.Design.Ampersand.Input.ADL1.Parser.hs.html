@@ -1,0 +1,764 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-enable-rewrite-rules #-} -- Disable rewrite rules to drastically improve compilation speed
+<span class="lineno">    2 </span>{-# LANGUAGE FlexibleContexts #-}
+<span class="lineno">    3 </span>module Database.Design.Ampersand.Input.ADL1.Parser(
+<span class="lineno">    4 </span>    AmpParser, pContext, pPopulations, pTerm, pRule
+<span class="lineno">    5 </span>) where
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>--TODO! Haddock comments to the parser
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>import Database.Design.Ampersand.Basics (fatalMsg)
+<span class="lineno">   10 </span>import Database.Design.Ampersand.Core.ParseTree
+<span class="lineno">   11 </span>--TODO! Remove or at least simplify the parsing lib
+<span class="lineno">   12 </span>import Database.Design.Ampersand.Input.ADL1.ParsingLib
+<span class="lineno">   13 </span>import Data.List
+<span class="lineno">   14 </span>import Data.Maybe
+<span class="lineno">   15 </span>import Control.Applicative(pure)
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   18 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Input.ADL1.Parser&quot;</span></span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>--to parse files containing only populations
+<span class="lineno">   21 </span>--- Populations ::= Population+
+<span class="lineno">   22 </span>pPopulations :: AmpParser [P_Population]
+<span class="lineno">   23 </span><span class="decl"><span class="nottickedoff">pPopulations = many1 pPopulation</span></span>
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>--- Context ::= 'CONTEXT' ConceptName LanguageRef TextMarkup? ContextElement* 'ENDCONTEXT'
+<span class="lineno">   26 </span>pContext :: AmpParser (P_Context, [String]) -- the result is the parsed context and a list of include filenames
+<span class="lineno">   27 </span><span class="decl"><span class="istickedoff">pContext  = rebuild &lt;$&gt; posOf (pKey &quot;CONTEXT&quot;)</span>
+<span class="lineno">   28 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pConceptName</span>
+<span class="lineno">   29 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pLanguageRef</span>
+<span class="lineno">   30 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pMaybe pTextMarkup</span>
+<span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; many pContextElement</span>
+<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*  pKey &quot;ENDCONTEXT&quot;</span>
+<span class="lineno">   33 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">rebuild :: Origin -&gt; String -&gt; Lang -&gt; Maybe PandocFormat -&gt; [ContextElement] -&gt; (P_Context, [String])</span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">rebuild    pos       nm        lang          fmt                   ces</span>
+<span class="lineno">   36 </span><span class="spaces">     </span><span class="istickedoff">= (PCtx{ ctx_nm     = nm</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">, ctx_pos    = <span class="nottickedoff">[pos]</span></span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">, ctx_lang   = lang</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">, ctx_markup = fmt</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">, ctx_thms   = (nub.concat) [xs | CThm xs&lt;-ces] -- Names of patterns to be printed in the functional specification. (For partial documents.)</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">, ctx_pats   = [p | CPat p&lt;-ces]       -- The patterns defined in this context</span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">, ctx_rs     = [p | CRul p&lt;-ces]       -- All user defined rules in this context, but outside patterns</span>
+<span class="lineno">   43 </span><span class="spaces">            </span><span class="istickedoff">, ctx_ds     = [p | CRel p&lt;-ces]       -- The relations defined in this context, outside the scope of patterns</span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">, ctx_cs     = [c <span class="nottickedoff">(&quot;CONTEXT &quot;++nm)</span> | CCon c&lt;-ces]    -- The concept definitions defined in this context, outside the scope of patterns</span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">, ctx_gs     = [g | CGen g&lt;-ces] ++ [y | CCfy y&lt;-ces] -- The gen definitions defined in this context, outside the scope of patterns</span>
+<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">, ctx_ks     = [k | CIndx k&lt;-ces]      -- The identity definitions defined in this context, outside the scope of patterns</span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">, ctx_rrules = []  -- TODO: Allow MAINTAINS statements in the context</span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">, ctx_rrels  = []  -- TODO: Allow EDITS statements in the context</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="istickedoff">, ctx_vs     = [v | CView v&lt;-ces]      -- The view definitions defined in this context, outside the scope of patterns</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff">, ctx_ifcs   = [s | Cifc s&lt;-ces]       -- The interfaces defined in this context, outside the scope of patterns -- fatal 78 (&quot;Diagnostic: &quot;++concat [&quot;\n\n   &quot;++show ifc | Cifc ifc&lt;-ces])</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">, ctx_sql    = [p | CSqlPlug p&lt;-ces]   -- user defined sqlplugs, taken from the Ampersand scriptplug&lt;-ces]</span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff">, ctx_php    = [p | CPhpPlug p&lt;-ces]   -- user defined phpplugs, taken from the Ampersand script</span>
+<span class="lineno">   53 </span><span class="spaces">            </span><span class="istickedoff">, ctx_ps     = [e | CPrp e&lt;-ces]       -- The purposes defined in this context, outside the scope of patterns</span>
+<span class="lineno">   54 </span><span class="spaces">            </span><span class="istickedoff">, ctx_pops   = [p | CPop p&lt;-ces]       -- The populations defined in this contextplug&lt;-ces]</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="istickedoff">, ctx_metas  = [meta | CMeta meta &lt;-ces]</span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="istickedoff">}</span>
+<span class="lineno">   57 </span><span class="spaces">       </span><span class="istickedoff">, [s | CIncl s&lt;-ces]) -- the INCLUDE filenames</span>
+<span class="lineno">   58 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff">--- ContextElement ::= Meta | PatternDef | ProcessDef | RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Interface | Sqlplug | Phpplug | Purpose | Population | PrintThemes | IncludeStatement</span>
+<span class="lineno">   60 </span><span class="spaces">    </span><span class="istickedoff">pContextElement :: AmpParser ContextElement</span>
+<span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff">pContextElement = CMeta    &lt;$&gt; pMeta         &lt;|&gt;</span>
+<span class="lineno">   62 </span><span class="spaces">                      </span><span class="istickedoff">CPat     &lt;$&gt; pPatternDef   &lt;|&gt;</span>
+<span class="lineno">   63 </span><span class="spaces">                      </span><span class="istickedoff">CPat     &lt;$&gt; pProcessDef   &lt;|&gt;</span>
+<span class="lineno">   64 </span><span class="spaces">                      </span><span class="istickedoff">CRul     &lt;$&gt; pRuleDef      &lt;|&gt;</span>
+<span class="lineno">   65 </span><span class="spaces">                      </span><span class="istickedoff">CCfy     &lt;$&gt; pClassify     &lt;|&gt;</span>
+<span class="lineno">   66 </span><span class="spaces">                      </span><span class="istickedoff">CRel     &lt;$&gt; pRelationDef  &lt;|&gt;</span>
+<span class="lineno">   67 </span><span class="spaces">                      </span><span class="istickedoff">CCon     &lt;$&gt; pConceptDef   &lt;|&gt;</span>
+<span class="lineno">   68 </span><span class="spaces">                      </span><span class="istickedoff">CGen     &lt;$&gt; pGenDef       &lt;|&gt;</span>
+<span class="lineno">   69 </span><span class="spaces">                      </span><span class="istickedoff">CIndx    &lt;$&gt; pIndex        &lt;|&gt;</span>
+<span class="lineno">   70 </span><span class="spaces">                      </span><span class="istickedoff">CView    &lt;$&gt; pViewDef      &lt;|&gt;</span>
+<span class="lineno">   71 </span><span class="spaces">                      </span><span class="istickedoff">Cifc     &lt;$&gt; pInterface    &lt;|&gt;</span>
+<span class="lineno">   72 </span><span class="spaces">                      </span><span class="istickedoff">CSqlPlug &lt;$&gt; pSqlplug      &lt;|&gt;</span>
+<span class="lineno">   73 </span><span class="spaces">                      </span><span class="istickedoff">CPhpPlug &lt;$&gt; pPhpplug      &lt;|&gt;</span>
+<span class="lineno">   74 </span><span class="spaces">                      </span><span class="istickedoff">CPrp     &lt;$&gt; pPurpose      &lt;|&gt;</span>
+<span class="lineno">   75 </span><span class="spaces">                      </span><span class="istickedoff">CPop     &lt;$&gt; pPopulation   &lt;|&gt;</span>
+<span class="lineno">   76 </span><span class="spaces">                      </span><span class="istickedoff">CThm     &lt;$&gt; pPrintThemes  &lt;|&gt;</span>
+<span class="lineno">   77 </span><span class="spaces">                      </span><span class="istickedoff">CIncl    &lt;$&gt; pIncludeStatement</span></span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>data ContextElement = CMeta Meta
+<span class="lineno">   80 </span>                    | CPat P_Pattern
+<span class="lineno">   81 </span>                    | CRul (P_Rule TermPrim)
+<span class="lineno">   82 </span>                    | CCfy P_Gen
+<span class="lineno">   83 </span>                    | CRel P_Declaration
+<span class="lineno">   84 </span>                    | CCon (String -&gt; ConceptDef)
+<span class="lineno">   85 </span>                    | CGen P_Gen
+<span class="lineno">   86 </span>                    | CIndx P_IdentDef
+<span class="lineno">   87 </span>                    | CView P_ViewDef
+<span class="lineno">   88 </span>                    | Cifc P_Interface
+<span class="lineno">   89 </span>                    | CSqlPlug P_ObjectDef
+<span class="lineno">   90 </span>                    | CPhpPlug P_ObjectDef
+<span class="lineno">   91 </span>                    | CPrp PPurpose
+<span class="lineno">   92 </span>                    | CPop P_Population
+<span class="lineno">   93 </span>                    | CThm [String]    -- a list of themes to be printed in the functional specification. These themes must be PATTERN or PROCESS names.
+<span class="lineno">   94 </span>                    | CIncl String     -- an INCLUDE statement
+<span class="lineno">   95 </span>
+<span class="lineno">   96 </span>--- IncludeStatement ::= 'INCLUDE' String
+<span class="lineno">   97 </span>pIncludeStatement :: AmpParser String
+<span class="lineno">   98 </span><span class="decl"><span class="istickedoff">pIncludeStatement = pKey &quot;INCLUDE&quot; *&gt; pString</span></span>
+<span class="lineno">   99 </span>
+<span class="lineno">  100 </span>--- LanguageRef ::= 'IN' ('DUTCH' | 'ENGLISH')
+<span class="lineno">  101 </span>pLanguageRef :: AmpParser Lang
+<span class="lineno">  102 </span><span class="decl"><span class="istickedoff">pLanguageRef = pKey &quot;IN&quot; *&gt;</span>
+<span class="lineno">  103 </span><span class="spaces">               </span><span class="istickedoff">(Dutch   &lt;$ pKey &quot;DUTCH&quot;   &lt;|&gt;</span>
+<span class="lineno">  104 </span><span class="spaces">                </span><span class="istickedoff">English &lt;$ pKey &quot;ENGLISH&quot;)</span></span>
+<span class="lineno">  105 </span>
+<span class="lineno">  106 </span>--- TextMarkup ::= 'REST' | 'HTML' | 'LATEX' | 'MARKDOWN'
+<span class="lineno">  107 </span>pTextMarkup :: AmpParser PandocFormat
+<span class="lineno">  108 </span><span class="decl"><span class="istickedoff">pTextMarkup = ReST     &lt;$ pKey &quot;REST&quot;     &lt;|&gt;</span>
+<span class="lineno">  109 </span><span class="spaces">              </span><span class="istickedoff">HTML     &lt;$ pKey &quot;HTML&quot;     &lt;|&gt;</span>
+<span class="lineno">  110 </span><span class="spaces">              </span><span class="istickedoff">LaTeX    &lt;$ pKey &quot;LATEX&quot;    &lt;|&gt;</span>
+<span class="lineno">  111 </span><span class="spaces">              </span><span class="istickedoff">Markdown &lt;$ pKey &quot;MARKDOWN&quot;</span></span>
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>--- Meta ::= 'META' String String
+<span class="lineno">  114 </span>pMeta :: AmpParser Meta
+<span class="lineno">  115 </span><span class="decl"><span class="istickedoff">pMeta = Meta &lt;$&gt; currPos &lt;* pKey &quot;META&quot; &lt;*&gt; pMetaObj &lt;*&gt; pString &lt;*&gt; pString</span>
+<span class="lineno">  116 </span><span class="spaces"> </span><span class="istickedoff">where pMetaObj = return ContextMeta</span></span> -- for the context meta we don't need a keyword
+<span class="lineno">  117 </span>
+<span class="lineno">  118 </span>--- PatternDef ::= 'PATTERN' ConceptName PatElem* 'ENDPATTERN'
+<span class="lineno">  119 </span>pPatternDef :: AmpParser P_Pattern
+<span class="lineno">  120 </span><span class="decl"><span class="istickedoff">pPatternDef = rebuild &lt;$&gt; currPos</span>
+<span class="lineno">  121 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pKey &quot;PATTERN&quot;</span>
+<span class="lineno">  122 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pConceptName   -- The name spaces of patterns, processes and concepts are shared.</span>
+<span class="lineno">  123 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; many pPatElem</span>
+<span class="lineno">  124 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; currPos</span>
+<span class="lineno">  125 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pKey &quot;ENDPATTERN&quot;</span>
+<span class="lineno">  126 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">  127 </span><span class="spaces">    </span><span class="istickedoff">rebuild :: Origin -&gt; String -&gt; [PatElem] -&gt; Origin -&gt; P_Pattern</span>
+<span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">rebuild pos' nm pes end</span>
+<span class="lineno">  129 </span><span class="spaces">     </span><span class="istickedoff">= P_Pat { pt_pos = <span class="nottickedoff">pos'</span></span>
+<span class="lineno">  130 </span><span class="spaces">             </span><span class="istickedoff">, pt_nm  = nm</span>
+<span class="lineno">  131 </span><span class="spaces">             </span><span class="istickedoff">, pt_rls = [r | Pr r&lt;-pes]</span>
+<span class="lineno">  132 </span><span class="spaces">             </span><span class="istickedoff">, pt_gns = [y | Py y&lt;-pes] ++ [g | Pg g&lt;-pes]</span>
+<span class="lineno">  133 </span><span class="spaces">             </span><span class="istickedoff">, pt_dcs = [d | Pd d&lt;-pes]</span>
+<span class="lineno">  134 </span><span class="spaces">             </span><span class="istickedoff">, pt_RRuls = [<span class="nottickedoff">rr</span> | Pm rr&lt;-pes]</span>
+<span class="lineno">  135 </span><span class="spaces">             </span><span class="istickedoff">, pt_RRels = [<span class="nottickedoff">rr</span> | Pl rr&lt;-pes]</span>
+<span class="lineno">  136 </span><span class="spaces">             </span><span class="istickedoff">, pt_cds = [c <span class="nottickedoff">nm</span> | Pc c&lt;-pes]</span>
+<span class="lineno">  137 </span><span class="spaces">             </span><span class="istickedoff">, pt_ids = [k | Pk k&lt;-pes]</span>
+<span class="lineno">  138 </span><span class="spaces">             </span><span class="istickedoff">, pt_vds = [v | Pv v&lt;-pes]</span>
+<span class="lineno">  139 </span><span class="spaces">             </span><span class="istickedoff">, pt_xps = [e | Pe e&lt;-pes]</span>
+<span class="lineno">  140 </span><span class="spaces">             </span><span class="istickedoff">, pt_pop = [p | Pp p&lt;-pes]</span>
+<span class="lineno">  141 </span><span class="spaces">             </span><span class="istickedoff">, pt_end = <span class="nottickedoff">end</span></span>
+<span class="lineno">  142 </span><span class="spaces">             </span><span class="istickedoff">}</span></span>
+<span class="lineno">  143 </span>
+<span class="lineno">  144 </span>--- ProcessDef ::= 'PROCESS' ConceptName PatElem* 'ENDPROCESS'
+<span class="lineno">  145 </span>pProcessDef :: AmpParser P_Pattern
+<span class="lineno">  146 </span><span class="decl"><span class="istickedoff">pProcessDef = rebuild &lt;$&gt; currPos</span>
+<span class="lineno">  147 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pKey &quot;PROCESS&quot;</span>
+<span class="lineno">  148 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pConceptName   -- The name spaces of patterns, processes and concepts are shared.</span>
+<span class="lineno">  149 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; many pPatElem</span>
+<span class="lineno">  150 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; currPos</span>
+<span class="lineno">  151 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pKey &quot;ENDPROCESS&quot;</span>
+<span class="lineno">  152 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">  153 </span><span class="spaces">    </span><span class="istickedoff">rebuild :: Origin -&gt; String -&gt; [PatElem] -&gt; Origin -&gt; P_Pattern</span>
+<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff">rebuild pos' nm pes end</span>
+<span class="lineno">  155 </span><span class="spaces">     </span><span class="istickedoff">= P_Pat { pt_pos = <span class="nottickedoff">pos'</span></span>
+<span class="lineno">  156 </span><span class="spaces">             </span><span class="istickedoff">, pt_nm  = nm</span>
+<span class="lineno">  157 </span><span class="spaces">             </span><span class="istickedoff">, pt_rls = [r | Pr r&lt;-pes]</span>
+<span class="lineno">  158 </span><span class="spaces">             </span><span class="istickedoff">, pt_gns = [y | Py y&lt;-pes] ++ [g | Pg g&lt;-pes]</span>
+<span class="lineno">  159 </span><span class="spaces">             </span><span class="istickedoff">, pt_dcs = [d | Pd d&lt;-pes]</span>
+<span class="lineno">  160 </span><span class="spaces">             </span><span class="istickedoff">, pt_RRuls = [rr | Pm rr&lt;-pes]</span>
+<span class="lineno">  161 </span><span class="spaces">             </span><span class="istickedoff">, pt_RRels = [rr | Pl rr&lt;-pes]</span>
+<span class="lineno">  162 </span><span class="spaces">             </span><span class="istickedoff">, pt_cds = [c <span class="nottickedoff">nm</span> | Pc c&lt;-pes]</span>
+<span class="lineno">  163 </span><span class="spaces">             </span><span class="istickedoff">, pt_ids = [k | Pk k&lt;-pes]</span>
+<span class="lineno">  164 </span><span class="spaces">             </span><span class="istickedoff">, pt_vds = [v | Pv v&lt;-pes]</span>
+<span class="lineno">  165 </span><span class="spaces">             </span><span class="istickedoff">, pt_xps = [e | Pe e&lt;-pes]</span>
+<span class="lineno">  166 </span><span class="spaces">             </span><span class="istickedoff">, pt_pop = [p | Pp p&lt;-pes]</span>
+<span class="lineno">  167 </span><span class="spaces">             </span><span class="istickedoff">, pt_end = <span class="nottickedoff">end</span></span>
+<span class="lineno">  168 </span><span class="spaces">             </span><span class="istickedoff">}</span></span>
+<span class="lineno">  169 </span>
+<span class="lineno">  170 </span>-- PatElem used by PATTERN and PROCESS
+<span class="lineno">  171 </span>--- PatElem ::= RuleDef | Classify | RelationDef | ConceptDef | GenDef | Index | ViewDef | Purpose | Population
+<span class="lineno">  172 </span>pPatElem :: AmpParser PatElem
+<span class="lineno">  173 </span><span class="decl"><span class="istickedoff">pPatElem = Pr &lt;$&gt; pRuleDef          &lt;|&gt;</span>
+<span class="lineno">  174 </span><span class="spaces">           </span><span class="istickedoff">Py &lt;$&gt; pClassify         &lt;|&gt;</span>
+<span class="lineno">  175 </span><span class="spaces">           </span><span class="istickedoff">Pd &lt;$&gt; pRelationDef      &lt;|&gt;</span>
+<span class="lineno">  176 </span><span class="spaces">                   </span><span class="istickedoff">-- the syntax of pRoleRule and pRoleRelation shows an ambiguity</span>
+<span class="lineno">  177 </span><span class="spaces">                   </span><span class="istickedoff">-- Syntax review can be considered</span>
+<span class="lineno">  178 </span><span class="spaces">           </span><span class="istickedoff">Pm &lt;$&gt; pRoleRule         &lt;|&gt;</span>
+<span class="lineno">  179 </span><span class="spaces">           </span><span class="istickedoff">Pl &lt;$&gt; pRoleRelation     &lt;|&gt;</span>
+<span class="lineno">  180 </span><span class="spaces">           </span><span class="istickedoff">Pc &lt;$&gt; pConceptDef       &lt;|&gt;</span>
+<span class="lineno">  181 </span><span class="spaces">           </span><span class="istickedoff">Pg &lt;$&gt; pGenDef           &lt;|&gt;</span>
+<span class="lineno">  182 </span><span class="spaces">           </span><span class="istickedoff">Pk &lt;$&gt; pIndex            &lt;|&gt;</span>
+<span class="lineno">  183 </span><span class="spaces">           </span><span class="istickedoff">Pv &lt;$&gt; pViewDef          &lt;|&gt;</span>
+<span class="lineno">  184 </span><span class="spaces">           </span><span class="istickedoff">Pe &lt;$&gt; pPurpose          &lt;|&gt;</span>
+<span class="lineno">  185 </span><span class="spaces">           </span><span class="istickedoff">Pp &lt;$&gt; pPopulation</span></span>
+<span class="lineno">  186 </span>
+<span class="lineno">  187 </span>data PatElem = Pr (P_Rule TermPrim)
+<span class="lineno">  188 </span>             | Py P_Gen
+<span class="lineno">  189 </span>             | Pd P_Declaration
+<span class="lineno">  190 </span>             | Pm P_RoleRule
+<span class="lineno">  191 </span>             | Pl P_RoleRelation
+<span class="lineno">  192 </span>             | Pc (String -&gt; ConceptDef)
+<span class="lineno">  193 </span>             | Pg P_Gen
+<span class="lineno">  194 </span>             | Pk P_IdentDef
+<span class="lineno">  195 </span>             | Pv P_ViewDef
+<span class="lineno">  196 </span>             | Pe PPurpose
+<span class="lineno">  197 </span>             | Pp P_Population
+<span class="lineno">  198 </span>
+<span class="lineno">  199 </span>--- Classify ::= 'CLASSIFY' ConceptRef 'IS' Cterm
+<span class="lineno">  200 </span>pClassify :: AmpParser P_Gen   -- Example: CLASSIFY A IS B /\ C /\ D
+<span class="lineno">  201 </span><span class="decl"><span class="istickedoff">pClassify = try (P_Cy &lt;$&gt; currPos</span>
+<span class="lineno">  202 </span><span class="spaces">                      </span><span class="istickedoff">&lt;* pKey &quot;CLASSIFY&quot;</span>
+<span class="lineno">  203 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pConceptRef</span>
+<span class="lineno">  204 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pKey &quot;IS&quot;)</span>
+<span class="lineno">  205 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; pCterm</span>
+<span class="lineno">  206 </span><span class="spaces">               </span><span class="istickedoff">where</span>
+<span class="lineno">  207 </span><span class="spaces">                 </span><span class="istickedoff">--- Cterm ::= Cterm1 ('/\' Cterm1)*</span>
+<span class="lineno">  208 </span><span class="spaces">                 </span><span class="istickedoff">--- Cterm1 ::= ConceptRef | ('('? Cterm ')'?)</span>
+<span class="lineno">  209 </span><span class="spaces">                 </span><span class="istickedoff">pCterm  = concat &lt;$&gt; pCterm1 `sepBy1` pOperator &quot;/\\&quot;</span>
+<span class="lineno">  210 </span><span class="spaces">                 </span><span class="istickedoff">pCterm1 = pure   &lt;$&gt; pConceptRef &lt;|&gt;</span>
+<span class="lineno">  211 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">id     &lt;$&gt; pParens pCterm</span></span></span>  -- brackets are allowed for educational reasons.
+<span class="lineno">  212 </span>
+<span class="lineno">  213 </span>--- RuleDef ::= 'RULE' Label? Rule Meaning* Message* Violation?
+<span class="lineno">  214 </span>pRuleDef :: AmpParser (P_Rule TermPrim)
+<span class="lineno">  215 </span><span class="decl"><span class="istickedoff">pRuleDef =  P_Ru &lt;$&gt; currPos</span>
+<span class="lineno">  216 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*  pKey &quot;RULE&quot;</span>
+<span class="lineno">  217 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; (try pLabel &lt;|&gt; rulid &lt;$&gt; currPos)</span>
+<span class="lineno">  218 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; pRule</span>
+<span class="lineno">  219 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; many pMeaning</span>
+<span class="lineno">  220 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; many pMessage</span>
+<span class="lineno">  221 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; pMaybe pViolation</span>
+<span class="lineno">  222 </span><span class="spaces">           </span><span class="istickedoff">where rulid (FileLoc pos _) = &quot;rule@&quot; ++ show (show pos)</span>
+<span class="lineno">  223 </span><span class="spaces">                 </span><span class="istickedoff">rulid _ = <span class="nottickedoff">fatal 226 &quot;pRuleDef is expecting a file location.&quot;</span></span>
+<span class="lineno">  224 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  225 </span><span class="spaces">                 </span><span class="istickedoff">--- Violation ::= 'VIOLATION' PairView</span>
+<span class="lineno">  226 </span><span class="spaces">                 </span><span class="istickedoff">pViolation :: AmpParser (PairView (Term TermPrim))</span>
+<span class="lineno">  227 </span><span class="spaces">                 </span><span class="istickedoff">pViolation = id &lt;$ pKey &quot;VIOLATION&quot; &lt;*&gt; pPairView</span>
+<span class="lineno">  228 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  229 </span><span class="spaces">                 </span><span class="istickedoff">--- PairView ::= '(' PairViewSegmentList ')'</span>
+<span class="lineno">  230 </span><span class="spaces">                 </span><span class="istickedoff">pPairView :: AmpParser (PairView (Term TermPrim))</span>
+<span class="lineno">  231 </span><span class="spaces">                 </span><span class="istickedoff">pPairView = PairView &lt;$&gt; pParens (pPairViewSegment `sepBy1` pComma)</span>
+<span class="lineno">  232 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  233 </span><span class="spaces">                 </span><span class="istickedoff">--- PairViewSegmentList ::= PairViewSegment (',' PairViewSegment)*</span>
+<span class="lineno">  234 </span><span class="spaces">                 </span><span class="istickedoff">--- PairViewSegment ::= 'SRC' Term | 'TGT' Term | 'TXT' String</span>
+<span class="lineno">  235 </span><span class="spaces">                 </span><span class="istickedoff">pPairViewSegment :: AmpParser (PairViewSegment (Term TermPrim))</span>
+<span class="lineno">  236 </span><span class="spaces">                 </span><span class="istickedoff">pPairViewSegment = PairViewExp  &lt;$&gt; posOf (pKey &quot;SRC&quot;) &lt;*&gt; return Src &lt;*&gt; pTerm</span>
+<span class="lineno">  237 </span><span class="spaces">                                </span><span class="istickedoff">&lt;|&gt; PairViewExp  &lt;$&gt; posOf (pKey &quot;TGT&quot;) &lt;*&gt; return Tgt &lt;*&gt; pTerm</span>
+<span class="lineno">  238 </span><span class="spaces">                                </span><span class="istickedoff">&lt;|&gt; PairViewText &lt;$&gt; posOf (pKey &quot;TXT&quot;) &lt;*&gt; pString</span></span>
+<span class="lineno">  239 </span>
+<span class="lineno">  240 </span>--- RelationDef ::= (RelationNew | RelationOld) 'BYPLUG'? Props? 'BYPLUG'? ('PRAGMA' String+)? Meaning* ('=' Content)? '.'?
+<span class="lineno">  241 </span>pRelationDef :: AmpParser P_Declaration
+<span class="lineno">  242 </span><span class="decl"><span class="istickedoff">pRelationDef = reorder &lt;$&gt; currPos</span>
+<span class="lineno">  243 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; (pRelationNew &lt;|&gt; pRelationOld)</span>
+<span class="lineno">  244 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; pIsThere (pKey &quot;BYPLUG&quot;)</span>
+<span class="lineno">  245 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; optList pProps</span>
+<span class="lineno">  246 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; pIsThere (pKey &quot;BYPLUG&quot;)</span>
+<span class="lineno">  247 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; optList (pKey &quot;PRAGMA&quot; *&gt; many1 pString)</span>
+<span class="lineno">  248 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; many pMeaning</span>
+<span class="lineno">  249 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; optList (pOperator &quot;=&quot; *&gt; pContent)</span>
+<span class="lineno">  250 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*  optList (pOperator &quot;.&quot;)</span>
+<span class="lineno">  251 </span><span class="spaces">            </span><span class="istickedoff">where reorder pos (nm,sign,fun) bp1 prop bp2 pragma meanings popu =</span>
+<span class="lineno">  252 </span><span class="spaces">                    </span><span class="istickedoff">let plug = bp1 || bp2</span>
+<span class="lineno">  253 </span><span class="spaces">                        </span><span class="istickedoff">props = prop ++ fun</span>
+<span class="lineno">  254 </span><span class="spaces">                    </span><span class="istickedoff">in P_Sgn nm sign props pragma meanings popu <span class="nottickedoff">pos</span> plug</span></span>
+<span class="lineno">  255 </span>
+<span class="lineno">  256 </span>--- RelationNew ::= 'RELATION' Varid Sign
+<span class="lineno">  257 </span>pRelationNew :: AmpParser (String,P_Sign,Props)
+<span class="lineno">  258 </span><span class="decl"><span class="istickedoff">pRelationNew = (,,) &lt;$  pKey &quot;RELATION&quot;</span>
+<span class="lineno">  259 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pVarid</span>
+<span class="lineno">  260 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pSign</span>
+<span class="lineno">  261 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; return []</span></span>
+<span class="lineno">  262 </span>
+<span class="lineno">  263 </span>--- RelationOld ::= Varid '::' ConceptRef Fun ConceptRef
+<span class="lineno">  264 </span>pRelationOld :: AmpParser (String,P_Sign,Props)
+<span class="lineno">  265 </span><span class="decl"><span class="istickedoff">pRelationOld = <span class="nottickedoff">relOld</span> &lt;$&gt; pVarid</span>
+<span class="lineno">  266 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pOperator &quot;::&quot;</span>
+<span class="lineno">  267 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pConceptRef</span>
+<span class="lineno">  268 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pFun</span>
+<span class="lineno">  269 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pConceptRef</span>
+<span class="lineno">  270 </span><span class="spaces">            </span><span class="istickedoff">where <span class="nottickedoff">relOld nm src fun tgt = (nm,P_Sign src tgt,fun)</span></span></span>
+<span class="lineno">  271 </span>
+<span class="lineno">  272 </span>--- Props ::= '[' PropList? ']'
+<span class="lineno">  273 </span>pProps :: AmpParser [Prop]
+<span class="lineno">  274 </span><span class="decl"><span class="istickedoff">pProps  = normalizeProps &lt;$&gt; pBrackets (pProp `sepBy` pComma)</span>
+<span class="lineno">  275 </span><span class="spaces">        </span><span class="istickedoff">--- PropList ::= Prop (',' Prop)*</span>
+<span class="lineno">  276 </span><span class="spaces">        </span><span class="istickedoff">--- Prop ::= 'UNI' | 'INJ' | 'SUR' | 'TOT' | 'SYM' | 'ASY' | 'TRN' | 'RFX' | 'IRF' | 'AUT' | 'PROP'</span>
+<span class="lineno">  277 </span><span class="spaces">  </span><span class="istickedoff">where pProp :: AmpParser Prop</span>
+<span class="lineno">  278 </span><span class="spaces">        </span><span class="istickedoff">pProp = choice [ p &lt;$ pKey (show p) | p &lt;- [minBound..] ]</span></span>
+<span class="lineno">  279 </span>
+<span class="lineno">  280 </span>--- Fun ::= '*' | '-&gt;' | '&lt;-' | '[' Mults ']'
+<span class="lineno">  281 </span>pFun :: AmpParser [Prop]
+<span class="lineno">  282 </span><span class="decl"><span class="istickedoff">pFun  = <span class="nottickedoff">[]</span>        &lt;$ pOperator &quot;*&quot;  &lt;|&gt;</span>
+<span class="lineno">  283 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[Uni,Tot]</span> &lt;$ pOperator &quot;-&gt;&quot; &lt;|&gt;</span>
+<span class="lineno">  284 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[Sur,Inj] &lt;$ pOperator &quot;&lt;-&quot; &lt;|&gt;</span></span>
+<span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pBrackets pMults</span></span>
+<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff">--- Mults ::= Mult '-' Mult</span>
+<span class="lineno">  287 </span><span class="spaces">  </span><span class="istickedoff">where pMults :: AmpParser [Prop]</span>
+<span class="lineno">  288 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pMults = (++) &lt;$&gt; optList (pMult (Sur,Inj))</span></span>
+<span class="lineno">  289 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">&lt;*  pDash</span></span>
+<span class="lineno">  290 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">&lt;*&gt; optList (pMult (Tot,Uni))</span></span>
+<span class="lineno">  291 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  292 </span><span class="spaces">        </span><span class="istickedoff">--- Mult ::= ('0' | '1') '..' ('1' | '*') | '*' | '1'</span>
+<span class="lineno">  293 </span><span class="spaces">        </span><span class="istickedoff">--TODO: refactor to Mult ::= '0' '..' ('1' | '*') | '1'('..' ('1' | '*'))? | '*'</span>
+<span class="lineno">  294 </span><span class="spaces">        </span><span class="istickedoff">pMult :: (Prop,Prop) -&gt; AmpParser [Prop]</span>
+<span class="lineno">  295 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pMult (ts,ui) = (++) &lt;$&gt; ([]    &lt;$ pZero   &lt;|&gt; [ts] &lt;$ try pOne)</span></span>
+<span class="lineno">  296 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">&lt;*  pOperator &quot;..&quot;</span></span>
+<span class="lineno">  297 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">&lt;*&gt; ([ui] &lt;$ try pOne &lt;|&gt; ([]   &lt;$ pOperator &quot;*&quot; )) &lt;|&gt;</span></span>
+<span class="lineno">  298 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[] &lt;$ pOperator &quot;*&quot;  &lt;|&gt;</span></span>
+<span class="lineno">  299 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ts,ui] &lt;$ try pOne</span></span></span>
+<span class="lineno">  300 </span>
+<span class="lineno">  301 </span>--- ConceptDef ::= 'CONCEPT' ConceptName 'BYPLUG'? String ('TYPE' String)? String?
+<span class="lineno">  302 </span>pConceptDef :: AmpParser (String-&gt;ConceptDef)
+<span class="lineno">  303 </span><span class="decl"><span class="istickedoff">pConceptDef       = Cd &lt;$&gt; currPos</span>
+<span class="lineno">  304 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*  pKey &quot;CONCEPT&quot;</span>
+<span class="lineno">  305 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; pConceptName           -- the concept name</span>
+<span class="lineno">  306 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; pIsThere (pKey &quot;BYPLUG&quot;)</span>
+<span class="lineno">  307 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; pString                -- the definition text</span>
+<span class="lineno">  308 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; optList (pKey &quot;TYPE&quot; *&gt; pString)     -- the type of the concept.</span>
+<span class="lineno">  309 </span><span class="spaces">                       </span><span class="istickedoff">&lt;*&gt; (pString `opt` &quot;&quot;)</span></span>     -- a reference to the source of this definition.
+<span class="lineno">  310 </span>
+<span class="lineno">  311 </span>--- GenDef ::= ('CLASSIFY' | 'SPEC') ConceptRef 'ISA' ConceptRef
+<span class="lineno">  312 </span>pGenDef :: AmpParser P_Gen
+<span class="lineno">  313 </span><span class="decl"><span class="istickedoff">pGenDef = try (PGen &lt;$&gt; currPos &lt;* key &lt;*&gt; pConceptRef &lt;* pKey &quot;ISA&quot;) &lt;*&gt; pConceptRef --</span>
+<span class="lineno">  314 </span><span class="spaces">          </span><span class="istickedoff">where key = pKey &quot;CLASSIFY&quot; &lt;|&gt; pKey &quot;SPEC&quot;</span></span>
+<span class="lineno">  315 </span>
+<span class="lineno">  316 </span>-- | A identity definition looks like:   IDENT onNameAdress : Person(name, address),
+<span class="lineno">  317 </span>-- which means that name&lt;&gt;name~ /\ address&lt;&gt;addres~ |- I[Person].
+<span class="lineno">  318 </span>-- The label 'onNameAddress' is used to refer to this identity.
+<span class="lineno">  319 </span>-- You may also use an expression on each attribute place, for example: IDENT onpassport: Person(nationality, passport;documentnr),
+<span class="lineno">  320 </span>-- which means that nationality&lt;&gt;nationality~ /\ passport;documentnr&lt;&gt;(passport;documentnr)~ |- I[Person].
+<span class="lineno">  321 </span>--- Index ::= 'IDENT' Label ConceptRef '(' IndSegmentList ')'
+<span class="lineno">  322 </span>pIndex :: AmpParser P_IdentDef
+<span class="lineno">  323 </span><span class="decl"><span class="istickedoff">pIndex  = P_Id &lt;$&gt; currPos</span>
+<span class="lineno">  324 </span><span class="spaces">               </span><span class="istickedoff">&lt;*  pKey &quot;IDENT&quot;</span>
+<span class="lineno">  325 </span><span class="spaces">               </span><span class="istickedoff">&lt;*&gt; pLabel</span>
+<span class="lineno">  326 </span><span class="spaces">               </span><span class="istickedoff">&lt;*&gt; pConceptRef</span>
+<span class="lineno">  327 </span><span class="spaces">               </span><span class="istickedoff">&lt;*&gt; pParens (pIndSegment `sepBy1` pComma)</span>
+<span class="lineno">  328 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  329 </span><span class="spaces">          </span><span class="istickedoff">--- IndSegmentList ::= Att (',' Att)*</span>
+<span class="lineno">  330 </span><span class="spaces">          </span><span class="istickedoff">pIndSegment :: AmpParser P_IdentSegment</span>
+<span class="lineno">  331 </span><span class="spaces">          </span><span class="istickedoff">pIndSegment = P_IdentExp &lt;$&gt; pAtt</span></span>
+<span class="lineno">  332 </span>
+<span class="lineno">  333 </span>-- | A view definition looks like:
+<span class="lineno">  334 </span>--      VIEW onSSN: Person(&quot;social security number&quot;:ssn)
+<span class="lineno">  335 </span>-- or
+<span class="lineno">  336 </span>--      VIEW SaveAdlFile: SaveAdlFile(PRIMHTML &quot;&lt;a href='../../index.php?operation=2&amp;file=&quot;, filepath , filename
+<span class="lineno">  337 </span>--      ,PRIMHTML &quot;&amp;userrole=&quot;, savecontext~;sourcefile;uploaded~;userrole
+<span class="lineno">  338 </span>--      ,PRIMHTML &quot;'&gt;&quot;, filename/\V[SaveAdlFile*FileName], PRIMHTML &quot;&lt;/a&gt;&quot;)
+<span class="lineno">  339 </span>-- which can be used to define a proper user interface by assigning labels and markup to the attributes in a view.
+<span class="lineno">  340 </span>
+<span class="lineno">  341 </span>--- ViewDef ::= FancyViewDef | ViewDefLegacy
+<span class="lineno">  342 </span>pViewDef :: AmpParser P_ViewDef
+<span class="lineno">  343 </span><span class="decl"><span class="istickedoff">pViewDef = try pFancyViewDef &lt;|&gt; try pViewDefLegacy</span></span> -- introduces backtracking, but is more elegant than rewriting pViewDefLegacy to disallow &quot;KEY ... ENDVIEW&quot;.
+<span class="lineno">  344 </span>
+<span class="lineno">  345 </span>--- FancyViewDef ::= 'VIEW' Label ConceptOneRef 'DEFAULT'? '{' ViewObjList '}' HtmlView? 'ENDVIEW'
+<span class="lineno">  346 </span>pFancyViewDef :: AmpParser P_ViewDef
+<span class="lineno">  347 </span><span class="decl"><span class="istickedoff">pFancyViewDef  = mkViewDef &lt;$&gt; currPos</span>
+<span class="lineno">  348 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pKey &quot;VIEW&quot;</span>
+<span class="lineno">  349 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pLabel</span>
+<span class="lineno">  350 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pConceptOneRef</span>
+<span class="lineno">  351 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pIsThere (pKey &quot;DEFAULT&quot;)</span>
+<span class="lineno">  352 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pBraces ((P_ViewExp &lt;$&gt; pViewObj) `sepBy1` pComma)</span>
+<span class="lineno">  353 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pMaybe pHtmlView</span>
+<span class="lineno">  354 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  pKey &quot;ENDVIEW&quot;</span>
+<span class="lineno">  355 </span><span class="spaces">    </span><span class="istickedoff">where mkViewDef pos nm cpt isDef ats html =</span>
+<span class="lineno">  356 </span><span class="spaces">            </span><span class="istickedoff">P_Vd { vd_pos = <span class="nottickedoff">pos</span></span>
+<span class="lineno">  357 </span><span class="spaces">                 </span><span class="istickedoff">, vd_lbl = nm</span>
+<span class="lineno">  358 </span><span class="spaces">                 </span><span class="istickedoff">, vd_cpt = cpt</span>
+<span class="lineno">  359 </span><span class="spaces">                 </span><span class="istickedoff">, vd_isDefault = isDef</span>
+<span class="lineno">  360 </span><span class="spaces">                 </span><span class="istickedoff">, vd_html = html</span>
+<span class="lineno">  361 </span><span class="spaces">                 </span><span class="istickedoff">, vd_ats = ats</span>
+<span class="lineno">  362 </span><span class="spaces">                 </span><span class="istickedoff">}</span>
+<span class="lineno">  363 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  364 </span><span class="spaces">          </span><span class="istickedoff">--- ViewObjList ::= ViewObj (',' ViewObj)*</span>
+<span class="lineno">  365 </span><span class="spaces">          </span><span class="istickedoff">--- ViewObj ::= Label Term</span>
+<span class="lineno">  366 </span><span class="spaces">          </span><span class="istickedoff">pViewObj :: AmpParser P_ObjectDef</span>
+<span class="lineno">  367 </span><span class="spaces">          </span><span class="istickedoff">pViewObj = P_Obj &lt;$&gt; pLabel</span>
+<span class="lineno">  368 </span><span class="spaces">                           </span><span class="istickedoff">&lt;*&gt; currPos</span>
+<span class="lineno">  369 </span><span class="spaces">                           </span><span class="istickedoff">&lt;*&gt; pTerm</span>
+<span class="lineno">  370 </span><span class="spaces">                           </span><span class="istickedoff">&lt;*&gt; return <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  371 </span><span class="spaces">                           </span><span class="istickedoff">&lt;*&gt; return <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  372 </span><span class="spaces">                           </span><span class="istickedoff">&lt;*&gt; return <span class="nottickedoff">[]</span></span>
+<span class="lineno">  373 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  374 </span><span class="spaces">          </span><span class="istickedoff">--- HtmlView ::= 'HTML' 'TEMPLATE' String</span>
+<span class="lineno">  375 </span><span class="spaces">          </span><span class="istickedoff">pHtmlView :: AmpParser ViewHtmlTemplate</span>
+<span class="lineno">  376 </span><span class="spaces">          </span><span class="istickedoff">pHtmlView = ViewHtmlTemplateFile &lt;$ pKey &quot;HTML&quot; &lt;* pKey &quot;TEMPLATE&quot; &lt;*&gt; pString</span></span>
+<span class="lineno">  377 </span>
+<span class="lineno">  378 </span>--- ViewDefLegacy ::= ('VIEW' | 'KEY') LabelProps ConceptOneRef '(' ViewSegmentList ')'
+<span class="lineno">  379 </span>pViewDefLegacy :: AmpParser P_ViewDef
+<span class="lineno">  380 </span><span class="decl"><span class="istickedoff">pViewDefLegacy = P_Vd &lt;$&gt; currPos</span>
+<span class="lineno">  381 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*  (pKey &quot;VIEW&quot; &lt;|&gt; pKey &quot;KEY&quot;)</span>
+<span class="lineno">  382 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pLabel</span>
+<span class="lineno">  383 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pConceptOneRef</span>
+<span class="lineno">  384 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; return True</span>
+<span class="lineno">  385 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; return Nothing</span>
+<span class="lineno">  386 </span><span class="spaces">                      </span><span class="istickedoff">&lt;*&gt; pParens(ats &lt;$&gt; pViewSegment `sepBy1` pComma)</span>
+<span class="lineno">  387 </span><span class="spaces">    </span><span class="istickedoff">--TODO: Numbering should not happen in the parser</span>
+<span class="lineno">  388 </span><span class="spaces">    </span><span class="istickedoff">where ats xs = [ case viewSeg of</span>
+<span class="lineno">  389 </span><span class="spaces">                         </span><span class="istickedoff">P_ViewExp x  -&gt; if <span class="tickonlyfalse">null (obj_nm x)</span> then <span class="nottickedoff">P_ViewExp $ x{obj_nm=&quot;seg_&quot;++show i}</span> else viewSeg</span>
+<span class="lineno">  390 </span><span class="spaces">                         </span><span class="istickedoff">_            -&gt; viewSeg</span>
+<span class="lineno">  391 </span><span class="spaces">                    </span><span class="istickedoff">| (i,viewSeg) &lt;- zip [(1::Integer)..] xs]</span>
+<span class="lineno">  392 </span><span class="spaces">                    </span><span class="istickedoff">-- counter is used to name anonymous segments (may skip numbers because text/html segments are also counted)</span>
+<span class="lineno">  393 </span><span class="spaces">          </span><span class="istickedoff">--- ViewSegmentList ::= ViewSegment (',' ViewSegment)*</span>
+<span class="lineno">  394 </span><span class="spaces">          </span><span class="istickedoff">--- ViewSegment ::= Att | 'TXT' String | 'PRIMHTML' String</span>
+<span class="lineno">  395 </span><span class="spaces">          </span><span class="istickedoff">pViewSegment :: AmpParser P_ViewSegment</span>
+<span class="lineno">  396 </span><span class="spaces">          </span><span class="istickedoff">pViewSegment = P_ViewExp  &lt;$&gt; pAtt &lt;|&gt;</span>
+<span class="lineno">  397 </span><span class="spaces">                         </span><span class="istickedoff">P_ViewText &lt;$ pKey &quot;TXT&quot; &lt;*&gt; pString &lt;|&gt;</span>
+<span class="lineno">  398 </span><span class="spaces">                         </span><span class="istickedoff">P_ViewHtml &lt;$ pKey &quot;PRIMHTML&quot; &lt;*&gt; pString</span></span>
+<span class="lineno">  399 </span>
+<span class="lineno">  400 </span>--- Interface ::= 'INTERFACE' ADLid 'CLASS'? (Conid | String) Params? InterfaceArgs? Roles? ':' Term SubInterface
+<span class="lineno">  401 </span>pInterface :: AmpParser P_Interface
+<span class="lineno">  402 </span><span class="decl"><span class="istickedoff">pInterface = lbl &lt;$&gt; currPos                                       &lt;*&gt;</span>
+<span class="lineno">  403 </span><span class="spaces">                     </span><span class="istickedoff">(pKey &quot;INTERFACE&quot; *&gt; pADLid)                  &lt;*&gt;</span>
+<span class="lineno">  404 </span><span class="spaces">                     </span><span class="istickedoff">pMaybe (pKey &quot;CLASS&quot; *&gt; (pConid &lt;|&gt; pString)) &lt;*&gt; -- the class is an upper-case identifier or a quoted string</span>
+<span class="lineno">  405 </span><span class="spaces">                     </span><span class="istickedoff">optList pParams                               &lt;*&gt; -- a list of expressions, which say which relations are editable within this service.</span>
+<span class="lineno">  406 </span><span class="spaces">                     </span><span class="istickedoff">optList pArgs                                 &lt;*&gt; -- either  Prel _ nm or  PNamedRel _ nm sgn</span>
+<span class="lineno">  407 </span><span class="spaces">                     </span><span class="istickedoff">optList pRoles                                &lt;*&gt;</span>
+<span class="lineno">  408 </span><span class="spaces">                     </span><span class="istickedoff">(pColon *&gt; pTerm)                             &lt;*&gt;</span>
+<span class="lineno">  409 </span><span class="spaces">                     </span><span class="istickedoff">pSubInterface</span>
+<span class="lineno">  410 </span><span class="spaces">    </span><span class="istickedoff">where lbl :: Origin -&gt; String -&gt; Maybe String -&gt; [P_NamedRel] -&gt; [[String]] -&gt; [Role] -&gt; Term TermPrim -&gt; P_SubInterface -&gt; P_Interface</span>
+<span class="lineno">  411 </span><span class="spaces">          </span><span class="istickedoff">lbl p nm iclass params args roles term sub</span>
+<span class="lineno">  412 </span><span class="spaces">             </span><span class="istickedoff">= P_Ifc { ifc_Name   = nm</span>
+<span class="lineno">  413 </span><span class="spaces">                     </span><span class="istickedoff">, ifc_Class  = iclass</span>
+<span class="lineno">  414 </span><span class="spaces">                     </span><span class="istickedoff">, ifc_Params = params</span>
+<span class="lineno">  415 </span><span class="spaces">                     </span><span class="istickedoff">, ifc_Args   = args</span>
+<span class="lineno">  416 </span><span class="spaces">                     </span><span class="istickedoff">, ifc_Roles  = roles</span>
+<span class="lineno">  417 </span><span class="spaces">                     </span><span class="istickedoff">, ifc_Obj    = P_Obj { obj_nm   = <span class="nottickedoff">nm</span></span>
+<span class="lineno">  418 </span><span class="spaces">                                          </span><span class="istickedoff">, obj_pos  = <span class="nottickedoff">p</span></span>
+<span class="lineno">  419 </span><span class="spaces">                                          </span><span class="istickedoff">, obj_ctx  = term</span>
+<span class="lineno">  420 </span><span class="spaces">                                          </span><span class="istickedoff">, obj_mView = <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  421 </span><span class="spaces">                                          </span><span class="istickedoff">, obj_msub = Just sub</span>
+<span class="lineno">  422 </span><span class="spaces">                                          </span><span class="istickedoff">, obj_strs = <span class="nottickedoff">args</span></span>
+<span class="lineno">  423 </span><span class="spaces">                                          </span><span class="istickedoff">}</span>
+<span class="lineno">  424 </span><span class="spaces">                     </span><span class="istickedoff">, ifc_Pos    = <span class="nottickedoff">p</span></span>
+<span class="lineno">  425 </span><span class="spaces">                     </span><span class="istickedoff">, ifc_Prp    = <span class="nottickedoff">&quot;&quot;</span>   --TODO: Nothing in syntax defined for the purpose of the interface.</span>
+<span class="lineno">  426 </span><span class="spaces">                     </span><span class="istickedoff">}</span>
+<span class="lineno">  427 </span><span class="spaces">          </span><span class="istickedoff">--- Params ::= '(' NamedRel ')'</span>
+<span class="lineno">  428 </span><span class="spaces">          </span><span class="istickedoff">pParams = pParens(pNamedRel `sepBy1` pComma)</span>
+<span class="lineno">  429 </span><span class="spaces">          </span><span class="istickedoff">--- InterfaceArgs ::= '{' ADLidListList '}'</span>
+<span class="lineno">  430 </span><span class="spaces">          </span><span class="istickedoff">pArgs   = pBraces(many1 pADLid `sepBy1` pComma)</span>
+<span class="lineno">  431 </span><span class="spaces">          </span><span class="istickedoff">--- Roles ::= 'FOR' RoleList</span>
+<span class="lineno">  432 </span><span class="spaces">          </span><span class="istickedoff">pRoles  = pKey &quot;FOR&quot; *&gt; pRole `sepBy1` pComma</span></span>
+<span class="lineno">  433 </span>
+<span class="lineno">  434 </span>--- SubInterface ::= ('BOX' ('&lt;' Conid '&gt;')? | 'ROWS' | 'COLS') Box | 'INTERFACE' ADLid
+<span class="lineno">  435 </span>pSubInterface :: AmpParser P_SubInterface
+<span class="lineno">  436 </span><span class="decl"><span class="istickedoff">pSubInterface = P_Box          &lt;$&gt; currPos &lt;*&gt; pBoxKey &lt;*&gt; pBox</span>
+<span class="lineno">  437 </span><span class="spaces">            </span><span class="istickedoff">&lt;|&gt; P_InterfaceRef &lt;$&gt; currPos &lt;*  pKey &quot;INTERFACE&quot; &lt;*&gt; pADLid</span>
+<span class="lineno">  438 </span><span class="spaces">  </span><span class="istickedoff">where pBoxKey :: AmpParser (Maybe String)</span>
+<span class="lineno">  439 </span><span class="spaces">        </span><span class="istickedoff">pBoxKey = pKey &quot;BOX&quot; *&gt; pMaybe (pChevrons <span class="nottickedoff">pConid</span>)</span>
+<span class="lineno">  440 </span><span class="spaces">              </span><span class="istickedoff">&lt;|&gt; Just &lt;$&gt; pKey &quot;ROWS&quot;</span>
+<span class="lineno">  441 </span><span class="spaces">              </span><span class="istickedoff">&lt;|&gt; Just &lt;$&gt; pKey &quot;COLS&quot;</span>
+<span class="lineno">  442 </span><span class="spaces">              </span><span class="istickedoff">&lt;|&gt; Just &lt;$&gt; pKey &quot;TABS&quot;</span></span>
+<span class="lineno">  443 </span>
+<span class="lineno">  444 </span>--- ObjDef ::= LabelProps Term ('&lt;' Conid '&gt;')? SubInterface?
+<span class="lineno">  445 </span>--- ObjDefList ::= ObjDef (',' ObjDef)*
+<span class="lineno">  446 </span>pObjDef :: AmpParser P_ObjectDef
+<span class="lineno">  447 </span><span class="decl"><span class="istickedoff">pObjDef = obj &lt;$&gt; currPos</span>
+<span class="lineno">  448 </span><span class="spaces">              </span><span class="istickedoff">&lt;*&gt; pLabelProps</span>
+<span class="lineno">  449 </span><span class="spaces">              </span><span class="istickedoff">&lt;*&gt; pTerm            -- the context expression (for example: I[c])</span>
+<span class="lineno">  450 </span><span class="spaces">              </span><span class="istickedoff">&lt;*&gt; pMaybe (pChevrons <span class="nottickedoff">pConid</span>)</span>
+<span class="lineno">  451 </span><span class="spaces">              </span><span class="istickedoff">&lt;*&gt; pMaybe pSubInterface  -- the optional subinterface</span>
+<span class="lineno">  452 </span><span class="spaces">         </span><span class="istickedoff">where obj pos (nm, strs) ctx mView msub =</span>
+<span class="lineno">  453 </span><span class="spaces">                 </span><span class="istickedoff">P_Obj nm <span class="nottickedoff">pos</span> ctx mView msub strs</span></span>
+<span class="lineno">  454 </span>
+<span class="lineno">  455 </span>--- Box ::= '[' ObjDefList ']'
+<span class="lineno">  456 </span>pBox :: AmpParser [P_ObjectDef]
+<span class="lineno">  457 </span><span class="decl"><span class="istickedoff">pBox = pBrackets $ pObjDef `sepBy1` pComma</span></span>
+<span class="lineno">  458 </span>
+<span class="lineno">  459 </span>--- Sqlplug ::= 'SQLPLUG' ObjDef
+<span class="lineno">  460 </span>pSqlplug :: AmpParser P_ObjectDef
+<span class="lineno">  461 </span><span class="decl"><span class="istickedoff">pSqlplug = pKey &quot;SQLPLUG&quot; *&gt; pObjDef</span></span>
+<span class="lineno">  462 </span>
+<span class="lineno">  463 </span>--- Phpplug ::= 'PHPPLUG' ObjDef
+<span class="lineno">  464 </span>pPhpplug :: AmpParser P_ObjectDef
+<span class="lineno">  465 </span><span class="decl"><span class="istickedoff">pPhpplug = pKey &quot;PHPPLUG&quot; *&gt; pObjDef</span></span>
+<span class="lineno">  466 </span>
+<span class="lineno">  467 </span>--- Purpose ::= 'PURPOSE' Ref2Obj LanguageRef? TextMarkup? ('REF' StringListSemi)? Expl
+<span class="lineno">  468 </span>pPurpose :: AmpParser PPurpose
+<span class="lineno">  469 </span><span class="decl"><span class="istickedoff">pPurpose = rebuild &lt;$&gt; currPos</span>
+<span class="lineno">  470 </span><span class="spaces">                   </span><span class="istickedoff">&lt;*  pKey &quot;PURPOSE&quot;  -- &quot;EXPLAIN&quot; has become obsolete</span>
+<span class="lineno">  471 </span><span class="spaces">                   </span><span class="istickedoff">&lt;*&gt; pRef2Obj</span>
+<span class="lineno">  472 </span><span class="spaces">                   </span><span class="istickedoff">&lt;*&gt; pMaybe pLanguageRef</span>
+<span class="lineno">  473 </span><span class="spaces">                   </span><span class="istickedoff">&lt;*&gt; pMaybe pTextMarkup</span>
+<span class="lineno">  474 </span><span class="spaces">                   </span><span class="istickedoff">&lt;*&gt; optList (pKey &quot;REF&quot; *&gt; pString `sepBy1` pSemi)</span>
+<span class="lineno">  475 </span><span class="spaces">                   </span><span class="istickedoff">&lt;*&gt; pExpl</span>
+<span class="lineno">  476 </span><span class="spaces">     </span><span class="istickedoff">where</span>
+<span class="lineno">  477 </span><span class="spaces">       </span><span class="istickedoff">rebuild :: Origin -&gt; PRef2Obj -&gt; Maybe Lang -&gt; Maybe PandocFormat -&gt; [String] -&gt; String -&gt; PPurpose</span>
+<span class="lineno">  478 </span><span class="spaces">       </span><span class="istickedoff">rebuild    orig      obj         lang          fmt                   refs       str</span>
+<span class="lineno">  479 </span><span class="spaces">           </span><span class="istickedoff">= PRef2 <span class="nottickedoff">orig</span> obj (P_Markup <span class="nottickedoff">lang</span> fmt str) (concatMap (splitOn &quot;;&quot;) refs)</span>
+<span class="lineno">  480 </span><span class="spaces">              </span><span class="istickedoff">-- TODO! This separation should not happen in the parser</span>
+<span class="lineno">  481 </span><span class="spaces">              </span><span class="istickedoff">where splitOn :: Eq a =&gt; [a] -&gt; [a] -&gt; [[a]]</span>
+<span class="lineno">  482 </span><span class="spaces">                    </span><span class="istickedoff">splitOn [] s = <span class="nottickedoff">[s]</span></span>
+<span class="lineno">  483 </span><span class="spaces">                    </span><span class="istickedoff">splitOn s t  = case findIndex (isPrefixOf s) (tails t) of</span>
+<span class="lineno">  484 </span><span class="spaces">                                     </span><span class="istickedoff">Nothing -&gt; [t]</span>
+<span class="lineno">  485 </span><span class="spaces">                                     </span><span class="istickedoff">Just i  -&gt; take i t : splitOn s (drop (i+length s) t)</span>
+<span class="lineno">  486 </span><span class="spaces">       </span><span class="istickedoff">--- Ref2Obj ::= 'CONCEPT' ConceptName | 'RELATION' NamedRel | 'RULE' ADLid | 'IDENT' ADLid | 'VIEW' ADLid | 'PATTERN' ADLid | 'PROCESS' ADLid | 'INTERFACE' ADLid | 'CONTEXT' ADLid</span>
+<span class="lineno">  487 </span><span class="spaces">       </span><span class="istickedoff">pRef2Obj :: AmpParser PRef2Obj</span>
+<span class="lineno">  488 </span><span class="spaces">       </span><span class="istickedoff">pRef2Obj = PRef2ConceptDef  &lt;$ pKey &quot;CONCEPT&quot;   &lt;*&gt; pConceptName &lt;|&gt;</span>
+<span class="lineno">  489 </span><span class="spaces">                  </span><span class="istickedoff">PRef2Declaration &lt;$ pKey &quot;RELATION&quot;  &lt;*&gt; pNamedRel    &lt;|&gt;</span>
+<span class="lineno">  490 </span><span class="spaces">                  </span><span class="istickedoff">PRef2Rule        &lt;$ pKey &quot;RULE&quot;      &lt;*&gt; pADLid       &lt;|&gt;</span>
+<span class="lineno">  491 </span><span class="spaces">                  </span><span class="istickedoff">PRef2IdentityDef &lt;$ pKey &quot;IDENT&quot;     &lt;*&gt; pADLid       &lt;|&gt;</span>
+<span class="lineno">  492 </span><span class="spaces">                  </span><span class="istickedoff">PRef2ViewDef     &lt;$ pKey &quot;VIEW&quot;      &lt;*&gt; pADLid       &lt;|&gt;</span>
+<span class="lineno">  493 </span><span class="spaces">                  </span><span class="istickedoff">PRef2Pattern     &lt;$ pKey &quot;PATTERN&quot;   &lt;*&gt; pADLid       &lt;|&gt;</span>
+<span class="lineno">  494 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">PRef2Pattern</span>     &lt;$ pKey &quot;PROCESS&quot;   &lt;*&gt; pADLid       &lt;|&gt;</span>
+<span class="lineno">  495 </span><span class="spaces">                  </span><span class="istickedoff">PRef2Interface   &lt;$ pKey &quot;INTERFACE&quot; &lt;*&gt; pADLid       &lt;|&gt;</span>
+<span class="lineno">  496 </span><span class="spaces">                  </span><span class="istickedoff">PRef2Context     &lt;$ pKey &quot;CONTEXT&quot;   &lt;*&gt; pADLid</span></span>
+<span class="lineno">  497 </span>
+<span class="lineno">  498 </span>--- Population ::= 'POPULATION' (NamedRel 'CONTAINS' Content | ConceptName 'CONTAINS' '[' ValueList ']')
+<span class="lineno">  499 </span>pPopulation :: AmpParser P_Population
+<span class="lineno">  500 </span><span class="decl"><span class="istickedoff">pPopulation = pKey &quot;POPULATION&quot; *&gt; (</span>
+<span class="lineno">  501 </span><span class="spaces">                  </span><span class="istickedoff">prelpop   &lt;$&gt; currPos &lt;*&gt; pNamedRel    &lt;* pKey &quot;CONTAINS&quot; &lt;*&gt; pContent &lt;|&gt;</span>
+<span class="lineno">  502 </span><span class="spaces">                  </span><span class="istickedoff">P_CptPopu &lt;$&gt; currPos &lt;*&gt; pConceptName &lt;* pKey &quot;CONTAINS&quot; &lt;*&gt; pBrackets (pString `sepBy` pComma))</span>
+<span class="lineno">  503 </span><span class="spaces">    </span><span class="istickedoff">where prelpop :: Origin -&gt; P_NamedRel -&gt; Pairs -&gt; P_Population</span>
+<span class="lineno">  504 </span><span class="spaces">          </span><span class="istickedoff">prelpop orig (PNamedRel _ nm mSgn) = case mSgn of</span>
+<span class="lineno">  505 </span><span class="spaces">                               </span><span class="istickedoff">Nothing    -&gt; P_RelPopu <span class="nottickedoff">orig</span> nm</span>
+<span class="lineno">  506 </span><span class="spaces">                               </span><span class="istickedoff">Just ptype -&gt; P_TRelPop <span class="nottickedoff">orig</span> nm ptype</span></span>
+<span class="lineno">  507 </span>
+<span class="lineno">  508 </span>--- RoleRelation ::= 'ROLE' RoleList 'EDITS' NamedRelList
+<span class="lineno">  509 </span>pRoleRelation :: AmpParser P_RoleRelation
+<span class="lineno">  510 </span><span class="decl"><span class="istickedoff">pRoleRelation = try (P_RR &lt;$&gt; currPos</span>
+<span class="lineno">  511 </span><span class="spaces">                          </span><span class="istickedoff">&lt;*  pKey &quot;ROLE&quot;</span>
+<span class="lineno">  512 </span><span class="spaces">                          </span><span class="istickedoff">&lt;*&gt; pRole `sepBy1` pComma</span>
+<span class="lineno">  513 </span><span class="spaces">                          </span><span class="istickedoff">&lt;*  pKey &quot;EDITS&quot;)</span>
+<span class="lineno">  514 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pNamedRel `sepBy1` pComma</span></span>
+<span class="lineno">  515 </span>
+<span class="lineno">  516 </span>--- RoleRule ::= 'ROLE' RoleList 'MAINTAINS' ADLidList
+<span class="lineno">  517 </span>--TODO! Rename the RoleRule to RoleMantains and RoleRelation to RoleEdits.
+<span class="lineno">  518 </span>pRoleRule :: AmpParser P_RoleRule
+<span class="lineno">  519 </span><span class="decl"><span class="istickedoff">pRoleRule = try (Maintain &lt;$&gt; currPos</span>
+<span class="lineno">  520 </span><span class="spaces">                          </span><span class="istickedoff">&lt;*  pKey &quot;ROLE&quot;</span>
+<span class="lineno">  521 </span><span class="spaces">                          </span><span class="istickedoff">&lt;*&gt; pRole `sepBy1` pComma</span>
+<span class="lineno">  522 </span><span class="spaces">                          </span><span class="istickedoff">&lt;*  pKey &quot;MAINTAINS&quot;)</span>
+<span class="lineno">  523 </span><span class="spaces">                </span><span class="istickedoff">&lt;*&gt; pADLid `sepBy1` pComma</span></span>
+<span class="lineno">  524 </span>
+<span class="lineno">  525 </span>--- Role ::= ADLid
+<span class="lineno">  526 </span>--- RoleList ::= Role (',' Role)*
+<span class="lineno">  527 </span>pRole :: AmpParser Role
+<span class="lineno">  528 </span><span class="decl"><span class="istickedoff">pRole =  Role &lt;$&gt; pADLid</span></span>
+<span class="lineno">  529 </span>
+<span class="lineno">  530 </span>--- PrintThemes ::= 'THEMES' ConceptNameList
+<span class="lineno">  531 </span>pPrintThemes :: AmpParser [String]
+<span class="lineno">  532 </span><span class="decl"><span class="istickedoff">pPrintThemes = pKey &quot;THEMES&quot;</span>
+<span class="lineno">  533 </span><span class="spaces">            </span><span class="istickedoff">*&gt; pConceptName `sepBy1` pComma</span></span> -- Patterns, processes and concepts share the same name space, so these names must be checked whether the processes and patterns exist.
+<span class="lineno">  534 </span>
+<span class="lineno">  535 </span>--- Meaning ::= 'MEANING' LanguageRef? TextMarkup? (String | Expl)
+<span class="lineno">  536 </span>pMeaning :: AmpParser PMeaning
+<span class="lineno">  537 </span><span class="decl"><span class="istickedoff">pMeaning = PMeaning &lt;$&gt; (</span>
+<span class="lineno">  538 </span><span class="spaces">           </span><span class="istickedoff">P_Markup &lt;$  pKey &quot;MEANING&quot;</span>
+<span class="lineno">  539 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pMaybe pLanguageRef</span>
+<span class="lineno">  540 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; pMaybe pTextMarkup</span>
+<span class="lineno">  541 </span><span class="spaces">                    </span><span class="istickedoff">&lt;*&gt; (pString &lt;|&gt; pExpl))</span></span>
+<span class="lineno">  542 </span>
+<span class="lineno">  543 </span>--- Message ::= 'MESSAGE' Markup
+<span class="lineno">  544 </span>pMessage :: AmpParser PMessage
+<span class="lineno">  545 </span><span class="decl"><span class="istickedoff">pMessage = PMessage &lt;$ pKey &quot;MESSAGE&quot; &lt;*&gt; pMarkup</span></span>
+<span class="lineno">  546 </span>
+<span class="lineno">  547 </span>--- Markup ::= LanguageRef? TextMarkup? (String | Expl)
+<span class="lineno">  548 </span>pMarkup :: AmpParser P_Markup
+<span class="lineno">  549 </span><span class="decl"><span class="istickedoff">pMarkup = P_Markup</span>
+<span class="lineno">  550 </span><span class="spaces">           </span><span class="istickedoff">&lt;$&gt; pMaybe pLanguageRef</span>
+<span class="lineno">  551 </span><span class="spaces">           </span><span class="istickedoff">&lt;*&gt; pMaybe pTextMarkup</span>
+<span class="lineno">  552 </span><span class="spaces">           </span><span class="istickedoff">&lt;*&gt; (pString &lt;|&gt; pExpl)</span></span>
+<span class="lineno">  553 </span>
+<span class="lineno">  554 </span>{-  Basically we would have the following expression syntax:
+<span class="lineno">  555 </span>pRule ::= pTrm1   &quot;=&quot;    pTerm                           |  -- equivalence
+<span class="lineno">  556 </span>       pTrm1   &quot;|-&quot;   pTerm                           |  -- implication or subset
+<span class="lineno">  557 </span>       pTrm1 .
+<span class="lineno">  558 </span>pTerm ::= pList1Sep &quot;/\\&quot; pTrm2                          |  -- intersection
+<span class="lineno">  559 </span>       pList1Sep &quot;\\/&quot; pTrm2                          |  -- union
+<span class="lineno">  560 </span>       pTrm2 .
+<span class="lineno">  561 </span>pTrm2 ::= pTrm3    &quot;-&quot;    pTrm3                          |  -- set difference
+<span class="lineno">  562 </span>       pTrm3 .
+<span class="lineno">  563 </span>pTrm3 ::= pTrm4   &quot;\\&quot;   pTrm4                           |  -- right residual
+<span class="lineno">  564 </span>       pTrm4   &quot;/&quot;    pTrm4                           |  -- left residual
+<span class="lineno">  565 </span>       pTrm4 .
+<span class="lineno">  566 </span>pTrm4 ::= pList1Sep &quot;;&quot; pTrm5                            |  -- composition       (semicolon)
+<span class="lineno">  567 </span>       pList1Sep &quot;!&quot; pTrm5                            |  -- relative addition (dagger)
+<span class="lineno">  568 </span>       pList1Sep &quot;#&quot; pTrm5                            |  -- cartesian product (asterisk)
+<span class="lineno">  569 </span>       pTrm5 .
+<span class="lineno">  570 </span>pTrm5 ::= &quot;-&quot;     pTrm6                                  |  -- unary complement
+<span class="lineno">  571 </span>       pTrm6   pSign                                  |  -- unary type cast
+<span class="lineno">  572 </span>       pTrm6   &quot;~&quot;                                    |  -- unary flip
+<span class="lineno">  573 </span>       pTrm6   &quot;*&quot;                                    |  -- unary Kleene star
+<span class="lineno">  574 </span>       pTrm6   &quot;+&quot;                                    |  -- unary Kleene plus
+<span class="lineno">  575 </span>       pTrm6 .
+<span class="lineno">  576 </span>pTrm6 ::= pRelation                                      |
+<span class="lineno">  577 </span>       &quot;(&quot;   pTerm   &quot;)&quot; .
+<span class="lineno">  578 </span>In practice, we have it a little different.
+<span class="lineno">  579 </span> - In order to avoid &quot;associative&quot; brackets, we parse the associative operators &quot;\/&quot;, &quot;/\&quot;, &quot;;&quot;, and &quot;!&quot; with pList1Sep. That works.
+<span class="lineno">  580 </span> - We would like the user to disambiguate between &quot;=&quot; and &quot;|-&quot; by using brackets.
+<span class="lineno">  581 </span>-}
+<span class="lineno">  582 </span>
+<span class="lineno">  583 </span>{- In theory, the expression is parsed by:
+<span class="lineno">  584 </span>pRule :: AmpParser (Term TermPrim)
+<span class="lineno">  585 </span>pRule  =  fEequ &lt;$&gt; pTrm1  &lt;*&gt;  posOf (pOperator &quot;=&quot;)  &lt;*&gt;  pTerm   &lt;|&gt;
+<span class="lineno">  586 </span>          fEimp &lt;$&gt; pTrm1  &lt;*&gt;  posOf (pOperator &quot;|-&quot;) &lt;*&gt;  pTerm   &lt;|&gt;
+<span class="lineno">  587 </span>          pTrm1
+<span class="lineno">  588 </span>          where fequ  lExp orig rExp = PEqu orig lExp rExp
+<span class="lineno">  589 </span>                fEimp lExp orig rExp = PImp orig lExp rExp
+<span class="lineno">  590 </span>-- However elegant, this solution needs to be left-factored in order to get a performant parser.
+<span class="lineno">  591 </span>-}
+<span class="lineno">  592 </span>--- Rule ::= Term ('=' Term | '|-' Term)?
+<span class="lineno">  593 </span>pRule :: AmpParser (Term TermPrim)
+<span class="lineno">  594 </span><span class="decl"><span class="istickedoff">pRule  =  pTerm &lt;??&gt; (invert PEqu  &lt;$&gt; currPos &lt;* pOperator &quot;=&quot;  &lt;*&gt; pTerm &lt;|&gt;</span>
+<span class="lineno">  595 </span><span class="spaces">                      </span><span class="istickedoff">invert PImp  &lt;$&gt; currPos &lt;* pOperator &quot;|-&quot; &lt;*&gt; pTerm)</span></span>
+<span class="lineno">  596 </span>
+<span class="lineno">  597 </span>
+<span class="lineno">  598 </span>{-
+<span class="lineno">  599 </span>pTrm1 is slightly more complicated, for the purpose of avoiding &quot;associative&quot; brackets.
+<span class="lineno">  600 </span>The idea is that each operator (&quot;/\\&quot; or &quot;\\/&quot;) can be parsed as a sequence without brackets.
+<span class="lineno">  601 </span>However, as soon as they are combined, brackets are needed to disambiguate the combination.
+<span class="lineno">  602 </span>There is no natural precedence of one operator over the other.
+<span class="lineno">  603 </span>Brackets are enforced by parsing the subexpression as pTrm5.
+<span class="lineno">  604 </span>In order to maintain performance standards, the parser is left factored.
+<span class="lineno">  605 </span>The functions pars and f have arguments 'combinator' and 'operator' only to avoid writing the same code twice.
+<span class="lineno">  606 </span>-}
+<span class="lineno">  607 </span>--- Term ::= Trm2 (('/\' Trm2)+ | ('\/' Trm2)+)?
+<span class="lineno">  608 </span>pTerm :: AmpParser (Term TermPrim)
+<span class="lineno">  609 </span><span class="decl"><span class="istickedoff">pTerm = pTrm2 &lt;??&gt; (invertT PIsc &lt;$&gt; rightAssociate <span class="nottickedoff">PIsc</span> &quot;/\\&quot; pTrm2 &lt;|&gt;</span>
+<span class="lineno">  610 </span><span class="spaces">                    </span><span class="istickedoff">invertT PUni &lt;$&gt; rightAssociate <span class="nottickedoff">PUni</span> &quot;\\/&quot; pTrm2)</span></span>
+<span class="lineno">  611 </span>
+<span class="lineno">  612 </span>-- The left factored version of difference: (Actually, there is no need for left-factoring here, but no harm either)
+<span class="lineno">  613 </span>--- Trm2 ::= Trm3 ('-' Trm3)?
+<span class="lineno">  614 </span>pTrm2 :: AmpParser (Term TermPrim)
+<span class="lineno">  615 </span><span class="decl"><span class="istickedoff">pTrm2   = pTrm3 &lt;??&gt; (invert PDif &lt;$&gt; posOf pDash &lt;*&gt; pTrm3)</span></span>
+<span class="lineno">  616 </span>
+<span class="lineno">  617 </span>-- The left factored version of right- and left residuals:
+<span class="lineno">  618 </span>--- Trm3 ::= Trm4 ('/' Trm4 | '\' Trm4 | '&lt;&gt;' Trm4)?
+<span class="lineno">  619 </span>pTrm3 :: AmpParser (Term TermPrim)
+<span class="lineno">  620 </span><span class="decl"><span class="istickedoff">pTrm3  =  pTrm4 &lt;??&gt; (invert PLrs &lt;$&gt; currPos &lt;* pOperator &quot;/&quot;  &lt;*&gt; pTrm4 &lt;|&gt;</span>
+<span class="lineno">  621 </span><span class="spaces">                      </span><span class="istickedoff">invert PRrs &lt;$&gt; currPos &lt;* pOperator &quot;\\&quot; &lt;*&gt; pTrm4 &lt;|&gt;</span>
+<span class="lineno">  622 </span><span class="spaces">                      </span><span class="istickedoff">invert PDia &lt;$&gt; currPos &lt;* pOperator &quot;&lt;&gt;&quot; &lt;*&gt; pTrm4 )</span></span>
+<span class="lineno">  623 </span>
+<span class="lineno">  624 </span>{- by the way, a slightly different way of getting exactly the same result is:
+<span class="lineno">  625 </span>pTrm3 :: AmpParser (Term TermPrim)
+<span class="lineno">  626 </span>pTrm3  =  pTrm4 &lt;??&gt; (f &lt;$&gt;  (valPosOf (pOperator &quot;/&quot;) &lt;|&gt; valPosOf (pOperator &quot;\\&quot;) &lt;|&gt; valPosOf (pOperator &quot;&lt;&gt;&quot;)) &lt;*&gt; pTrm4 )
+<span class="lineno">  627 </span>          where f (&quot;\\&quot;, orig) rExp lExp = PRrs orig lExp rExp
+<span class="lineno">  628 </span>                f (&quot;/&quot; , orig) rExp lExp = PLrs orig lExp rExp
+<span class="lineno">  629 </span>                f (_   , orig) rExp lExp = PDia orig lExp rExp
+<span class="lineno">  630 </span>-}
+<span class="lineno">  631 </span>
+<span class="lineno">  632 </span>-- composition and relational addition are associative, and parsed similar to union and intersect...
+<span class="lineno">  633 </span>--- Trm4 ::= Trm5 ((';' Trm5)+ | ('!' Trm5)+ | ('#' Trm5)+)?
+<span class="lineno">  634 </span>pTrm4 :: AmpParser (Term TermPrim)
+<span class="lineno">  635 </span><span class="decl"><span class="istickedoff">pTrm4   = pTrm5 &lt;??&gt; (invertT PCps &lt;$&gt; rightAssociate <span class="nottickedoff">PCps</span> &quot;;&quot; pTrm5 &lt;|&gt;</span>
+<span class="lineno">  636 </span><span class="spaces">                      </span><span class="istickedoff">invertT PRad &lt;$&gt; rightAssociate <span class="nottickedoff">PRad</span> &quot;!&quot; pTrm5 &lt;|&gt;</span>
+<span class="lineno">  637 </span><span class="spaces">                      </span><span class="istickedoff">invertT PPrd &lt;$&gt; rightAssociate <span class="nottickedoff">PPrd</span> &quot;#&quot; pTrm5)</span></span>
+<span class="lineno">  638 </span>
+<span class="lineno">  639 </span>--- Trm5 ::= '-'* Trm6 ('~' | '*' | '+')*
+<span class="lineno">  640 </span>pTrm5 :: AmpParser (Term TermPrim)
+<span class="lineno">  641 </span>--TODO! Separate into prefix and postfix top-level functions
+<span class="lineno">  642 </span><span class="decl"><span class="istickedoff">pTrm5  =  f &lt;$&gt; many (valPosOf pDash) &lt;*&gt; pTrm6  &lt;*&gt; many (valPosOf (pOperator &quot;~&quot; &lt;|&gt; pOperator &quot;*&quot; &lt;|&gt; pOperator &quot;+&quot; ))</span>
+<span class="lineno">  643 </span><span class="spaces">          </span><span class="istickedoff">where f ms pe ((&quot;~&quot;,_):ps) = let x=f ms pe ps in PFlp <span class="nottickedoff">(origin x)</span> x  -- the type checker requires that the origin of x is equal to the origin of its converse.</span>
+<span class="lineno">  644 </span><span class="spaces">                </span><span class="istickedoff">f ms pe ((&quot;*&quot;,orig):ps) = PKl0 <span class="nottickedoff">orig</span> (f ms pe ps)              -- e*  Kleene closure (star)</span>
+<span class="lineno">  645 </span><span class="spaces">                </span><span class="istickedoff">f ms pe ((&quot;+&quot;,orig):ps) = PKl1 <span class="nottickedoff">orig</span> (f ms pe ps)              -- e+  Kleene closure (plus)</span>
+<span class="lineno">  646 </span><span class="spaces">                </span><span class="istickedoff">f (_:_:ms) pe ps        = <span class="nottickedoff">f ms pe ps</span>                          -- -e  complement     (unary minus)</span>
+<span class="lineno">  647 </span><span class="spaces">                </span><span class="istickedoff">f ((_,orig):ms) pe ps   = let x=f ms pe ps in PCpl <span class="nottickedoff">orig</span> x     -- the type checker requires that the origin of x is equal to the origin of its complement.</span>
+<span class="lineno">  648 </span><span class="spaces">                </span><span class="istickedoff">f _ pe _                = pe</span></span>
+<span class="lineno">  649 </span>
+<span class="lineno">  650 </span>--- Trm6 ::= RelationRef | '(' Term ')'
+<span class="lineno">  651 </span>pTrm6 :: AmpParser (Term TermPrim)
+<span class="lineno">  652 </span><span class="decl"><span class="istickedoff">pTrm6 = Prim &lt;$&gt; pRelationRef  &lt;|&gt;</span>
+<span class="lineno">  653 </span><span class="spaces">        </span><span class="istickedoff">PBrk &lt;$&gt; currPos &lt;*&gt; pParens pTerm</span></span>
+<span class="lineno">  654 </span>
+<span class="lineno">  655 </span>-- Help function for several expressions. The type 't' is each of the terms.
+<span class="lineno">  656 </span>invert :: (Origin -&gt; t -&gt; t -&gt; t) -&gt; Origin -&gt; t -&gt; t -&gt; t
+<span class="lineno">  657 </span><span class="decl"><span class="istickedoff">invert constructor position rightTerm leftTerm = constructor <span class="nottickedoff">position</span> leftTerm rightTerm</span></span>
+<span class="lineno">  658 </span>
+<span class="lineno">  659 </span>-- Variant for the above function with a tuple, for usage with right association
+<span class="lineno">  660 </span>invertT :: (Origin -&gt; t -&gt; t -&gt; t) -&gt; (Origin, t) -&gt; t -&gt; t
+<span class="lineno">  661 </span><span class="decl"><span class="istickedoff">invertT constructor (position,rightTerm) leftTerm = constructor <span class="nottickedoff">position</span> leftTerm rightTerm</span></span>
+<span class="lineno">  662 </span>
+<span class="lineno">  663 </span>-- Help function for pTerm and pTrm4, to allow right association
+<span class="lineno">  664 </span>rightAssociate :: (Origin -&gt; t -&gt; t -&gt; t) -&gt; String -&gt; AmpParser t -&gt; AmpParser (Origin, t)
+<span class="lineno">  665 </span><span class="decl"><span class="istickedoff">rightAssociate combinator operator term</span>
+<span class="lineno">  666 </span><span class="spaces">                 </span><span class="istickedoff">= g &lt;$&gt; currPos &lt;* pOperator operator &lt;*&gt; term &lt;*&gt; pMaybe (rightAssociate <span class="nottickedoff">combinator</span> operator term)</span>
+<span class="lineno">  667 </span><span class="spaces">                          </span><span class="istickedoff">where g orig y Nothing  = (<span class="nottickedoff">orig</span>, y)</span>
+<span class="lineno">  668 </span><span class="spaces">                                </span><span class="istickedoff">g orig y (Just (org,z)) = <span class="nottickedoff">(orig, combinator org y z)</span></span></span>
+<span class="lineno">  669 </span>
+<span class="lineno">  670 </span>--- RelationRef ::= NamedRel | 'I' ('[' ConceptOneRef ']')? | 'V' Sign? | Atom ('[' ConceptOneRef ']')?
+<span class="lineno">  671 </span>pRelationRef :: AmpParser TermPrim
+<span class="lineno">  672 </span><span class="decl"><span class="istickedoff">pRelationRef      = PNamedR &lt;$&gt; pNamedRel                                                           &lt;|&gt;</span>
+<span class="lineno">  673 </span><span class="spaces">                    </span><span class="istickedoff">pid   &lt;$&gt; currPos &lt;* pKey &quot;I&quot; &lt;*&gt; pMaybe (pBrackets pConceptOneRef)  &lt;|&gt;</span>
+<span class="lineno">  674 </span><span class="spaces">                    </span><span class="istickedoff">pfull &lt;$&gt; currPos &lt;* pKey &quot;V&quot; &lt;*&gt; pMaybe pSign                       &lt;|&gt;</span>
+<span class="lineno">  675 </span><span class="spaces">                    </span><span class="istickedoff">Patm  &lt;$&gt; currPos &lt;*&gt; pAtom   &lt;*&gt; pMaybe (pBrackets pConceptOneRef)</span>
+<span class="lineno">  676 </span><span class="spaces">                    </span><span class="istickedoff">where pid orig Nothing = PI <span class="nottickedoff">orig</span></span>
+<span class="lineno">  677 </span><span class="spaces">                          </span><span class="istickedoff">pid orig (Just c)= Pid <span class="nottickedoff">orig</span> c</span>
+<span class="lineno">  678 </span><span class="spaces">                          </span><span class="istickedoff">pfull orig Nothing = PVee <span class="nottickedoff">orig</span></span>
+<span class="lineno">  679 </span><span class="spaces">                          </span><span class="istickedoff">pfull orig (Just (P_Sign src trg)) = Pfull <span class="nottickedoff">orig</span> src trg</span></span>
+<span class="lineno">  680 </span>
+<span class="lineno">  681 </span>--- Att ::= LabelProps? Term
+<span class="lineno">  682 </span>pAtt :: AmpParser P_ObjectDef
+<span class="lineno">  683 </span>-- There's an ambiguity in the grammar here: If we see an identifier, we don't know whether it's a label followed by ':' or a term name.
+<span class="lineno">  684 </span><span class="decl"><span class="istickedoff">pAtt = rebuild &lt;$&gt; currPos &lt;*&gt; try pLabelProps `opt` <span class="nottickedoff">(&quot;&quot;,[])</span> &lt;*&gt; try pTerm</span>
+<span class="lineno">  685 </span><span class="spaces">  </span><span class="istickedoff">where rebuild pos (nm, strs) ctx = P_Obj nm <span class="nottickedoff">pos</span> ctx mView <span class="nottickedoff">msub</span> strs</span>
+<span class="lineno">  686 </span><span class="spaces">        </span><span class="istickedoff">mView = Nothing</span>
+<span class="lineno">  687 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">msub = Nothing</span></span></span>
+<span class="lineno">  688 </span>
+<span class="lineno">  689 </span>--- NamedRelList ::= NamedRel (',' NamedRel)*
+<span class="lineno">  690 </span>--- NamedRel ::= Varid Sign?
+<span class="lineno">  691 </span>pNamedRel :: AmpParser P_NamedRel
+<span class="lineno">  692 </span><span class="decl"><span class="istickedoff">pNamedRel = PNamedRel  &lt;$&gt; currPos &lt;*&gt; pVarid &lt;*&gt; pMaybe pSign</span></span>
+<span class="lineno">  693 </span>
+<span class="lineno">  694 </span>--- Sign ::= '[' ConceptOneRef ('*' ConceptOneRef)? ']'
+<span class="lineno">  695 </span>pSign :: AmpParser P_Sign
+<span class="lineno">  696 </span><span class="decl"><span class="istickedoff">pSign = pBrackets sign</span>
+<span class="lineno">  697 </span><span class="spaces">   </span><span class="istickedoff">where sign = mkSign &lt;$&gt; pConceptOneRef &lt;*&gt; pMaybe (pOperator &quot;*&quot; *&gt; pConceptOneRef)</span>
+<span class="lineno">  698 </span><span class="spaces">         </span><span class="istickedoff">mkSign src mTgt = P_Sign src (fromMaybe src mTgt)</span></span>
+<span class="lineno">  699 </span>
+<span class="lineno">  700 </span>--- ConceptName ::= Conid | String
+<span class="lineno">  701 </span>--- ConceptNameList ::= ConceptName (',' ConceptName)
+<span class="lineno">  702 </span>pConceptName ::   AmpParser String
+<span class="lineno">  703 </span><span class="decl"><span class="istickedoff">pConceptName = pConid &lt;|&gt; pString</span></span>
+<span class="lineno">  704 </span>
+<span class="lineno">  705 </span>--- ConceptRef ::= ConceptName
+<span class="lineno">  706 </span>pConceptRef ::    AmpParser P_Concept
+<span class="lineno">  707 </span><span class="decl"><span class="istickedoff">pConceptRef = PCpt &lt;$&gt; pConceptName</span></span>
+<span class="lineno">  708 </span>
+<span class="lineno">  709 </span>--- ConceptOneRef ::= 'ONE' | ConceptRef
+<span class="lineno">  710 </span>pConceptOneRef :: AmpParser P_Concept
+<span class="lineno">  711 </span><span class="decl"><span class="istickedoff">pConceptOneRef = (P_Singleton &lt;$ pKey &quot;ONE&quot;) &lt;|&gt; pConceptRef</span></span>
+<span class="lineno">  712 </span>
+<span class="lineno">  713 </span>--  (SJ) Why does a label have (optional) strings?
+<span class="lineno">  714 </span>--  (GM) This is a binding mechanism for implementation specific properties, such as SQL/PHP plug,PHP web app,etc.
+<span class="lineno">  715 </span>--  (SJ April 15th, 2013) Since KEY has been replaced by IDENT and VIEW, there is a variant with props  (pLabelProps) and one without (pLabel).
+<span class="lineno">  716 </span>--- LabelProps ::= ADLid ('{' ADLidListList '}')? ':'
+<span class="lineno">  717 </span>pLabelProps :: AmpParser (String, [[String]])
+<span class="lineno">  718 </span><span class="decl"><span class="istickedoff">pLabelProps = (,) &lt;$&gt; pADLid</span>
+<span class="lineno">  719 </span><span class="spaces">                  </span><span class="istickedoff">&lt;*&gt; optList pArgs</span>
+<span class="lineno">  720 </span><span class="spaces">                  </span><span class="istickedoff">&lt;*  posOf pColon</span>
+<span class="lineno">  721 </span><span class="spaces">              </span><span class="istickedoff">where pArgs = pBraces $ many1 pADLid `sepBy1` pComma</span></span>
+<span class="lineno">  722 </span>
+<span class="lineno">  723 </span>--- Label ::= ADLid ':'
+<span class="lineno">  724 </span>pLabel :: AmpParser String
+<span class="lineno">  725 </span><span class="decl"><span class="istickedoff">pLabel = pADLid &lt;* pColon</span></span>
+<span class="lineno">  726 </span>
+<span class="lineno">  727 </span>--TODO! Try should not be necessary here, we must take the brackets out of the scope
+<span class="lineno">  728 </span>--- Content ::= '[' (RecordList | RecordObsList)? ']'
+<span class="lineno">  729 </span>pContent :: AmpParser Pairs
+<span class="lineno">  730 </span><span class="decl"><span class="istickedoff">pContent = pBrackets (pRecord `sepBy1` pComma &lt;|&gt; pRecordObs `sepBy` pSemi)</span>
+<span class="lineno">  731 </span><span class="spaces">          </span><span class="istickedoff">--- RecordList ::= Record (',' Record)*</span>
+<span class="lineno">  732 </span><span class="spaces">          </span><span class="istickedoff">--- Record ::= String '*' String</span>
+<span class="lineno">  733 </span><span class="spaces">    </span><span class="istickedoff">where pRecord :: AmpParser Paire</span>
+<span class="lineno">  734 </span><span class="spaces">          </span><span class="istickedoff">pRecord = mkPair &lt;$&gt; pString &lt;* pOperator &quot;*&quot; &lt;*&gt; pString</span>
+<span class="lineno">  735 </span><span class="spaces">          </span><span class="istickedoff">--- RecordObsList ::= RecordObsList (';' RecordObsList)</span>
+<span class="lineno">  736 </span><span class="spaces">          </span><span class="istickedoff">--- RecordObs ::= '(' String ',' String ')'</span>
+<span class="lineno">  737 </span><span class="spaces">          </span><span class="istickedoff">pRecordObs :: AmpParser Paire</span>
+<span class="lineno">  738 </span><span class="spaces">          </span><span class="istickedoff">pRecordObs = pParens (<span class="nottickedoff">mkPair</span> &lt;$&gt; pString &lt;* pComma &lt;*&gt; pString)</span></span>
+<span class="lineno">  739 </span>
+<span class="lineno">  740 </span>--- ADLid ::= Varid | Conid | String
+<span class="lineno">  741 </span>--- ADLidList ::= ADLid (',' ADLid)*
+<span class="lineno">  742 </span>--- ADLidListList ::= ADLid+ (',' ADLid+)*
+<span class="lineno">  743 </span>pADLid :: AmpParser String
+<span class="lineno">  744 </span><span class="decl"><span class="istickedoff">pADLid = pVarid &lt;|&gt; pConid &lt;|&gt; pString</span></span>
+
+</pre>
+</body>
+</html>

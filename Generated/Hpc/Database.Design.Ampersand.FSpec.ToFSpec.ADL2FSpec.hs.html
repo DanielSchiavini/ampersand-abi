@@ -1,0 +1,530 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.FSpec.ToFSpec.ADL2FSpec
+<span class="lineno">    2 </span>         (makeFSpec) where
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>import Prelude hiding (Ord(..))
+<span class="lineno">    5 </span>import Data.Char
+<span class="lineno">    6 </span>import Data.List
+<span class="lineno">    7 </span>import Data.Maybe
+<span class="lineno">    8 </span>import Text.Pandoc
+<span class="lineno">    9 </span>import Database.Design.Ampersand.ADL1
+<span class="lineno">   10 </span>import Database.Design.Ampersand.ADL1.Rule
+<span class="lineno">   11 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   12 </span>import Database.Design.Ampersand.Classes
+<span class="lineno">   13 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">   14 </span>import Database.Design.Ampersand.Core.Poset
+<span class="lineno">   15 </span>import Database.Design.Ampersand.FSpec.FSpec
+<span class="lineno">   16 </span>import Database.Design.Ampersand.Misc
+<span class="lineno">   17 </span>import Database.Design.Ampersand.FSpec.Crud
+<span class="lineno">   18 </span>import Database.Design.Ampersand.FSpec.ToFSpec.ADL2Plug
+<span class="lineno">   19 </span>import Database.Design.Ampersand.FSpec.ToFSpec.Calc
+<span class="lineno">   20 </span>import Database.Design.Ampersand.FSpec.ToFSpec.NormalForms 
+<span class="lineno">   21 </span>import Database.Design.Ampersand.FSpec.ShowADL
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   24 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;FSpec.ToFSpec.ADL2FSpec&quot;</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>makeFSpec :: Options -&gt; A_Context -&gt; FSpec
+<span class="lineno">   27 </span><span class="decl"><span class="nottickedoff">makeFSpec opts context</span>
+<span class="lineno">   28 </span><span class="spaces"> </span><span class="nottickedoff">=      FSpec { fsName       = name context</span>
+<span class="lineno">   29 </span><span class="spaces">              </span><span class="nottickedoff">, originalContext = context </span>
+<span class="lineno">   30 </span><span class="spaces">              </span><span class="nottickedoff">, getOpts      = opts</span>
+<span class="lineno">   31 </span><span class="spaces">              </span><span class="nottickedoff">, fspos        = ctxpos context</span>
+<span class="lineno">   32 </span><span class="spaces">              </span><span class="nottickedoff">, themes       = themesInScope</span>
+<span class="lineno">   33 </span><span class="spaces">              </span><span class="nottickedoff">, pattsInScope = pattsInThemesInScope</span>
+<span class="lineno">   34 </span><span class="spaces">              </span><span class="nottickedoff">, rulesInScope = rulesInThemesInScope</span>
+<span class="lineno">   35 </span><span class="spaces">              </span><span class="nottickedoff">, declsInScope = declsInThemesInScope </span>
+<span class="lineno">   36 </span><span class="spaces">              </span><span class="nottickedoff">, concsInScope = concsInThemesInScope</span>
+<span class="lineno">   37 </span><span class="spaces">              </span><span class="nottickedoff">, cDefsInScope = cDefsInThemesInScope</span>
+<span class="lineno">   38 </span><span class="spaces">              </span><span class="nottickedoff">, gensInScope  = gensInThemesInScope</span>
+<span class="lineno">   39 </span><span class="spaces">              </span><span class="nottickedoff">, fsLang       = printingLanguage</span>
+<span class="lineno">   40 </span><span class="spaces">              </span><span class="nottickedoff">, vplugInfos   = definedplugs</span>
+<span class="lineno">   41 </span><span class="spaces">              </span><span class="nottickedoff">, plugInfos    = allplugs</span>
+<span class="lineno">   42 </span><span class="spaces">              </span><span class="nottickedoff">, interfaceS   = fSpecAllInterfaces -- interfaces specified in the Ampersand script</span>
+<span class="lineno">   43 </span><span class="spaces">              </span><span class="nottickedoff">, interfaceG   = [ifc | ifc&lt;-interfaceGen, let ctxrel = objctx (ifcObj ifc)</span>
+<span class="lineno">   44 </span><span class="spaces">                                    </span><span class="nottickedoff">, isIdent ctxrel &amp;&amp; source ctxrel==ONE</span>
+<span class="lineno">   45 </span><span class="spaces">                                      </span><span class="nottickedoff">|| ctxrel `notElem` map (objctx.ifcObj) fSpecAllInterfaces</span>
+<span class="lineno">   46 </span><span class="spaces">                                    </span><span class="nottickedoff">, allInterfaces opts]  -- generated interfaces</span>
+<span class="lineno">   47 </span><span class="spaces">              </span><span class="nottickedoff">, fSwitchboard</span>
+<span class="lineno">   48 </span><span class="spaces">                  </span><span class="nottickedoff">= Fswtch</span>
+<span class="lineno">   49 </span><span class="spaces">                           </span><span class="nottickedoff">{ fsbEvIn  = nub (map ecaTriggr allVecas) -- eventsIn</span>
+<span class="lineno">   50 </span><span class="spaces">                           </span><span class="nottickedoff">, fsbEvOut = nub [evt | eca&lt;-allVecas, evt&lt;-eventsFrom (ecaAction eca)] -- eventsOut</span>
+<span class="lineno">   51 </span><span class="spaces">                           </span><span class="nottickedoff">, fsbConjs = nub [ (qRule q, rc_conjunct x) | q &lt;- filter (not . isSignal . qRule) allQuads</span>
+<span class="lineno">   52 </span><span class="spaces">                                                                       </span><span class="nottickedoff">, x &lt;- qConjuncts q]</span>
+<span class="lineno">   53 </span><span class="spaces">                           </span><span class="nottickedoff">, fsbECAs  = allVecas</span>
+<span class="lineno">   54 </span><span class="spaces">                           </span><span class="nottickedoff">}</span>
+<span class="lineno">   55 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   56 </span><span class="spaces">              </span><span class="nottickedoff">, fDeriveProofs = deriveProofs opts context </span>
+<span class="lineno">   57 </span><span class="spaces">              </span><span class="nottickedoff">, fActivities  = allActivities</span>
+<span class="lineno">   58 </span><span class="spaces">              </span><span class="nottickedoff">, fRoleRels    = nub [(role,decl) -- fRoleRels says which roles may change the population of which relation.</span>
+<span class="lineno">   59 </span><span class="spaces">                                   </span><span class="nottickedoff">| rr &lt;- ctxRRels context</span>
+<span class="lineno">   60 </span><span class="spaces">                                   </span><span class="nottickedoff">, decl &lt;- rrRels rr</span>
+<span class="lineno">   61 </span><span class="spaces">                                   </span><span class="nottickedoff">, role &lt;- rrRoles rr</span>
+<span class="lineno">   62 </span><span class="spaces">                                   </span><span class="nottickedoff">] </span>
+<span class="lineno">   63 </span><span class="spaces">              </span><span class="nottickedoff">, fRoleRuls    = nub [(role,rule)   -- fRoleRuls says which roles maintain which rules.</span>
+<span class="lineno">   64 </span><span class="spaces">                                   </span><span class="nottickedoff">| rule &lt;- allrules</span>
+<span class="lineno">   65 </span><span class="spaces">                                   </span><span class="nottickedoff">, role &lt;- maintainersOf rule</span>
+<span class="lineno">   66 </span><span class="spaces">                                   </span><span class="nottickedoff">]</span>
+<span class="lineno">   67 </span><span class="spaces">              </span><span class="nottickedoff">, fRoles       = nub (concatMap arRoles (ctxrrules context)++</span>
+<span class="lineno">   68 </span><span class="spaces">                                    </span><span class="nottickedoff">concatMap rrRoles (ctxRRels context)++</span>
+<span class="lineno">   69 </span><span class="spaces">                                    </span><span class="nottickedoff">concatMap ifcRoles (ctxifcs context)</span>
+<span class="lineno">   70 </span><span class="spaces">                                   </span><span class="nottickedoff">) </span>
+<span class="lineno">   71 </span><span class="spaces">              </span><span class="nottickedoff">, fallRules = allrules</span>
+<span class="lineno">   72 </span><span class="spaces">              </span><span class="nottickedoff">, vrules       = filter      isUserDefined  allrules</span>
+<span class="lineno">   73 </span><span class="spaces">              </span><span class="nottickedoff">, grules       = filter (not.isUserDefined) allrules</span>
+<span class="lineno">   74 </span><span class="spaces">              </span><span class="nottickedoff">, invariants   = filter (not.isSignal)      allrules</span>
+<span class="lineno">   75 </span><span class="spaces">              </span><span class="nottickedoff">, vconjs       = allConjs</span>
+<span class="lineno">   76 </span><span class="spaces">              </span><span class="nottickedoff">, allConjsPerRule = fSpecAllConjsPerRule</span>
+<span class="lineno">   77 </span><span class="spaces">              </span><span class="nottickedoff">, allConjsPerDecl = fSpecAllConjsPerDecl</span>
+<span class="lineno">   78 </span><span class="spaces">              </span><span class="nottickedoff">, allConjsPerConcept = fSpecAllConjsPerConcept</span>
+<span class="lineno">   79 </span><span class="spaces">              </span><span class="nottickedoff">, vquads       = allQuads</span>
+<span class="lineno">   80 </span><span class="spaces">              </span><span class="nottickedoff">, vEcas        = allVecas</span>
+<span class="lineno">   81 </span><span class="spaces">              </span><span class="nottickedoff">, vrels        = calculatedDecls</span>
+<span class="lineno">   82 </span><span class="spaces">              </span><span class="nottickedoff">, allUsedDecls = relsUsedIn context</span>
+<span class="lineno">   83 </span><span class="spaces">              </span><span class="nottickedoff">, allDecls     = fSpecAllDecls</span>
+<span class="lineno">   84 </span><span class="spaces">              </span><span class="nottickedoff">, allConcepts  = fSpecAllConcepts</span>
+<span class="lineno">   85 </span><span class="spaces">              </span><span class="nottickedoff">, kernels      = constructKernels</span>
+<span class="lineno">   86 </span><span class="spaces">              </span><span class="nottickedoff">, fsisa        = concatMap genericAndSpecifics (gens context)</span>
+<span class="lineno">   87 </span><span class="spaces">              </span><span class="nottickedoff">, vpatterns    = patterns context</span>
+<span class="lineno">   88 </span><span class="spaces">              </span><span class="nottickedoff">, vgens        = gens context</span>
+<span class="lineno">   89 </span><span class="spaces">              </span><span class="nottickedoff">, vIndices     = identities context</span>
+<span class="lineno">   90 </span><span class="spaces">              </span><span class="nottickedoff">, vviews       = viewDefs context</span>
+<span class="lineno">   91 </span><span class="spaces">              </span><span class="nottickedoff">, conceptDefs  = ctxcds context</span>
+<span class="lineno">   92 </span><span class="spaces">              </span><span class="nottickedoff">, fSexpls      = ctxps context</span>
+<span class="lineno">   93 </span><span class="spaces">              </span><span class="nottickedoff">, metas        = ctxmetas context</span>
+<span class="lineno">   94 </span><span class="spaces">              </span><span class="nottickedoff">, crudInfo     = mkCrudInfo fSpecAllConcepts fSpecAllDecls fSpecAllInterfaces</span>
+<span class="lineno">   95 </span><span class="spaces">              </span><span class="nottickedoff">, initialPops  = initialpops</span>
+<span class="lineno">   96 </span><span class="spaces">              </span><span class="nottickedoff">, allAtoms     = allatoms</span>
+<span class="lineno">   97 </span><span class="spaces">              </span><span class="nottickedoff">, allLinks     = alllinks</span>
+<span class="lineno">   98 </span><span class="spaces">              </span><span class="nottickedoff">, allViolations  = [ (r,vs)</span>
+<span class="lineno">   99 </span><span class="spaces">                                 </span><span class="nottickedoff">| r &lt;- allrules, not (isSignal r)</span>
+<span class="lineno">  100 </span><span class="spaces">                                 </span><span class="nottickedoff">, let vs = ruleviolations (gens context) initialpops r, not (null vs) ]</span>
+<span class="lineno">  101 </span><span class="spaces">              </span><span class="nottickedoff">, allExprs     = expressionsIn context</span>
+<span class="lineno">  102 </span><span class="spaces">              </span><span class="nottickedoff">, allSigns     = nub $ map sign fSpecAllDecls ++ map sign (expressionsIn context)</span>
+<span class="lineno">  103 </span><span class="spaces">              </span><span class="nottickedoff">, initialConjunctSignals = [ (conj, viols) | conj &lt;- allConjs </span>
+<span class="lineno">  104 </span><span class="spaces">                                         </span><span class="nottickedoff">, let viols = conjunctViolations (gens context) initialpops conj</span>
+<span class="lineno">  105 </span><span class="spaces">                                         </span><span class="nottickedoff">, not $ null viols</span>
+<span class="lineno">  106 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">  107 </span><span class="spaces">              </span><span class="nottickedoff">}</span>
+<span class="lineno">  108 </span><span class="spaces">   </span><span class="nottickedoff">where           </span>
+<span class="lineno">  109 </span><span class="spaces">     </span><span class="nottickedoff">allatoms :: [Atom]</span>
+<span class="lineno">  110 </span><span class="spaces">     </span><span class="nottickedoff">allatoms = nub (concatMap atoms initialpops)</span>
+<span class="lineno">  111 </span><span class="spaces">       </span><span class="nottickedoff">where</span>
+<span class="lineno">  112 </span><span class="spaces">         </span><span class="nottickedoff">atoms :: Population -&gt; [Atom]</span>
+<span class="lineno">  113 </span><span class="spaces">         </span><span class="nottickedoff">atoms udp = case udp of</span>
+<span class="lineno">  114 </span><span class="spaces">           </span><span class="nottickedoff">PRelPopu{} -&gt;  map (mkAtom ((source.popdcl) udp).srcPaire) (popps udp)</span>
+<span class="lineno">  115 </span><span class="spaces">                       </span><span class="nottickedoff">++ map (mkAtom ((target.popdcl) udp).trgPaire) (popps udp)</span>
+<span class="lineno">  116 </span><span class="spaces">           </span><span class="nottickedoff">PCptPopu{} -&gt;  map (mkAtom (        popcpt  udp)         ) (popas udp)</span>
+<span class="lineno">  117 </span><span class="spaces">     </span><span class="nottickedoff">mkAtom :: A_Concept -&gt; String -&gt; Atom</span>
+<span class="lineno">  118 </span><span class="spaces">     </span><span class="nottickedoff">mkAtom cpt value = </span>
+<span class="lineno">  119 </span><span class="spaces">        </span><span class="nottickedoff">Atom { atmRoots = rootConcepts gs [cpt]</span>
+<span class="lineno">  120 </span><span class="spaces">               </span><span class="nottickedoff">, atmIn   = largerConcepts gs cpt `uni` [cpt]</span>
+<span class="lineno">  121 </span><span class="spaces">               </span><span class="nottickedoff">, atmVal  = value</span>
+<span class="lineno">  122 </span><span class="spaces">               </span><span class="nottickedoff">}</span>
+<span class="lineno">  123 </span><span class="spaces">       </span><span class="nottickedoff">where</span>
+<span class="lineno">  124 </span><span class="spaces">         </span><span class="nottickedoff">gs = gens context</span>
+<span class="lineno">  125 </span><span class="spaces">     </span><span class="nottickedoff">dclLinks :: Declaration -&gt; [A_Pair]</span>
+<span class="lineno">  126 </span><span class="spaces">     </span><span class="nottickedoff">dclLinks dcl</span>
+<span class="lineno">  127 </span><span class="spaces">       </span><span class="nottickedoff">= [Pair   { lnkDcl   = dcl</span>
+<span class="lineno">  128 </span><span class="spaces">                 </span><span class="nottickedoff">, lnkLeft  = mkAtom (source dcl) (srcPaire p) </span>
+<span class="lineno">  129 </span><span class="spaces">                 </span><span class="nottickedoff">, lnkRight = mkAtom (target dcl) (trgPaire p)</span>
+<span class="lineno">  130 </span><span class="spaces">                 </span><span class="nottickedoff">}</span>
+<span class="lineno">  131 </span><span class="spaces">         </span><span class="nottickedoff">| p &lt;- pairsOf dcl]</span>
+<span class="lineno">  132 </span><span class="spaces">     </span><span class="nottickedoff">alllinks ::  [A_Pair]</span>
+<span class="lineno">  133 </span><span class="spaces">     </span><span class="nottickedoff">alllinks = concatMap dclLinks fSpecAllDecls</span>
+<span class="lineno">  134 </span><span class="spaces">     </span><span class="nottickedoff">pairsOf :: Declaration -&gt; Pairs</span>
+<span class="lineno">  135 </span><span class="spaces">     </span><span class="nottickedoff">pairsOf d = case filter theDecl initialpops of</span>
+<span class="lineno">  136 </span><span class="spaces">                    </span><span class="nottickedoff">[]    -&gt; []</span>
+<span class="lineno">  137 </span><span class="spaces">                    </span><span class="nottickedoff">[pop] -&gt; popps pop</span>
+<span class="lineno">  138 </span><span class="spaces">                    </span><span class="nottickedoff">_     -&gt; fatal 273 &quot;Multiple entries found in populationTable&quot;</span>
+<span class="lineno">  139 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
+<span class="lineno">  140 </span><span class="spaces">          </span><span class="nottickedoff">theDecl :: Population -&gt; Bool</span>
+<span class="lineno">  141 </span><span class="spaces">          </span><span class="nottickedoff">theDecl p = case p of</span>
+<span class="lineno">  142 </span><span class="spaces">                        </span><span class="nottickedoff">PRelPopu{} -&gt; popdcl p == d</span>
+<span class="lineno">  143 </span><span class="spaces">                        </span><span class="nottickedoff">PCptPopu{} -&gt; False</span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  145 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  146 </span><span class="spaces">     </span><span class="nottickedoff">fSpecAllConcepts = concs context</span>
+<span class="lineno">  147 </span><span class="spaces">     </span><span class="nottickedoff">fSpecAllDecls = relsDefdIn context</span>
+<span class="lineno">  148 </span><span class="spaces">     </span><span class="nottickedoff">fSpecAllInterfaces = map enrichIfc (ctxifcs context) </span>
+<span class="lineno">  149 </span><span class="spaces">     </span><span class="nottickedoff"></span>
+<span class="lineno">  150 </span><span class="spaces">     </span><span class="nottickedoff">themesInScope = if null (ctxthms context)   -- The names of patterns/processes to be printed in the functional specification. (for making partial documentation)</span>
+<span class="lineno">  151 </span><span class="spaces">                     </span><span class="nottickedoff">then map name (patterns context)</span>
+<span class="lineno">  152 </span><span class="spaces">                     </span><span class="nottickedoff">else ctxthms context</span>
+<span class="lineno">  153 </span><span class="spaces">     </span><span class="nottickedoff">pattsInThemesInScope = filter (\p -&gt; name p `elem` themesInScope) (patterns context)</span>
+<span class="lineno">  154 </span><span class="spaces">     </span><span class="nottickedoff">cDefsInThemesInScope = filter (\cd -&gt; cdfrom cd `elem` themesInScope) (ctxcds context)</span>
+<span class="lineno">  155 </span><span class="spaces">     </span><span class="nottickedoff">rulesInThemesInScope = ctxrs context `uni` concatMap ptrls pattsInThemesInScope</span>
+<span class="lineno">  156 </span><span class="spaces">     </span><span class="nottickedoff">declsInThemesInScope = ctxds context `uni` concatMap ptdcs pattsInThemesInScope</span>
+<span class="lineno">  157 </span><span class="spaces">     </span><span class="nottickedoff">concsInThemesInScope = concs (ctxrs context) `uni`  concs pattsInThemesInScope</span>
+<span class="lineno">  158 </span><span class="spaces">     </span><span class="nottickedoff">gensInThemesInScope  = ctxgs context ++ concatMap ptgns pattsInThemesInScope</span>
+<span class="lineno">  159 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  160 </span><span class="spaces">     </span><span class="nottickedoff">enrichIfc :: Interface -&gt; Interface</span>
+<span class="lineno">  161 </span><span class="spaces">     </span><span class="nottickedoff">enrichIfc ifc</span>
+<span class="lineno">  162 </span><span class="spaces">      </span><span class="nottickedoff">= ifc{ ifcEcas = fst . assembleECAs opts context $ ifcParams ifc</span>
+<span class="lineno">  163 </span><span class="spaces">           </span><span class="nottickedoff">, ifcControls = makeIfcControls (ifcParams ifc) allConjs</span>
+<span class="lineno">  164 </span><span class="spaces">           </span><span class="nottickedoff">}</span>
+<span class="lineno">  165 </span><span class="spaces">     </span><span class="nottickedoff">initialpops = [ PRelPopu{ popdcl = popdcl (head eqclass)</span>
+<span class="lineno">  166 </span><span class="spaces">                             </span><span class="nottickedoff">, popps  = (nub.concat) [ popps pop | pop&lt;-eqclass ]</span>
+<span class="lineno">  167 </span><span class="spaces">                             </span><span class="nottickedoff">}</span>
+<span class="lineno">  168 </span><span class="spaces">                   </span><span class="nottickedoff">| eqclass&lt;-eqCl popdcl [ pop | pop@PRelPopu{}&lt;-populations ] ] ++</span>
+<span class="lineno">  169 </span><span class="spaces">                   </span><span class="nottickedoff">[ PCptPopu{ popcpt = popcpt (head eqclass)</span>
+<span class="lineno">  170 </span><span class="spaces">                             </span><span class="nottickedoff">, popas  = (nub.concat) [ popas pop | pop&lt;-eqclass ]</span>
+<span class="lineno">  171 </span><span class="spaces">                             </span><span class="nottickedoff">}</span>
+<span class="lineno">  172 </span><span class="spaces">                   </span><span class="nottickedoff">| eqclass&lt;-eqCl popcpt [ pop | pop@PCptPopu{}&lt;-populations ] ]</span>
+<span class="lineno">  173 </span><span class="spaces">       </span><span class="nottickedoff">where populations = ctxpopus context++concatMap ptups (patterns context)       </span>
+<span class="lineno">  174 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  175 </span><span class="spaces">     </span><span class="nottickedoff">allConjs = makeAllConjs opts allrules</span>
+<span class="lineno">  176 </span><span class="spaces">     </span><span class="nottickedoff">fSpecAllConjsPerRule :: [(Rule,[Conjunct])]</span>
+<span class="lineno">  177 </span><span class="spaces">     </span><span class="nottickedoff">fSpecAllConjsPerRule = converse [ (conj, rc_orgRules conj) | conj &lt;- allConjs ]</span>
+<span class="lineno">  178 </span><span class="spaces">     </span><span class="nottickedoff">fSpecAllConjsPerDecl = converse [ (conj, relsUsedIn $ rc_conjunct conj) | conj &lt;- allConjs ] </span>
+<span class="lineno">  179 </span><span class="spaces">     </span><span class="nottickedoff">fSpecAllConjsPerConcept = converse [ (conj, [source r, target r]) | conj &lt;- allConjs, r &lt;- relsMentionedIn $ rc_conjunct conj ] </span>
+<span class="lineno">  180 </span><span class="spaces">     </span><span class="nottickedoff">allQuads = quadsOfRules opts allrules </span>
+<span class="lineno">  181 </span><span class="spaces">     </span><span class="nottickedoff"></span>
+<span class="lineno">  182 </span><span class="spaces">     </span><span class="nottickedoff">allrules = map setIsSignal (allRules context)</span>
+<span class="lineno">  183 </span><span class="spaces">        </span><span class="nottickedoff">where setIsSignal r = r{isSignal = (not.null) (maintainersOf r)}</span>
+<span class="lineno">  184 </span><span class="spaces">     </span><span class="nottickedoff">maintainersOf :: Rule -&gt; [Role]</span>
+<span class="lineno">  185 </span><span class="spaces">     </span><span class="nottickedoff">maintainersOf r </span>
+<span class="lineno">  186 </span><span class="spaces">       </span><span class="nottickedoff">= [role </span>
+<span class="lineno">  187 </span><span class="spaces">         </span><span class="nottickedoff">| role &lt;- concatMap arRoles . filter (\x -&gt; name r `elem` arRules x) . ctxrrules $ context</span>
+<span class="lineno">  188 </span><span class="spaces">         </span><span class="nottickedoff">]</span>
+<span class="lineno">  189 </span><span class="spaces">     </span><span class="nottickedoff">isUserDefined rul =</span>
+<span class="lineno">  190 </span><span class="spaces">       </span><span class="nottickedoff">case r_usr rul of</span>
+<span class="lineno">  191 </span><span class="spaces">         </span><span class="nottickedoff">UserDefined  -&gt; True</span>
+<span class="lineno">  192 </span><span class="spaces">         </span><span class="nottickedoff">Multiplicity -&gt; False</span>
+<span class="lineno">  193 </span><span class="spaces">         </span><span class="nottickedoff">Identity     -&gt; False</span>
+<span class="lineno">  194 </span><span class="spaces">     </span><span class="nottickedoff">allActivities :: [Activity]</span>
+<span class="lineno">  195 </span><span class="spaces">     </span><span class="nottickedoff">allActivities = map makeActivity (filter isSignal allrules)</span>
+<span class="lineno">  196 </span><span class="spaces">     </span><span class="nottickedoff">allVecas = {-preEmpt opts . -} fst (assembleECAs opts context fSpecAllDecls)   -- TODO: preEmpt gives problems. Readdress the preEmption problem and redo, but properly.</span>
+<span class="lineno">  197 </span><span class="spaces">     </span><span class="nottickedoff">-- | allDecs contains all user defined plus all generated relations plus all defined and computed totals.</span>
+<span class="lineno">  198 </span><span class="spaces">     </span><span class="nottickedoff">calcProps :: Declaration -&gt; Declaration</span>
+<span class="lineno">  199 </span><span class="spaces">     </span><span class="nottickedoff">calcProps d = d{decprps_calc = Just calculated}</span>
+<span class="lineno">  200 </span><span class="spaces">         </span><span class="nottickedoff">where calculated = decprps d `uni` [Tot | d `elem` totals]</span>
+<span class="lineno">  201 </span><span class="spaces">                                      </span><span class="nottickedoff">`uni` [Sur | d `elem` surjectives]</span>
+<span class="lineno">  202 </span><span class="spaces">     </span><span class="nottickedoff">calculatedDecls = map calcProps fSpecAllDecls</span>
+<span class="lineno">  203 </span><span class="spaces">     </span><span class="nottickedoff">constructKernels = foldl f (group (delete ONE fSpecAllConcepts)) (gens context)</span>
+<span class="lineno">  204 </span><span class="spaces">         </span><span class="nottickedoff">where f disjuncLists g = concat haves : nohaves</span>
+<span class="lineno">  205 </span><span class="spaces">                 </span><span class="nottickedoff">where</span>
+<span class="lineno">  206 </span><span class="spaces">                   </span><span class="nottickedoff">(haves,nohaves) = partition (not.null.intersect (concs g)) disjuncLists</span>
+<span class="lineno">  207 </span><span class="spaces">  </span><span class="nottickedoff">-- determine relations that are total (as many as possible, but not necessarily all)</span>
+<span class="lineno">  208 </span><span class="spaces">     </span><span class="nottickedoff">totals      = [ d |       EDcD d  &lt;- totsurs ]</span>
+<span class="lineno">  209 </span><span class="spaces">     </span><span class="nottickedoff">surjectives = [ d | EFlp (EDcD d) &lt;- totsurs ]</span>
+<span class="lineno">  210 </span><span class="spaces">     </span><span class="nottickedoff">totsurs :: [Expression]</span>
+<span class="lineno">  211 </span><span class="spaces">     </span><span class="nottickedoff">totsurs</span>
+<span class="lineno">  212 </span><span class="spaces">      </span><span class="nottickedoff">= nub [rel | q&lt;-filter (not . isSignal . qRule) allQuads -- all quads for invariant rules</span>
+<span class="lineno">  213 </span><span class="spaces">                 </span><span class="nottickedoff">, isIdent (qDcl q)</span>
+<span class="lineno">  214 </span><span class="spaces">                 </span><span class="nottickedoff">, x&lt;-qConjuncts q, dnf&lt;-rc_dnfClauses x</span>
+<span class="lineno">  215 </span><span class="spaces">                 </span><span class="nottickedoff">, let antc = conjNF opts (foldr (./\.) (EDcV (sign (head (antcs dnf++conss dnf)))) (antcs dnf))</span>
+<span class="lineno">  216 </span><span class="spaces">                 </span><span class="nottickedoff">, isRfx antc -- We now know that I is a subset of the antecedent of this dnf clause.</span>
+<span class="lineno">  217 </span><span class="spaces">                 </span><span class="nottickedoff">, cons&lt;-map exprCps2list (conss dnf)</span>
+<span class="lineno">  218 </span><span class="spaces">            </span><span class="nottickedoff">-- let I |- r;s;t be an invariant rule, then r and s and t~ and s~ are all total.</span>
+<span class="lineno">  219 </span><span class="spaces">                 </span><span class="nottickedoff">, rel&lt;-init cons++[flp r | r&lt;-tail cons]</span>
+<span class="lineno">  220 </span><span class="spaces">                 </span><span class="nottickedoff">]</span>
+<span class="lineno">  221 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  222 </span><span class="spaces">     </span><span class="nottickedoff">--------------</span>
+<span class="lineno">  223 </span><span class="spaces">     </span><span class="nottickedoff">--making plugs</span>
+<span class="lineno">  224 </span><span class="spaces">     </span><span class="nottickedoff">--------------</span>
+<span class="lineno">  225 </span><span class="spaces">     </span><span class="nottickedoff">vsqlplugs = [ (makeUserDefinedSqlPlug context p) | p&lt;-ctxsql context] --REMARK -&gt; no optimization like try2specific, because these plugs are user defined</span>
+<span class="lineno">  226 </span><span class="spaces">     </span><span class="nottickedoff">definedplugs = map InternalPlug vsqlplugs</span>
+<span class="lineno">  227 </span><span class="spaces">                 </span><span class="nottickedoff">++ map ExternalPlug (ctxphp context)</span>
+<span class="lineno">  228 </span><span class="spaces">     </span><span class="nottickedoff">allplugs = definedplugs ++      -- all plugs defined by the user</span>
+<span class="lineno">  229 </span><span class="spaces">                </span><span class="nottickedoff">genPlugs             -- all generated plugs</span>
+<span class="lineno">  230 </span><span class="spaces">     </span><span class="nottickedoff">genPlugs = [InternalPlug (rename p (qlfname (name p)))</span>
+<span class="lineno">  231 </span><span class="spaces">                </span><span class="nottickedoff">| p &lt;- uniqueNames (map name definedplugs) -- the names of definedplugs will not be changed, assuming they are all unique</span>
+<span class="lineno">  232 </span><span class="spaces">                                   </span><span class="nottickedoff">(makeGeneratedSqlPlugs opts context totsurs entityRels)</span>
+<span class="lineno">  233 </span><span class="spaces">                </span><span class="nottickedoff">]</span>
+<span class="lineno">  234 </span><span class="spaces">     </span><span class="nottickedoff">-- relations to be saved in generated plugs: if decplug=True, the declaration has the BYPLUG and therefore may not be saved in a database</span>
+<span class="lineno">  235 </span><span class="spaces">     </span><span class="nottickedoff">-- WHAT -&gt; is a BYPLUG?</span>
+<span class="lineno">  236 </span><span class="spaces">     </span><span class="nottickedoff">entityRels = [ d | d&lt;-calculatedDecls, not (decplug d)] -- The persistent relations.</span>
+<span class="lineno">  237 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  238 </span><span class="spaces">     </span><span class="nottickedoff">qlfname x = if null (namespace opts) then x else &quot;ns&quot;++namespace opts++x</span>
+<span class="lineno">  239 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  240 </span><span class="spaces">     </span><span class="nottickedoff">--TODO151210 -&gt; Plug A is overbodig, want A zit al in plug r</span>
+<span class="lineno">  241 </span><span class="spaces"></span><span class="nottickedoff">--CONTEXT Temp</span>
+<span class="lineno">  242 </span><span class="spaces"></span><span class="nottickedoff">--PATTERN Temp</span>
+<span class="lineno">  243 </span><span class="spaces"></span><span class="nottickedoff">--r::A*B[TOT].</span>
+<span class="lineno">  244 </span><span class="spaces"></span><span class="nottickedoff">--t::E*ECps[UNI].</span>
+<span class="lineno">  245 </span><span class="spaces"></span><span class="nottickedoff">--ENDPATTERN</span>
+<span class="lineno">  246 </span><span class="spaces"></span><span class="nottickedoff">--ENDCONTEXT</span>
+<span class="lineno">  247 </span><span class="spaces"></span><span class="nottickedoff">{-</span>
+<span class="lineno">  248 </span><span class="spaces">    </span><span class="nottickedoff">**************************************</span>
+<span class="lineno">  249 </span><span class="spaces">    </span><span class="nottickedoff">* Plug E                               *</span>
+<span class="lineno">  250 </span><span class="spaces">    </span><span class="nottickedoff">* I  [INJ,SUR,UNI,TOT,SYM,ASY,TRN,RFX] *</span>
+<span class="lineno">  251 </span><span class="spaces">    </span><span class="nottickedoff">* t  [UNI]                             *</span>
+<span class="lineno">  252 </span><span class="spaces">    </span><span class="nottickedoff">**************************************</span>
+<span class="lineno">  253 </span><span class="spaces">    </span><span class="nottickedoff">* Plug ECps                            *</span>
+<span class="lineno">  254 </span><span class="spaces">    </span><span class="nottickedoff">* I  [INJ,SUR,UNI,TOT,SYM,ASY,TRN,RFX] *</span>
+<span class="lineno">  255 </span><span class="spaces">    </span><span class="nottickedoff">**************************************</span>
+<span class="lineno">  256 </span><span class="spaces">    </span><span class="nottickedoff">* Plug B                               *</span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="nottickedoff">* I  [INJ,SUR,UNI,TOT,SYM,ASY,TRN,RFX] *</span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="nottickedoff">**************************************</span>
+<span class="lineno">  259 </span><span class="spaces">    </span><span class="nottickedoff">* Plug A                               *</span>
+<span class="lineno">  260 </span><span class="spaces">    </span><span class="nottickedoff">* I  [INJ,SUR,UNI,TOT,SYM,ASY,TRN,RFX] *</span>
+<span class="lineno">  261 </span><span class="spaces">    </span><span class="nottickedoff">**************************************</span>
+<span class="lineno">  262 </span><span class="spaces">    </span><span class="nottickedoff">* Plug r                               *</span>
+<span class="lineno">  263 </span><span class="spaces">    </span><span class="nottickedoff">* I  [INJ,SUR,UNI,TOT,SYM,ASY,TRN,RFX] *</span>
+<span class="lineno">  264 </span><span class="spaces">    </span><span class="nottickedoff">* r  [TOT]                             *</span>
+<span class="lineno">  265 </span><span class="spaces">    </span><span class="nottickedoff">**************************************</span>
+<span class="lineno">  266 </span><span class="spaces"></span><span class="nottickedoff">-}</span>
+<span class="lineno">  267 </span><span class="spaces">     </span><span class="nottickedoff">-------------------</span>
+<span class="lineno">  268 </span><span class="spaces">     </span><span class="nottickedoff">--END: making plugs</span>
+<span class="lineno">  269 </span><span class="spaces">     </span><span class="nottickedoff">-------------------</span>
+<span class="lineno">  270 </span><span class="spaces">     </span><span class="nottickedoff">-------------------</span>
+<span class="lineno">  271 </span><span class="spaces">     </span><span class="nottickedoff">--making interfaces</span>
+<span class="lineno">  272 </span><span class="spaces">     </span><span class="nottickedoff">-------------------</span>
+<span class="lineno">  273 </span><span class="spaces">     </span><span class="nottickedoff">-- interfaces (type ObjectDef) can be generated from a basic ontology. That is: they can be derived from a set</span>
+<span class="lineno">  274 </span><span class="spaces">     </span><span class="nottickedoff">-- of relations together with multiplicity constraints. That is what interfaceG does.</span>
+<span class="lineno">  275 </span><span class="spaces">     </span><span class="nottickedoff">-- This is meant to help a developer to build his own list of interfaces, by providing a set of interfaces that works.</span>
+<span class="lineno">  276 </span><span class="spaces">     </span><span class="nottickedoff">-- The developer may relabel attributes by names of his own choice.</span>
+<span class="lineno">  277 </span><span class="spaces">     </span><span class="nottickedoff">-- This is easier than to invent a set of interfaces from scratch.</span>
+<span class="lineno">  278 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  279 </span><span class="spaces">     </span><span class="nottickedoff">-- Rule: a interface must be large enough to allow the required transactions to take place within that interface.</span>
+<span class="lineno">  280 </span><span class="spaces">     </span><span class="nottickedoff">-- Attributes of an ObjectDef have unique names within that ObjectDef.</span>
+<span class="lineno">  281 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  282 </span><span class="spaces"></span><span class="nottickedoff">--- generation of interfaces:</span>
+<span class="lineno">  283 </span><span class="spaces"></span><span class="nottickedoff">--  Ampersand generates interfaces for the purpose of quick prototyping.</span>
+<span class="lineno">  284 </span><span class="spaces"></span><span class="nottickedoff">--  A script without any mention of interfaces is supplemented</span>
+<span class="lineno">  285 </span><span class="spaces"></span><span class="nottickedoff">--  by a number of interface definitions that gives a user full access to all data.</span>
+<span class="lineno">  286 </span><span class="spaces"></span><span class="nottickedoff">--  Step 1: select and arrange all relations to obtain a set cRels of total relations</span>
+<span class="lineno">  287 </span><span class="spaces"></span><span class="nottickedoff">--          to ensure insertability of entities (signal declarations are excluded)</span>
+<span class="lineno">  288 </span><span class="spaces">     </span><span class="nottickedoff">cRels = [     EDcD d  | d@Sgn{}&lt;-fSpecAllDecls, not(deciss d), isTot d, not$decplug d]++</span>
+<span class="lineno">  289 </span><span class="spaces">             </span><span class="nottickedoff">[flp (EDcD d) | d@Sgn{}&lt;-fSpecAllDecls, not(deciss d), not (isTot d) &amp;&amp; isSur d, not$decplug d]</span>
+<span class="lineno">  290 </span><span class="spaces"></span><span class="nottickedoff">--  Step 2: select and arrange all relations to obtain a set dRels of injective relations</span>
+<span class="lineno">  291 </span><span class="spaces"></span><span class="nottickedoff">--          to ensure deletability of entities (signal declarations are excluded)</span>
+<span class="lineno">  292 </span><span class="spaces">     </span><span class="nottickedoff">dRels = [     EDcD d  | d@Sgn{}&lt;-fSpecAllDecls, not(deciss d), isInj d, not$decplug d]++</span>
+<span class="lineno">  293 </span><span class="spaces">             </span><span class="nottickedoff">[flp (EDcD d) | d@Sgn{}&lt;-fSpecAllDecls, not(deciss d), not (isInj d) &amp;&amp; isUni d, not$decplug d]</span>
+<span class="lineno">  294 </span><span class="spaces"></span><span class="nottickedoff">--  Step 3: compute longest sequences of total expressions and longest sequences of injective expressions.</span>
+<span class="lineno">  295 </span><span class="spaces">     </span><span class="nottickedoff">maxTotPaths = clos1 cRels   -- maxTotPaths = cRels+, i.e. the transitive closure of cRels</span>
+<span class="lineno">  296 </span><span class="spaces">     </span><span class="nottickedoff">maxInjPaths = clos1 dRels   -- maxInjPaths = dRels+, i.e. the transitive closure of dRels</span>
+<span class="lineno">  297 </span><span class="spaces">     </span><span class="nottickedoff">--    Warshall's transitive closure algorithm, adapted for this purpose:</span>
+<span class="lineno">  298 </span><span class="spaces">     </span><span class="nottickedoff">clos1 :: [Expression] -&gt; [[Expression]]</span>
+<span class="lineno">  299 </span><span class="spaces">     </span><span class="nottickedoff">clos1 xs</span>
+<span class="lineno">  300 </span><span class="spaces">      </span><span class="nottickedoff">= foldl f [ [ x ] | x&lt;-xs] (nub (map source xs) `isc` nub (map target xs))</span>
+<span class="lineno">  301 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
+<span class="lineno">  302 </span><span class="spaces">          </span><span class="nottickedoff">f :: [[Expression]] -&gt; A_Concept -&gt; [[Expression]]</span>
+<span class="lineno">  303 </span><span class="spaces">          </span><span class="nottickedoff">f q x = q ++ [l ++ r | l &lt;- q, x == target (last l),</span>
+<span class="lineno">  304 </span><span class="spaces">                                 </span><span class="nottickedoff">r &lt;- q, x == source (head r), null (l `isc` r)]</span>
+<span class="lineno">  305 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  306 </span><span class="spaces"></span><span class="nottickedoff">--  Step 4: i) generate interfaces starting with INTERFACE concept: I[Concept]</span>
+<span class="lineno">  307 </span><span class="spaces"></span><span class="nottickedoff">--          ii) generate interfaces starting with INTERFACE concepts: V[ONE*Concept]</span>
+<span class="lineno">  308 </span><span class="spaces"></span><span class="nottickedoff">--          note: based on a theme one can pick a certain set of generated interfaces (there is not one correct set)</span>
+<span class="lineno">  309 </span><span class="spaces"></span><span class="nottickedoff">--                default theme =&gt; generate interfaces from the clos total expressions and clos injective expressions (see step1-3).</span>
+<span class="lineno">  310 </span><span class="spaces"></span><span class="nottickedoff">--                student theme =&gt; generate interface for each concept with relations where concept is source or target (note: step1-3 are skipped)</span>
+<span class="lineno">  311 </span><span class="spaces">     </span><span class="nottickedoff">interfaceGen = step4a ++ step4b</span>
+<span class="lineno">  312 </span><span class="spaces">     </span><span class="nottickedoff">step4a</span>
+<span class="lineno">  313 </span><span class="spaces">      </span><span class="nottickedoff">| theme opts == StudentTheme</span>
+<span class="lineno">  314 </span><span class="spaces">      </span><span class="nottickedoff">= [Ifc { ifcClass = Nothing</span>
+<span class="lineno">  315 </span><span class="spaces">             </span><span class="nottickedoff">, ifcParams = params</span>
+<span class="lineno">  316 </span><span class="spaces">             </span><span class="nottickedoff">, ifcArgs   = []</span>
+<span class="lineno">  317 </span><span class="spaces">             </span><span class="nottickedoff">, ifcObj    = Obj { objnm   = name cpt ++ &quot; (instantie)&quot;</span>
+<span class="lineno">  318 </span><span class="spaces">                               </span><span class="nottickedoff">, objpos  = Origin &quot;generated object for interface for each concept in TblSQL or ScalarSQL&quot;</span>
+<span class="lineno">  319 </span><span class="spaces">                               </span><span class="nottickedoff">, objctx  = EDcI cpt</span>
+<span class="lineno">  320 </span><span class="spaces">                               </span><span class="nottickedoff">, objmView = Nothing</span>
+<span class="lineno">  321 </span><span class="spaces">                               </span><span class="nottickedoff">, objmsub = Just . Box cpt Nothing $</span>
+<span class="lineno">  322 </span><span class="spaces">                                            </span><span class="nottickedoff">Obj { objnm   = &quot;I[&quot;++name cpt++&quot;]&quot;</span>
+<span class="lineno">  323 </span><span class="spaces">                                                </span><span class="nottickedoff">, objpos  = Origin &quot;generated object: step 4a - default theme&quot;</span>
+<span class="lineno">  324 </span><span class="spaces">                                                </span><span class="nottickedoff">, objctx  = EDcI cpt</span>
+<span class="lineno">  325 </span><span class="spaces">                                                </span><span class="nottickedoff">, objmView = Nothing</span>
+<span class="lineno">  326 </span><span class="spaces">                                                </span><span class="nottickedoff">, objmsub = Nothing</span>
+<span class="lineno">  327 </span><span class="spaces">                                                </span><span class="nottickedoff">, objstrs = [] }</span>
+<span class="lineno">  328 </span><span class="spaces">                                           </span><span class="nottickedoff">:[Obj { objnm   = name dcl ++ &quot;::&quot;++name (source dcl)++&quot;*&quot;++name (target dcl)</span>
+<span class="lineno">  329 </span><span class="spaces">                                                 </span><span class="nottickedoff">, objpos  = Origin &quot;generated object: step 4a - default theme&quot;</span>
+<span class="lineno">  330 </span><span class="spaces">                                                 </span><span class="nottickedoff">, objctx  = if source dcl==cpt then EDcD dcl else flp (EDcD dcl)</span>
+<span class="lineno">  331 </span><span class="spaces">                                                 </span><span class="nottickedoff">, objmView = Nothing</span>
+<span class="lineno">  332 </span><span class="spaces">                                                 </span><span class="nottickedoff">, objmsub = Nothing</span>
+<span class="lineno">  333 </span><span class="spaces">                                                 </span><span class="nottickedoff">, objstrs = [] }</span>
+<span class="lineno">  334 </span><span class="spaces">                                            </span><span class="nottickedoff">| dcl &lt;- params]</span>
+<span class="lineno">  335 </span><span class="spaces">                               </span><span class="nottickedoff">, objstrs = []</span>
+<span class="lineno">  336 </span><span class="spaces">                               </span><span class="nottickedoff">}</span>
+<span class="lineno">  337 </span><span class="spaces">             </span><span class="nottickedoff">, ifcEcas   = fst (assembleECAs opts context params)</span>
+<span class="lineno">  338 </span><span class="spaces">             </span><span class="nottickedoff">, ifcControls = makeIfcControls params allConjs</span>
+<span class="lineno">  339 </span><span class="spaces">             </span><span class="nottickedoff">, ifcPos    = Origin &quot;generated interface for each concept in TblSQL or ScalarSQL&quot;</span>
+<span class="lineno">  340 </span><span class="spaces">             </span><span class="nottickedoff">, ifcPrp    = &quot;Interface &quot; ++name cpt++&quot; has been generated by Ampersand.&quot;</span>
+<span class="lineno">  341 </span><span class="spaces">             </span><span class="nottickedoff">, ifcRoles  = []</span>
+<span class="lineno">  342 </span><span class="spaces">             </span><span class="nottickedoff">}</span>
+<span class="lineno">  343 </span><span class="spaces">        </span><span class="nottickedoff">| cpt&lt;-fSpecAllConcepts</span>
+<span class="lineno">  344 </span><span class="spaces">        </span><span class="nottickedoff">, let params = [ d | d&lt;-fSpecAllDecls, cpt `elem` concs d]</span>
+<span class="lineno">  345 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  346 </span><span class="spaces">      </span><span class="nottickedoff">--end student theme</span>
+<span class="lineno">  347 </span><span class="spaces">      </span><span class="nottickedoff">--otherwise: default theme</span>
+<span class="lineno">  348 </span><span class="spaces">      </span><span class="nottickedoff">| otherwise --note: the uni of maxInj and maxTot may take significant time (e.g. -p while generating index.htm)</span>
+<span class="lineno">  349 </span><span class="spaces">                  </span><span class="nottickedoff">--note: associations without any multiplicity are not in any Interface</span>
+<span class="lineno">  350 </span><span class="spaces">                  </span><span class="nottickedoff">--note: scalars with only associations without any multiplicity are not in any Interface</span>
+<span class="lineno">  351 </span><span class="spaces">      </span><span class="nottickedoff">= let recur es</span>
+<span class="lineno">  352 </span><span class="spaces">             </span><span class="nottickedoff">= [ Obj { objnm   = showADL t</span>
+<span class="lineno">  353 </span><span class="spaces">                     </span><span class="nottickedoff">, objpos  = Origin &quot;generated recur object: step 4a - default theme&quot;</span>
+<span class="lineno">  354 </span><span class="spaces">                     </span><span class="nottickedoff">, objctx  = t</span>
+<span class="lineno">  355 </span><span class="spaces">                     </span><span class="nottickedoff">, objmView = Nothing</span>
+<span class="lineno">  356 </span><span class="spaces">                     </span><span class="nottickedoff">, objmsub = Just . Box (target t) Nothing $ recur [ pth | (_:pth)&lt;-cl, not (null pth) ]</span>
+<span class="lineno">  357 </span><span class="spaces">                     </span><span class="nottickedoff">, objstrs = [] }</span>
+<span class="lineno">  358 </span><span class="spaces">               </span><span class="nottickedoff">| cl&lt;-eqCl head es, (t:_)&lt;-take 1 cl] --</span>
+<span class="lineno">  359 </span><span class="spaces">            </span><span class="nottickedoff">-- es is a list of expression lists, each with at least one expression in it. They all have the same source concept (i.e. source.head)</span>
+<span class="lineno">  360 </span><span class="spaces">            </span><span class="nottickedoff">-- Each expression list represents a path from the origin of a box to the attribute.</span>
+<span class="lineno">  361 </span><span class="spaces">            </span><span class="nottickedoff">-- 16 Aug 2011: (recur es) is applied once where es originates from (maxTotPaths `uni` maxInjPaths) both based on clos</span>
+<span class="lineno">  362 </span><span class="spaces">            </span><span class="nottickedoff">-- Interfaces for I[Concept] are generated only for concepts that have been analysed to be an entity.</span>
+<span class="lineno">  363 </span><span class="spaces">            </span><span class="nottickedoff">-- These concepts are collected in gPlugConcepts</span>
+<span class="lineno">  364 </span><span class="spaces">            </span><span class="nottickedoff">gPlugConcepts = [ c | InternalPlug plug@TblSQL{}&lt;-genPlugs , (c,_)&lt;-take 1 (cLkpTbl plug) ]</span>
+<span class="lineno">  365 </span><span class="spaces">            </span><span class="nottickedoff">-- Each interface gets all attributes that are required to create and delete the object.</span>
+<span class="lineno">  366 </span><span class="spaces">            </span><span class="nottickedoff">-- All total attributes must be included, because the interface must allow an object to be deleted.</span>
+<span class="lineno">  367 </span><span class="spaces">        </span><span class="nottickedoff">in</span>
+<span class="lineno">  368 </span><span class="spaces">        </span><span class="nottickedoff">[Ifc { ifcClass    = Nothing</span>
+<span class="lineno">  369 </span><span class="spaces">             </span><span class="nottickedoff">, ifcParams   = params</span>
+<span class="lineno">  370 </span><span class="spaces">             </span><span class="nottickedoff">, ifcArgs     = []</span>
+<span class="lineno">  371 </span><span class="spaces">             </span><span class="nottickedoff">, ifcObj      = Obj { objnm   = name c</span>
+<span class="lineno">  372 </span><span class="spaces">                                 </span><span class="nottickedoff">, objpos  = Origin &quot;generated object: step 4a - default theme&quot;</span>
+<span class="lineno">  373 </span><span class="spaces">                                 </span><span class="nottickedoff">, objctx  = EDcI c</span>
+<span class="lineno">  374 </span><span class="spaces">                                 </span><span class="nottickedoff">, objmView = Nothing</span>
+<span class="lineno">  375 </span><span class="spaces">                                 </span><span class="nottickedoff">, objmsub = Just . Box c Nothing $ objattributes</span>
+<span class="lineno">  376 </span><span class="spaces">                                 </span><span class="nottickedoff">, objstrs = [] }</span>
+<span class="lineno">  377 </span><span class="spaces">             </span><span class="nottickedoff">, ifcEcas     = fst (assembleECAs opts context params)</span>
+<span class="lineno">  378 </span><span class="spaces">             </span><span class="nottickedoff">, ifcControls = makeIfcControls params allConjs</span>
+<span class="lineno">  379 </span><span class="spaces">             </span><span class="nottickedoff">, ifcPos      = Origin &quot;generated interface: step 4a - default theme&quot;</span>
+<span class="lineno">  380 </span><span class="spaces">             </span><span class="nottickedoff">, ifcPrp      = &quot;Interface &quot; ++name c++&quot; has been generated by Ampersand.&quot;</span>
+<span class="lineno">  381 </span><span class="spaces">             </span><span class="nottickedoff">, ifcRoles    = []</span>
+<span class="lineno">  382 </span><span class="spaces">             </span><span class="nottickedoff">}</span>
+<span class="lineno">  383 </span><span class="spaces">        </span><span class="nottickedoff">| cl &lt;- eqCl (source.head) [ pth | pth&lt;-maxTotPaths `uni` maxInjPaths, (source.head) pth `elem` gPlugConcepts ]</span>
+<span class="lineno">  384 </span><span class="spaces">        </span><span class="nottickedoff">, let objattributes = recur cl</span>
+<span class="lineno">  385 </span><span class="spaces">        </span><span class="nottickedoff">, not (null objattributes) --de meeste plugs hebben in ieder geval I als attribuut</span>
+<span class="lineno">  386 </span><span class="spaces">        </span><span class="nottickedoff">, --exclude concept A without cRels or dRels (i.e. A in Scalar without total associations to other plugs)</span>
+<span class="lineno">  387 </span><span class="spaces">          </span><span class="nottickedoff">not (length objattributes==1 &amp;&amp; isIdent(objctx(head objattributes)))</span>
+<span class="lineno">  388 </span><span class="spaces">        </span><span class="nottickedoff">, let e0=head cl, if null e0 then fatal 284 &quot;null e0&quot; else True</span>
+<span class="lineno">  389 </span><span class="spaces">        </span><span class="nottickedoff">, let c=source (head e0)</span>
+<span class="lineno">  390 </span><span class="spaces">        </span><span class="nottickedoff">, let params = [ d | EDcD d &lt;- concatMap primsMentionedIn (expressionsIn objattributes)]++</span>
+<span class="lineno">  391 </span><span class="spaces">                       </span><span class="nottickedoff">[ Isn cpt |  EDcI cpt &lt;- concatMap primsMentionedIn (expressionsIn objattributes)]</span>
+<span class="lineno">  392 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  393 </span><span class="spaces">     </span><span class="nottickedoff">--end otherwise: default theme</span>
+<span class="lineno">  394 </span><span class="spaces">     </span><span class="nottickedoff">--end stap4a</span>
+<span class="lineno">  395 </span><span class="spaces">     </span><span class="nottickedoff">step4b --generate lists of concept instances for those concepts that have a generated INTERFACE in step4a</span>
+<span class="lineno">  396 </span><span class="spaces">      </span><span class="nottickedoff">= [Ifc { ifcClass    = ifcClass ifcc</span>
+<span class="lineno">  397 </span><span class="spaces">             </span><span class="nottickedoff">, ifcParams   = ifcParams ifcc</span>
+<span class="lineno">  398 </span><span class="spaces">             </span><span class="nottickedoff">, ifcArgs     = ifcArgs   ifcc</span>
+<span class="lineno">  399 </span><span class="spaces">             </span><span class="nottickedoff">, ifcObj      = Obj { objnm   = nm</span>
+<span class="lineno">  400 </span><span class="spaces">                                 </span><span class="nottickedoff">, objpos  = Origin &quot;generated object: step 4b&quot;</span>
+<span class="lineno">  401 </span><span class="spaces">                                 </span><span class="nottickedoff">, objctx  = EDcI ONE</span>
+<span class="lineno">  402 </span><span class="spaces">                                 </span><span class="nottickedoff">, objmView = Nothing</span>
+<span class="lineno">  403 </span><span class="spaces">                                 </span><span class="nottickedoff">, objmsub = Just . Box ONE Nothing $ [att]</span>
+<span class="lineno">  404 </span><span class="spaces">                                 </span><span class="nottickedoff">, objstrs = [] }</span>
+<span class="lineno">  405 </span><span class="spaces">             </span><span class="nottickedoff">, ifcEcas     = ifcEcas     ifcc</span>
+<span class="lineno">  406 </span><span class="spaces">             </span><span class="nottickedoff">, ifcControls = ifcControls ifcc</span>
+<span class="lineno">  407 </span><span class="spaces">             </span><span class="nottickedoff">, ifcPos      = ifcPos      ifcc</span>
+<span class="lineno">  408 </span><span class="spaces">             </span><span class="nottickedoff">, ifcPrp      = ifcPrp      ifcc</span>
+<span class="lineno">  409 </span><span class="spaces">             </span><span class="nottickedoff">, ifcRoles    = []</span>
+<span class="lineno">  410 </span><span class="spaces">             </span><span class="nottickedoff">}</span>
+<span class="lineno">  411 </span><span class="spaces">        </span><span class="nottickedoff">| ifcc&lt;-step4a</span>
+<span class="lineno">  412 </span><span class="spaces">        </span><span class="nottickedoff">, let c   = source(objctx (ifcObj ifcc))</span>
+<span class="lineno">  413 </span><span class="spaces">              </span><span class="nottickedoff">nm'::Int-&gt;String</span>
+<span class="lineno">  414 </span><span class="spaces">              </span><span class="nottickedoff">nm' 0  = plural printingLanguage (name c)</span>
+<span class="lineno">  415 </span><span class="spaces">              </span><span class="nottickedoff">nm' i  = plural printingLanguage (name c) ++ show i</span>
+<span class="lineno">  416 </span><span class="spaces">              </span><span class="nottickedoff">nms = [nm' i |i&lt;-[0..], nm' i `notElem` map name (ctxifcs context)]</span>
+<span class="lineno">  417 </span><span class="spaces">              </span><span class="nottickedoff">nm</span>
+<span class="lineno">  418 </span><span class="spaces">                </span><span class="nottickedoff">| theme opts == StudentTheme = name c</span>
+<span class="lineno">  419 </span><span class="spaces">                </span><span class="nottickedoff">| null nms = fatal 355 &quot;impossible&quot;</span>
+<span class="lineno">  420 </span><span class="spaces">                </span><span class="nottickedoff">| otherwise = head nms</span>
+<span class="lineno">  421 </span><span class="spaces">              </span><span class="nottickedoff">att = Obj (name c) (Origin &quot;generated attribute object: step 4b&quot;) (EDcV (Sign ONE c)) Nothing Nothing []</span>
+<span class="lineno">  422 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  423 </span><span class="spaces">     </span><span class="nottickedoff">----------------------</span>
+<span class="lineno">  424 </span><span class="spaces">     </span><span class="nottickedoff">--END: making interfaces</span>
+<span class="lineno">  425 </span><span class="spaces">     </span><span class="nottickedoff">----------------------</span>
+<span class="lineno">  426 </span><span class="spaces">     </span><span class="nottickedoff">printingLanguage = fromMaybe (ctxlang context) (language opts)  -- The language for printing this specification is taken from the command line options (language opts). If none is specified, the specification is printed in the language in which the context was defined (ctxlang context).</span>
+<span class="lineno">  427 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  428 </span><span class="spaces">        </span><span class="nottickedoff">{- makeActivity turns a process rule into an activity definition.</span>
+<span class="lineno">  429 </span><span class="spaces">        </span><span class="nottickedoff">Each activity can be mapped to a single interface.</span>
+<span class="lineno">  430 </span><span class="spaces">        </span><span class="nottickedoff">A call to such an interface takes the population of the current context to another population,</span>
+<span class="lineno">  431 </span><span class="spaces">        </span><span class="nottickedoff">while maintaining all invariants.</span>
+<span class="lineno">  432 </span><span class="spaces">        </span><span class="nottickedoff">-}</span>
+<span class="lineno">  433 </span><span class="spaces">     </span><span class="nottickedoff">makeActivity :: Rule -&gt; Activity</span>
+<span class="lineno">  434 </span><span class="spaces">     </span><span class="nottickedoff">makeActivity rul</span>
+<span class="lineno">  435 </span><span class="spaces">         </span><span class="nottickedoff">= let s = Act{ actRule   = rul</span>
+<span class="lineno">  436 </span><span class="spaces">                      </span><span class="nottickedoff">, actTrig   = decls</span>
+<span class="lineno">  437 </span><span class="spaces">                      </span><span class="nottickedoff">, actAffect = nub [ d' | (d,_,d')&lt;-clos2 affectPairs, d `elem` decls]</span>
+<span class="lineno">  438 </span><span class="spaces">                      </span><span class="nottickedoff">, actQuads  = invQs</span>
+<span class="lineno">  439 </span><span class="spaces">                      </span><span class="nottickedoff">, actEcas   = [eca | eca&lt;-allVecas, eDcl (ecaTriggr eca) `elem` decls]</span>
+<span class="lineno">  440 </span><span class="spaces">                      </span><span class="nottickedoff">, actPurp   = [Expl { explPos = OriginUnknown</span>
+<span class="lineno">  441 </span><span class="spaces">                                          </span><span class="nottickedoff">, explObj = ExplRule (name rul)</span>
+<span class="lineno">  442 </span><span class="spaces">                                          </span><span class="nottickedoff">, explMarkup = A_Markup { amLang   = Dutch</span>
+<span class="lineno">  443 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, amFormat = ReST</span>
+<span class="lineno">  444 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, amPandoc = [Plain [Str &quot;Waartoe activiteit &quot;, Quoted SingleQuote [Str (name rul)], Str&quot; bestaat is niet gedocumenteerd.&quot; ]]</span>
+<span class="lineno">  445 </span><span class="spaces">                                                                  </span><span class="nottickedoff">}</span>
+<span class="lineno">  446 </span><span class="spaces">                                          </span><span class="nottickedoff">, explUserdefd = False</span>
+<span class="lineno">  447 </span><span class="spaces">                                          </span><span class="nottickedoff">, explRefIds = [&quot;Regel &quot;++name rul]</span>
+<span class="lineno">  448 </span><span class="spaces">                                          </span><span class="nottickedoff">}</span>
+<span class="lineno">  449 </span><span class="spaces">                                    </span><span class="nottickedoff">,Expl { explPos = OriginUnknown</span>
+<span class="lineno">  450 </span><span class="spaces">                                          </span><span class="nottickedoff">, explObj = ExplRule (name rul)</span>
+<span class="lineno">  451 </span><span class="spaces">                                          </span><span class="nottickedoff">, explMarkup = A_Markup { amLang   = English</span>
+<span class="lineno">  452 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, amFormat = ReST</span>
+<span class="lineno">  453 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, amPandoc = [Plain [Str &quot;For what purpose activity &quot;, Quoted SingleQuote [Str (name rul)], Str&quot; exists remains undocumented.&quot; ]]</span>
+<span class="lineno">  454 </span><span class="spaces">                                                                  </span><span class="nottickedoff">}</span>
+<span class="lineno">  455 </span><span class="spaces">                                          </span><span class="nottickedoff">, explUserdefd = False</span>
+<span class="lineno">  456 </span><span class="spaces">                                          </span><span class="nottickedoff">, explRefIds = [&quot;Regel &quot;++name rul]</span>
+<span class="lineno">  457 </span><span class="spaces">                                          </span><span class="nottickedoff">}</span>
+<span class="lineno">  458 </span><span class="spaces">                                    </span><span class="nottickedoff">]</span>
+<span class="lineno">  459 </span><span class="spaces">                      </span><span class="nottickedoff">} in s</span>
+<span class="lineno">  460 </span><span class="spaces">         </span><span class="nottickedoff">where</span>
+<span class="lineno">  461 </span><span class="spaces">        </span><span class="nottickedoff">-- relations that may be affected by an edit action within the transaction</span>
+<span class="lineno">  462 </span><span class="spaces">             </span><span class="nottickedoff">decls        = relsUsedIn rul</span>
+<span class="lineno">  463 </span><span class="spaces">        </span><span class="nottickedoff">-- the quads that induce automated action on an editable relation.</span>
+<span class="lineno">  464 </span><span class="spaces">        </span><span class="nottickedoff">-- (A quad contains the conjunct(s) to be maintained.)</span>
+<span class="lineno">  465 </span><span class="spaces">        </span><span class="nottickedoff">-- Those are the quads that originate from invariants.</span>
+<span class="lineno">  466 </span><span class="spaces">             </span><span class="nottickedoff">invQs       = [q | q&lt;-allQuads, (not.isSignal.qRule) q</span>
+<span class="lineno">  467 </span><span class="spaces">                              </span><span class="nottickedoff">, (not.null) ((relsUsedIn.qRule) q `isc` decls)] -- SJ 20111201 TODO: make this selection more precise (by adding inputs and outputs to a quad).</span>
+<span class="lineno">  468 </span><span class="spaces">        </span><span class="nottickedoff">-- a relation affects another if there is a quad (i.e. an automated action) that links them</span>
+<span class="lineno">  469 </span><span class="spaces">             </span><span class="nottickedoff">affectPairs = [(qDcl q,[q], d) | q&lt;-invQs, d&lt;-(relsUsedIn.qRule) q]</span>
+<span class="lineno">  470 </span><span class="spaces">        </span><span class="nottickedoff">-- the relations affected by automated action</span>
+<span class="lineno">  471 </span><span class="spaces">        </span><span class="nottickedoff">--      triples     = [ (r,qs,r') | (r,qs,r')&lt;-clos affectPairs, r `elem` rels]</span>
+<span class="lineno">  472 </span><span class="spaces">        </span><span class="nottickedoff">----------------------------------------------------</span>
+<span class="lineno">  473 </span><span class="spaces">        </span><span class="nottickedoff">--  Warshall's transitive closure algorithm in Haskell, adapted to carry along the intermediate steps:</span>
+<span class="lineno">  474 </span><span class="spaces">        </span><span class="nottickedoff">----------------------------------------------------</span>
+<span class="lineno">  475 </span><span class="spaces">             </span><span class="nottickedoff">clos2 :: (Eq a,Eq b) =&gt; [(a,[b],a)] -&gt; [(a,[b],a)]     -- e.g. a list of pairs, with intermediates in between</span>
+<span class="lineno">  476 </span><span class="spaces">             </span><span class="nottickedoff">clos2 xs</span>
+<span class="lineno">  477 </span><span class="spaces">               </span><span class="nottickedoff">= foldl f xs (nub (map fst3 xs) `isc` nub (map thd3 xs))</span>
+<span class="lineno">  478 </span><span class="spaces">                 </span><span class="nottickedoff">where</span>
+<span class="lineno">  479 </span><span class="spaces">                  </span><span class="nottickedoff">f q x = q `un`</span>
+<span class="lineno">  480 </span><span class="spaces">                             </span><span class="nottickedoff">[(a, qs `uni` qs', b') | (a, qs, b) &lt;- q, b == x,</span>
+<span class="lineno">  481 </span><span class="spaces">                              </span><span class="nottickedoff">(a', qs', b') &lt;- q, a' == x]</span>
+<span class="lineno">  482 </span><span class="spaces">                  </span><span class="nottickedoff">ts `un` [] = ts</span>
+<span class="lineno">  483 </span><span class="spaces">                  </span><span class="nottickedoff">ts `un` ((a',qs',b'):ts')</span>
+<span class="lineno">  484 </span><span class="spaces">                   </span><span class="nottickedoff">= ([(a,qs `uni` qs',b) | (a,qs,b)&lt;-ts, a==a' &amp;&amp; b==b']++</span>
+<span class="lineno">  485 </span><span class="spaces">                      </span><span class="nottickedoff">[(a,qs,b)           | (a,qs,b)&lt;-ts, a/=a' || b/=b']++</span>
+<span class="lineno">  486 </span><span class="spaces">                      </span><span class="nottickedoff">[(a',qs',b')        | (a',b') `notElem` [(a,b) |(a,_,b)&lt;-ts]]) `un` ts'</span></span>
+<span class="lineno">  487 </span>        
+<span class="lineno">  488 </span>makeIfcControls :: [Declaration] -&gt; [Conjunct] -&gt; [Conjunct]
+<span class="lineno">  489 </span><span class="decl"><span class="nottickedoff">makeIfcControls params allConjs = [ conj </span>
+<span class="lineno">  490 </span><span class="spaces">                                </span><span class="nottickedoff">| conj&lt;-allConjs</span>
+<span class="lineno">  491 </span><span class="spaces">                                </span><span class="nottickedoff">, (not.null) (map EDcD params `isc` primsMentionedIn (rc_conjunct conj))</span>
+<span class="lineno">  492 </span><span class="spaces">                                </span><span class="nottickedoff">-- Filtering for uni/inj invariants is pointless here, as we can only filter out those conjuncts for which all</span>
+<span class="lineno">  493 </span><span class="spaces">                                </span><span class="nottickedoff">-- originating rules are uni/inj invariants. Conjuncts that also have other originating rules need to be included</span>
+<span class="lineno">  494 </span><span class="spaces">                                </span><span class="nottickedoff">-- and the uni/inj invariant rules need to be filtered out at a later stage (in Generate.hs).</span>
+<span class="lineno">  495 </span><span class="spaces">                                </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  496 </span>  
+<span class="lineno">  497 </span>
+<span class="lineno">  498 </span>class Named a =&gt; Rename a where
+<span class="lineno">  499 </span> rename :: a-&gt;String-&gt;a
+<span class="lineno">  500 </span> -- | the function uniqueNames ensures case-insensitive unique names like sql plug names
+<span class="lineno">  501 </span> uniqueNames :: [String]-&gt;[a]-&gt;[a]
+<span class="lineno">  502 </span> <span class="decl"><span class="nottickedoff">uniqueNames taken xs</span>
+<span class="lineno">  503 </span><span class="spaces">  </span><span class="nottickedoff">= [p | cl&lt;-eqCl (map toLower.name) xs  -- each equivalence class cl contains (identified a) with the same map toLower (name p)</span>
+<span class="lineno">  504 </span><span class="spaces">       </span><span class="nottickedoff">, p &lt;-if name (head cl) `elem` taken || length cl&gt;1</span>
+<span class="lineno">  505 </span><span class="spaces">             </span><span class="nottickedoff">then [rename p (name p++show i) | (p,i)&lt;-zip cl [(1::Int)..]]</span>
+<span class="lineno">  506 </span><span class="spaces">             </span><span class="nottickedoff">else cl</span>
+<span class="lineno">  507 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  508 </span>
+<span class="lineno">  509 </span>instance Rename PlugSQL where
+<span class="lineno">  510 </span> <span class="decl"><span class="nottickedoff">rename p x = p{sqlname=x}</span></span>
+
+</pre>
+</body>
+</html>

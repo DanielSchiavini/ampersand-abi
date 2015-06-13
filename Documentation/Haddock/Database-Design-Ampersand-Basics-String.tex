@@ -1,0 +1,35 @@
+\haddockmoduleheading{Database.Design.Ampersand.Basics.String}
+\label{module:Database.Design.Ampersand.Basics.String}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Database.Design.Ampersand.Basics.String (
+    unCap,  upCap,  escapeNonAlphaNum
+  ) where\end{verbatim}}
+\haddockendheader
+
+This module contains some common String funcions\par
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+unCap\ ::\ String\ ->\ String
+\end{tabular}]\haddockbegindoc
+Converts the first character of a string to lowercase, with the exception that there is a second character, which is uppercase.
+ uncap \haddocktt{AbcDe} == "abcDe"
+ uncap \haddocktt{ABcDE} == \haddocktt{ABcDE}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+upCap\ ::\ String\ ->\ String
+\end{tabular}]\haddockbegindoc
+Converts the first character of a string to uppercase\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+escapeNonAlphaNum\ ::\ String\ ->\ String
+\end{tabular}]\haddockbegindoc
+escape anything except regular characters and digits to {\char '137}\href{character}{code}
+ e.g. escapeNonAlphaNum "a{\char '137}‚" = "a{\char '137}95{\char '137}233"\par
+
+\end{haddockdesc}

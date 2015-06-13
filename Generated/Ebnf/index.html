@@ -1,0 +1,2217 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="generator" content="Railroad Diagram Generator 1.40.1033"><style type="text/css" xml:space="preserve">
+    ::-moz-selection
+    {
+      color: #FFFCF0;
+      background: #0F0C00;
+    }
+    ::selection
+    {
+      color: #FFFCF0;
+      background: #0F0C00;
+    }      
+    .ebnf a
+    {
+      text-decoration: none;
+    }
+    .ebnf a:hover
+    {
+      color: #050400;
+      text-decoration: underline;
+    }    
+    .signature
+    {
+      color: #806600;
+      font-size: 11px;
+      text-align: right;
+    }
+    body
+    {
+      font: normal 12px Verdana, sans-serif;
+      color: #0F0C00;
+      background: #FFFCF0;
+    }
+    a:link, a:visited
+    {
+      color: #0F0C00;
+    }
+    a:link.signature, a:visited.signature
+    {
+      color: #806600;
+    }
+    a.button, #tabs li a
+    {
+      padding: 0.25em 0.5em;
+      border: 1px solid #806600;
+      background: #F1E8C6;
+      color: #806600;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a.button:hover, #tabs li a:hover
+    {
+      color: #050400;
+      background: #FFF6D1;
+      border-color: #050400;       
+    }     
+    #tabs
+    {
+      padding: 3px 10px;
+      margin-left: 0;
+      margin-top: 58px;
+      border-bottom: 1px solid #0F0C00;
+    }  
+    #tabs li
+    {
+      list-style: none;
+      margin-left: 5px;
+      display: inline;
+    }
+    #tabs li a
+    {     
+      border-bottom: 1px solid #0F0C00;
+    }
+    #tabs li a.active
+    {
+      color: #0F0C00;
+      background: #FFFCF0;
+      border-color: #0F0C00;
+      border-bottom: 1px solid #FFFCF0;
+      outline: none;
+    }
+    #divs div
+    {
+      display: none;
+      overflow:auto;
+    }
+    #divs div.active
+    {
+      display: block;
+    }
+    #text
+    {
+      border-color: #806600;
+      background: #FFFEFA;
+      color: #050400;
+    }
+    .small
+    {
+      vertical-align: top;
+      text-align: right;
+      font-size: 9px;
+      font-weight: normal;
+      line-height: 120%;
+    }
+    td.small
+    {
+      padding-top: 0px;
+    }
+    .hidden
+    {
+      visibility: hidden;
+    }
+    td:hover .hidden 
+    {
+      visibility: visible;
+    }
+    div.download
+    {
+      display: none;
+      background: #FFFCF0;
+      position: absolute;
+      right: 34px;
+      top: 94px;
+      padding: 10px;
+      border: 1px dotted #0F0C00;
+    }
+    #divs div.ebnf, div.ebnf
+    {
+      display: block;
+      padding-left: 16px;
+      padding-top: 2px; 
+      padding-bottom: 2px; 
+      background: #FFF6D1;
+    }
+    table.palette
+    {
+      border-top: 1px solid #050400;
+      border-right: 1px solid #050400;
+      margin-bottom: 4px
+    }
+    td.palette
+    {
+      border-bottom: 1px solid #050400;
+      border-left: 1px solid #050400;
+    }
+    a.palette
+    {
+      padding: 2px 3px 2px 10px;
+      text-decoration: none;
+    }
+    .palette
+    {
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      -ms-user-select: none;
+    }
+  </style></head>
+   <body>
+      
+      <p style="font-size: 14px; font-weight:bold"><a name="Populations">Populations:</a></p>
+      <img border="0" src="diagram/Populations.png" height="52" width="184" usemap="#Populations.map"><map name="Populations.map">
+         <area shape="rect" coords="49,17,135,49" href="#Population" title="Population"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Populations" title="Populations" shape="rect">Populations</a>
+         ::= <a href="#Population" title="Population" shape="rect">Population</a>+</pre></div>
+         
+      </p>
+      
+      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="Context">Context:</a></p>
+      <img border="0" src="diagram/Context.png" height="86" width="852" usemap="#Context.map"><map name="Context.map">
+         <area shape="rect" coords="131,35,239,67" href="#ConceptName" title="ConceptName">
+         <area shape="rect" coords="259,35,361,67" href="#LanguageRef" title="LanguageRef">
+         <area shape="rect" coords="401,35,493,67" href="#TextMarkup" title="TextMarkup">
+         <area shape="rect" coords="553,1,673,33" href="#ContextElement" title="ContextElement"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Context" title="Context" shape="rect">Context</a>  ::= 'CONTEXT' <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a> <a href="#LanguageRef" title="LanguageRef" shape="rect">LanguageRef</a> <a href="#TextMarkup" title="TextMarkup" shape="rect">TextMarkup</a>? <a href="#ContextElement" title="ContextElement" shape="rect">ContextElement</a>* 'ENDCONTEXT'</pre></div>
+         
+      </p>
+      
+      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="ContextElement">ContextElement:</a></p>
+      <img border="0" src="diagram/ContextElement.png" height="740" width="230" usemap="#ContextElement.map"><map name="ContextElement.map">
+         <area shape="rect" coords="49,1,99,33" href="#Meta" title="Meta">
+         <area shape="rect" coords="49,45,137,77" href="#PatternDef" title="PatternDef">
+         <area shape="rect" coords="49,89,139,121" href="#ProcessDef" title="ProcessDef">
+         <area shape="rect" coords="49,133,117,165" href="#RuleDef" title="RuleDef">
+         <area shape="rect" coords="49,177,117,209" href="#Classify" title="Classify">
+         <area shape="rect" coords="49,221,141,253" href="#RelationDef" title="RelationDef">
+         <area shape="rect" coords="49,265,141,297" href="#ConceptDef" title="ConceptDef">
+         <area shape="rect" coords="49,309,115,341" href="#GenDef" title="GenDef">
+         <area shape="rect" coords="49,353,105,385" href="#Index" title="Index">
+         <area shape="rect" coords="49,397,119,429" href="#ViewDef" title="ViewDef">
+         <area shape="rect" coords="49,441,125,473" href="#Interface" title="Interface">
+         <area shape="rect" coords="49,485,115,517" href="#Sqlplug" title="Sqlplug">
+         <area shape="rect" coords="49,529,119,561" href="#Phpplug" title="Phpplug">
+         <area shape="rect" coords="49,573,121,605" href="#Purpose" title="Purpose">
+         <area shape="rect" coords="49,617,135,649" href="#Population" title="Population">
+         <area shape="rect" coords="49,661,147,693" href="#PrintThemes" title="PrintThemes">
+         <area shape="rect" coords="49,705,181,737" href="#IncludeStatement" title="IncludeStatement"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ContextElement" title="ContextElement" shape="rect">ContextElement</a>
+         ::= <a href="#Meta" title="Meta" shape="rect">Meta</a>
+           | <a href="#PatternDef" title="PatternDef" shape="rect">PatternDef</a>
+           | <a href="#ProcessDef" title="ProcessDef" shape="rect">ProcessDef</a>
+           | <a href="#RuleDef" title="RuleDef" shape="rect">RuleDef</a>
+           | <a href="#Classify" title="Classify" shape="rect">Classify</a>
+           | <a href="#RelationDef" title="RelationDef" shape="rect">RelationDef</a>
+           | <a href="#ConceptDef" title="ConceptDef" shape="rect">ConceptDef</a>
+           | <a href="#GenDef" title="GenDef" shape="rect">GenDef</a>
+           | <a href="#Index" title="Index" shape="rect">Index</a>
+           | <a href="#ViewDef" title="ViewDef" shape="rect">ViewDef</a>
+           | <a href="#Interface" title="Interface" shape="rect">Interface</a>
+           | <a href="#Sqlplug" title="Sqlplug" shape="rect">Sqlplug</a>
+           | <a href="#Phpplug" title="Phpplug" shape="rect">Phpplug</a>
+           | <a href="#Purpose" title="Purpose" shape="rect">Purpose</a>
+           | <a href="#Population" title="Population" shape="rect">Population</a>
+           | <a href="#PrintThemes" title="PrintThemes" shape="rect">PrintThemes</a>
+           | <a href="#IncludeStatement" title="IncludeStatement" shape="rect">IncludeStatement</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Context" title="Context">Context</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="IncludeStatement">IncludeStatement:</a></p>
+      <img border="0" src="diagram/IncludeStatement.png" height="36" width="214" usemap="#IncludeStatement.map"><map name="IncludeStatement.map">
+         <area shape="rect" coords="129,1,185,33" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#IncludeStatement" title="IncludeStatement" shape="rect">IncludeStatement</a>
+         ::= 'INCLUDE' <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="LanguageRef">LanguageRef:</a></p>
+      <img border="0" src="diagram/LanguageRef.png" height="80" width="234">
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#LanguageRef" title="LanguageRef" shape="rect">LanguageRef</a>
+         ::= 'IN' ( 'DUTCH' | 'ENGLISH' )</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Context" title="Context">Context</a></li>
+            
+            <li><a href="#Markup" title="Markup">Markup</a></li>
+            
+            <li><a href="#Meaning" title="Meaning">Meaning</a></li>
+            
+            <li><a href="#Purpose" title="Purpose">Purpose</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="TextMarkup">TextMarkup:</a></p>
+      <img border="0" src="diagram/TextMarkup.png" height="168" width="200">
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#TextMarkup" title="TextMarkup" shape="rect">TextMarkup</a>
+         ::= 'REST'
+           | 'HTML'
+           | 'LATEX'
+           | 'MARKDOWN'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Context" title="Context">Context</a></li>
+            
+            <li><a href="#Markup" title="Markup">Markup</a></li>
+            
+            <li><a href="#Meaning" title="Meaning">Meaning</a></li>
+            
+            <li><a href="#Purpose" title="Purpose">Purpose</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Meta">Meta:</a></p>
+      <img border="0" src="diagram/Meta.png" height="36" width="266" usemap="#Meta.map"><map name="Meta.map">
+         <area shape="rect" coords="105,1,161,33" href="#String" title="String">
+         <area shape="rect" coords="181,1,237,33" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Meta" title="Meta" shape="rect">Meta</a>     ::= 'META' <a href="#String" title="String" shape="rect">String</a> <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="PatternDef">PatternDef:</a></p>
+      <img border="0" src="diagram/PatternDef.png" height="70" width="524" usemap="#PatternDef.map"><map name="PatternDef.map">
+         <area shape="rect" coords="129,35,237,67" href="#ConceptName" title="ConceptName">
+         <area shape="rect" coords="277,1,347,33" href="#PatElem" title="PatElem"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#PatternDef" title="PatternDef" shape="rect">PatternDef</a>
+         ::= 'PATTERN' <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a> <a href="#PatElem" title="PatElem" shape="rect">PatElem</a>* 'ENDPATTERN'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ProcessDef">ProcessDef:</a></p>
+      <img border="0" src="diagram/ProcessDef.png" height="70" width="532" usemap="#ProcessDef.map"><map name="ProcessDef.map">
+         <area shape="rect" coords="133,35,241,67" href="#ConceptName" title="ConceptName">
+         <area shape="rect" coords="281,1,351,33" href="#PatElem" title="PatElem"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ProcessDef" title="ProcessDef" shape="rect">ProcessDef</a>
+         ::= 'PROCESS' <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a> <a href="#PatElem" title="PatElem" shape="rect">PatElem</a>* 'ENDPROCESS'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="PatElem">PatElem:</a></p>
+      <img border="0" src="diagram/PatElem.png" height="388" width="190" usemap="#PatElem.map"><map name="PatElem.map">
+         <area shape="rect" coords="49,1,117,33" href="#RuleDef" title="RuleDef">
+         <area shape="rect" coords="49,45,117,77" href="#Classify" title="Classify">
+         <area shape="rect" coords="49,89,141,121" href="#RelationDef" title="RelationDef">
+         <area shape="rect" coords="49,133,141,165" href="#ConceptDef" title="ConceptDef">
+         <area shape="rect" coords="49,177,115,209" href="#GenDef" title="GenDef">
+         <area shape="rect" coords="49,221,105,253" href="#Index" title="Index">
+         <area shape="rect" coords="49,265,119,297" href="#ViewDef" title="ViewDef">
+         <area shape="rect" coords="49,309,121,341" href="#Purpose" title="Purpose">
+         <area shape="rect" coords="49,353,135,385" href="#Population" title="Population"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#PatElem" title="PatElem" shape="rect">PatElem</a>  ::= <a href="#RuleDef" title="RuleDef" shape="rect">RuleDef</a>
+           | <a href="#Classify" title="Classify" shape="rect">Classify</a>
+           | <a href="#RelationDef" title="RelationDef" shape="rect">RelationDef</a>
+           | <a href="#ConceptDef" title="ConceptDef" shape="rect">ConceptDef</a>
+           | <a href="#GenDef" title="GenDef" shape="rect">GenDef</a>
+           | <a href="#Index" title="Index" shape="rect">Index</a>
+           | <a href="#ViewDef" title="ViewDef" shape="rect">ViewDef</a>
+           | <a href="#Purpose" title="Purpose" shape="rect">Purpose</a>
+           | <a href="#Population" title="Population" shape="rect">Population</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#PatternDef" title="PatternDef">PatternDef</a></li>
+            
+            <li><a href="#ProcessDef" title="ProcessDef">ProcessDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Classify">Classify:</a></p>
+      <img border="0" src="diagram/Classify.png" height="36" width="390" usemap="#Classify.map"><map name="Classify.map">
+         <area shape="rect" coords="137,1,229,33" href="#ConceptRef" title="ConceptRef">
+         <area shape="rect" coords="303,1,361,33" href="#Cterm" title="Cterm"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Classify" title="Classify" shape="rect">Classify</a> ::= 'CLASSIFY' <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a> 'IS' <a href="#Cterm" title="Cterm" shape="rect">Cterm</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Cterm">Cterm:</a></p>
+      <img border="0" src="diagram/Cterm.png" height="80" width="164" usemap="#Cterm.map"><map name="Cterm.map">
+         <area shape="rect" coords="49,45,115,77" href="#Cterm1" title="Cterm1"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Cterm" title="Cterm" shape="rect">Cterm</a>    ::= <a href="#Cterm1" title="Cterm1" shape="rect">Cterm1</a> ( '/\' <a href="#Cterm1" title="Cterm1" shape="rect">Cterm1</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Classify" title="Classify">Classify</a></li>
+            
+            <li><a href="#Cterm1" title="Cterm1">Cterm1</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Cterm1">Cterm1:</a></p>
+      <img border="0" src="diagram/Cterm1.png" height="96" width="328" usemap="#Cterm1.map"><map name="Cterm1.map">
+         <area shape="rect" coords="49,1,141,33" href="#ConceptRef" title="ConceptRef">
+         <area shape="rect" coords="135,45,193,77" href="#Cterm" title="Cterm"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Cterm1" title="Cterm1" shape="rect">Cterm1</a>   ::= <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a>
+           | '('? <a href="#Cterm" title="Cterm" shape="rect">Cterm</a> ')'?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Cterm" title="Cterm">Cterm</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RuleDef">RuleDef:</a></p>
+      <img border="0" src="diagram/RuleDef.png" height="86" width="694" usemap="#RuleDef.map"><map name="RuleDef.map">
+         <area shape="rect" coords="123,35,177,67" href="#Label" title="Label">
+         <area shape="rect" coords="217,35,263,67" href="#Rule" title="Rule">
+         <area shape="rect" coords="303,1,375,33" href="#Meaning" title="Meaning">
+         <area shape="rect" coords="435,1,511,33" href="#Message" title="Message">
+         <area shape="rect" coords="571,35,645,67" href="#Violation" title="Violation"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RuleDef" title="RuleDef" shape="rect">RuleDef</a>  ::= 'RULE' <a href="#Label" title="Label" shape="rect">Label</a>? <a href="#Rule" title="Rule" shape="rect">Rule</a> <a href="#Meaning" title="Meaning" shape="rect">Meaning</a>* <a href="#Message" title="Message" shape="rect">Message</a>* <a href="#Violation" title="Violation" shape="rect">Violation</a>?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Violation">Violation:</a></p>
+      <img border="0" src="diagram/Violation.png" height="36" width="250" usemap="#Violation.map"><map name="Violation.map">
+         <area shape="rect" coords="147,1,221,33" href="#PairView" title="PairView"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Violation" title="Violation" shape="rect">Violation</a>
+         ::= 'VIOLATION' <a href="#PairView" title="PairView" shape="rect">PairView</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RuleDef" title="RuleDef">RuleDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="PairView">PairView:</a></p>
+      <img border="0" src="diagram/PairView.png" height="36" width="302" usemap="#PairView.map"><map name="PairView.map">
+         <area shape="rect" coords="75,1,227,33" href="#PairViewSegmentList" title="PairViewSegmentList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#PairView" title="PairView" shape="rect">PairView</a> ::= '(' <a href="#PairViewSegmentList" title="PairViewSegmentList" shape="rect">PairViewSegmentList</a> ')'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Violation" title="Violation">Violation</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="PairViewSegmentList">PairViewSegmentList:</a></p>
+      <img border="0" src="diagram/PairViewSegmentList.png" height="80" width="228" usemap="#PairViewSegmentList.map"><map name="PairViewSegmentList.map">
+         <area shape="rect" coords="49,45,179,77" href="#PairViewSegment" title="PairViewSegment"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#PairViewSegmentList" title="PairViewSegmentList" shape="rect">PairViewSegmentList</a>
+         ::= <a href="#PairViewSegment" title="PairViewSegment" shape="rect">PairViewSegment</a> ( ',' <a href="#PairViewSegment" title="PairViewSegment" shape="rect">PairViewSegment</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#PairView" title="PairView">PairView</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="PairViewSegment">PairViewSegment:</a></p>
+      <img border="0" src="diagram/PairViewSegment.png" height="124" width="218" usemap="#PairViewSegment.map"><map name="PairViewSegment.map">
+         <area shape="rect" coords="115,1,165,33" href="#Term" title="Term">
+         <area shape="rect" coords="115,45,165,77" href="#Term" title="Term">
+         <area shape="rect" coords="113,89,169,121" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#PairViewSegment" title="PairViewSegment" shape="rect">PairViewSegment</a>
+         ::= 'SRC' <a href="#Term" title="Term" shape="rect">Term</a>
+           | 'TGT' <a href="#Term" title="Term" shape="rect">Term</a>
+           | 'TXT' <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#PairViewSegmentList" title="PairViewSegmentList">PairViewSegmentList</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RelationDef">RelationDef:</a></p>
+      <img border="0" src="diagram/RelationDef.png" height="196" width="962" usemap="#RelationDef.map"><map name="RelationDef.map">
+         <area shape="rect" coords="49,35,147,67" href="#RelationNew" title="RelationNew">
+         <area shape="rect" coords="49,79,141,111" href="#RelationOld" title="RelationOld">
+         <area shape="rect" coords="343,35,399,67" href="#Props" title="Props">
+         <area shape="rect" coords="711,35,767,67" href="#String" title="String">
+         <area shape="rect" coords="847,1,919,33" href="#Meaning" title="Meaning">
+         <area shape="rect" coords="759,145,829,177" href="#Content" title="Content"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RelationDef" title="RelationDef" shape="rect">RelationDef</a>
+         ::= ( <a href="#RelationNew" title="RelationNew" shape="rect">RelationNew</a> | <a href="#RelationOld" title="RelationOld" shape="rect">RelationOld</a> ) 'BYPLUG'? <a href="#Props" title="Props" shape="rect">Props</a>? 'BYPLUG'? ( 'PRAGMA' <a href="#String" title="String" shape="rect">String</a>+ )? <a href="#Meaning" title="Meaning" shape="rect">Meaning</a>* ( '=' <a href="#Content" title="Content" shape="rect">Content</a> )? '.'?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RelationNew">RelationNew:</a></p>
+      <img border="0" src="diagram/RelationNew.png" height="36" width="284" usemap="#RelationNew.map"><map name="RelationNew.map">
+         <area shape="rect" coords="137,1,189,33" href="#Varid" title="Varid">
+         <area shape="rect" coords="209,1,255,33" href="#Sign" title="Sign"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RelationNew" title="RelationNew" shape="rect">RelationNew</a>
+         ::= 'RELATION' <a href="#Varid" title="Varid" shape="rect">Varid</a> <a href="#Sign" title="Sign" shape="rect">Sign</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RelationDef" title="RelationDef">RelationDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RelationOld">RelationOld:</a></p>
+      <img border="0" src="diagram/RelationOld.png" height="36" width="446" usemap="#RelationOld.map"><map name="RelationOld.map">
+         <area shape="rect" coords="29,1,81,33" href="#Varid" title="Varid">
+         <area shape="rect" coords="151,1,243,33" href="#ConceptRef" title="ConceptRef">
+         <area shape="rect" coords="263,1,305,33" href="#Fun" title="Fun">
+         <area shape="rect" coords="325,1,417,33" href="#ConceptRef" title="ConceptRef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RelationOld" title="RelationOld" shape="rect">RelationOld</a>
+         ::= <a href="#Varid" title="Varid" shape="rect">Varid</a> '::' <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a> <a href="#Fun" title="Fun" shape="rect">Fun</a> <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RelationDef" title="RelationDef">RelationDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Props">Props:</a></p>
+      <img border="0" src="diagram/Props.png" height="52" width="260" usemap="#Props.map"><map name="Props.map">
+         <area shape="rect" coords="95,1,165,33" href="#PropList" title="PropList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Props" title="Props" shape="rect">Props</a>    ::= '[' <a href="#PropList" title="PropList" shape="rect">PropList</a>? ']'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RelationDef" title="RelationDef">RelationDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="PropList">PropList:</a></p>
+      <img border="0" src="diagram/PropList.png" height="80" width="146" usemap="#PropList.map"><map name="PropList.map">
+         <area shape="rect" coords="49,45,97,77" href="#Prop" title="Prop"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#PropList" title="PropList" shape="rect">PropList</a> ::= <a href="#Prop" title="Prop" shape="rect">Prop</a> ( ',' <a href="#Prop" title="Prop" shape="rect">Prop</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Props" title="Props">Props</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Prop">Prop:</a></p>
+      <img border="0" src="diagram/Prop.png" height="476" width="156">
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Prop" title="Prop" shape="rect">Prop</a>     ::= 'UNI'
+           | 'INJ'
+           | 'SUR'
+           | 'TOT'
+           | 'SYM'
+           | 'ASY'
+           | 'TRN'
+           | 'RFX'
+           | 'IRF'
+           | 'AUT'
+           | 'PROP'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#PropList" title="PropList">PropList</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Fun">Fun:</a></p>
+      <img border="0" src="diagram/Fun.png" height="168" width="242" usemap="#Fun.map"><map name="Fun.map">
+         <area shape="rect" coords="95,133,147,165" href="#Mults" title="Mults"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Fun" title="Fun" shape="rect">Fun</a>      ::= '*'
+           | '-&gt;'
+           | '&lt;-'
+           | '[' <a href="#Mults" title="Mults" shape="rect">Mults</a> ']'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RelationOld" title="RelationOld">RelationOld</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Mults">Mults:</a></p>
+      <img border="0" src="diagram/Mults.png" height="36" width="216" usemap="#Mults.map"><map name="Mults.map">
+         <area shape="rect" coords="29,1,75,33" href="#Mult" title="Mult">
+         <area shape="rect" coords="141,1,187,33" href="#Mult" title="Mult"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Mults" title="Mults" shape="rect">Mults</a>    ::= <a href="#Mult" title="Mult" shape="rect">Mult</a> '-' <a href="#Mult" title="Mult" shape="rect">Mult</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Fun" title="Fun">Fun</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Mult">Mult:</a></p>
+      <img border="0" src="diagram/Mult.png" height="168" width="302">
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Mult" title="Mult" shape="rect">Mult</a>     ::= ( '0' | '1' ) '..' ( '1' | '*' )
+           | '*'
+           | '1'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Mults" title="Mults">Mults</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConceptDef">ConceptDef:</a></p>
+      <img border="0" src="diagram/ConceptDef.png" height="52" width="788" usemap="#ConceptDef.map"><map name="ConceptDef.map">
+         <area shape="rect" coords="133,1,241,33" href="#ConceptName" title="ConceptName">
+         <area shape="rect" coords="397,1,453,33" href="#String" title="String">
+         <area shape="rect" coords="567,1,623,33" href="#String" title="String">
+         <area shape="rect" coords="683,1,739,33" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ConceptDef" title="ConceptDef" shape="rect">ConceptDef</a>
+         ::= 'CONCEPT' <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a> 'BYPLUG'? <a href="#String" title="String" shape="rect">String</a> ( 'TYPE' <a href="#String" title="String" shape="rect">String</a> )? <a href="#String" title="String" shape="rect">String</a>?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="GenDef">GenDef:</a></p>
+      <img border="0" src="diagram/GenDef.png" height="80" width="474" usemap="#GenDef.map"><map name="GenDef.map">
+         <area shape="rect" coords="177,1,269,33" href="#ConceptRef" title="ConceptRef">
+         <area shape="rect" coords="353,1,445,33" href="#ConceptRef" title="ConceptRef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#GenDef" title="GenDef" shape="rect">GenDef</a>   ::= ( 'CLASSIFY' | 'SPEC' ) <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a> 'ISA' <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Index">Index:</a></p>
+      <img border="0" src="diagram/Index.png" height="36" width="536" usemap="#Index.map"><map name="Index.map">
+         <area shape="rect" coords="111,1,165,33" href="#Label" title="Label">
+         <area shape="rect" coords="185,1,277,33" href="#ConceptRef" title="ConceptRef">
+         <area shape="rect" coords="343,1,461,33" href="#IndSegmentList" title="IndSegmentList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Index" title="Index" shape="rect">Index</a>    ::= 'IDENT' <a href="#Label" title="Label" shape="rect">Label</a> <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a> '(' <a href="#IndSegmentList" title="IndSegmentList" shape="rect">IndSegmentList</a> ')'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="IndSegmentList">IndSegmentList:</a></p>
+      <img border="0" src="diagram/IndSegmentList.png" height="80" width="136" usemap="#IndSegmentList.map"><map name="IndSegmentList.map">
+         <area shape="rect" coords="49,45,87,77" href="#Att" title="Att"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#IndSegmentList" title="IndSegmentList" shape="rect">IndSegmentList</a>
+         ::= <a href="#Att" title="Att" shape="rect">Att</a> ( ',' <a href="#Att" title="Att" shape="rect">Att</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Index" title="Index">Index</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ViewDef">ViewDef:</a></p>
+      <img border="0" src="diagram/ViewDef.png" height="80" width="212" usemap="#ViewDef.map"><map name="ViewDef.map">
+         <area shape="rect" coords="49,1,155,33" href="#FancyViewDef" title="FancyViewDef">
+         <area shape="rect" coords="49,45,163,77" href="#ViewDefLegacy" title="ViewDefLegacy"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ViewDef" title="ViewDef" shape="rect">ViewDef</a>  ::= <a href="#FancyViewDef" title="FancyViewDef" shape="rect">FancyViewDef</a>
+           | <a href="#ViewDefLegacy" title="ViewDefLegacy" shape="rect">ViewDefLegacy</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="FancyViewDef">FancyViewDef:</a></p>
+      <img border="0" src="diagram/FancyViewDef.png" height="52" width="918" usemap="#FancyViewDef.map"><map name="FancyViewDef.map">
+         <area shape="rect" coords="105,1,159,33" href="#Label" title="Label">
+         <area shape="rect" coords="179,1,297,33" href="#ConceptOneRef" title="ConceptOneRef">
+         <area shape="rect" coords="505,1,599,33" href="#ViewObjList" title="ViewObjList">
+         <area shape="rect" coords="687,1,765,33" href="#HtmlView" title="HtmlView"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#FancyViewDef" title="FancyViewDef" shape="rect">FancyViewDef</a>
+         ::= 'VIEW' <a href="#Label" title="Label" shape="rect">Label</a> <a href="#ConceptOneRef" title="ConceptOneRef" shape="rect">ConceptOneRef</a> 'DEFAULT'? '{' <a href="#ViewObjList" title="ViewObjList" shape="rect">ViewObjList</a> '}' <a href="#HtmlView" title="HtmlView" shape="rect">HtmlView</a>? 'ENDVIEW'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ViewDef" title="ViewDef">ViewDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ViewObjList">ViewObjList:</a></p>
+      <img border="0" src="diagram/ViewObjList.png" height="80" width="170" usemap="#ViewObjList.map"><map name="ViewObjList.map">
+         <area shape="rect" coords="49,45,121,77" href="#ViewObj" title="ViewObj"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ViewObjList" title="ViewObjList" shape="rect">ViewObjList</a>
+         ::= <a href="#ViewObj" title="ViewObj" shape="rect">ViewObj</a> ( ',' <a href="#ViewObj" title="ViewObj" shape="rect">ViewObj</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#FancyViewDef" title="FancyViewDef">FancyViewDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ViewObj">ViewObj:</a></p>
+      <img border="0" src="diagram/ViewObj.png" height="36" width="182" usemap="#ViewObj.map"><map name="ViewObj.map">
+         <area shape="rect" coords="29,1,83,33" href="#Label" title="Label">
+         <area shape="rect" coords="103,1,153,33" href="#Term" title="Term"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ViewObj" title="ViewObj" shape="rect">ViewObj</a>  ::= <a href="#Label" title="Label" shape="rect">Label</a> <a href="#Term" title="Term" shape="rect">Term</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ViewObjList" title="ViewObjList">ViewObjList</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="HtmlView">HtmlView:</a></p>
+      <img border="0" src="diagram/HtmlView.png" height="36" width="298" usemap="#HtmlView.map"><map name="HtmlView.map">
+         <area shape="rect" coords="213,1,269,33" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#HtmlView" title="HtmlView" shape="rect">HtmlView</a> ::= 'HTML' 'TEMPLATE' <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#FancyViewDef" title="FancyViewDef">FancyViewDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ViewDefLegacy">ViewDefLegacy:</a></p>
+      <img border="0" src="diagram/ViewDefLegacy.png" height="80" width="642" usemap="#ViewDefLegacy.map"><map name="ViewDefLegacy.map">
+         <area shape="rect" coords="145,1,235,33" href="#LabelProps" title="LabelProps">
+         <area shape="rect" coords="255,1,373,33" href="#ConceptOneRef" title="ConceptOneRef">
+         <area shape="rect" coords="439,1,567,33" href="#ViewSegmentList" title="ViewSegmentList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ViewDefLegacy" title="ViewDefLegacy" shape="rect">ViewDefLegacy</a>
+         ::= ( 'VIEW' | 'KEY' ) <a href="#LabelProps" title="LabelProps" shape="rect">LabelProps</a> <a href="#ConceptOneRef" title="ConceptOneRef" shape="rect">ConceptOneRef</a> '(' <a href="#ViewSegmentList" title="ViewSegmentList" shape="rect">ViewSegmentList</a> ')'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ViewDef" title="ViewDef">ViewDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ViewSegmentList">ViewSegmentList:</a></p>
+      <img border="0" src="diagram/ViewSegmentList.png" height="80" width="204" usemap="#ViewSegmentList.map"><map name="ViewSegmentList.map">
+         <area shape="rect" coords="49,45,155,77" href="#ViewSegment" title="ViewSegment"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ViewSegmentList" title="ViewSegmentList" shape="rect">ViewSegmentList</a>
+         ::= <a href="#ViewSegment" title="ViewSegment" shape="rect">ViewSegment</a> ( ',' <a href="#ViewSegment" title="ViewSegment" shape="rect">ViewSegment</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ViewDefLegacy" title="ViewDefLegacy">ViewDefLegacy</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ViewSegment">ViewSegment:</a></p>
+      <img border="0" src="diagram/ViewSegment.png" height="124" width="266" usemap="#ViewSegment.map"><map name="ViewSegment.map">
+         <area shape="rect" coords="49,1,87,33" href="#Att" title="Att">
+         <area shape="rect" coords="113,45,169,77" href="#String" title="String">
+         <area shape="rect" coords="161,89,217,121" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ViewSegment" title="ViewSegment" shape="rect">ViewSegment</a>
+         ::= <a href="#Att" title="Att" shape="rect">Att</a>
+           | 'TXT' <a href="#String" title="String" shape="rect">String</a>
+           | 'PRIMHTML' <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ViewSegmentList" title="ViewSegmentList">ViewSegmentList</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Interface">Interface:</a></p>
+      <img border="0" src="diagram/Interface.png" height="146" width="978" usemap="#Interface.map"><map name="Interface.map">
+         <area shape="rect" coords="143,1,197,33" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="361,1,417,33" href="#Conid" title="Conid">
+         <area shape="rect" coords="361,45,417,77" href="#String" title="String">
+         <area shape="rect" coords="477,1,543,33" href="#Params" title="Params">
+         <area shape="rect" coords="603,1,707,33" href="#InterfaceArgs" title="InterfaceArgs">
+         <area shape="rect" coords="767,1,821,33" href="#Roles" title="Roles">
+         <area shape="rect" coords="905,1,955,33" href="#Term" title="Term">
+         <area shape="rect" coords="849,111,949,143" href="#SubInterface" title="SubInterface"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Interface" title="Interface" shape="rect">Interface</a>
+         ::= 'INTERFACE' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a> 'CLASS'? ( <a href="#Conid" title="Conid" shape="rect">Conid</a> | <a href="#String" title="String" shape="rect">String</a> ) <a href="#Params" title="Params" shape="rect">Params</a>? <a href="#InterfaceArgs" title="InterfaceArgs" shape="rect">InterfaceArgs</a>? <a href="#Roles" title="Roles" shape="rect">Roles</a>? ':' <a href="#Term" title="Term" shape="rect">Term</a> <a href="#SubInterface" title="SubInterface" shape="rect">SubInterface</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Params">Params:</a></p>
+      <img border="0" src="diagram/Params.png" height="36" width="232" usemap="#Params.map"><map name="Params.map">
+         <area shape="rect" coords="75,1,157,33" href="#NamedRel" title="NamedRel"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Params" title="Params" shape="rect">Params</a>   ::= '(' <a href="#NamedRel" title="NamedRel" shape="rect">NamedRel</a> ')'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="InterfaceArgs">InterfaceArgs:</a></p>
+      <img border="0" src="diagram/InterfaceArgs.png" height="36" width="252" usemap="#InterfaceArgs.map"><map name="InterfaceArgs.map">
+         <area shape="rect" coords="77,1,175,33" href="#ADLidListList" title="ADLidListList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#InterfaceArgs" title="InterfaceArgs" shape="rect">InterfaceArgs</a>
+         ::= '{' <a href="#ADLidListList" title="ADLidListList" shape="rect">ADLidListList</a> '}'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Roles">Roles:</a></p>
+      <img border="0" src="diagram/Roles.png" height="36" width="194" usemap="#Roles.map"><map name="Roles.map">
+         <area shape="rect" coords="97,1,165,33" href="#RoleList" title="RoleList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Roles" title="Roles" shape="rect">Roles</a>    ::= 'FOR' <a href="#RoleList" title="RoleList" shape="rect">RoleList</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="SubInterface">SubInterface:</a></p>
+      <img border="0" src="diagram/SubInterface.png" height="190" width="464" usemap="#SubInterface.map"><map name="SubInterface.map">
+         <area shape="rect" coords="207,1,263,33" href="#Conid" title="Conid">
+         <area shape="rect" coords="373,1,415,33" href="#Box" title="Box">
+         <area shape="rect" coords="163,155,217,187" href="#ADLid" title="ADLid"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#SubInterface" title="SubInterface" shape="rect">SubInterface</a>
+         ::= ( 'BOX' ( '&lt;' <a href="#Conid" title="Conid" shape="rect">Conid</a> '&gt;' )? | 'ROWS' | 'COLS' ) <a href="#Box" title="Box" shape="rect">Box</a>
+           | 'INTERFACE' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+            <li><a href="#ObjDef" title="ObjDef">ObjDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ObjDef">ObjDef:</a></p>
+      <img border="0" src="diagram/ObjDef.png" height="52" width="594" usemap="#ObjDef.map"><map name="ObjDef.map">
+         <area shape="rect" coords="29,1,119,33" href="#LabelProps" title="LabelProps">
+         <area shape="rect" coords="139,1,189,33" href="#Term" title="Term">
+         <area shape="rect" coords="279,1,335,33" href="#Conid" title="Conid">
+         <area shape="rect" coords="445,1,545,33" href="#SubInterface" title="SubInterface"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ObjDef" title="ObjDef" shape="rect">ObjDef</a>   ::= <a href="#LabelProps" title="LabelProps" shape="rect">LabelProps</a> <a href="#Term" title="Term" shape="rect">Term</a> ( '&lt;' <a href="#Conid" title="Conid" shape="rect">Conid</a> '&gt;' )? <a href="#SubInterface" title="SubInterface" shape="rect">SubInterface</a>?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ObjDefList" title="ObjDefList">ObjDefList</a></li>
+            
+            <li><a href="#Phpplug" title="Phpplug">Phpplug</a></li>
+            
+            <li><a href="#Sqlplug" title="Sqlplug">Sqlplug</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ObjDefList">ObjDefList:</a></p>
+      <img border="0" src="diagram/ObjDefList.png" height="80" width="160" usemap="#ObjDefList.map"><map name="ObjDefList.map">
+         <area shape="rect" coords="49,45,111,77" href="#ObjDef" title="ObjDef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ObjDefList" title="ObjDefList" shape="rect">ObjDefList</a>
+         ::= <a href="#ObjDef" title="ObjDef" shape="rect">ObjDef</a> ( ',' <a href="#ObjDef" title="ObjDef" shape="rect">ObjDef</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Box" title="Box">Box</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Box">Box:</a></p>
+      <img border="0" src="diagram/Box.png" height="36" width="234" usemap="#Box.map"><map name="Box.map">
+         <area shape="rect" coords="75,1,159,33" href="#ObjDefList" title="ObjDefList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Box" title="Box" shape="rect">Box</a>      ::= '[' <a href="#ObjDefList" title="ObjDefList" shape="rect">ObjDefList</a> ']'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#SubInterface" title="SubInterface">SubInterface</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Sqlplug">Sqlplug:</a></p>
+      <img border="0" src="diagram/Sqlplug.png" height="36" width="224" usemap="#Sqlplug.map"><map name="Sqlplug.map">
+         <area shape="rect" coords="133,1,195,33" href="#ObjDef" title="ObjDef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Sqlplug" title="Sqlplug" shape="rect">Sqlplug</a>  ::= 'SQLPLUG' <a href="#ObjDef" title="ObjDef" shape="rect">ObjDef</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Phpplug">Phpplug:</a></p>
+      <img border="0" src="diagram/Phpplug.png" height="36" width="224" usemap="#Phpplug.map"><map name="Phpplug.map">
+         <area shape="rect" coords="133,1,195,33" href="#ObjDef" title="ObjDef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Phpplug" title="Phpplug" shape="rect">Phpplug</a>  ::= 'PHPPLUG' <a href="#ObjDef" title="ObjDef" shape="rect">ObjDef</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Purpose">Purpose:</a></p>
+      <img border="0" src="diagram/Purpose.png" height="52" width="844" usemap="#Purpose.map"><map name="Purpose.map">
+         <area shape="rect" coords="133,1,203,33" href="#Ref2Obj" title="Ref2Obj">
+         <area shape="rect" coords="243,1,345,33" href="#LanguageRef" title="LanguageRef">
+         <area shape="rect" coords="405,1,497,33" href="#TextMarkup" title="TextMarkup">
+         <area shape="rect" coords="621,1,729,33" href="#StringListSemi" title="StringListSemi">
+         <area shape="rect" coords="769,1,815,33" href="#Expl" title="Expl"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Purpose" title="Purpose" shape="rect">Purpose</a>  ::= 'PURPOSE' <a href="#Ref2Obj" title="Ref2Obj" shape="rect">Ref2Obj</a> <a href="#LanguageRef" title="LanguageRef" shape="rect">LanguageRef</a>? <a href="#TextMarkup" title="TextMarkup" shape="rect">TextMarkup</a>? ( 'REF' <a href="#StringListSemi" title="StringListSemi" shape="rect">StringListSemi</a> )? <a href="#Expl" title="Expl" shape="rect">Expl</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Ref2Obj">Ref2Obj:</a></p>
+      <img border="0" src="diagram/Ref2Obj.png" height="388" width="310" usemap="#Ref2Obj.map"><map name="Ref2Obj.map">
+         <area shape="rect" coords="153,1,261,33" href="#ConceptName" title="ConceptName">
+         <area shape="rect" coords="157,45,239,77" href="#NamedRel" title="NamedRel">
+         <area shape="rect" coords="123,89,177,121" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="131,133,185,165" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="125,177,179,209" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="149,221,203,253" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="153,265,207,297" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="163,309,217,341" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="151,353,205,385" href="#ADLid" title="ADLid"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Ref2Obj" title="Ref2Obj" shape="rect">Ref2Obj</a>  ::= 'CONCEPT' <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a>
+           | 'RELATION' <a href="#NamedRel" title="NamedRel" shape="rect">NamedRel</a>
+           | 'RULE' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>
+           | 'IDENT' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>
+           | 'VIEW' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>
+           | 'PATTERN' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>
+           | 'PROCESS' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>
+           | 'INTERFACE' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>
+           | 'CONTEXT' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Purpose" title="Purpose">Purpose</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Population">Population:</a></p>
+      <img border="0" src="diagram/Population.png" height="80" width="636" usemap="#Population.map"><map name="Population.map">
+         <area shape="rect" coords="179,1,261,33" href="#NamedRel" title="NamedRel">
+         <area shape="rect" coords="393,1,463,33" href="#Content" title="Content">
+         <area shape="rect" coords="179,45,287,77" href="#ConceptName" title="ConceptName">
+         <area shape="rect" coords="465,45,541,77" href="#ValueList" title="ValueList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Population" title="Population" shape="rect">Population</a>
+         ::= 'POPULATION' ( <a href="#NamedRel" title="NamedRel" shape="rect">NamedRel</a> 'CONTAINS' <a href="#Content" title="Content" shape="rect">Content</a> | <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a> 'CONTAINS' '[' <a href="#ValueList" title="ValueList" shape="rect">ValueList</a> ']' )</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+            <li><a href="#PatElem" title="PatElem">PatElem</a></li>
+            
+            <li><a href="#Populations" title="Populations">Populations</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RoleRelation">RoleRelation:</a></p>
+      <img border="0" src="diagram/RoleRelation.png" height="36" width="406" usemap="#RoleRelation.map"><map name="RoleRelation.map">
+         <area shape="rect" coords="105,1,173,33" href="#RoleList" title="RoleList">
+         <area shape="rect" coords="273,1,377,33" href="#NamedRelList" title="NamedRelList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RoleRelation" title="RoleRelation" shape="rect">RoleRelation</a>
+         ::= 'ROLE' <a href="#RoleList" title="RoleList" shape="rect">RoleList</a> 'EDITS' <a href="#NamedRelList" title="NamedRelList" shape="rect">NamedRelList</a></pre></div>
+         
+      </p>
+      
+      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="RoleRule">RoleRule:</a></p>
+      <img border="0" src="diagram/RoleRule.png" height="36" width="416" usemap="#RoleRule.map"><map name="RoleRule.map">
+         <area shape="rect" coords="105,1,173,33" href="#RoleList" title="RoleList">
+         <area shape="rect" coords="311,1,387,33" href="#ADLidList" title="ADLidList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RoleRule" title="RoleRule" shape="rect">RoleRule</a> ::= 'ROLE' <a href="#RoleList" title="RoleList" shape="rect">RoleList</a> 'MAINTAINS' <a href="#ADLidList" title="ADLidList" shape="rect">ADLidList</a></pre></div>
+         
+      </p>
+      
+      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="Role">Role:</a></p>
+      <img border="0" src="diagram/Role.png" height="36" width="112" usemap="#Role.map"><map name="Role.map">
+         <area shape="rect" coords="29,1,83,33" href="#ADLid" title="ADLid"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Role" title="Role" shape="rect">Role</a>     ::= <a href="#ADLid" title="ADLid" shape="rect">ADLid</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RoleList" title="RoleList">RoleList</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RoleList">RoleList:</a></p>
+      <img border="0" src="diagram/RoleList.png" height="80" width="144" usemap="#RoleList.map"><map name="RoleList.map">
+         <area shape="rect" coords="49,45,95,77" href="#Role" title="Role"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RoleList" title="RoleList" shape="rect">RoleList</a> ::= <a href="#Role" title="Role" shape="rect">Role</a> ( ',' <a href="#Role" title="Role" shape="rect">Role</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RoleRelation" title="RoleRelation">RoleRelation</a></li>
+            
+            <li><a href="#RoleRule" title="RoleRule">RoleRule</a></li>
+            
+            <li><a href="#Roles" title="Roles">Roles</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="PrintThemes">PrintThemes:</a></p>
+      <img border="0" src="diagram/PrintThemes.png" height="36" width="282" usemap="#PrintThemes.map"><map name="PrintThemes.map">
+         <area shape="rect" coords="123,1,253,33" href="#ConceptNameList" title="ConceptNameList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#PrintThemes" title="PrintThemes" shape="rect">PrintThemes</a>
+         ::= 'THEMES' <a href="#ConceptNameList" title="ConceptNameList" shape="rect">ConceptNameList</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ContextElement" title="ContextElement">ContextElement</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Meaning">Meaning:</a></p>
+      <img border="0" src="diagram/Meaning.png" height="80" width="572" usemap="#Meaning.map"><map name="Meaning.map">
+         <area shape="rect" coords="153,1,255,33" href="#LanguageRef" title="LanguageRef">
+         <area shape="rect" coords="315,1,407,33" href="#TextMarkup" title="TextMarkup">
+         <area shape="rect" coords="467,1,523,33" href="#String" title="String">
+         <area shape="rect" coords="467,45,513,77" href="#Expl" title="Expl"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Meaning" title="Meaning" shape="rect">Meaning</a>  ::= 'MEANING' <a href="#LanguageRef" title="LanguageRef" shape="rect">LanguageRef</a>? <a href="#TextMarkup" title="TextMarkup" shape="rect">TextMarkup</a>? ( <a href="#String" title="String" shape="rect">String</a> | <a href="#Expl" title="Expl" shape="rect">Expl</a> )</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RelationDef" title="RelationDef">RelationDef</a></li>
+            
+            <li><a href="#RuleDef" title="RuleDef">RuleDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Message">Message:</a></p>
+      <img border="0" src="diagram/Message.png" height="36" width="228" usemap="#Message.map"><map name="Message.map">
+         <area shape="rect" coords="133,1,199,33" href="#Markup" title="Markup"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Message" title="Message" shape="rect">Message</a>  ::= 'MESSAGE' <a href="#Markup" title="Markup" shape="rect">Markup</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RuleDef" title="RuleDef">RuleDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Markup">Markup:</a></p>
+      <img border="0" src="diagram/Markup.png" height="80" width="468" usemap="#Markup.map"><map name="Markup.map">
+         <area shape="rect" coords="49,1,151,33" href="#LanguageRef" title="LanguageRef">
+         <area shape="rect" coords="211,1,303,33" href="#TextMarkup" title="TextMarkup">
+         <area shape="rect" coords="363,1,419,33" href="#String" title="String">
+         <area shape="rect" coords="363,45,409,77" href="#Expl" title="Expl"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Markup" title="Markup" shape="rect">Markup</a>   ::= <a href="#LanguageRef" title="LanguageRef" shape="rect">LanguageRef</a>? <a href="#TextMarkup" title="TextMarkup" shape="rect">TextMarkup</a>? ( <a href="#String" title="String" shape="rect">String</a> | <a href="#Expl" title="Expl" shape="rect">Expl</a> )</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Message" title="Message">Message</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Rule">Rule:</a></p>
+      <img border="0" src="diagram/Rule.png" height="96" width="270" usemap="#Rule.map"><map name="Rule.map">
+         <area shape="rect" coords="29,1,79,33" href="#Term" title="Term">
+         <area shape="rect" coords="169,1,219,33" href="#Term" title="Term">
+         <area shape="rect" coords="171,45,221,77" href="#Term" title="Term"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Rule" title="Rule" shape="rect">Rule</a>     ::= <a href="#Term" title="Term" shape="rect">Term</a> ( '=' <a href="#Term" title="Term" shape="rect">Term</a> | '|-' <a href="#Term" title="Term" shape="rect">Term</a> )?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RuleDef" title="RuleDef">RuleDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Term">Term:</a></p>
+      <img border="0" src="diagram/Term.png" height="134" width="314" usemap="#Term.map"><map name="Term.map">
+         <area shape="rect" coords="29,17,79,49" href="#Trm2" title="Trm2">
+         <area shape="rect" coords="195,17,245,49" href="#Trm2" title="Trm2">
+         <area shape="rect" coords="195,83,245,115" href="#Trm2" title="Trm2"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Term" title="Term" shape="rect">Term</a>     ::= <a href="#Trm2" title="Trm2" shape="rect">Trm2</a> ( ( '/\' <a href="#Trm2" title="Trm2" shape="rect">Trm2</a> )+ | ( '\/' <a href="#Trm2" title="Trm2" shape="rect">Trm2</a> )+ )?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Att" title="Att">Att</a></li>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+            <li><a href="#ObjDef" title="ObjDef">ObjDef</a></li>
+            
+            <li><a href="#PairViewSegment" title="PairViewSegment">PairViewSegment</a></li>
+            
+            <li><a href="#Rule" title="Rule">Rule</a></li>
+            
+            <li><a href="#Trm6" title="Trm6">Trm6</a></li>
+            
+            <li><a href="#ViewObj" title="ViewObj">ViewObj</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Trm2">Trm2:</a></p>
+      <img border="0" src="diagram/Trm2.png" height="52" width="264" usemap="#Trm2.map"><map name="Trm2.map">
+         <area shape="rect" coords="29,1,79,33" href="#Trm3" title="Trm3">
+         <area shape="rect" coords="165,1,215,33" href="#Trm3" title="Trm3"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Trm2" title="Trm2" shape="rect">Trm2</a>     ::= <a href="#Trm3" title="Trm3" shape="rect">Trm3</a> ( '-' <a href="#Trm3" title="Trm3" shape="rect">Trm3</a> )?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Term" title="Term">Term</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Trm3">Trm3:</a></p>
+      <img border="0" src="diagram/Trm3.png" height="140" width="278" usemap="#Trm3.map"><map name="Trm3.map">
+         <area shape="rect" coords="29,1,79,33" href="#Trm4" title="Trm4">
+         <area shape="rect" coords="167,1,217,33" href="#Trm4" title="Trm4">
+         <area shape="rect" coords="167,45,217,77" href="#Trm4" title="Trm4">
+         <area shape="rect" coords="179,89,229,121" href="#Trm4" title="Trm4"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Trm3" title="Trm3" shape="rect">Trm3</a>     ::= <a href="#Trm4" title="Trm4" shape="rect">Trm4</a> ( '/' <a href="#Trm4" title="Trm4" shape="rect">Trm4</a> | '\' <a href="#Trm4" title="Trm4" shape="rect">Trm4</a> | '&lt;&gt;' <a href="#Trm4" title="Trm4" shape="rect">Trm4</a> )?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Trm2" title="Trm2">Trm2</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Trm4">Trm4:</a></p>
+      <img border="0" src="diagram/Trm4.png" height="200" width="308" usemap="#Trm4.map"><map name="Trm4.map">
+         <area shape="rect" coords="29,17,79,49" href="#Trm5" title="Trm5">
+         <area shape="rect" coords="183,17,233,49" href="#Trm5" title="Trm5">
+         <area shape="rect" coords="183,83,233,115" href="#Trm5" title="Trm5">
+         <area shape="rect" coords="189,149,239,181" href="#Trm5" title="Trm5"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Trm4" title="Trm4" shape="rect">Trm4</a>     ::= <a href="#Trm5" title="Trm5" shape="rect">Trm5</a> ( ( ';' <a href="#Trm5" title="Trm5" shape="rect">Trm5</a> )+ | ( '!' <a href="#Trm5" title="Trm5" shape="rect">Trm5</a> )+ | ( '#' <a href="#Trm5" title="Trm5" shape="rect">Trm5</a> )+ )?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Trm3" title="Trm3">Trm3</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Trm5">Trm5:</a></p>
+      <img border="0" src="diagram/Trm5.png" height="158" width="284" usemap="#Trm5.map"><map name="Trm5.map">
+         <area shape="rect" coords="115,123,165,155" href="#Trm6" title="Trm6"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Trm5" title="Trm5" shape="rect">Trm5</a>     ::= '-'* <a href="#Trm6" title="Trm6" shape="rect">Trm6</a> ( '~' | '*' | '+' )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Trm4" title="Trm4">Trm4</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Trm6">Trm6:</a></p>
+      <img border="0" src="diagram/Trm6.png" height="80" width="240" usemap="#Trm6.map"><map name="Trm6.map">
+         <area shape="rect" coords="49,1,139,33" href="#RelationRef" title="RelationRef">
+         <area shape="rect" coords="95,45,145,77" href="#Term" title="Term"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Trm6" title="Trm6" shape="rect">Trm6</a>     ::= <a href="#RelationRef" title="RelationRef" shape="rect">RelationRef</a>
+           | '(' <a href="#Term" title="Term" shape="rect">Term</a> ')'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Trm5" title="Trm5">Trm5</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RelationRef">RelationRef:</a></p>
+      <img border="0" src="diagram/RelationRef.png" height="228" width="420" usemap="#RelationRef.map"><map name="RelationRef.map">
+         <area shape="rect" coords="49,1,131,33" href="#NamedRel" title="NamedRel">
+         <area shape="rect" coords="161,45,279,77" href="#ConceptOneRef" title="ConceptOneRef">
+         <area shape="rect" coords="117,111,163,143" href="#Sign" title="Sign">
+         <area shape="rect" coords="49,177,101,209" href="#Atom" title="Atom">
+         <area shape="rect" coords="187,177,305,209" href="#ConceptOneRef" title="ConceptOneRef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RelationRef" title="RelationRef" shape="rect">RelationRef</a>
+         ::= <a href="#NamedRel" title="NamedRel" shape="rect">NamedRel</a>
+           | 'I' ( '[' <a href="#ConceptOneRef" title="ConceptOneRef" shape="rect">ConceptOneRef</a> ']' )?
+           | 'V' <a href="#Sign" title="Sign" shape="rect">Sign</a>?
+           | <a href="#Atom" title="Atom" shape="rect">Atom</a> ( '[' <a href="#ConceptOneRef" title="ConceptOneRef" shape="rect">ConceptOneRef</a> ']' )?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Trm6" title="Trm6">Trm6</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Att">Att:</a></p>
+      <img border="0" src="diagram/Att.png" height="52" width="258" usemap="#Att.map"><map name="Att.map">
+         <area shape="rect" coords="49,1,139,33" href="#LabelProps" title="LabelProps">
+         <area shape="rect" coords="179,1,229,33" href="#Term" title="Term"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Att" title="Att" shape="rect">Att</a>      ::= <a href="#LabelProps" title="LabelProps" shape="rect">LabelProps</a>? <a href="#Term" title="Term" shape="rect">Term</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#IndSegmentList" title="IndSegmentList">IndSegmentList</a></li>
+            
+            <li><a href="#ViewSegment" title="ViewSegment">ViewSegment</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="NamedRelList">NamedRelList:</a></p>
+      <img border="0" src="diagram/NamedRelList.png" height="80" width="180" usemap="#NamedRelList.map"><map name="NamedRelList.map">
+         <area shape="rect" coords="49,45,131,77" href="#NamedRel" title="NamedRel"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#NamedRelList" title="NamedRelList" shape="rect">NamedRelList</a>
+         ::= <a href="#NamedRel" title="NamedRel" shape="rect">NamedRel</a> ( ',' <a href="#NamedRel" title="NamedRel" shape="rect">NamedRel</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RoleRelation" title="RoleRelation">RoleRelation</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="NamedRel">NamedRel:</a></p>
+      <img border="0" src="diagram/NamedRel.png" height="52" width="216" usemap="#NamedRel.map"><map name="NamedRel.map">
+         <area shape="rect" coords="29,1,81,33" href="#Varid" title="Varid">
+         <area shape="rect" coords="121,1,167,33" href="#Sign" title="Sign"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#NamedRel" title="NamedRel" shape="rect">NamedRel</a> ::= <a href="#Varid" title="Varid" shape="rect">Varid</a> <a href="#Sign" title="Sign" shape="rect">Sign</a>?</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#NamedRelList" title="NamedRelList">NamedRelList</a></li>
+            
+            <li><a href="#Params" title="Params">Params</a></li>
+            
+            <li><a href="#Population" title="Population">Population</a></li>
+            
+            <li><a href="#Ref2Obj" title="Ref2Obj">Ref2Obj</a></li>
+            
+            <li><a href="#RelationRef" title="RelationRef">RelationRef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Sign">Sign:</a></p>
+      <img border="0" src="diagram/Sign.png" height="52" width="494" usemap="#Sign.map"><map name="Sign.map">
+         <area shape="rect" coords="75,1,193,33" href="#ConceptOneRef" title="ConceptOneRef">
+         <area shape="rect" coords="281,1,399,33" href="#ConceptOneRef" title="ConceptOneRef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Sign" title="Sign" shape="rect">Sign</a>     ::= '[' <a href="#ConceptOneRef" title="ConceptOneRef" shape="rect">ConceptOneRef</a> ( '*' <a href="#ConceptOneRef" title="ConceptOneRef" shape="rect">ConceptOneRef</a> )? ']'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#NamedRel" title="NamedRel">NamedRel</a></li>
+            
+            <li><a href="#RelationNew" title="RelationNew">RelationNew</a></li>
+            
+            <li><a href="#RelationRef" title="RelationRef">RelationRef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConceptName">ConceptName:</a></p>
+      <img border="0" src="diagram/ConceptName.png" height="80" width="154" usemap="#ConceptName.map"><map name="ConceptName.map">
+         <area shape="rect" coords="49,1,105,33" href="#Conid" title="Conid">
+         <area shape="rect" coords="49,45,105,77" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a>
+         ::= <a href="#Conid" title="Conid" shape="rect">Conid</a>
+           | <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ConceptDef" title="ConceptDef">ConceptDef</a></li>
+            
+            <li><a href="#ConceptNameList" title="ConceptNameList">ConceptNameList</a></li>
+            
+            <li><a href="#ConceptRef" title="ConceptRef">ConceptRef</a></li>
+            
+            <li><a href="#Context" title="Context">Context</a></li>
+            
+            <li><a href="#PatternDef" title="PatternDef">PatternDef</a></li>
+            
+            <li><a href="#Population" title="Population">Population</a></li>
+            
+            <li><a href="#ProcessDef" title="ProcessDef">ProcessDef</a></li>
+            
+            <li><a href="#Ref2Obj" title="Ref2Obj">Ref2Obj</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConceptNameList">ConceptNameList:</a></p>
+      <img border="0" src="diagram/ConceptNameList.png" height="36" width="338" usemap="#ConceptNameList.map"><map name="ConceptNameList.map">
+         <area shape="rect" coords="29,1,137,33" href="#ConceptName" title="ConceptName">
+         <area shape="rect" coords="201,1,309,33" href="#ConceptName" title="ConceptName"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ConceptNameList" title="ConceptNameList" shape="rect">ConceptNameList</a>
+         ::= <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a> ',' <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#PrintThemes" title="PrintThemes">PrintThemes</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConceptRef">ConceptRef:</a></p>
+      <img border="0" src="diagram/ConceptRef.png" height="36" width="166" usemap="#ConceptRef.map"><map name="ConceptRef.map">
+         <area shape="rect" coords="29,1,137,33" href="#ConceptName" title="ConceptName"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a>
+         ::= <a href="#ConceptName" title="ConceptName" shape="rect">ConceptName</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Classify" title="Classify">Classify</a></li>
+            
+            <li><a href="#ConceptOneRef" title="ConceptOneRef">ConceptOneRef</a></li>
+            
+            <li><a href="#Cterm1" title="Cterm1">Cterm1</a></li>
+            
+            <li><a href="#GenDef" title="GenDef">GenDef</a></li>
+            
+            <li><a href="#Index" title="Index">Index</a></li>
+            
+            <li><a href="#RelationOld" title="RelationOld">RelationOld</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConceptOneRef">ConceptOneRef:</a></p>
+      <img border="0" src="diagram/ConceptOneRef.png" height="80" width="190" usemap="#ConceptOneRef.map"><map name="ConceptOneRef.map">
+         <area shape="rect" coords="49,45,141,77" href="#ConceptRef" title="ConceptRef"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ConceptOneRef" title="ConceptOneRef" shape="rect">ConceptOneRef</a>
+         ::= 'ONE'
+           | <a href="#ConceptRef" title="ConceptRef" shape="rect">ConceptRef</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#FancyViewDef" title="FancyViewDef">FancyViewDef</a></li>
+            
+            <li><a href="#RelationRef" title="RelationRef">RelationRef</a></li>
+            
+            <li><a href="#Sign" title="Sign">Sign</a></li>
+            
+            <li><a href="#ViewDefLegacy" title="ViewDefLegacy">ViewDefLegacy</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="LabelProps">LabelProps:</a></p>
+      <img border="0" src="diagram/LabelProps.png" height="52" width="410" usemap="#LabelProps.map"><map name="LabelProps.map">
+         <area shape="rect" coords="29,1,83,33" href="#ADLid" title="ADLid">
+         <area shape="rect" coords="171,1,269,33" href="#ADLidListList" title="ADLidListList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#LabelProps" title="LabelProps" shape="rect">LabelProps</a>
+         ::= <a href="#ADLid" title="ADLid" shape="rect">ADLid</a> ( '{' <a href="#ADLidListList" title="ADLidListList" shape="rect">ADLidListList</a> '}' )? ':'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Att" title="Att">Att</a></li>
+            
+            <li><a href="#ObjDef" title="ObjDef">ObjDef</a></li>
+            
+            <li><a href="#ViewDefLegacy" title="ViewDefLegacy">ViewDefLegacy</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Label">Label:</a></p>
+      <img border="0" src="diagram/Label.png" height="36" width="156" usemap="#Label.map"><map name="Label.map">
+         <area shape="rect" coords="29,1,83,33" href="#ADLid" title="ADLid"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Label" title="Label" shape="rect">Label</a>    ::= <a href="#ADLid" title="ADLid" shape="rect">ADLid</a> ':'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#FancyViewDef" title="FancyViewDef">FancyViewDef</a></li>
+            
+            <li><a href="#Index" title="Index">Index</a></li>
+            
+            <li><a href="#RuleDef" title="RuleDef">RuleDef</a></li>
+            
+            <li><a href="#ViewObj" title="ViewObj">ViewObj</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Content">Content:</a></p>
+      <img border="0" src="diagram/Content.png" height="96" width="300" usemap="#Content.map"><map name="Content.map">
+         <area shape="rect" coords="95,1,179,33" href="#RecordList" title="RecordList">
+         <area shape="rect" coords="95,45,205,77" href="#RecordObsList" title="RecordObsList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Content" title="Content" shape="rect">Content</a>  ::= '[' ( <a href="#RecordList" title="RecordList" shape="rect">RecordList</a> | <a href="#RecordObsList" title="RecordObsList" shape="rect">RecordObsList</a> )? ']'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Population" title="Population">Population</a></li>
+            
+            <li><a href="#RelationDef" title="RelationDef">RelationDef</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RecordList">RecordList:</a></p>
+      <img border="0" src="diagram/RecordList.png" height="80" width="160" usemap="#RecordList.map"><map name="RecordList.map">
+         <area shape="rect" coords="49,45,111,77" href="#Record" title="Record"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RecordList" title="RecordList" shape="rect">RecordList</a>
+         ::= <a href="#Record" title="Record" shape="rect">Record</a> ( ',' <a href="#Record" title="Record" shape="rect">Record</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Content" title="Content">Content</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Record">Record:</a></p>
+      <img border="0" src="diagram/Record.png" height="36" width="238" usemap="#Record.map"><map name="Record.map">
+         <area shape="rect" coords="29,1,85,33" href="#String" title="String">
+         <area shape="rect" coords="153,1,209,33" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Record" title="Record" shape="rect">Record</a>   ::= <a href="#String" title="String" shape="rect">String</a> '*' <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RecordList" title="RecordList">RecordList</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RecordObsList">RecordObsList:</a></p>
+      <img border="0" src="diagram/RecordObsList.png" height="36" width="342" usemap="#RecordObsList.map"><map name="RecordObsList.map">
+         <area shape="rect" coords="29,1,139,33" href="#RecordObsList" title="RecordObsList">
+         <area shape="rect" coords="203,1,313,33" href="#RecordObsList" title="RecordObsList"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RecordObsList" title="RecordObsList" shape="rect">RecordObsList</a>
+         ::= <a href="#RecordObsList" title="RecordObsList" shape="rect">RecordObsList</a> ';' <a href="#RecordObsList" title="RecordObsList" shape="rect">RecordObsList</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Content" title="Content">Content</a></li>
+            
+            <li><a href="#RecordObsList" title="RecordObsList">RecordObsList</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="RecordObs">RecordObs:</a></p>
+      <img border="0" src="diagram/RecordObs.png" height="36" width="326" usemap="#RecordObs.map"><map name="RecordObs.map">
+         <area shape="rect" coords="75,1,131,33" href="#String" title="String">
+         <area shape="rect" coords="195,1,251,33" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#RecordObs" title="RecordObs" shape="rect">RecordObs</a>
+         ::= '(' <a href="#String" title="String" shape="rect">String</a> ',' <a href="#String" title="String" shape="rect">String</a> ')'</pre></div>
+         
+      </p>
+      
+      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="ADLid">ADLid:</a></p>
+      <img border="0" src="diagram/ADLid.png" height="124" width="154" usemap="#ADLid.map"><map name="ADLid.map">
+         <area shape="rect" coords="49,1,101,33" href="#Varid" title="Varid">
+         <area shape="rect" coords="49,45,105,77" href="#Conid" title="Conid">
+         <area shape="rect" coords="49,89,105,121" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ADLid" title="ADLid" shape="rect">ADLid</a>    ::= <a href="#Varid" title="Varid" shape="rect">Varid</a>
+           | <a href="#Conid" title="Conid" shape="rect">Conid</a>
+           | <a href="#String" title="String" shape="rect">String</a></pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ADLidList" title="ADLidList">ADLidList</a></li>
+            
+            <li><a href="#ADLidListList" title="ADLidListList">ADLidListList</a></li>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+            <li><a href="#Label" title="Label">Label</a></li>
+            
+            <li><a href="#LabelProps" title="LabelProps">LabelProps</a></li>
+            
+            <li><a href="#Ref2Obj" title="Ref2Obj">Ref2Obj</a></li>
+            
+            <li><a href="#Role" title="Role">Role</a></li>
+            
+            <li><a href="#SubInterface" title="SubInterface">SubInterface</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ADLidList">ADLidList:</a></p>
+      <img border="0" src="diagram/ADLidList.png" height="80" width="152" usemap="#ADLidList.map"><map name="ADLidList.map">
+         <area shape="rect" coords="49,45,103,77" href="#ADLid" title="ADLid"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ADLidList" title="ADLidList" shape="rect">ADLidList</a>
+         ::= <a href="#ADLid" title="ADLid" shape="rect">ADLid</a> ( ',' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RoleRule" title="RoleRule">RoleRule</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="ADLidListList">ADLidListList:</a></p>
+      <img border="0" src="diagram/ADLidListList.png" height="102" width="192" usemap="#ADLidListList.map"><map name="ADLidListList.map">
+         <area shape="rect" coords="69,67,123,99" href="#ADLid" title="ADLid"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#ADLidListList" title="ADLidListList" shape="rect">ADLidListList</a>
+         ::= <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>+ ( ',' <a href="#ADLid" title="ADLid" shape="rect">ADLid</a>+ )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#InterfaceArgs" title="InterfaceArgs">InterfaceArgs</a></li>
+            
+            <li><a href="#LabelProps" title="LabelProps">LabelProps</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Conid">Conid:</a></p>
+      <img border="0" src="diagram/Conid.png" height="114" width="256" usemap="#Conid.map"><map name="Conid.map">
+         <area shape="rect" coords="29,79,117,111" href="#UpperChar" title="UpperChar">
+         <area shape="rect" coords="157,45,207,77" href="#Char" title="Char"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Conid" title="Conid" shape="rect">Conid</a>    ::= <a href="#UpperChar" title="UpperChar" shape="rect">UpperChar</a> ( <a href="#Char" title="Char" shape="rect">Char</a> | '_' )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ADLid" title="ADLid">ADLid</a></li>
+            
+            <li><a href="#ConceptName" title="ConceptName">ConceptName</a></li>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+            <li><a href="#ObjDef" title="ObjDef">ObjDef</a></li>
+            
+            <li><a href="#SubInterface" title="SubInterface">SubInterface</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="String">String:</a></p>
+      <img border="0" src="diagram/String.png" height="70" width="232" usemap="#String.map"><map name="String.map">
+         <area shape="rect" coords="95,1,137,33" href="#Any" title="Any"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#String" title="String" shape="rect">String</a>   ::= '"' <a href="#Any" title="Any" shape="rect">Any</a>* '"'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ADLid" title="ADLid">ADLid</a></li>
+            
+            <li><a href="#ConceptDef" title="ConceptDef">ConceptDef</a></li>
+            
+            <li><a href="#ConceptName" title="ConceptName">ConceptName</a></li>
+            
+            <li><a href="#HtmlView" title="HtmlView">HtmlView</a></li>
+            
+            <li><a href="#IncludeStatement" title="IncludeStatement">IncludeStatement</a></li>
+            
+            <li><a href="#Interface" title="Interface">Interface</a></li>
+            
+            <li><a href="#Markup" title="Markup">Markup</a></li>
+            
+            <li><a href="#Meaning" title="Meaning">Meaning</a></li>
+            
+            <li><a href="#Meta" title="Meta">Meta</a></li>
+            
+            <li><a href="#PairViewSegment" title="PairViewSegment">PairViewSegment</a></li>
+            
+            <li><a href="#Record" title="Record">Record</a></li>
+            
+            <li><a href="#RecordObs" title="RecordObs">RecordObs</a></li>
+            
+            <li><a href="#RelationDef" title="RelationDef">RelationDef</a></li>
+            
+            <li><a href="#StringListSemi" title="StringListSemi">StringListSemi</a></li>
+            
+            <li><a href="#ViewSegment" title="ViewSegment">ViewSegment</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="StringListSemi">StringListSemi:</a></p>
+      <img border="0" src="diagram/StringListSemi.png" height="80" width="154" usemap="#StringListSemi.map"><map name="StringListSemi.map">
+         <area shape="rect" coords="49,45,105,77" href="#String" title="String"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#StringListSemi" title="StringListSemi" shape="rect">StringListSemi</a>
+         ::= <a href="#String" title="String" shape="rect">String</a> ( ';' <a href="#String" title="String" shape="rect">String</a> )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Purpose" title="Purpose">Purpose</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Expl">Expl:</a></p>
+      <img border="0" src="diagram/Expl.png" height="70" width="252" usemap="#Expl.map"><map name="Expl.map">
+         <area shape="rect" coords="107,1,149,33" href="#Any" title="Any"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Expl" title="Expl" shape="rect">Expl</a>     ::= '{+' <a href="#Any" title="Any" shape="rect">Any</a>* '-}'</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#Markup" title="Markup">Markup</a></li>
+            
+            <li><a href="#Meaning" title="Meaning">Meaning</a></li>
+            
+            <li><a href="#Purpose" title="Purpose">Purpose</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Varid">Varid:</a></p>
+      <img border="0" src="diagram/Varid.png" height="158" width="296" usemap="#Varid.map"><map name="Varid.map">
+         <area shape="rect" coords="49,79,137,111" href="#LowerChar" title="LowerChar">
+         <area shape="rect" coords="197,45,247,77" href="#Char" title="Char"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Varid" title="Varid" shape="rect">Varid</a>    ::= ( <a href="#LowerChar" title="LowerChar" shape="rect">LowerChar</a> | '_' ) ( <a href="#Char" title="Char" shape="rect">Char</a> | '_' )*</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ADLid" title="ADLid">ADLid</a></li>
+            
+            <li><a href="#NamedRel" title="NamedRel">NamedRel</a></li>
+            
+            <li><a href="#RelationNew" title="RelationNew">RelationNew</a></li>
+            
+            <li><a href="#RelationOld" title="RelationOld">RelationOld</a></li>
+            
+         </ul>
+         
+      </p><br><p style="font-size: 14px; font-weight:bold"><a name="Atom">Atom:</a></p>
+      <img border="0" src="diagram/Atom.png" height="70" width="228" usemap="#Atom.map"><map name="Atom.map">
+         <area shape="rect" coords="93,1,135,33" href="#Any" title="Any"></map>
+      
+      <p>
+         
+         <div class="ebnf"><pre><a href="#Atom" title="Atom" shape="rect">Atom</a>     ::= "'" <a href="#Any" title="Any" shape="rect">Any</a>* "'"</pre></div>
+         
+      </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#RelationRef" title="RelationRef">RelationRef</a></li>
+            
+         </ul>
+         
+      </p><br><hr>
+      
+      <p>
+         
+         <table border="0" class="signature">
+            
+            <tr>
+               
+               <td style="width: 100%">&nbsp;</td>
+               
+               <td valign="top">
+                  
+                  <nobr class="signature">... generated by <a name="Railroad-Diagram-Generator" class="signature" title="http://www.bottlecaps.de/rr/ui" href="http://www.bottlecaps.de/rr/ui" target="_blank">Railroad Diagram Generator</a></nobr>
+                  
+               </td>
+               
+               <td><a name="Railroad-Diagram-Generator" title="http://www.bottlecaps.de/rr/ui" href="http://www.bottlecaps.de/rr/ui" target="_blank">
+                     <img border="0" src="diagram/rr-1.40.1033.png" height="16" width="16"></a></td>
+               
+            </tr>
+            
+         </table>
+         
+      </p>
+      
+   </body>
+</html>

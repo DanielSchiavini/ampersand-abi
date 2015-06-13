@@ -1,0 +1,160 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-warn-orphans #-}
+<span class="lineno">    2 </span>{- COPIED FROM http://hackage.haskell.org/package/altfloat-0.3.1 -}
+<span class="lineno">    3 </span>{-
+<span class="lineno">    4 </span> - Copyright (C) 2009 Nick Bowler.
+<span class="lineno">    5 </span> -
+<span class="lineno">    6 </span> - License BSD2:  2-clause BSD license.  See LICENSE for full terms.
+<span class="lineno">    7 </span> - This is free software: you are free to change and redistribute it.
+<span class="lineno">    8 </span> - There is NO WARRANTY, to the extent permitted by law.
+<span class="lineno">    9 </span> -}
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>-- | Partially ordered data types.  The standard 'Prelude.Ord' class is for
+<span class="lineno">   12 </span>-- total orders and therefore not suitable for floating point.  However, we can
+<span class="lineno">   13 </span>-- still define meaningful 'max' and 'sortWith functions for these types.
+<span class="lineno">   14 </span>--
+<span class="lineno">   15 </span>-- We define our own 'Ord' class which is intended as a replacement for
+<span class="lineno">   16 </span>-- 'Prelude.Ord'.  Should the user wish to take advantage of existing libraries
+<span class="lineno">   17 </span>-- which use 'Prelude.Ord', just let Prelude.compare = (totalOrder .) . compare
+<span class="lineno">   18 </span>module Database.Design.Ampersand.Core.Poset (
+<span class="lineno">   19 </span>    Poset(..), Sortable(..), Ordering(..), Ord, comparableClass,greatest,least,maxima,minima,sortWith
+<span class="lineno">   20 </span>) where
+<span class="lineno">   21 </span>import qualified Prelude
+<span class="lineno">   22 </span>--import qualified GHC.Exts (sortWith)
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>import Prelude hiding (Ord(..), Ordering(..))
+<span class="lineno">   25 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   26 </span>import Database.Design.Ampersand.Core.Poset.Instances() --required for instance Int of Poset only
+<span class="lineno">   27 </span>import Database.Design.Ampersand.Core.Poset.Internal hiding (fatal)
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>--import Data.Function
+<span class="lineno">   30 </span>import Data.Monoid
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>--import Database.Design.Ampersand.Basics (eqCl,isc,fatalMsg)
+<span class="lineno">   33 </span>import qualified Data.List as List
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   36 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Core.Poset&quot;</span></span>
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>-- | makePartialOrder makes a partial order containing local partial orders, i.e. comparable classes.
+<span class="lineno">   39 </span>--   it makes sense to sort comparable classes.
+<span class="lineno">   40 </span>--   example: A and B are in a comparable class
+<span class="lineno">   41 </span>--            A and B are not LT, not GT, not EQ =&gt; CP
+<span class="lineno">   42 </span>--            if you sortBy comparableClass then A and B are considered EQ (comparableClass CP = Prelude.EQ)
+<span class="lineno">   43 </span>--   when the comparable classes have a top, then join can be defined on them
+<span class="lineno">   44 </span>--   when the comparable classes have a bottom, then meet can be defined on them
+<span class="lineno">   45 </span>--
+<span class="lineno">   46 </span>--   When A_Concept should be a collection of total orders change f a b guard (| or [ a `elem` cl &amp;&amp; b `elem` cl | cl &lt;- cls ] = NC)
+<span class="lineno">   47 </span>--
+<span class="lineno">   48 </span>--   examples on data X = A | B | C | D | E | F deriving (Eq,Show):
+<span class="lineno">   49 </span>--   [bottom]       (makePartialOrder [(A,B),(C,D),(B,D),(A,C),(D,E),(D,F)]) :: (A &lt;= B /\ C &lt;= B \/ C &lt;= D &lt;= E /\ F &lt;= E \/ F)
+<span class="lineno">   50 </span>--   [ringish]      (makePartialOrder [(A,B),(C,D),(B,D),(A,C),(D,E),(D,F),(E,A),(F,A)]) _ _ = LT
+<span class="lineno">   51 </span>--   [ringish]      (makePartialOrder [(A,B),(C,D),(B,D),(A,C),(D,E),(D,F),(E,A)])       F A = GT
+<span class="lineno">   52 </span>--                  (makePartialOrder [(A,B),(C,D),(B,D),(A,C),(D,E),(D,F),(E,A)])       _ _ = LT
+<span class="lineno">   53 </span>--   [bottom,total] (makePartialOrder [(A,B),(C,D),(B,D),(A,C),(E,F)]) :: ( A &lt;= B /\ C &lt;= B \/ C &lt;= D , E &lt;= F )
+<span class="lineno">   54 </span>--   [2x total]     (makePartialOrder [(A,B),(B,C),(C,D),(E,F)]) :: ( A &lt;= B &lt;= C &lt;= D , E &lt;= F )
+<span class="lineno">   55 </span>--   [total]        (makePartialOrder [(A,B),(B,C),(C,D),(D,E),(E,F)]) :: ( A &lt;= B &lt;= C &lt;= D &lt;= E &lt;= F )
+<span class="lineno">   56 </span>--   [3x total]     (makePartialOrder [(A,B),(B,C),(C,D)]) :: ( A &lt;= B &lt;= C &lt;= D , E , F )
+<span class="lineno">   57 </span>--   [partial]      (makePartialOrder [(A,B),(C,D),(B,D),(D,E),(D,F)]) :: ( (A &lt;= B &lt;= D &lt;= E /\ F &lt;= E \/ F) + (C &lt;= D &lt;= E /\ F &lt;= E \/ F) )
+<span class="lineno">   58 </span>--
+<span class="lineno">   59 </span>--   a sorted list will have the x left of y for all x and y. x &lt;= y
+<span class="lineno">   60 </span>--   like x==y, the intraposition of x and y is without meaning for all x and y. x `compare` y = CP
+<span class="lineno">   61 </span>--   for example given a (makePartialOrder [(A,B),(C,D),(B,D),(D,E),(F,C)]):
+<span class="lineno">   62 </span>--    + sort  [F,E,D,C,B,A] = [F,C,A,B,D,E]
+<span class="lineno">   63 </span>--    + sort  [F,E,D,B,A,C] = [F,A,B,C,D,E]
+<span class="lineno">   64 </span>--    + sort  [B,F,E,C,D,A] = [A,B,F,C,D,E]
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>instance Poset a =&gt; Poset (Maybe a) where
+<span class="lineno">   67 </span>    <span class="decl"><span class="nottickedoff">Just x  &lt;= Just y = x &lt;= y</span>
+<span class="lineno">   68 </span><span class="spaces">    </span><span class="nottickedoff">Nothing &lt;= _      = True</span>
+<span class="lineno">   69 </span><span class="spaces">    </span><span class="nottickedoff">_       &lt;= _      = False</span></span>
+<span class="lineno">   70 </span>
+<span class="lineno">   71 </span>instance Poset a =&gt; Poset [a] where
+<span class="lineno">   72 </span>    <span class="decl"><span class="nottickedoff">compare = (mconcat .) . zipWith compare</span></span>
+<span class="lineno">   73 </span>
+<span class="lineno">   74 </span>{-
+<span class="lineno">   75 </span>-- | Sort a list using the default comparison function.
+<span class="lineno">   76 </span>sort :: Sortable a =&gt; [a] -&gt; [a]
+<span class="lineno">   77 </span>sort = sortBy compare
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>-- | Apply a function to values before comparing.
+<span class="lineno">   80 </span>comparing :: Poset b =&gt; (a -&gt; b) -&gt; a -&gt; a -&gt; Ordering
+<span class="lineno">   81 </span>comparing = on compare
+<span class="lineno">   82 </span>-}
+<span class="lineno">   83 </span>
+<span class="lineno">   84 </span>-- example where b=A_Concept: sortWith (snd . order , concs fSpec) idCpt (vIndices fSpec)
+<span class="lineno">   85 </span>sortWith :: (Show b,Poset b) =&gt; (b -&gt; [[b]], [b]) -&gt; (a -&gt; b) -&gt; [a] -&gt; [a]
+<span class="lineno">   86 </span><span class="decl"><span class="nottickedoff">sortWith _   _  [] = []</span>
+<span class="lineno">   87 </span><span class="spaces"></span><span class="nottickedoff">sortWith (tos,allb) f xs</span>
+<span class="lineno">   88 </span><span class="spaces"> </span><span class="nottickedoff">= let xtos = [ [x | x&lt;-xs, elem (f x) to] --group xs such that each elem of (map f xtos) is a total order</span>
+<span class="lineno">   89 </span><span class="spaces">              </span><span class="nottickedoff">| to&lt;-(tos . f . head) xs --non-trivial total orders</span>
+<span class="lineno">   90 </span><span class="spaces">                    </span><span class="nottickedoff">++ [[b] | b&lt;-allb, not( elem b (concat((tos . f . head) xs))) ] --trivial total orders</span>
+<span class="lineno">   91 </span><span class="spaces">              </span><span class="nottickedoff">]</span>
+<span class="lineno">   92 </span><span class="spaces">       </span><span class="nottickedoff">sortwith = List.sortBy (\x y -&gt; comparableClass(compare (f x) (f y))) --sortwith of Poset, which should be a total order</span>
+<span class="lineno">   93 </span><span class="spaces">   </span><span class="nottickedoff">in  concat(map sortwith xtos)</span></span> --sortwith each total order and concat them
+<span class="lineno">   94 </span>
+<span class="lineno">   95 </span>-- | Elements can be arranged into classes of comparable elements, not necessarily a total order
+<span class="lineno">   96 </span>--   It makes sense to sort such a class.
+<span class="lineno">   97 </span>--   Take for example instance Sortable A_Concept.
+<span class="lineno">   98 </span>--   When A_Concept should be a collection of total orders: comparableClass CP = fatal 118 &quot;Elements in totally ordered class, which are not LT, not GT and not EQ.&quot;
+<span class="lineno">   99 </span>comparableClass :: Ordering -&gt; Prelude.Ordering
+<span class="lineno">  100 </span><span class="decl"><span class="nottickedoff">comparableClass LT = Prelude.LT</span>
+<span class="lineno">  101 </span><span class="spaces"></span><span class="nottickedoff">comparableClass EQ = Prelude.EQ</span>
+<span class="lineno">  102 </span><span class="spaces"></span><span class="nottickedoff">comparableClass GT = Prelude.GT</span>
+<span class="lineno">  103 </span><span class="spaces"></span><span class="nottickedoff">comparableClass NC = fatal 123 &quot;Uncomparable elements in comparable class.&quot;</span>
+<span class="lineno">  104 </span><span class="spaces"></span><span class="nottickedoff">comparableClass CP = Prelude.EQ</span></span> --the position of two comparable concepts is equal
+<span class="lineno">  105 </span>
+<span class="lineno">  106 </span>{-
+<span class="lineno">  107 </span>-- | If elements are in a total order, then they can be sortedBy totalOrder using the Prelude.Ordering
+<span class="lineno">  108 </span>--   When A_Concept should be in a total order with an Anything and Nothing: sortBy f = Data.List.sortBy ((totalOrder .) . f)
+<span class="lineno">  109 </span>totalOrder :: Ordering -&gt; Prelude.Ordering
+<span class="lineno">  110 </span>totalOrder LT = Prelude.LT
+<span class="lineno">  111 </span>totalOrder EQ = Prelude.EQ
+<span class="lineno">  112 </span>totalOrder GT = Prelude.GT
+<span class="lineno">  113 </span>totalOrder NC = fatal 132 &quot;Uncomparable elements in total order.&quot;
+<span class="lineno">  114 </span>totalOrder CP = fatal 133 &quot;Uncomparable elements in total order.&quot;
+<span class="lineno">  115 </span>-}
+<span class="lineno">  116 </span>
+<span class="lineno">  117 </span>-- | takes the greatest a of comparables
+<span class="lineno">  118 </span>greatest :: (Show a,Sortable a) =&gt; [a] -&gt; a
+<span class="lineno">  119 </span><span class="decl"><span class="nottickedoff">greatest xs =</span>
+<span class="lineno">  120 </span><span class="spaces">  </span><span class="nottickedoff">case maxima (List.nub xs) of</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="nottickedoff">[]  -&gt; fatal 138 &quot;there is no greatest&quot;</span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="nottickedoff">[x] -&gt; x</span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="nottickedoff">xs'  -&gt; fatal 140 (&quot;there is more than one greatest: &quot;++ show (List.nub xs'))</span></span>
+<span class="lineno">  124 </span>-- | takes all a without anything larger
+<span class="lineno">  125 </span>maxima :: Sortable a =&gt; [a] -&gt; [a]
+<span class="lineno">  126 </span><span class="decl"><span class="nottickedoff">maxima [] = fatal 144 &quot;the empty list has no maximum&quot;</span>
+<span class="lineno">  127 </span><span class="spaces"></span><span class="nottickedoff">maxima xs = [x | x&lt;-List.nub xs,not (or [x &lt; y | y&lt;-List.nub xs])]</span></span>
+<span class="lineno">  128 </span>
+<span class="lineno">  129 </span>-- | takes the least a of comparables if there is only one
+<span class="lineno">  130 </span>least :: Sortable a =&gt; [a] -&gt; a
+<span class="lineno">  131 </span><span class="decl"><span class="nottickedoff">least xs =</span>
+<span class="lineno">  132 </span><span class="spaces">  </span><span class="nottickedoff">case minima (List.nub xs) of</span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="nottickedoff">[]  -&gt; fatal 150 &quot;there is no least&quot;</span>
+<span class="lineno">  134 </span><span class="spaces">    </span><span class="nottickedoff">[x] -&gt; x</span>
+<span class="lineno">  135 </span><span class="spaces">    </span><span class="nottickedoff">_   -&gt; fatal 150 &quot;there is more than one least. &quot;</span></span>
+<span class="lineno">  136 </span>-- | takes all a without anything less
+<span class="lineno">  137 </span>minima :: Sortable a =&gt; [a] -&gt; [a]
+<span class="lineno">  138 </span><span class="decl"><span class="nottickedoff">minima [] = fatal 156 &quot;the empty list has no minimum&quot;</span>
+<span class="lineno">  139 </span><span class="spaces"></span><span class="nottickedoff">minima xs = [x | x&lt;-List.nub xs,not (or [y &lt; x | y&lt;-List.nub xs])]</span></span>
+<span class="lineno">  140 </span>
+
+</pre>
+</body>
+</html>

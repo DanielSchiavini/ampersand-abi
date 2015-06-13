@@ -1,0 +1,70 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    2 </span>module Database.Design.Ampersand.Basics.Unique 
+<span class="lineno">    3 </span>  (Unique(..),Named(..))
+<span class="lineno">    4 </span>where
+<span class="lineno">    5 </span>import Data.Typeable
+<span class="lineno">    6 </span>import Data.List
+<span class="lineno">    7 </span>import Data.Char
+<span class="lineno">    8 </span>import Database.Design.Ampersand.Basics.Version
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   11 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;Unique&quot;</span></span>
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>-- | anything could have some label, can't it?
+<span class="lineno">   14 </span>class Named a where
+<span class="lineno">   15 </span>  name :: a-&gt;String
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>-- | In the context of the haskell code, things can be Unique. 
+<span class="lineno">   18 </span>class (Typeable e, Eq e) =&gt; Unique e where 
+<span class="lineno">   19 </span>  -- | a representation of a unique thing
+<span class="lineno">   20 </span>  self :: e -&gt; UniqueObj e
+<span class="lineno">   21 </span>  <span class="decl"><span class="nottickedoff">self a = UniqueObj { theThing = a</span>
+<span class="lineno">   22 </span><span class="spaces">                     </span><span class="nottickedoff">, theShow  = showUnique</span>
+<span class="lineno">   23 </span><span class="spaces">                     </span><span class="nottickedoff">}</span></span>
+<span class="lineno">   24 </span>  -- | representation of a Unique thing into a string.  
+<span class="lineno">   25 </span>  uniqueShow :: Bool -&gt;  --  Should the type show too? 
+<span class="lineno">   26 </span>              e    -&gt;  --  the thing to show
+<span class="lineno">   27 </span>              String
+<span class="lineno">   28 </span>  <span class="decl"><span class="nottickedoff">uniqueShow includeType x = typePrefix ++ (showUnique . theThing . self) x</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">   30 </span><span class="spaces">      </span><span class="nottickedoff">typePrefix = if includeType then show $ typeOf x else &quot;&quot;</span></span>
+<span class="lineno">   31 </span>  -- | A function to show a unique instance. It is the responsability
+<span class="lineno">   32 </span>  --   of the instance definition to make sure that for every a, b of 
+<span class="lineno">   33 </span>  --   an individual type:
+<span class="lineno">   34 </span>  --        a == b  &lt;==&gt; showUnique a == showUnique b
+<span class="lineno">   35 </span>  showUnique :: e -&gt; String
+<span class="lineno">   36 </span>  {-# MINIMAL showUnique #-}
+<span class="lineno">   37 </span>  
+<span class="lineno">   38 </span>
+<span class="lineno">   39 </span>-- | this is the implementation of the abstract data type. It mustn't be exported
+<span class="lineno">   40 </span>data UniqueObj a = 
+<span class="lineno">   41 </span>       UniqueObj { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">theThing</span></span></span> :: a
+<span class="lineno">   42 </span>                 , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">theShow</span></span></span>  :: (a -&gt; String)
+<span class="lineno">   43 </span>                 } deriving (<span class="decl"><span class="nottickedoff">Typeable</span></span>)
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>instance Unique a =&gt; Unique [a] where
+<span class="lineno">   46 </span>   <span class="decl"><span class="nottickedoff">showUnique [] = fatal 74 $ &quot;empty list is not unique&quot;</span>
+<span class="lineno">   47 </span><span class="spaces">   </span><span class="nottickedoff">showUnique xs = &quot;[&quot;++intercalate &quot;, &quot; (map showUnique xs)++&quot;]&quot;</span></span>
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>instance Unique Bool where
+<span class="lineno">   50 </span> <span class="decl"><span class="nottickedoff">showUnique = map toLower . show</span></span> 
+
+</pre>
+</body>
+</html>

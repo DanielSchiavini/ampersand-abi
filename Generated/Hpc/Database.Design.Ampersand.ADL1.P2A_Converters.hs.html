@@ -1,0 +1,804 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -Wall #-}
+<span class="lineno">    2 </span>{-# LANGUAGE LambdaCase #-}
+<span class="lineno">    3 </span>module Database.Design.Ampersand.ADL1.P2A_Converters (pCtx2aCtx,pCpt2aCpt)
+<span class="lineno">    4 </span>where
+<span class="lineno">    5 </span>import Database.Design.Ampersand.ADL1.Disambiguate
+<span class="lineno">    6 </span>import Database.Design.Ampersand.Core.ParseTree -- (P_Context(..), A_Context(..))
+<span class="lineno">    7 </span>import Database.Design.Ampersand.Input.ADL1.CtxError
+<span class="lineno">    8 </span>import Database.Design.Ampersand.ADL1.Lattices -- used for type-checking
+<span class="lineno">    9 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree hiding (sortWith, maxima, greatest)
+<span class="lineno">   10 </span>import Database.Design.Ampersand.Classes.ViewPoint hiding (gens)
+<span class="lineno">   11 </span>import Database.Design.Ampersand.Classes.ConceptStructure
+<span class="lineno">   12 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">   13 </span>import Database.Design.Ampersand.Misc
+<span class="lineno">   14 </span>import Prelude hiding (sequence, mapM)
+<span class="lineno">   15 </span>import Control.Applicative
+<span class="lineno">   16 </span>import Data.Traversable
+<span class="lineno">   17 </span>import qualified Data.Set as Set
+<span class="lineno">   18 </span>import qualified Data.Map as Map
+<span class="lineno">   19 </span>import Data.Function
+<span class="lineno">   20 </span>import Data.Maybe
+<span class="lineno">   21 </span>import Data.List(nub)
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   24 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;ADL1.P2A_Converters&quot;</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>newtype SignOrd = SignOrd Sign
+<span class="lineno">   27 </span>instance Ord SignOrd where
+<span class="lineno">   28 </span>  <span class="decl"><span class="nottickedoff">compare (SignOrd (Sign a b)) (SignOrd (Sign c d)) = compare (name a,name b) (name c,name d)</span></span>
+<span class="lineno">   29 </span>instance Eq SignOrd where
+<span class="lineno">   30 </span>  <span class="decl"><span class="nottickedoff">(==) (SignOrd (Sign a b)) (SignOrd (Sign c d)) = (name a,name b) == (name c,name d)</span></span>
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>-- pCtx2aCtx has three tasks:
+<span class="lineno">   33 </span>-- 1) Disambiguate the structures.
+<span class="lineno">   34 </span>--    Disambiguation means replacing every &quot;TermPrim&quot; (the parsed expression) with the correct Expression (available through DisambPrim)
+<span class="lineno">   35 </span>--    This is done by using the function &quot;disambiguate&quot; on the outer-most structure.
+<span class="lineno">   36 </span>--    In order to do this, its data type must be polymorphic, as in &quot;P_ViewSegmt a&quot;.
+<span class="lineno">   37 </span>--    After parsing, the type has TermPrim for the type variable. In our example: &quot;P_ViewSegmt TermPrim&quot;. Note that &quot;type P_ViewSegment = P_ViewSegmt TermPrim&quot;.
+<span class="lineno">   38 </span>--    After disambiguation, the type variable is (TermPrim, DisambPrim), as in &quot;P_ViewSegmt (TermPrim, DisambPrim)&quot;
+<span class="lineno">   39 </span>-- 2) Typecheck the structures.
+<span class="lineno">   40 </span>--    This changes the data-structure entirely, changing the P_ into the A_
+<span class="lineno">   41 </span>--    A &quot;Guarded&quot; will be added on the outside, in order to catch both type errors and disambiguation errors.
+<span class="lineno">   42 </span>--    Using the Applicative operations &lt;$&gt; and &lt;*&gt; causes these errors to be in parallel
+<span class="lineno">   43 </span>-- 3) Check everything else on the A_-structure: interface references should not be cyclic, rules e.a. must have unique names, etc.
+<span class="lineno">   44 </span>-- Part 3 is done below, the other two are done in pCtx2aCtx'
+<span class="lineno">   45 </span>pCtx2aCtx :: Options -&gt; P_Context -&gt; Guarded A_Context
+<span class="lineno">   46 </span><span class="decl"><span class="nottickedoff">pCtx2aCtx opts = checkOtherAtomsInSessionConcept</span>
+<span class="lineno">   47 </span><span class="spaces">               </span><span class="nottickedoff">. checkPurposes             -- Check whether all purposes refer to existing objects</span>
+<span class="lineno">   48 </span><span class="spaces">               </span><span class="nottickedoff">. checkDanglingRulesInRuleRoles -- Check whether all rules in MAINTAIN statements are declared</span>
+<span class="lineno">   49 </span><span class="spaces">               </span><span class="nottickedoff">. checkInterfaceCycles      -- Check that interface references are not cyclic</span>
+<span class="lineno">   50 </span><span class="spaces">               </span><span class="nottickedoff">. checkMultipleDefaultViews -- Check whether each concept has at most one default view</span>
+<span class="lineno">   51 </span><span class="spaces">               </span><span class="nottickedoff">. checkUnique udefrules     -- Check uniquene names of: rules,</span>
+<span class="lineno">   52 </span><span class="spaces">               </span><span class="nottickedoff">. checkUnique patterns      --                          patterns,</span>
+<span class="lineno">   53 </span><span class="spaces">               </span><span class="nottickedoff">. checkUnique ctxvs         --                          view defs,</span>
+<span class="lineno">   54 </span><span class="spaces">               </span><span class="nottickedoff">. checkUnique ctxifcs       --                          and interfaces.</span>
+<span class="lineno">   55 </span><span class="spaces">               </span><span class="nottickedoff">. pCtx2aCtx' opts</span>
+<span class="lineno">   56 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">checkUnique f gCtx =</span>
+<span class="lineno">   58 </span><span class="spaces">     </span><span class="nottickedoff">case gCtx of</span>
+<span class="lineno">   59 </span><span class="spaces">       </span><span class="nottickedoff">Checked ctx -&gt; case uniqueNames (f ctx) of</span>
+<span class="lineno">   60 </span><span class="spaces">                         </span><span class="nottickedoff">Checked () -&gt; gCtx</span>
+<span class="lineno">   61 </span><span class="spaces">                         </span><span class="nottickedoff">Errors err -&gt; Errors err</span>
+<span class="lineno">   62 </span><span class="spaces">       </span><span class="nottickedoff">Errors err -&gt; Errors err</span></span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>-- NOTE: Static checks like checkPurposes should ideally occur on the P-structure before type-checking, as it makes little
+<span class="lineno">   65 </span>-- sense to do type checking when there are static errors. However, in Ampersand all collect functions (e.g. in ViewPoint)
+<span class="lineno">   66 </span>-- only exist on the A-Structure, so we do it afterwards. Static purpose errors won't affect types, so in this case it is no problem. 
+<span class="lineno">   67 </span>
+<span class="lineno">   68 </span>-- Check whether all purposes refer to existing objects.
+<span class="lineno">   69 </span>checkPurposes :: Guarded A_Context -&gt; Guarded A_Context
+<span class="lineno">   70 </span><span class="decl"><span class="nottickedoff">checkPurposes gCtx =</span>
+<span class="lineno">   71 </span><span class="spaces">  </span><span class="nottickedoff">case gCtx of</span>
+<span class="lineno">   72 </span><span class="spaces">    </span><span class="nottickedoff">Errors err  -&gt; Errors err</span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="nottickedoff">Checked ctx -&gt; let topLevelPurposes = ctxps ctx</span>
+<span class="lineno">   74 </span><span class="spaces">                       </span><span class="nottickedoff">purposesInPatterns = concatMap ptxps (ctxpats ctx)</span>
+<span class="lineno">   75 </span><span class="spaces">                       </span><span class="nottickedoff">allPurposes = topLevelPurposes ++ purposesInPatterns</span>
+<span class="lineno">   76 </span><span class="spaces">                       </span><span class="nottickedoff">danglingPurposes = filter (isDanglingPurpose ctx) allPurposes</span>
+<span class="lineno">   77 </span><span class="spaces">                   </span><span class="nottickedoff">in  if null danglingPurposes then gCtx else Errors $ map mkDanglingPurposeError danglingPurposes</span></span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>-- Return True if the ExplObj in this Purpose does not exist.
+<span class="lineno">   80 </span>isDanglingPurpose :: A_Context -&gt; Purpose -&gt; Bool
+<span class="lineno">   81 </span><span class="decl"><span class="nottickedoff">isDanglingPurpose ctx purp = </span>
+<span class="lineno">   82 </span><span class="spaces">  </span><span class="nottickedoff">case explObj purp of</span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="nottickedoff">ExplConceptDef concDef -&gt; let nm = name concDef in nm `notElem` map name (ctxcds ctx )</span>
+<span class="lineno">   84 </span><span class="spaces">    </span><span class="nottickedoff">ExplDeclaration decl -&gt; let nm = name decl in nm `notElem` map name (relsDefdIn ctx) -- is already covered by type checker</span>
+<span class="lineno">   85 </span><span class="spaces">    </span><span class="nottickedoff">ExplRule nm -&gt; nm `notElem` map name (udefrules ctx) </span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="nottickedoff">ExplIdentityDef nm -&gt; nm `notElem` map name (identities ctx)</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="nottickedoff">ExplViewDef nm -&gt;  nm `notElem` map name (viewDefs ctx)</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="nottickedoff">ExplPattern nm -&gt; nm `notElem` map name (ctxpats ctx)</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="nottickedoff">ExplInterface nm -&gt; nm `notElem` map name (ctxifcs ctx)</span>
+<span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">ExplContext nm -&gt; ctxnm ctx /= nm </span>
+<span class="lineno">   91 </span><span class="spaces">                         </span><span class="nottickedoff">&amp;&amp; False</span></span> -- HJO: This line is a workaround for the issue mentioned in https://github.com/AmpersandTarski/ampersand/issues/46
+<span class="lineno">   92 </span>                                  -- TODO: fix this when we pick up working on multiple contexts.
+<span class="lineno">   93 </span>-- Check that interface references are not cyclic
+<span class="lineno">   94 </span>checkInterfaceCycles :: Guarded A_Context -&gt; Guarded A_Context
+<span class="lineno">   95 </span><span class="decl"><span class="nottickedoff">checkInterfaceCycles gCtx =</span>
+<span class="lineno">   96 </span><span class="spaces">  </span><span class="nottickedoff">case gCtx of</span>
+<span class="lineno">   97 </span><span class="spaces">    </span><span class="nottickedoff">Errors err  -&gt; Errors err</span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="nottickedoff">Checked ctx -&gt; if null interfaceCycles then gCtx else Errors $  map mkInterfaceRefCycleError interfaceCycles</span>
+<span class="lineno">   99 </span><span class="spaces">      </span><span class="nottickedoff">where interfaceCycles = [ map lookupInterface iCycle | iCycle &lt;- getCycles refsPerInterface ]</span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="nottickedoff">refsPerInterface = [(name ifc, getDeepIfcRefs $ ifcObj ifc) | ifc &lt;- ctxifcs ctx ]</span>
+<span class="lineno">  101 </span><span class="spaces">            </span><span class="nottickedoff">getDeepIfcRefs obj = case objmsub obj of</span>
+<span class="lineno">  102 </span><span class="spaces">                                   </span><span class="nottickedoff">Nothing                -&gt; []</span>
+<span class="lineno">  103 </span><span class="spaces">                                   </span><span class="nottickedoff">Just (InterfaceRef nm) -&gt; [nm]</span>
+<span class="lineno">  104 </span><span class="spaces">                                   </span><span class="nottickedoff">Just (Box _ _ objs)    -&gt; concatMap getDeepIfcRefs objs</span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="nottickedoff">lookupInterface nm = case [ ifc | ifc &lt;- ctxifcs ctx, name ifc == nm ] of</span>
+<span class="lineno">  106 </span><span class="spaces">                                   </span><span class="nottickedoff">[ifc] -&gt; ifc</span>
+<span class="lineno">  107 </span><span class="spaces">                                   </span><span class="nottickedoff">_     -&gt; fatal 124 &quot;Interface lookup returned zero or more than one result&quot;</span></span>
+<span class="lineno">  108 </span>
+<span class="lineno">  109 </span>-- Check whether each concept has at most one default view
+<span class="lineno">  110 </span>checkMultipleDefaultViews :: Guarded A_Context -&gt; Guarded A_Context
+<span class="lineno">  111 </span><span class="decl"><span class="nottickedoff">checkMultipleDefaultViews gCtx =</span>
+<span class="lineno">  112 </span><span class="spaces">  </span><span class="nottickedoff">case gCtx of</span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="nottickedoff">Errors err  -&gt; Errors err</span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="nottickedoff">Checked ctx -&gt; let conceptsWithMultipleViews = [ (c,vds)| vds@(Vd{vdcpt=c}:_:_) &lt;- eqClass ((==) `on` vdcpt) $ filter vdIsDefault (ctxvs ctx) ]</span>
+<span class="lineno">  115 </span><span class="spaces">                   </span><span class="nottickedoff">in  if null conceptsWithMultipleViews then gCtx else Errors $ map mkMultipleDefaultError conceptsWithMultipleViews</span></span>
+<span class="lineno">  116 </span>
+<span class="lineno">  117 </span>checkDanglingRulesInRuleRoles :: Guarded A_Context -&gt; Guarded A_Context
+<span class="lineno">  118 </span><span class="decl"><span class="nottickedoff">checkDanglingRulesInRuleRoles gCtx =</span>
+<span class="lineno">  119 </span><span class="spaces">  </span><span class="nottickedoff">case gCtx of</span>
+<span class="lineno">  120 </span><span class="spaces">    </span><span class="nottickedoff">Errors _  -&gt; gCtx</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="nottickedoff">Checked ctx -&gt; case [mkDanglingRefError &quot;Rule&quot; nm (arPos rr)  </span>
+<span class="lineno">  122 </span><span class="spaces">                        </span><span class="nottickedoff">| rr &lt;- ctxrrules ctx</span>
+<span class="lineno">  123 </span><span class="spaces">                        </span><span class="nottickedoff">, nm &lt;- arRules rr</span>
+<span class="lineno">  124 </span><span class="spaces">                        </span><span class="nottickedoff">, nm `notElem` map name (allRules ctx)</span>
+<span class="lineno">  125 </span><span class="spaces">                        </span><span class="nottickedoff">] of</span>
+<span class="lineno">  126 </span><span class="spaces">                     </span><span class="nottickedoff">[] -&gt; gCtx</span>
+<span class="lineno">  127 </span><span class="spaces">                     </span><span class="nottickedoff">errs -&gt; Errors errs</span></span>
+<span class="lineno">  128 </span>checkOtherAtomsInSessionConcept :: Guarded A_Context -&gt; Guarded A_Context
+<span class="lineno">  129 </span><span class="decl"><span class="nottickedoff">checkOtherAtomsInSessionConcept gCtx =</span>
+<span class="lineno">  130 </span><span class="spaces">   </span><span class="nottickedoff">case gCtx of</span>
+<span class="lineno">  131 </span><span class="spaces">     </span><span class="nottickedoff">Errors _  -&gt; gCtx</span>
+<span class="lineno">  132 </span><span class="spaces">     </span><span class="nottickedoff">Checked ctx -&gt; case [mkOtherAtomInSessionError atom</span>
+<span class="lineno">  133 </span><span class="spaces">                         </span><span class="nottickedoff">| pop@PCptPopu{popcpt =cpt} &lt;- ctxpopus ctx</span>
+<span class="lineno">  134 </span><span class="spaces">                         </span><span class="nottickedoff">, name cpt == &quot;SESSION&quot;</span>
+<span class="lineno">  135 </span><span class="spaces">                         </span><span class="nottickedoff">, atom &lt;- filter (/= &quot;_SESSION&quot;) (popas pop)</span>
+<span class="lineno">  136 </span><span class="spaces">                         </span><span class="nottickedoff">] of</span>
+<span class="lineno">  137 </span><span class="spaces">                      </span><span class="nottickedoff">[] -&gt; gCtx</span>
+<span class="lineno">  138 </span><span class="spaces">                      </span><span class="nottickedoff">errs -&gt; Errors errs</span></span>
+<span class="lineno">  139 </span>
+<span class="lineno">  140 </span>pCtx2aCtx' :: Options -&gt; P_Context -&gt; Guarded A_Context
+<span class="lineno">  141 </span><span class="decl"><span class="nottickedoff">pCtx2aCtx' _</span>
+<span class="lineno">  142 </span><span class="spaces"> </span><span class="nottickedoff">PCtx { ctx_nm     = n1</span>
+<span class="lineno">  143 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pos    = n2</span>
+<span class="lineno">  144 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_lang   = lang</span>
+<span class="lineno">  145 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_markup = pandocf</span>
+<span class="lineno">  146 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_thms   = p_themes </span>
+<span class="lineno">  147 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pats   = p_patterns</span>
+<span class="lineno">  148 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rs     = p_rules    </span>
+<span class="lineno">  149 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ds     = p_declarations</span>
+<span class="lineno">  150 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_cs     = p_conceptdefs</span>
+<span class="lineno">  151 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ks     = p_identdefs</span>
+<span class="lineno">  152 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rrules = p_roleRules</span>
+<span class="lineno">  153 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rrels  = p_roleRelations</span>
+<span class="lineno">  154 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_vs     = p_viewdefs</span>
+<span class="lineno">  155 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_gs     = p_gens</span>
+<span class="lineno">  156 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ifcs   = p_interfaces</span>
+<span class="lineno">  157 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ps     = p_purposes</span>
+<span class="lineno">  158 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pops   = p_pops</span>
+<span class="lineno">  159 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_sql    = p_sqldefs</span>
+<span class="lineno">  160 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_php    = p_phpdefs</span>
+<span class="lineno">  161 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_metas  = p_metas</span>
+<span class="lineno">  162 </span><span class="spaces">      </span><span class="nottickedoff">}</span>
+<span class="lineno">  163 </span><span class="spaces"> </span><span class="nottickedoff">= (\pats rules identdefs viewdefs interfaces purposes udpops sqldefs phpdefs allRoleRelations</span>
+<span class="lineno">  164 </span><span class="spaces">     </span><span class="nottickedoff">-&gt; ACtx{ ctxnm = n1</span>
+<span class="lineno">  165 </span><span class="spaces">            </span><span class="nottickedoff">, ctxpos = n2</span>
+<span class="lineno">  166 </span><span class="spaces">            </span><span class="nottickedoff">, ctxlang = deflangCtxt</span>
+<span class="lineno">  167 </span><span class="spaces">            </span><span class="nottickedoff">, ctxmarkup = deffrmtCtxt</span>
+<span class="lineno">  168 </span><span class="spaces">            </span><span class="nottickedoff">, ctxthms = p_themes</span>
+<span class="lineno">  169 </span><span class="spaces">            </span><span class="nottickedoff">, ctxpats = pats</span>
+<span class="lineno">  170 </span><span class="spaces">            </span><span class="nottickedoff">, ctxrs = rules</span>
+<span class="lineno">  171 </span><span class="spaces">            </span><span class="nottickedoff">, ctxds = ctxDecls</span>
+<span class="lineno">  172 </span><span class="spaces">            </span><span class="nottickedoff">, ctxpopus = nub (udpops++dclPops++mp1Pops rules++mp1Pops pats++mp1Pops identdefs++mp1Pops viewdefs++mp1Pops interfaces)</span>
+<span class="lineno">  173 </span><span class="spaces">            </span><span class="nottickedoff">, ctxcds = allConceptDefs</span>
+<span class="lineno">  174 </span><span class="spaces">            </span><span class="nottickedoff">, ctxks = identdefs</span>
+<span class="lineno">  175 </span><span class="spaces">            </span><span class="nottickedoff">, ctxrrules = allRoleRules</span>
+<span class="lineno">  176 </span><span class="spaces">            </span><span class="nottickedoff">, ctxRRels = allRoleRelations</span>
+<span class="lineno">  177 </span><span class="spaces">            </span><span class="nottickedoff">, ctxvs = viewdefs</span>
+<span class="lineno">  178 </span><span class="spaces">            </span><span class="nottickedoff">, ctxgs = map pGen2aGen p_gens</span>
+<span class="lineno">  179 </span><span class="spaces">            </span><span class="nottickedoff">, ctxgenconcs = map (map castConcept) (concGroups ++ map (:[]) soloConcs)</span>
+<span class="lineno">  180 </span><span class="spaces">            </span><span class="nottickedoff">, ctxifcs = interfaces</span>
+<span class="lineno">  181 </span><span class="spaces">            </span><span class="nottickedoff">, ctxps = purposes</span>
+<span class="lineno">  182 </span><span class="spaces">            </span><span class="nottickedoff">, ctxsql = sqldefs</span>
+<span class="lineno">  183 </span><span class="spaces">            </span><span class="nottickedoff">, ctxphp = phpdefs</span>
+<span class="lineno">  184 </span><span class="spaces">            </span><span class="nottickedoff">, ctxmetas = p_metas</span>
+<span class="lineno">  185 </span><span class="spaces">            </span><span class="nottickedoff">}</span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="nottickedoff">) &lt;$&gt; traverse pPat2aPat p_patterns            --  The patterns defined in this context</span>
+<span class="lineno">  187 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse (pRul2aRul n1) p_rules       --  All user defined rules in this context, but outside patterns</span>
+<span class="lineno">  188 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pIdentity2aIdentity p_identdefs --  The identity definitions defined in this context, outside the scope of patterns</span>
+<span class="lineno">  189 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pViewDef2aViewDef p_viewdefs    --  The view definitions defined in this context, outside the scope of patterns</span>
+<span class="lineno">  190 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pIfc2aIfc p_interfaceAndDisambObjs   --  TODO: explain   ... The interfaces defined in this context, outside the scope of patterns</span>
+<span class="lineno">  191 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pPurp2aPurp p_purposes          --  The purposes of objects defined in this context, outside the scope of patterns</span>
+<span class="lineno">  192 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pPop2aPop p_pops                --  [Population]</span>
+<span class="lineno">  193 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pObjDef2aObjDef p_sqldefs       --  user defined sqlplugs, taken from the Ampersand script</span>
+<span class="lineno">  194 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pObjDef2aObjDef p_phpdefs       --  user defined phpplugs, taken from the Ampersand script</span>
+<span class="lineno">  195 </span><span class="spaces">      </span><span class="nottickedoff">&lt;*&gt; traverse pRoleRelation2aRoleRelation (p_roleRelations ++ concatMap pt_RRels p_patterns)</span>
+<span class="lineno">  196 </span><span class="spaces">      </span><span class="nottickedoff"></span>
+<span class="lineno">  197 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">  198 </span><span class="spaces">    </span><span class="nottickedoff">p_interfaceAndDisambObjs :: [(P_Interface, P_ObjDef (TermPrim, DisambPrim))]</span>
+<span class="lineno">  199 </span><span class="spaces">    </span><span class="nottickedoff">p_interfaceAndDisambObjs = [ (ifc, disambiguate termPrimDisAmb $ ifc_Obj ifc) | ifc &lt;- p_interfaces ]</span>
+<span class="lineno">  200 </span><span class="spaces">    </span><span class="nottickedoff">-- story about genRules and genLattice</span>
+<span class="lineno">  201 </span><span class="spaces">    </span><span class="nottickedoff">-- the genRules is a list of equalities between concept sets, in which every set is interpreted as a conjunction of concepts</span>
+<span class="lineno">  202 </span><span class="spaces">    </span><span class="nottickedoff">-- the genLattice is the resulting optimized structure</span>
+<span class="lineno">  203 </span><span class="spaces">    </span><span class="nottickedoff">genRules = [ ( Set.singleton (name (gen_spc x)), Set.fromList (map name (gen_concs x)))</span>
+<span class="lineno">  204 </span><span class="spaces">               </span><span class="nottickedoff">| x &lt;- p_gens ++ concatMap pt_gns p_patterns</span>
+<span class="lineno">  205 </span><span class="spaces">               </span><span class="nottickedoff">]</span>
+<span class="lineno">  206 </span><span class="spaces">    </span><span class="nottickedoff">genLattice :: Op1EqualitySystem String</span>
+<span class="lineno">  207 </span><span class="spaces">    </span><span class="nottickedoff">genLattice = optimize1 (foldr addEquality emptySystem genRules)</span>
+<span class="lineno">  208 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  209 </span><span class="spaces">    </span><span class="nottickedoff">concGroups :: [[String]]</span>
+<span class="lineno">  210 </span><span class="spaces">    </span><span class="nottickedoff">concGroups = getGroups genLattice</span>
+<span class="lineno">  211 </span><span class="spaces">    </span><span class="nottickedoff">allConcs :: Set.Set String</span>
+<span class="lineno">  212 </span><span class="spaces">    </span><span class="nottickedoff">allConcs = Set.fromList (map (name . source) decls ++ map (name . target) decls)</span>
+<span class="lineno">  213 </span><span class="spaces">    </span><span class="nottickedoff">soloConcs :: [String]</span>
+<span class="lineno">  214 </span><span class="spaces">    </span><span class="nottickedoff">soloConcs = filter (not . isInSystem genLattice) (Set.toList allConcs)</span>
+<span class="lineno">  215 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  216 </span><span class="spaces">    </span><span class="nottickedoff">deflangCtxt = lang -- take the default language from the top-level context</span>
+<span class="lineno">  217 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  218 </span><span class="spaces">    </span><span class="nottickedoff">deffrmtCtxt = fromMaybe ReST pandocf</span>
+<span class="lineno">  219 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  220 </span><span class="spaces">    </span><span class="nottickedoff">(decls,dclPops)= unzip dps</span>
+<span class="lineno">  221 </span><span class="spaces">    </span><span class="nottickedoff">(ctxDecls,_ ) = unzip ctxDecls'</span>
+<span class="lineno">  222 </span><span class="spaces">    </span><span class="nottickedoff">dps = ctxDecls'++patDecls</span>
+<span class="lineno">  223 </span><span class="spaces">    </span><span class="nottickedoff">ctxDecls' = [ pDecl2aDecl n1         deflangCtxt deffrmtCtxt pDecl | pDecl&lt;-p_declarations ] --  The relations declared in this context, outside the scope of patterns</span>
+<span class="lineno">  224 </span><span class="spaces">    </span><span class="nottickedoff">patDecls  = [ pDecl2aDecl (name pat) deflangCtxt deffrmtCtxt pDecl | pat&lt;-p_patterns , pDecl&lt;-pt_dcs pat ] --  The relations declared in all patterns within this context.</span>
+<span class="lineno">  225 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  226 </span><span class="spaces"></span><span class="nottickedoff">-- In order to find declarations efficiently, a Map is constructed to search declarations by name.</span>
+<span class="lineno">  227 </span><span class="spaces">    </span><span class="nottickedoff">declMap = Map.map groupOnTp (Map.fromListWith (++) [(name d,[d]) | d &lt;- decls])</span>
+<span class="lineno">  228 </span><span class="spaces">      </span><span class="nottickedoff">where groupOnTp lst = Map.fromListWith accumDecl [(SignOrd$ sign d,d) | d &lt;- lst]</span>
+<span class="lineno">  229 </span><span class="spaces">    </span><span class="nottickedoff">findDecls x = Map.findWithDefault Map.empty x declMap  -- get all declarations with the same name as x</span>
+<span class="lineno">  230 </span><span class="spaces">    </span><span class="nottickedoff">findDecl o x = (getOneExactly o . Map.elems . findDecls) x</span>
+<span class="lineno">  231 </span><span class="spaces">    </span><span class="nottickedoff">findDeclsTyped x tp = Map.findWithDefault [] (SignOrd tp) (Map.map (:[]) (findDecls x))</span>
+<span class="lineno">  232 </span><span class="spaces">    </span><span class="nottickedoff">findDeclTyped o x tp = getOneExactly o (findDeclsTyped x tp)</span>
+<span class="lineno">  233 </span><span class="spaces">    </span><span class="nottickedoff">-- accumDecl is the function that combines two relations into one</span>
+<span class="lineno">  234 </span><span class="spaces">    </span><span class="nottickedoff">-- meanings, for instance, two should get combined into a list of meanings, et cetera</span>
+<span class="lineno">  235 </span><span class="spaces">    </span><span class="nottickedoff">-- positions are combined</span>
+<span class="lineno">  236 </span><span class="spaces">    </span><span class="nottickedoff">-- TODO</span>
+<span class="lineno">  237 </span><span class="spaces">    </span><span class="nottickedoff">accumDecl :: Declaration -&gt; Declaration -&gt; Declaration</span>
+<span class="lineno">  238 </span><span class="spaces">    </span><span class="nottickedoff">accumDecl a _ = a</span>
+<span class="lineno">  239 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  240 </span><span class="spaces">    </span><span class="nottickedoff">pDecl2aDecl ::</span>
+<span class="lineno">  241 </span><span class="spaces">         </span><span class="nottickedoff">String         -- The name of the pattern</span>
+<span class="lineno">  242 </span><span class="spaces">      </span><span class="nottickedoff">-&gt; Lang           -- The default language</span>
+<span class="lineno">  243 </span><span class="spaces">      </span><span class="nottickedoff">-&gt; PandocFormat   -- The default pandocFormat</span>
+<span class="lineno">  244 </span><span class="spaces">      </span><span class="nottickedoff">-&gt; P_Declaration -&gt; (Declaration, Population)</span>
+<span class="lineno">  245 </span><span class="spaces">    </span><span class="nottickedoff">pDecl2aDecl patNm defLanguage defFormat pd</span>
+<span class="lineno">  246 </span><span class="spaces">     </span><span class="nottickedoff">= let (prL:prM:prR:_) = dec_pragma pd ++ [&quot;&quot;, &quot;&quot;, &quot;&quot;]</span>
+<span class="lineno">  247 </span><span class="spaces">           </span><span class="nottickedoff">dcl = Sgn { decnm   = dec_nm pd</span>
+<span class="lineno">  248 </span><span class="spaces">                     </span><span class="nottickedoff">, decsgn  = pSign2aSign (dec_sign pd)</span>
+<span class="lineno">  249 </span><span class="spaces">                     </span><span class="nottickedoff">, decprps = dec_prps pd</span>
+<span class="lineno">  250 </span><span class="spaces">                     </span><span class="nottickedoff">, decprps_calc = Nothing  --decprps_calc in an A_Context are still the user-defined only. prps are calculated in adl2fspec.</span>
+<span class="lineno">  251 </span><span class="spaces">                     </span><span class="nottickedoff">, decprL  = prL</span>
+<span class="lineno">  252 </span><span class="spaces">                     </span><span class="nottickedoff">, decprM  = prM</span>
+<span class="lineno">  253 </span><span class="spaces">                     </span><span class="nottickedoff">, decprR  = prR</span>
+<span class="lineno">  254 </span><span class="spaces">                     </span><span class="nottickedoff">, decMean = pMean2aMean defLanguage defFormat (dec_Mean pd)</span>
+<span class="lineno">  255 </span><span class="spaces">                     </span><span class="nottickedoff">, decfpos = dec_fpos pd</span>
+<span class="lineno">  256 </span><span class="spaces">                     </span><span class="nottickedoff">, deciss  = True</span>
+<span class="lineno">  257 </span><span class="spaces">                     </span><span class="nottickedoff">, decusr  = True</span>
+<span class="lineno">  258 </span><span class="spaces">                     </span><span class="nottickedoff">, decpat  = patNm</span>
+<span class="lineno">  259 </span><span class="spaces">                     </span><span class="nottickedoff">, decplug = dec_plug pd</span>
+<span class="lineno">  260 </span><span class="spaces">                     </span><span class="nottickedoff">}</span>
+<span class="lineno">  261 </span><span class="spaces">       </span><span class="nottickedoff">in (dcl, PRelPopu { popdcl = dcl, popps = dec_popu pd})</span>
+<span class="lineno">  262 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  263 </span><span class="spaces">    </span><span class="nottickedoff">pSign2aSign :: P_Sign -&gt; Sign</span>
+<span class="lineno">  264 </span><span class="spaces">    </span><span class="nottickedoff">pSign2aSign (P_Sign src tgt) = Sign (pCpt2aCpt src) (pCpt2aCpt tgt)</span>
+<span class="lineno">  265 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  266 </span><span class="spaces">    </span><span class="nottickedoff">pGen2aGen :: P_Gen -&gt; A_Gen</span>
+<span class="lineno">  267 </span><span class="spaces">    </span><span class="nottickedoff">pGen2aGen pg@PGen{}</span>
+<span class="lineno">  268 </span><span class="spaces">       </span><span class="nottickedoff">= Isa{gengen = pCpt2aCpt (gen_gen pg)</span>
+<span class="lineno">  269 </span><span class="spaces">            </span><span class="nottickedoff">,genspc = pCpt2aCpt (gen_spc pg)</span>
+<span class="lineno">  270 </span><span class="spaces">            </span><span class="nottickedoff">}</span>
+<span class="lineno">  271 </span><span class="spaces">    </span><span class="nottickedoff">pGen2aGen pg@P_Cy{}</span>
+<span class="lineno">  272 </span><span class="spaces">       </span><span class="nottickedoff">= IsE { genrhs = map pCpt2aCpt (gen_rhs pg)</span>
+<span class="lineno">  273 </span><span class="spaces">             </span><span class="nottickedoff">, genspc = pCpt2aCpt (gen_spc pg)</span>
+<span class="lineno">  274 </span><span class="spaces">             </span><span class="nottickedoff">}</span>
+<span class="lineno">  275 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  276 </span><span class="spaces">    </span><span class="nottickedoff">castSign :: String -&gt; String -&gt; Sign</span>
+<span class="lineno">  277 </span><span class="spaces">    </span><span class="nottickedoff">castSign a b = Sign (castConcept a) (castConcept b)</span>
+<span class="lineno">  278 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  279 </span><span class="spaces">    </span><span class="nottickedoff">leastConcept :: A_Concept -&gt; String -&gt; A_Concept</span>
+<span class="lineno">  280 </span><span class="spaces">    </span><span class="nottickedoff">leastConcept c str</span>
+<span class="lineno">  281 </span><span class="spaces">     </span><span class="nottickedoff">= case (name c `elem` leastConcepts, str `elem` leastConcepts) of</span>
+<span class="lineno">  282 </span><span class="spaces">         </span><span class="nottickedoff">(True, _) -&gt; c</span>
+<span class="lineno">  283 </span><span class="spaces">         </span><span class="nottickedoff">(_, True) -&gt; castConcept str</span>
+<span class="lineno">  284 </span><span class="spaces">         </span><span class="nottickedoff">(_, _)    -&gt; fatal 178 (&quot;Either &quot;++name c++&quot; or &quot;++str++&quot; should be a subset of the other.&quot; )</span>
+<span class="lineno">  285 </span><span class="spaces">       </span><span class="nottickedoff">where</span>
+<span class="lineno">  286 </span><span class="spaces">         </span><span class="nottickedoff">leastConcepts = findExact genLattice (Atom (name c) `Meet` (Atom str))</span>
+<span class="lineno">  287 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  288 </span><span class="spaces">    </span><span class="nottickedoff">castConcept :: String -&gt; A_Concept</span>
+<span class="lineno">  289 </span><span class="spaces">    </span><span class="nottickedoff">castConcept &quot;ONE&quot; = ONE</span>
+<span class="lineno">  290 </span><span class="spaces">    </span><span class="nottickedoff">castConcept x     = PlainConcept { cptnm = x }</span>
+<span class="lineno">  291 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  292 </span><span class="spaces">    </span><span class="nottickedoff">pPop2aPop :: P_Population -&gt; Guarded Population</span>
+<span class="lineno">  293 </span><span class="spaces">    </span><span class="nottickedoff">pPop2aPop P_CptPopu { p_cnme = cnm, p_popas = ps }</span>
+<span class="lineno">  294 </span><span class="spaces">     </span><span class="nottickedoff">= pure PCptPopu{ popcpt = castConcept cnm, popas = ps }</span>
+<span class="lineno">  295 </span><span class="spaces">    </span><span class="nottickedoff">pPop2aPop orig@(P_RelPopu { p_rnme = rnm, p_popps = ps })</span>
+<span class="lineno">  296 </span><span class="spaces">     </span><span class="nottickedoff">= fmap (\dcl -&gt; PRelPopu { popdcl = dcl, popps = ps})</span>
+<span class="lineno">  297 </span><span class="spaces">            </span><span class="nottickedoff">(findDecl orig rnm)</span>
+<span class="lineno">  298 </span><span class="spaces">    </span><span class="nottickedoff">pPop2aPop orig@(P_TRelPop { p_rnme = rnm, p_type = tp, p_popps = ps })</span>
+<span class="lineno">  299 </span><span class="spaces">     </span><span class="nottickedoff">= fmap (\dcl -&gt; PRelPopu { popdcl = dcl, popps = ps})</span>
+<span class="lineno">  300 </span><span class="spaces">            </span><span class="nottickedoff">(findDeclTyped orig rnm (pSign2aSign tp))</span>
+<span class="lineno">  301 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  302 </span><span class="spaces">    </span><span class="nottickedoff">pObjDef2aObjDef :: P_ObjectDef -&gt; Guarded ObjectDef</span>
+<span class="lineno">  303 </span><span class="spaces">    </span><span class="nottickedoff">pObjDef2aObjDef x = pObjDefDisamb2aObjDef $ disambiguate termPrimDisAmb x</span>
+<span class="lineno">  304 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  305 </span><span class="spaces">    </span><span class="nottickedoff">pObjDefDisamb2aObjDef :: P_ObjDef (TermPrim, DisambPrim) -&gt; Guarded ObjectDef</span>
+<span class="lineno">  306 </span><span class="spaces">    </span><span class="nottickedoff">pObjDefDisamb2aObjDef x = fmap fst (typecheckObjDef x)</span>
+<span class="lineno">  307 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  308 </span><span class="spaces">    </span><span class="nottickedoff">pViewDef2aViewDef :: P_ViewDef -&gt; Guarded ViewDef</span>
+<span class="lineno">  309 </span><span class="spaces">    </span><span class="nottickedoff">pViewDef2aViewDef x = typecheckViewDef tpda</span>
+<span class="lineno">  310 </span><span class="spaces">     </span><span class="nottickedoff">where tpda = disambiguate termPrimDisAmb x</span>
+<span class="lineno">  311 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  312 </span><span class="spaces">    </span><span class="nottickedoff">typecheckViewDef :: P_ViewD (TermPrim, DisambPrim) -&gt; Guarded ViewDef</span>
+<span class="lineno">  313 </span><span class="spaces">    </span><span class="nottickedoff">typecheckViewDef</span>
+<span class="lineno">  314 </span><span class="spaces">       </span><span class="nottickedoff">o@(P_Vd { vd_pos = orig</span>
+<span class="lineno">  315 </span><span class="spaces">            </span><span class="nottickedoff">, vd_lbl  = lbl   -- String</span>
+<span class="lineno">  316 </span><span class="spaces">            </span><span class="nottickedoff">, vd_cpt  = cpt   -- Concept</span>
+<span class="lineno">  317 </span><span class="spaces">            </span><span class="nottickedoff">, vd_isDefault = isDefault</span>
+<span class="lineno">  318 </span><span class="spaces">            </span><span class="nottickedoff">, vd_html = mHtml -- Html template</span>
+<span class="lineno">  319 </span><span class="spaces">            </span><span class="nottickedoff">, vd_ats  = pvs   -- view segment</span>
+<span class="lineno">  320 </span><span class="spaces">            </span><span class="nottickedoff">})</span>
+<span class="lineno">  321 </span><span class="spaces">     </span><span class="nottickedoff">= (\vdts</span>
+<span class="lineno">  322 </span><span class="spaces">        </span><span class="nottickedoff">-&gt; Vd { vdpos  = orig</span>
+<span class="lineno">  323 </span><span class="spaces">              </span><span class="nottickedoff">, vdlbl  = lbl</span>
+<span class="lineno">  324 </span><span class="spaces">              </span><span class="nottickedoff">, vdcpt  = pCpt2aCpt cpt</span>
+<span class="lineno">  325 </span><span class="spaces">              </span><span class="nottickedoff">, vdIsDefault = isDefault</span>
+<span class="lineno">  326 </span><span class="spaces">              </span><span class="nottickedoff">, vdhtml = mHtml</span>
+<span class="lineno">  327 </span><span class="spaces">              </span><span class="nottickedoff">, vdats  = vdts</span>
+<span class="lineno">  328 </span><span class="spaces">              </span><span class="nottickedoff">})</span>
+<span class="lineno">  329 </span><span class="spaces">       </span><span class="nottickedoff">&lt;$&gt; traverse (typeCheckViewSegment o) pvs</span>
+<span class="lineno">  330 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  331 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckViewSegment :: (P_ViewD a) -&gt; (P_ViewSegmt (TermPrim, DisambPrim)) -&gt; Guarded ViewSegment</span>
+<span class="lineno">  332 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckViewSegment o P_ViewExp{ vs_obj = ojd }</span>
+<span class="lineno">  333 </span><span class="spaces">     </span><span class="nottickedoff">= unguard $</span>
+<span class="lineno">  334 </span><span class="spaces">         </span><span class="nottickedoff">(\(obj,b) -&gt; case findExact genLattice (mIsc c (name (source (objctx obj)))) of</span>
+<span class="lineno">  335 </span><span class="spaces">                        </span><span class="nottickedoff">[] -&gt; mustBeOrdered o o (Src,(source (objctx obj)),obj)</span>
+<span class="lineno">  336 </span><span class="spaces">                        </span><span class="nottickedoff">r  -&gt; if b || c `elem` r then pure (ViewExp obj{objctx = addEpsilonLeft' (head r) (objctx obj)})</span>
+<span class="lineno">  337 </span><span class="spaces">                              </span><span class="nottickedoff">else mustBeBound (origin obj) [(Tgt,objctx obj)])</span>
+<span class="lineno">  338 </span><span class="spaces">         </span><span class="nottickedoff">&lt;$&gt; typecheckObjDef ojd</span>
+<span class="lineno">  339 </span><span class="spaces">     </span><span class="nottickedoff">where c = name (vd_cpt o)</span>
+<span class="lineno">  340 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckViewSegment _ P_ViewText { vs_txt = txt } = pure$ ViewText txt</span>
+<span class="lineno">  341 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckViewSegment _ P_ViewHtml { vs_htm = htm } = pure$ ViewHtml htm</span>
+<span class="lineno">  342 </span><span class="spaces">    </span><span class="nottickedoff"></span>
+<span class="lineno">  343 </span><span class="spaces">    </span><span class="nottickedoff">isa :: String -&gt; String -&gt; Bool</span>
+<span class="lineno">  344 </span><span class="spaces">    </span><span class="nottickedoff">isa c1 c2 = c1 `elem` findExact genLattice (Atom c1 `Meet` Atom c2) -- shouldn't this Atom be called a Concept? SJC: Answer: we're using the constructor &quot;Atom&quot; in the lattice sense, not in the relation-algebra sense. c1 and c2 are indeed Concepts here</span>
+<span class="lineno">  345 </span><span class="spaces">    </span><span class="nottickedoff"></span>
+<span class="lineno">  346 </span><span class="spaces">    </span><span class="nottickedoff">typecheckObjDef :: (P_ObjDef (TermPrim, DisambPrim)) -&gt; Guarded (ObjectDef, Bool)</span>
+<span class="lineno">  347 </span><span class="spaces">    </span><span class="nottickedoff">typecheckObjDef o@(P_Obj { obj_nm = nm</span>
+<span class="lineno">  348 </span><span class="spaces">                             </span><span class="nottickedoff">, obj_pos = orig</span>
+<span class="lineno">  349 </span><span class="spaces">                             </span><span class="nottickedoff">, obj_ctx = ctx</span>
+<span class="lineno">  350 </span><span class="spaces">                             </span><span class="nottickedoff">, obj_mView = mView</span>
+<span class="lineno">  351 </span><span class="spaces">                             </span><span class="nottickedoff">, obj_msub = subs</span>
+<span class="lineno">  352 </span><span class="spaces">                             </span><span class="nottickedoff">, obj_strs = ostrs</span>
+<span class="lineno">  353 </span><span class="spaces">                             </span><span class="nottickedoff">})</span>
+<span class="lineno">  354 </span><span class="spaces">     </span><span class="nottickedoff">= unguard $</span>
+<span class="lineno">  355 </span><span class="spaces">        </span><span class="nottickedoff">(\ (objExpr,(srcBounded,tgtBounded)) -&gt;</span>
+<span class="lineno">  356 </span><span class="spaces">            </span><span class="nottickedoff">(\case</span>
+<span class="lineno">  357 </span><span class="spaces">               </span><span class="nottickedoff">Just (newExpr,subStructures) -&gt; obj (newExpr,srcBounded) (Just subStructures)</span>
+<span class="lineno">  358 </span><span class="spaces">               </span><span class="nottickedoff">Nothing -&gt; obj (objExpr,srcBounded) Nothing</span>
+<span class="lineno">  359 </span><span class="spaces">            </span><span class="nottickedoff">)</span>
+<span class="lineno">  360 </span><span class="spaces">            </span><span class="nottickedoff">&lt;$&gt; maybeOverGuarded (pSubi2aSubi objExpr tgtBounded o) subs &lt;* typeCheckViewAnnotation objExpr mView</span>
+<span class="lineno">  361 </span><span class="spaces">        </span><span class="nottickedoff">) &lt;$&gt; typecheckTerm ctx</span>
+<span class="lineno">  362 </span><span class="spaces">     </span><span class="nottickedoff">where      </span>
+<span class="lineno">  363 </span><span class="spaces">      </span><span class="nottickedoff"></span>
+<span class="lineno">  364 </span><span class="spaces">      </span><span class="nottickedoff">lookupView :: String -&gt; Maybe P_ViewDef</span>
+<span class="lineno">  365 </span><span class="spaces">      </span><span class="nottickedoff">lookupView viewId = case [ vd | vd &lt;- p_viewdefs, vd_lbl vd == viewId ] of</span>
+<span class="lineno">  366 </span><span class="spaces">                            </span><span class="nottickedoff">[]   -&gt; Nothing</span>
+<span class="lineno">  367 </span><span class="spaces">                            </span><span class="nottickedoff">vd:_ -&gt; Just vd -- return the first one, if there are more, this is caught later on by uniqueness static check</span>
+<span class="lineno">  368 </span><span class="spaces">                        </span><span class="nottickedoff"></span>
+<span class="lineno">  369 </span><span class="spaces">      </span><span class="nottickedoff">typeCheckViewAnnotation :: Expression -&gt; Maybe String -&gt; Guarded ()</span>
+<span class="lineno">  370 </span><span class="spaces">      </span><span class="nottickedoff">typeCheckViewAnnotation _       Nothing       = pure ()</span>
+<span class="lineno">  371 </span><span class="spaces">      </span><span class="nottickedoff">typeCheckViewAnnotation objExpr (Just viewId) =</span>
+<span class="lineno">  372 </span><span class="spaces">        </span><span class="nottickedoff">case lookupView viewId of </span>
+<span class="lineno">  373 </span><span class="spaces">          </span><span class="nottickedoff">Just vd -&gt; let viewAnnCptStr = name $ target objExpr</span>
+<span class="lineno">  374 </span><span class="spaces">                         </span><span class="nottickedoff">viewDefCptStr = name $ vd_cpt vd</span>
+<span class="lineno">  375 </span><span class="spaces">                         </span><span class="nottickedoff">viewIsCompatible = viewAnnCptStr `isa` viewDefCptStr</span>
+<span class="lineno">  376 </span><span class="spaces">                     </span><span class="nottickedoff">in  if viewIsCompatible then pure () else Errors [mkIncompatibleViewError o viewId viewAnnCptStr viewDefCptStr]</span>
+<span class="lineno">  377 </span><span class="spaces">          </span><span class="nottickedoff">Nothing -&gt; Errors [mkUndeclaredError &quot;view&quot; o viewId] </span>
+<span class="lineno">  378 </span><span class="spaces">     </span><span class="nottickedoff"></span>
+<span class="lineno">  379 </span><span class="spaces">      </span><span class="nottickedoff"></span>
+<span class="lineno">  380 </span><span class="spaces">      </span><span class="nottickedoff">obj (e,sr) s</span>
+<span class="lineno">  381 </span><span class="spaces">       </span><span class="nottickedoff">= ( Obj { objnm = nm</span>
+<span class="lineno">  382 </span><span class="spaces">               </span><span class="nottickedoff">, objpos = orig</span>
+<span class="lineno">  383 </span><span class="spaces">               </span><span class="nottickedoff">, objctx = e</span>
+<span class="lineno">  384 </span><span class="spaces">               </span><span class="nottickedoff">, objmView = mView</span>
+<span class="lineno">  385 </span><span class="spaces">               </span><span class="nottickedoff">, objmsub = s</span>
+<span class="lineno">  386 </span><span class="spaces">               </span><span class="nottickedoff">, objstrs = ostrs</span>
+<span class="lineno">  387 </span><span class="spaces">               </span><span class="nottickedoff">}, sr)</span>
+<span class="lineno">  388 </span><span class="spaces">    </span><span class="nottickedoff">addEpsilonLeft',addEpsilonRight' :: String -&gt; Expression -&gt; Expression -- TODO: why use primes here?</span>
+<span class="lineno">  389 </span><span class="spaces">    </span><span class="nottickedoff">addEpsilonLeft' a e</span>
+<span class="lineno">  390 </span><span class="spaces">     </span><span class="nottickedoff">= if a==name (source e) then e else EEps (leastConcept (source e) a) (castSign a (name (source e))) .:. e</span>
+<span class="lineno">  391 </span><span class="spaces">    </span><span class="nottickedoff">addEpsilonRight' a e</span>
+<span class="lineno">  392 </span><span class="spaces">     </span><span class="nottickedoff">= if a==name (target e) then e else e .:. EEps (leastConcept (target e) a) (castSign (name (target e)) a)</span>
+<span class="lineno">  393 </span><span class="spaces">    </span><span class="nottickedoff">addEpsilon :: String -&gt; String -&gt; Expression -&gt; Expression</span>
+<span class="lineno">  394 </span><span class="spaces">    </span><span class="nottickedoff">addEpsilon s t e</span>
+<span class="lineno">  395 </span><span class="spaces">     </span><span class="nottickedoff">= addEpsilonLeft' s (addEpsilonRight' t e)</span>
+<span class="lineno">  396 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  397 </span><span class="spaces">    </span><span class="nottickedoff">pSubi2aSubi :: Expression -- Expression of the surrounding</span>
+<span class="lineno">  398 </span><span class="spaces">                </span><span class="nottickedoff">-&gt; Bool -- Whether the surrounding is bounded</span>
+<span class="lineno">  399 </span><span class="spaces">                </span><span class="nottickedoff">-&gt; P_ObjDef a -- name of where the error occured!</span>
+<span class="lineno">  400 </span><span class="spaces">                </span><span class="nottickedoff">-&gt; P_SubIfc (TermPrim, DisambPrim) -- Subinterface to check</span>
+<span class="lineno">  401 </span><span class="spaces">                </span><span class="nottickedoff">-&gt; Guarded ( Expression -- In the case of a &quot;Ref&quot;, we do not change the type of the subinterface with epsilons, this is to change the type of our surrounding instead. In the case of &quot;Box&quot;, this is simply the original expression (in such a case, epsilons are added to the branches instead)</span>
+<span class="lineno">  402 </span><span class="spaces">                           </span><span class="nottickedoff">, SubInterface -- the subinterface</span>
+<span class="lineno">  403 </span><span class="spaces">                           </span><span class="nottickedoff">)</span>
+<span class="lineno">  404 </span><span class="spaces">    </span><span class="nottickedoff">pSubi2aSubi objExpr b o x</span>
+<span class="lineno">  405 </span><span class="spaces">      </span><span class="nottickedoff">= case x of</span>
+<span class="lineno">  406 </span><span class="spaces">         </span><span class="nottickedoff">P_InterfaceRef{si_str = ifcId} </span>
+<span class="lineno">  407 </span><span class="spaces">           </span><span class="nottickedoff">-&gt;  unguard $</span>
+<span class="lineno">  408 </span><span class="spaces">             </span><span class="nottickedoff">(\(refIfcExpr,_) -&gt; (\objExprEps -&gt; (objExprEps,InterfaceRef ifcId)) &lt;$&gt; typeCheckInterfaceRef o ifcId objExpr refIfcExpr)</span>
+<span class="lineno">  409 </span><span class="spaces">             </span><span class="nottickedoff">&lt;$&gt; case lookupDisambIfcObj ifcId of</span>
+<span class="lineno">  410 </span><span class="spaces">                   </span><span class="nottickedoff">Just disambObj -&gt; typecheckTerm $ obj_ctx disambObj -- term is type checked twice, but otherwise we need a more complicated type check method to access already-checked interfaces. TODO: hide possible duplicate errors in a nice way (that is: via CtxError)</span>
+<span class="lineno">  411 </span><span class="spaces">                   </span><span class="nottickedoff">Nothing        -&gt; Errors [mkUndeclaredError &quot;interface&quot; o ifcId]</span>
+<span class="lineno">  412 </span><span class="spaces">         </span><span class="nottickedoff">P_Box{}</span>
+<span class="lineno">  413 </span><span class="spaces">           </span><span class="nottickedoff">-&gt; case si_box x of</span>
+<span class="lineno">  414 </span><span class="spaces">                </span><span class="nottickedoff">[]  -&gt; const undefined &lt;$&gt; hasNone ([]::[P_SubIfc a]) x -- error</span>
+<span class="lineno">  415 </span><span class="spaces">                </span><span class="nottickedoff">l   -&gt; (\lst -&gt; (objExpr,Box (target objExpr) (si_class x) lst)) &lt;$&gt; traverse (unguard . fmap (matchWith (target objExpr)) . typecheckObjDef) l &lt;* uniqueNames l</span>
+<span class="lineno">  416 </span><span class="spaces">     </span><span class="nottickedoff">where matchWith _ (ojd,exprBound)</span>
+<span class="lineno">  417 </span><span class="spaces">            </span><span class="nottickedoff">= if b || exprBound then</span>
+<span class="lineno">  418 </span><span class="spaces">              </span><span class="nottickedoff">( case findExact genLattice (mIsc (name$ target objExpr) (name . source . objctx $ ojd)) of</span>
+<span class="lineno">  419 </span><span class="spaces">                    </span><span class="nottickedoff">[] -&gt; mustBeOrderedLst x [(source (objctx ojd),Src, ojd)]</span>
+<span class="lineno">  420 </span><span class="spaces">                    </span><span class="nottickedoff">(r:_) -&gt; pure (ojd{objctx=addEpsilonLeft' r (objctx ojd)})</span>
+<span class="lineno">  421 </span><span class="spaces">              </span><span class="nottickedoff">)</span>
+<span class="lineno">  422 </span><span class="spaces">              </span><span class="nottickedoff">else mustBeBound (origin ojd) [(Src,objctx ojd),(Tgt,objExpr)]</span>
+<span class="lineno">  423 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckInterfaceRef :: P_ObjDef a -&gt; String -&gt; Expression -&gt; Expression -&gt; Guarded Expression</span>
+<span class="lineno">  424 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckInterfaceRef objDef ifcRef objExpr ifcExpr = </span>
+<span class="lineno">  425 </span><span class="spaces">      </span><span class="nottickedoff">let expTarget = target objExpr</span>
+<span class="lineno">  426 </span><span class="spaces">          </span><span class="nottickedoff">expTargetStr = name expTarget</span>
+<span class="lineno">  427 </span><span class="spaces">          </span><span class="nottickedoff">ifcSource = source ifcExpr</span>
+<span class="lineno">  428 </span><span class="spaces">          </span><span class="nottickedoff">ifcSourceStr = name ifcSource</span>
+<span class="lineno">  429 </span><span class="spaces">          </span><span class="nottickedoff">refIsCompatible = expTargetStr `isa` ifcSourceStr || ifcSourceStr `isa` expTargetStr</span>
+<span class="lineno">  430 </span><span class="spaces">      </span><span class="nottickedoff">in  if refIsCompatible </span>
+<span class="lineno">  431 </span><span class="spaces">          </span><span class="nottickedoff">then pure $ addEpsilonRight' ifcSourceStr objExpr </span>
+<span class="lineno">  432 </span><span class="spaces">          </span><span class="nottickedoff">else Errors [mkIncompatibleInterfaceError objDef expTarget ifcSource ifcRef ]</span>
+<span class="lineno">  433 </span><span class="spaces">    </span><span class="nottickedoff">lookupDisambIfcObj :: String -&gt; Maybe (P_ObjDef (TermPrim, DisambPrim))</span>
+<span class="lineno">  434 </span><span class="spaces">    </span><span class="nottickedoff">lookupDisambIfcObj ifcId =</span>
+<span class="lineno">  435 </span><span class="spaces">      </span><span class="nottickedoff">case [ disambObj | (vd,disambObj) &lt;- p_interfaceAndDisambObjs, ifc_Name vd == ifcId ] of</span>
+<span class="lineno">  436 </span><span class="spaces">        </span><span class="nottickedoff">[]          -&gt; Nothing</span>
+<span class="lineno">  437 </span><span class="spaces">        </span><span class="nottickedoff">disambObj:_ -&gt; Just disambObj -- return the first one, if there are more, this is caught later on by uniqueness static check</span>
+<span class="lineno">  438 </span><span class="spaces">    </span><span class="nottickedoff"></span>
+<span class="lineno">  439 </span><span class="spaces">    </span><span class="nottickedoff">typecheckTerm :: Term (TermPrim, DisambPrim) -&gt; Guarded (Expression, (Bool, Bool))</span>
+<span class="lineno">  440 </span><span class="spaces">    </span><span class="nottickedoff">typecheckTerm tct</span>
+<span class="lineno">  441 </span><span class="spaces">     </span><span class="nottickedoff">= case tct of</span>
+<span class="lineno">  442 </span><span class="spaces">         </span><span class="nottickedoff">Prim (t,v) -&gt; (\x -&gt; (x, case t of</span>
+<span class="lineno">  443 </span><span class="spaces">                                   </span><span class="nottickedoff">PVee _ -&gt; (False,False)</span>
+<span class="lineno">  444 </span><span class="spaces">                                   </span><span class="nottickedoff">_      -&gt; (True,True)</span>
+<span class="lineno">  445 </span><span class="spaces">                                   </span><span class="nottickedoff">)) &lt;$&gt; pDisAmb2Expr (t,v)</span>
+<span class="lineno">  446 </span><span class="spaces">         </span><span class="nottickedoff">PEqu _ a b -&gt; unguard $ binary  (.==.) (MBE (Src,fst) (Src,snd), MBE (Tgt,fst) (Tgt,snd)) &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  447 </span><span class="spaces">         </span><span class="nottickedoff">PImp _ a b -&gt; unguard $ binary  (.|-.) (MBG (Src,snd) (Src,fst), MBG (Tgt,snd) (Tgt,fst)) &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  448 </span><span class="spaces">         </span><span class="nottickedoff">PIsc _ a b -&gt; unguard $ binary  (./\.) (ISC (Src,fst) (Src,snd), ISC (Tgt,fst) (Tgt,snd)) &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  449 </span><span class="spaces">         </span><span class="nottickedoff">PUni _ a b -&gt; unguard $ binary  (.\/.) (UNI (Src,fst) (Src,snd), UNI (Tgt,fst) (Tgt,snd)) &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  450 </span><span class="spaces">         </span><span class="nottickedoff">PDif _ a b -&gt; unguard $ binary  (.-.)  (MBG (Src,fst) (Src,snd), MBG (Tgt,fst) (Tgt,snd)) &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  451 </span><span class="spaces">         </span><span class="nottickedoff">PLrs _ a b -&gt; unguard $ binary' (./.)  (MBG (Tgt,snd) (Tgt,fst)) ((Src,fst),(Src,snd)) Tgt Tgt &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  452 </span><span class="spaces">         </span><span class="nottickedoff">PRrs _ a b -&gt; unguard $ binary' (.\.)  (MBG (Src,fst) (Src,snd)) ((Tgt,fst),(Tgt,snd)) Src Src &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  453 </span><span class="spaces">         </span><span class="nottickedoff">PDia _ a b -&gt; unguard $ binary' (.&lt;&gt;.) (ISC (Tgt,fst) (Src,snd)) ((Src,fst),(Tgt,snd)) Tgt Src &lt;$&gt; tt a &lt;*&gt; tt b -- MBE would have been correct, but too restrictive</span>
+<span class="lineno">  454 </span><span class="spaces">         </span><span class="nottickedoff">PCps _ a b -&gt; unguard $ binary' (.:.)  (ISC (Tgt,fst) (Src,snd)) ((Src,fst),(Tgt,snd)) Tgt Src &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  455 </span><span class="spaces">         </span><span class="nottickedoff">PRad _ a b -&gt; unguard $ binary' (.!.)  (MBE (Tgt,fst) (Src,snd)) ((Src,fst),(Tgt,snd)) Tgt Src &lt;$&gt; tt a &lt;*&gt; tt b -- Using MBE instead of ISC allows the programmer to use De Morgan</span>
+<span class="lineno">  456 </span><span class="spaces">         </span><span class="nottickedoff">PPrd _ a b -&gt; (\(x,(s,_)) (y,(_,t)) -&gt; (x .*. y, (s,t))) &lt;$&gt; tt a &lt;*&gt; tt b</span>
+<span class="lineno">  457 </span><span class="spaces">         </span><span class="nottickedoff">PKl0 _ a   -&gt; unguard $ unary   EKl0   (UNI (Src, id) (Tgt, id), UNI (Src, id) (Tgt, id)) &lt;$&gt; tt a</span>
+<span class="lineno">  458 </span><span class="spaces">         </span><span class="nottickedoff">PKl1 _ a   -&gt; unguard $ unary   EKl1   (UNI (Src, id) (Tgt, id), UNI (Src, id) (Tgt, id)) &lt;$&gt; tt a</span>
+<span class="lineno">  459 </span><span class="spaces">         </span><span class="nottickedoff">PFlp _ a   -&gt; (\(x,(s,t)) -&gt; ((EFlp x), (t,s))) &lt;$&gt; tt a</span>
+<span class="lineno">  460 </span><span class="spaces">         </span><span class="nottickedoff">PCpl _ a   -&gt; (\(x,_) -&gt; (ECpl x,(False,False))) &lt;$&gt; tt a</span>
+<span class="lineno">  461 </span><span class="spaces">         </span><span class="nottickedoff">PBrk _ e   -&gt; (\(x,t) -&gt; (EBrk x,t)) &lt;$&gt; tt e </span>
+<span class="lineno">  462 </span><span class="spaces">     </span><span class="nottickedoff">where</span>
+<span class="lineno">  463 </span><span class="spaces">      </span><span class="nottickedoff">o = origin (fmap fst tct)</span>
+<span class="lineno">  464 </span><span class="spaces">      </span><span class="nottickedoff">tt = typecheckTerm</span>
+<span class="lineno">  465 </span><span class="spaces">      </span><span class="nottickedoff">-- SJC: Here is what binary, binary' and unary do:</span>
+<span class="lineno">  466 </span><span class="spaces">      </span><span class="nottickedoff">-- (1) Create an expression, the combinator for this is given by its first argument</span>
+<span class="lineno">  467 </span><span class="spaces">      </span><span class="nottickedoff">-- (2) Fill in the corresponding type-checked terms to that expression</span>
+<span class="lineno">  468 </span><span class="spaces">      </span><span class="nottickedoff">-- (3) For binary' only: fill in the intermediate concept too</span>
+<span class="lineno">  469 </span><span class="spaces">      </span><span class="nottickedoff">-- (4) Fill in the type of the new expression</span>
+<span class="lineno">  470 </span><span class="spaces">      </span><span class="nottickedoff">-- For steps (3) and (4), you can use the `TT' data type to specify the new type, and what checks should occur:</span>
+<span class="lineno">  471 </span><span class="spaces">      </span><span class="nottickedoff">-- If you don't know what to use, try MBE: it is the strictest form.</span>
+<span class="lineno">  472 </span><span class="spaces">      </span><span class="nottickedoff">-- In the steps (3) and (4), different type errors may arise:</span>
+<span class="lineno">  473 </span><span class="spaces">      </span><span class="nottickedoff">-- If the type does not exist, this yields a type error.</span>
+<span class="lineno">  474 </span><span class="spaces">      </span><span class="nottickedoff">-- Some types may be generalized, while others may not.</span>
+<span class="lineno">  475 </span><span class="spaces">      </span><span class="nottickedoff">-- When a type may be generalized, that means that the value of the expression does not change if the type becomes larger</span>
+<span class="lineno">  476 </span><span class="spaces">      </span><span class="nottickedoff">-- When a type may not be generalized:</span>
+<span class="lineno">  477 </span><span class="spaces">      </span><span class="nottickedoff">--   the type so far is actually just an estimate</span>
+<span class="lineno">  478 </span><span class="spaces">      </span><span class="nottickedoff">--   it must be bound by the context to something smaller, or something as big</span>
+<span class="lineno">  479 </span><span class="spaces">      </span><span class="nottickedoff">--   a way to do this, is by using (V[type] /\ thingToBeBound)</span>
+<span class="lineno">  480 </span><span class="spaces">      </span><span class="nottickedoff">-- More details about generalizable types can be found by looking at &quot;deriv1&quot;.</span>
+<span class="lineno">  481 </span><span class="spaces">      </span><span class="nottickedoff">binary :: (Expression -&gt; Expression-&gt;Expression) -- combinator</span>
+<span class="lineno">  482 </span><span class="spaces">             </span><span class="nottickedoff">-&gt; ( TT ( SrcOrTgt</span>
+<span class="lineno">  483 </span><span class="spaces">                     </span><span class="nottickedoff">, ( (Expression, (Bool, Bool))</span>
+<span class="lineno">  484 </span><span class="spaces">                       </span><span class="nottickedoff">, (Expression, (Bool, Bool))</span>
+<span class="lineno">  485 </span><span class="spaces">                       </span><span class="nottickedoff">) -&gt; (Expression, (Bool, Bool))</span>
+<span class="lineno">  486 </span><span class="spaces">                     </span><span class="nottickedoff">)</span>
+<span class="lineno">  487 </span><span class="spaces">                </span><span class="nottickedoff">, TT ( SrcOrTgt</span>
+<span class="lineno">  488 </span><span class="spaces">                     </span><span class="nottickedoff">, ( (Expression, (Bool, Bool))</span>
+<span class="lineno">  489 </span><span class="spaces">                       </span><span class="nottickedoff">, (Expression, (Bool, Bool))</span>
+<span class="lineno">  490 </span><span class="spaces">                       </span><span class="nottickedoff">) -&gt; (Expression, (Bool, Bool))</span>
+<span class="lineno">  491 </span><span class="spaces">                     </span><span class="nottickedoff">)</span>
+<span class="lineno">  492 </span><span class="spaces">                </span><span class="nottickedoff">) -- simple instruction on how to derive the type</span>
+<span class="lineno">  493 </span><span class="spaces">             </span><span class="nottickedoff">-&gt; (Expression,(Bool,Bool))</span>
+<span class="lineno">  494 </span><span class="spaces">             </span><span class="nottickedoff">-&gt; (Expression,(Bool,Bool)) -- expressions to feed into the combinator after translation</span>
+<span class="lineno">  495 </span><span class="spaces">             </span><span class="nottickedoff">-&gt; Guarded (Expression,(Bool,Bool))</span>
+<span class="lineno">  496 </span><span class="spaces">      </span><span class="nottickedoff">binary  cbn     tp  e1 e2 = wrap (fst e1,fst e2) &lt;$&gt; deriv tp (e1,e2)</span>
+<span class="lineno">  497 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
+<span class="lineno">  498 </span><span class="spaces">         </span><span class="nottickedoff">wrap (expr1,expr2) ((src,b1), (tgt,b2)) = (cbn (addEpsilon src tgt expr1) (addEpsilon src tgt expr2), (b1, b2))</span>
+<span class="lineno">  499 </span><span class="spaces">      </span><span class="nottickedoff">unary   cbn     tp e1      = wrap (fst e1) &lt;$&gt; deriv tp e1</span>
+<span class="lineno">  500 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
+<span class="lineno">  501 </span><span class="spaces">         </span><span class="nottickedoff">wrap expr  ((src,b1), (tgt,b2))  = (cbn (addEpsilon src tgt expr), (b1, b2))</span>
+<span class="lineno">  502 </span><span class="spaces">      </span><span class="nottickedoff">binary' cbn preConcept tp side1 side2 e1 e2 = wrap (fst e1,fst e2) &lt;$&gt; deriv1 o (fmap (resolve (e1,e2)) preConcept) &lt;*&gt; deriv' tp (e1,e2)</span>
+<span class="lineno">  503 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
+<span class="lineno">  504 </span><span class="spaces">         </span><span class="nottickedoff">wrap (expr1,expr2) (cpt,_) ((_,b1), (_,b2))</span>
+<span class="lineno">  505 </span><span class="spaces">          </span><span class="nottickedoff">= (cbn (lrDecide side1 expr1) (lrDecide side2 expr2), (b1, b2))</span>
+<span class="lineno">  506 </span><span class="spaces">            </span><span class="nottickedoff">where lrDecide side e = case side of Src -&gt; addEpsilonLeft' cpt e; Tgt -&gt; addEpsilonRight' cpt e</span>
+<span class="lineno">  507 </span><span class="spaces">      </span><span class="nottickedoff">deriv (t1,t2) es = (,) &lt;$&gt; deriv1 o (fmap (resolve es) t1) &lt;*&gt; deriv1 o (fmap (resolve es) t2)</span>
+<span class="lineno">  508 </span><span class="spaces"> </span><span class="nottickedoff"></span>
+<span class="lineno">  509 </span><span class="spaces">    </span><span class="nottickedoff">deriv1 o x'</span>
+<span class="lineno">  510 </span><span class="spaces">     </span><span class="nottickedoff">= case x' of</span>
+<span class="lineno">  511 </span><span class="spaces">        </span><span class="nottickedoff">(MBE a@(p1,(e1,b1)) b@(p2,(e2,b2))) -&gt;</span>
+<span class="lineno">  512 </span><span class="spaces">             </span><span class="nottickedoff">if (b1 &amp;&amp; b2) || (getConcept p1 e1 == getConcept p2 e2) then (\x -&gt; (x,b1||b2)) &lt;$&gt; getExactType mjoin (p1, e1) (p2, e2)</span>
+<span class="lineno">  513 </span><span class="spaces">             </span><span class="nottickedoff">else mustBeBound o [(p,e) | (p,(e,False))&lt;-[a,b]]</span>
+<span class="lineno">  514 </span><span class="spaces">        </span><span class="nottickedoff">(MBG (p1,(e1,b1)) (p2,(e2,b2))) -&gt;</span>
+<span class="lineno">  515 </span><span class="spaces">             </span><span class="nottickedoff">(\x -&gt; (x,b1)) &lt;$&gt; getAndCheckType mjoin (p1, True, e1) (p2, b2, e2)</span>
+<span class="lineno">  516 </span><span class="spaces">        </span><span class="nottickedoff">(UNI (p1,(e1,b1)) (p2,(e2,b2))) -&gt;</span>
+<span class="lineno">  517 </span><span class="spaces">             </span><span class="nottickedoff">(\x -&gt; (x,b1 &amp;&amp; b2)) &lt;$&gt; getAndCheckType mjoin (p1, b1, e1) (p2, b2, e2)</span>
+<span class="lineno">  518 </span><span class="spaces">        </span><span class="nottickedoff">(ISC (p1,(e1,b1)) (p2,(e2,b2))) -&gt;</span>
+<span class="lineno">  519 </span><span class="spaces">             </span><span class="nottickedoff">(\x -&gt; (x,b1 || b2)) &lt;$&gt; getAndCheckType mIsc  (p1, b1, e1) (p2, b2, e2)</span>
+<span class="lineno">  520 </span><span class="spaces">     </span><span class="nottickedoff">where</span>
+<span class="lineno">  521 </span><span class="spaces">      </span><span class="nottickedoff">getExactType flf (p1,e1) (p2,e2)</span>
+<span class="lineno">  522 </span><span class="spaces">       </span><span class="nottickedoff">= case findExact genLattice (flf (getConcept p1 e1) (getConcept p2 e2)) of</span>
+<span class="lineno">  523 </span><span class="spaces">          </span><span class="nottickedoff">[] -&gt; mustBeOrdered o (p1,e1) (p2,e2)</span>
+<span class="lineno">  524 </span><span class="spaces">          </span><span class="nottickedoff">r  -&gt; pure$ head r</span>
+<span class="lineno">  525 </span><span class="spaces">      </span><span class="nottickedoff">getAndCheckType flf (p1,b1,e1) (p2,b2,e2)</span>
+<span class="lineno">  526 </span><span class="spaces">       </span><span class="nottickedoff">= case findSubsets genLattice (flf (getConcept p1 e1) (getConcept p2 e2)) of -- note: we could have used GetOneGuarded, but this is more specific</span>
+<span class="lineno">  527 </span><span class="spaces">          </span><span class="nottickedoff">[]  -&gt; mustBeOrdered o (p1,e1) (p2,e2)</span>
+<span class="lineno">  528 </span><span class="spaces">          </span><span class="nottickedoff">[r] -&gt; case (b1 || Set.member (getConcept p1 e1) r,b2 || Set.member (getConcept p2 e2) r ) of</span>
+<span class="lineno">  529 </span><span class="spaces">                   </span><span class="nottickedoff">(True,True) -&gt; pure (head (Set.toList r))</span>
+<span class="lineno">  530 </span><span class="spaces">                   </span><span class="nottickedoff">(a,b) -&gt; mustBeBound o [(p,e) | (False,p,e)&lt;-[(a,p1,e1),(b,p2,e2)]]</span>
+<span class="lineno">  531 </span><span class="spaces">          </span><span class="nottickedoff">lst -&gt; mustBeOrderedConcLst o (p1,e1) (p2,e2) (map (map castConcept . Set.toList) lst)</span>
+<span class="lineno">  532 </span><span class="spaces">    </span><span class="nottickedoff">termPrimDisAmb :: TermPrim -&gt; (TermPrim, DisambPrim)</span>
+<span class="lineno">  533 </span><span class="spaces">    </span><span class="nottickedoff">termPrimDisAmb x</span>
+<span class="lineno">  534 </span><span class="spaces">     </span><span class="nottickedoff">= (x, case x of</span>
+<span class="lineno">  535 </span><span class="spaces">           </span><span class="nottickedoff">PI _        -&gt; Ident</span>
+<span class="lineno">  536 </span><span class="spaces">           </span><span class="nottickedoff">Pid _ conspt-&gt; Known (EDcI (pCpt2aCpt conspt))</span>
+<span class="lineno">  537 </span><span class="spaces">           </span><span class="nottickedoff">Patm _ s Nothing -&gt; Mp1 s</span>
+<span class="lineno">  538 </span><span class="spaces">           </span><span class="nottickedoff">Patm _ s (Just conspt) -&gt; Known (EMp1 s (pCpt2aCpt conspt))</span>
+<span class="lineno">  539 </span><span class="spaces">           </span><span class="nottickedoff">PVee _      -&gt; Vee</span>
+<span class="lineno">  540 </span><span class="spaces">           </span><span class="nottickedoff">Pfull _ a b -&gt; Known (EDcV (Sign (pCpt2aCpt a) (pCpt2aCpt b)))</span>
+<span class="lineno">  541 </span><span class="spaces">           </span><span class="nottickedoff">PNamedR nr -&gt; Rel $ disambNamedRel nr</span>
+<span class="lineno">  542 </span><span class="spaces">        </span><span class="nottickedoff">)</span>
+<span class="lineno">  543 </span><span class="spaces">    </span><span class="nottickedoff">disambNamedRel (PNamedRel _ r Nothing)  = [EDcD dc | dc &lt;- (Map.elems $ findDecls r)]</span>
+<span class="lineno">  544 </span><span class="spaces">    </span><span class="nottickedoff">disambNamedRel (PNamedRel _ r (Just s)) = [EDcD dc | dc &lt;- (findDeclsTyped r (pSign2aSign s))]</span>
+<span class="lineno">  545 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  546 </span><span class="spaces">    </span><span class="nottickedoff">namedRel2Decl :: P_NamedRel -&gt; Guarded Declaration</span>
+<span class="lineno">  547 </span><span class="spaces">    </span><span class="nottickedoff">namedRel2Decl o@(PNamedRel _ r Nothing)  = getOneExactly o [ dc | dc &lt;- (Map.elems $ findDecls r)]</span>
+<span class="lineno">  548 </span><span class="spaces">    </span><span class="nottickedoff">namedRel2Decl o@(PNamedRel _ r (Just s)) = getOneExactly o [ dc | dc &lt;- (findDeclsTyped r (pSign2aSign s))]</span>
+<span class="lineno">  549 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  550 </span><span class="spaces">    </span><span class="nottickedoff">pIfc2aIfc :: (P_Interface, P_ObjDef (TermPrim, DisambPrim)) -&gt; Guarded Interface</span>
+<span class="lineno">  551 </span><span class="spaces">    </span><span class="nottickedoff">pIfc2aIfc (P_Ifc { ifc_Params = tps</span>
+<span class="lineno">  552 </span><span class="spaces">                    </span><span class="nottickedoff">, ifc_Class = iclass</span>
+<span class="lineno">  553 </span><span class="spaces">                    </span><span class="nottickedoff">, ifc_Args = args</span>
+<span class="lineno">  554 </span><span class="spaces">                    </span><span class="nottickedoff">, ifc_Roles = rols</span>
+<span class="lineno">  555 </span><span class="spaces">                    </span><span class="nottickedoff">, ifc_Obj = _</span>
+<span class="lineno">  556 </span><span class="spaces">                    </span><span class="nottickedoff">, ifc_Pos = orig</span>
+<span class="lineno">  557 </span><span class="spaces">                    </span><span class="nottickedoff">-- , ifc_Name = nm</span>
+<span class="lineno">  558 </span><span class="spaces">                    </span><span class="nottickedoff">, ifc_Prp = prp</span>
+<span class="lineno">  559 </span><span class="spaces">                    </span><span class="nottickedoff">}, objDisamb)</span>
+<span class="lineno">  560 </span><span class="spaces">        </span><span class="nottickedoff">= (\ tps' obj'</span>
+<span class="lineno">  561 </span><span class="spaces">             </span><span class="nottickedoff">-&gt; Ifc { ifcParams = tps'</span>
+<span class="lineno">  562 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcClass = iclass</span>
+<span class="lineno">  563 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcArgs = args</span>
+<span class="lineno">  564 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcRoles = rols</span>
+<span class="lineno">  565 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcObj = obj'</span>
+<span class="lineno">  566 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcEcas = []      -- to be enriched in Adl2fSpec with ECA-rules</span>
+<span class="lineno">  567 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcControls = []  -- to be enriched in Adl2fSpec with rules to be checked</span>
+<span class="lineno">  568 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcPos = orig</span>
+<span class="lineno">  569 </span><span class="spaces">                    </span><span class="nottickedoff">, ifcPrp = prp</span>
+<span class="lineno">  570 </span><span class="spaces">                    </span><span class="nottickedoff">}) &lt;$&gt; traverse namedRel2Decl tps</span>
+<span class="lineno">  571 </span><span class="spaces">                       </span><span class="nottickedoff">&lt;*&gt; pObjDefDisamb2aObjDef objDisamb</span>
+<span class="lineno">  572 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  573 </span><span class="spaces">    </span><span class="nottickedoff">pRoleRelation2aRoleRelation :: P_RoleRelation -&gt; Guarded A_RoleRelation</span>
+<span class="lineno">  574 </span><span class="spaces">    </span><span class="nottickedoff">pRoleRelation2aRoleRelation prr</span>
+<span class="lineno">  575 </span><span class="spaces">     </span><span class="nottickedoff">= (\ ds' </span>
+<span class="lineno">  576 </span><span class="spaces">        </span><span class="nottickedoff">-&gt; RR { rrRoles = rr_Roles prr</span>
+<span class="lineno">  577 </span><span class="spaces">              </span><span class="nottickedoff">, rrRels  = ds'</span>
+<span class="lineno">  578 </span><span class="spaces">              </span><span class="nottickedoff">, rrPos   = rr_Pos prr</span>
+<span class="lineno">  579 </span><span class="spaces">              </span><span class="nottickedoff">}) &lt;$&gt; traverse namedRel2Decl (rr_Rels prr)</span>
+<span class="lineno">  580 </span><span class="spaces">    </span><span class="nottickedoff">pRoleRule2aRoleRule :: P_RoleRule -&gt; A_RoleRule</span>
+<span class="lineno">  581 </span><span class="spaces">    </span><span class="nottickedoff">pRoleRule2aRoleRule prr</span>
+<span class="lineno">  582 </span><span class="spaces">     </span><span class="nottickedoff">= A_RoleRule { arRoles = mRoles prr</span>
+<span class="lineno">  583 </span><span class="spaces">                  </span><span class="nottickedoff">, arRules = mRules prr</span>
+<span class="lineno">  584 </span><span class="spaces">                  </span><span class="nottickedoff">, arPos   = mPos prr</span>
+<span class="lineno">  585 </span><span class="spaces">                  </span><span class="nottickedoff">}</span>
+<span class="lineno">  586 </span><span class="spaces">    </span><span class="nottickedoff"></span>
+<span class="lineno">  587 </span><span class="spaces">    </span><span class="nottickedoff">pPat2aPat :: P_Pattern -&gt; Guarded Pattern</span>
+<span class="lineno">  588 </span><span class="spaces">    </span><span class="nottickedoff">pPat2aPat ppat</span>
+<span class="lineno">  589 </span><span class="spaces">     </span><span class="nottickedoff">= f &lt;$&gt; traverse (pRul2aRul (name ppat)) (pt_rls ppat)</span>
+<span class="lineno">  590 </span><span class="spaces">         </span><span class="nottickedoff">&lt;*&gt; traverse pIdentity2aIdentity (pt_ids ppat) </span>
+<span class="lineno">  591 </span><span class="spaces">         </span><span class="nottickedoff">&lt;*&gt; traverse pPop2aPop (pt_pop ppat)</span>
+<span class="lineno">  592 </span><span class="spaces">         </span><span class="nottickedoff">&lt;*&gt; traverse pViewDef2aViewDef (pt_vds ppat) </span>
+<span class="lineno">  593 </span><span class="spaces">         </span><span class="nottickedoff">&lt;*&gt; traverse pPurp2aPurp (pt_xps ppat)</span>
+<span class="lineno">  594 </span><span class="spaces">       </span><span class="nottickedoff">where</span>
+<span class="lineno">  595 </span><span class="spaces">        </span><span class="nottickedoff">f rules' keys' pops' views' xpls</span>
+<span class="lineno">  596 </span><span class="spaces">           </span><span class="nottickedoff">= let (decls',dPops) = unzip [ pDecl2aDecl (name ppat) deflangCtxt deffrmtCtxt pDecl | pDecl&lt;-pt_dcs ppat ]</span>
+<span class="lineno">  597 </span><span class="spaces">             </span><span class="nottickedoff">in A_Pat { ptnm  = name ppat</span>
+<span class="lineno">  598 </span><span class="spaces">                      </span><span class="nottickedoff">, ptpos = pt_pos ppat</span>
+<span class="lineno">  599 </span><span class="spaces">                      </span><span class="nottickedoff">, ptend = pt_end ppat</span>
+<span class="lineno">  600 </span><span class="spaces">                      </span><span class="nottickedoff">, ptrls = rules'</span>
+<span class="lineno">  601 </span><span class="spaces">                      </span><span class="nottickedoff">, ptgns = map pGen2aGen (pt_gns ppat)</span>
+<span class="lineno">  602 </span><span class="spaces">                      </span><span class="nottickedoff">, ptdcs = decls'</span>
+<span class="lineno">  603 </span><span class="spaces">                      </span><span class="nottickedoff">, ptups = pops' ++ [ dp | dp@PRelPopu{}&lt;-dPops, (not.null.popps) dp ] ++ [ cp | cp@PCptPopu{}&lt;-dPops, (not.null.popas) cp ]</span>
+<span class="lineno">  604 </span><span class="spaces">                      </span><span class="nottickedoff">, ptids = keys'</span>
+<span class="lineno">  605 </span><span class="spaces">                      </span><span class="nottickedoff">, ptvds = views'</span>
+<span class="lineno">  606 </span><span class="spaces">                      </span><span class="nottickedoff">, ptxps = xpls</span>
+<span class="lineno">  607 </span><span class="spaces">                      </span><span class="nottickedoff">}</span>
+<span class="lineno">  608 </span><span class="spaces">    </span><span class="nottickedoff">pRul2aRul :: String -- environment name (pattern / proc name)</span>
+<span class="lineno">  609 </span><span class="spaces">              </span><span class="nottickedoff">-&gt; (P_Rule TermPrim) -&gt; Guarded Rule</span>
+<span class="lineno">  610 </span><span class="spaces">    </span><span class="nottickedoff">pRul2aRul env = typeCheckRul env . disambiguate termPrimDisAmb</span>
+<span class="lineno">  611 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckRul :: </span>
+<span class="lineno">  612 </span><span class="spaces">                 </span><span class="nottickedoff">String -- environment name (pattern / proc name)</span>
+<span class="lineno">  613 </span><span class="spaces">              </span><span class="nottickedoff">-&gt; (P_Rule (TermPrim, DisambPrim)) -&gt; Guarded Rule</span>
+<span class="lineno">  614 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckRul env P_Ru { rr_fps = orig</span>
+<span class="lineno">  615 </span><span class="spaces">                          </span><span class="nottickedoff">, rr_nm = nm</span>
+<span class="lineno">  616 </span><span class="spaces">                          </span><span class="nottickedoff">, rr_exp = expr</span>
+<span class="lineno">  617 </span><span class="spaces">                          </span><span class="nottickedoff">, rr_mean = meanings</span>
+<span class="lineno">  618 </span><span class="spaces">                          </span><span class="nottickedoff">, rr_msg = msgs</span>
+<span class="lineno">  619 </span><span class="spaces">                          </span><span class="nottickedoff">, rr_viol = viols</span>
+<span class="lineno">  620 </span><span class="spaces">                          </span><span class="nottickedoff">}</span>
+<span class="lineno">  621 </span><span class="spaces">     </span><span class="nottickedoff">= unguard $ </span>
+<span class="lineno">  622 </span><span class="spaces">         </span><span class="nottickedoff">(\ (exp',_) -&gt; </span>
+<span class="lineno">  623 </span><span class="spaces">           </span><span class="nottickedoff">(\ vls -&gt;</span>
+<span class="lineno">  624 </span><span class="spaces">             </span><span class="nottickedoff">Ru { rrnm = nm</span>
+<span class="lineno">  625 </span><span class="spaces">                </span><span class="nottickedoff">, rrexp = exp'</span>
+<span class="lineno">  626 </span><span class="spaces">                </span><span class="nottickedoff">, rrfps = orig</span>
+<span class="lineno">  627 </span><span class="spaces">                </span><span class="nottickedoff">, rrmean = pMean2aMean deflangCtxt deffrmtCtxt meanings</span>
+<span class="lineno">  628 </span><span class="spaces">                </span><span class="nottickedoff">, rrmsg = map (pMess2aMess deflangCtxt deffrmtCtxt) msgs</span>
+<span class="lineno">  629 </span><span class="spaces">                </span><span class="nottickedoff">, rrviol = vls</span>
+<span class="lineno">  630 </span><span class="spaces">                </span><span class="nottickedoff">, rrtyp = sign exp'</span>
+<span class="lineno">  631 </span><span class="spaces">                </span><span class="nottickedoff">, rrdcl = Nothing</span>
+<span class="lineno">  632 </span><span class="spaces">                </span><span class="nottickedoff">, r_env = env</span>
+<span class="lineno">  633 </span><span class="spaces">                </span><span class="nottickedoff">, r_usr = UserDefined</span>
+<span class="lineno">  634 </span><span class="spaces">                </span><span class="nottickedoff">, isSignal = not . null . concatMap arRoles . filter (\x -&gt; nm `elem` arRules x) $ allRoleRules </span>
+<span class="lineno">  635 </span><span class="spaces">                </span><span class="nottickedoff">})</span>
+<span class="lineno">  636 </span><span class="spaces">           </span><span class="nottickedoff">&lt;$&gt; maybeOverGuarded (typeCheckPairView orig exp') viols)</span>
+<span class="lineno">  637 </span><span class="spaces">         </span><span class="nottickedoff">&lt;$&gt; typecheckTerm expr</span>
+<span class="lineno">  638 </span><span class="spaces">    </span><span class="nottickedoff">pIdentity2aIdentity :: P_IdentDef -&gt; Guarded IdentityDef</span>
+<span class="lineno">  639 </span><span class="spaces">    </span><span class="nottickedoff">pIdentity2aIdentity pidt</span>
+<span class="lineno">  640 </span><span class="spaces">     </span><span class="nottickedoff">= case disambiguate termPrimDisAmb pidt of</span>
+<span class="lineno">  641 </span><span class="spaces">           </span><span class="nottickedoff">P_Id { ix_lbl = lbl</span>
+<span class="lineno">  642 </span><span class="spaces">                </span><span class="nottickedoff">, ix_ats = isegs</span>
+<span class="lineno">  643 </span><span class="spaces">                </span><span class="nottickedoff">} -&gt; (\isegs' -&gt; Id { idPos = orig</span>
+<span class="lineno">  644 </span><span class="spaces">                                    </span><span class="nottickedoff">, idLbl = lbl</span>
+<span class="lineno">  645 </span><span class="spaces">                                    </span><span class="nottickedoff">, idCpt = conc</span>
+<span class="lineno">  646 </span><span class="spaces">                                    </span><span class="nottickedoff">, identityAts = isegs'</span>
+<span class="lineno">  647 </span><span class="spaces">                                    </span><span class="nottickedoff">}) &lt;$&gt; traverse pIdentSegment2IdentSegment isegs</span>
+<span class="lineno">  648 </span><span class="spaces">     </span><span class="nottickedoff">where conc = pCpt2aCpt (ix_cpt pidt)</span>
+<span class="lineno">  649 </span><span class="spaces">           </span><span class="nottickedoff">orig = ix_pos pidt</span>
+<span class="lineno">  650 </span><span class="spaces">           </span><span class="nottickedoff">pIdentSegment2IdentSegment :: P_IdentSegmnt (TermPrim, DisambPrim) -&gt; Guarded IdentitySegment</span>
+<span class="lineno">  651 </span><span class="spaces">           </span><span class="nottickedoff">pIdentSegment2IdentSegment (P_IdentExp ojd) =</span>
+<span class="lineno">  652 </span><span class="spaces">              </span><span class="nottickedoff">unguard $</span>
+<span class="lineno">  653 </span><span class="spaces">                </span><span class="nottickedoff">(\o -&gt; case findExact genLattice $ name (source $ objctx o) `mjoin` name conc of</span>
+<span class="lineno">  654 </span><span class="spaces">                         </span><span class="nottickedoff">[] -&gt; mustBeOrdered orig (Src, origin ojd, objctx o) pidt</span>
+<span class="lineno">  655 </span><span class="spaces">                         </span><span class="nottickedoff">_  -&gt; pure $ IdentityExp o{objctx = addEpsilonLeft' (name conc) (objctx o)}</span>
+<span class="lineno">  656 </span><span class="spaces">                </span><span class="nottickedoff">) &lt;$&gt; pObjDefDisamb2aObjDef ojd</span>
+<span class="lineno">  657 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  658 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckPairView :: Origin -&gt; Expression -&gt; PairView (Term (TermPrim, DisambPrim)) -&gt; Guarded (PairView Expression)</span>
+<span class="lineno">  659 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckPairView o x (PairView lst)</span>
+<span class="lineno">  660 </span><span class="spaces">     </span><span class="nottickedoff">= PairView &lt;$&gt; traverse (typeCheckPairViewSeg o x) lst</span>
+<span class="lineno">  661 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckPairViewSeg :: Origin -&gt; Expression -&gt; (PairViewSegment (Term (TermPrim, DisambPrim))) -&gt; Guarded (PairViewSegment Expression)</span>
+<span class="lineno">  662 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckPairViewSeg _ _ (PairViewText orig x) = pure (PairViewText orig x)</span>
+<span class="lineno">  663 </span><span class="spaces">    </span><span class="nottickedoff">typeCheckPairViewSeg o t (PairViewExp orig s x)</span>
+<span class="lineno">  664 </span><span class="spaces">     </span><span class="nottickedoff">= unguard $</span>
+<span class="lineno">  665 </span><span class="spaces">         </span><span class="nottickedoff">(\(e,(b,_)) -&gt; case (findSubsets genLattice (mjoin (name (source e)) (getConcept s t))) of</span>
+<span class="lineno">  666 </span><span class="spaces">                          </span><span class="nottickedoff">[] -&gt; mustBeOrdered o (Src, (origin (fmap fst x)), e) (s,t)</span>
+<span class="lineno">  667 </span><span class="spaces">                          </span><span class="nottickedoff">lst -&gt; if b || and (map (name (source e) `elem`) lst)</span>
+<span class="lineno">  668 </span><span class="spaces">                                 </span><span class="nottickedoff">then pure (PairViewExp orig s e)</span>
+<span class="lineno">  669 </span><span class="spaces">                                 </span><span class="nottickedoff">else mustBeBound (origin (fmap fst x)) [(Src, e)])</span>
+<span class="lineno">  670 </span><span class="spaces">         </span><span class="nottickedoff">&lt;$&gt; typecheckTerm x</span>
+<span class="lineno">  671 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  672 </span><span class="spaces">    </span><span class="nottickedoff">pPurp2aPurp :: PPurpose -&gt; Guarded Purpose</span>
+<span class="lineno">  673 </span><span class="spaces">    </span><span class="nottickedoff">pPurp2aPurp PRef2 { pexPos    = orig     -- :: Origin</span>
+<span class="lineno">  674 </span><span class="spaces">                      </span><span class="nottickedoff">, pexObj    = objref   -- :: PRefObj</span>
+<span class="lineno">  675 </span><span class="spaces">                      </span><span class="nottickedoff">, pexMarkup = pmarkup  -- :: P_Markup</span>
+<span class="lineno">  676 </span><span class="spaces">                      </span><span class="nottickedoff">, pexRefIDs  = refIds  -- :: [String]</span>
+<span class="lineno">  677 </span><span class="spaces">                      </span><span class="nottickedoff">}</span>
+<span class="lineno">  678 </span><span class="spaces">     </span><span class="nottickedoff">= (\ obj -&gt; Expl { explPos      = orig</span>
+<span class="lineno">  679 </span><span class="spaces">                      </span><span class="nottickedoff">, explObj      = obj</span>
+<span class="lineno">  680 </span><span class="spaces">                      </span><span class="nottickedoff">, explMarkup   = pMarkup2aMarkup deflangCtxt deffrmtCtxt pmarkup</span>
+<span class="lineno">  681 </span><span class="spaces">                      </span><span class="nottickedoff">, explUserdefd = True</span>
+<span class="lineno">  682 </span><span class="spaces">                      </span><span class="nottickedoff">, explRefIds   = refIds</span>
+<span class="lineno">  683 </span><span class="spaces">                      </span><span class="nottickedoff">})</span>
+<span class="lineno">  684 </span><span class="spaces">       </span><span class="nottickedoff">&lt;$&gt; pRefObj2aRefObj objref</span>
+<span class="lineno">  685 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj :: PRef2Obj -&gt; Guarded ExplObj</span>
+<span class="lineno">  686 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2ConceptDef  s ) = pure$ ExplConceptDef (lookupConceptDef s)</span>
+<span class="lineno">  687 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2Declaration tm) = ExplDeclaration &lt;$&gt; (namedRel2Decl tm)</span>
+<span class="lineno">  688 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2Rule        s ) = pure$ ExplRule s</span>
+<span class="lineno">  689 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2IdentityDef s ) = pure$ ExplIdentityDef s</span>
+<span class="lineno">  690 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2ViewDef     s ) = pure$ ExplViewDef s</span>
+<span class="lineno">  691 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2Pattern     s ) = pure$ ExplPattern s</span>
+<span class="lineno">  692 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2Interface   s ) = pure$ ExplInterface s</span>
+<span class="lineno">  693 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2Context     s ) = pure$ ExplContext s</span>
+<span class="lineno">  694 </span><span class="spaces">    </span><span class="nottickedoff">pRefObj2aRefObj (PRef2Fspc        s ) = pure$ ExplContext s</span>
+<span class="lineno">  695 </span><span class="spaces">    </span><span class="nottickedoff">lookupConceptDef :: String -&gt; ConceptDef</span>
+<span class="lineno">  696 </span><span class="spaces">    </span><span class="nottickedoff">lookupConceptDef s</span>
+<span class="lineno">  697 </span><span class="spaces">     </span><span class="nottickedoff">= case filter (\cd -&gt; name cd == s) allConceptDefs of</span>
+<span class="lineno">  698 </span><span class="spaces">        </span><span class="nottickedoff">[]    -&gt; Cd{cdpos=OriginUnknown, cdcpt=s, cdplug=True, cddef=&quot;&quot;, cdtyp=&quot;&quot;, cdref=&quot;&quot;, cdfrom=n1} </span>
+<span class="lineno">  699 </span><span class="spaces">        </span><span class="nottickedoff">(x:_) -&gt; x</span>
+<span class="lineno">  700 </span><span class="spaces">    </span><span class="nottickedoff">allConceptDefs :: [ConceptDef]</span>
+<span class="lineno">  701 </span><span class="spaces">    </span><span class="nottickedoff">allConceptDefs = p_conceptdefs++concatMap pt_cds p_patterns</span>
+<span class="lineno">  702 </span><span class="spaces">    </span><span class="nottickedoff">allRoleRules :: [A_RoleRule]</span>
+<span class="lineno">  703 </span><span class="spaces">    </span><span class="nottickedoff">allRoleRules = map pRoleRule2aRoleRule </span>
+<span class="lineno">  704 </span><span class="spaces">                      </span><span class="nottickedoff">(p_roleRules ++ concatMap pt_RRuls p_patterns)</span></span>
+<span class="lineno">  705 </span>pDisAmb2Expr :: (TermPrim, DisambPrim) -&gt; Guarded Expression
+<span class="lineno">  706 </span><span class="decl"><span class="nottickedoff">pDisAmb2Expr (_,Known x) = pure x</span>
+<span class="lineno">  707 </span><span class="spaces"></span><span class="nottickedoff">pDisAmb2Expr (_,Rel [x]) = pure x</span>
+<span class="lineno">  708 </span><span class="spaces"></span><span class="nottickedoff">pDisAmb2Expr (o,Rel rs)  = cannotDisambRel o rs</span>
+<span class="lineno">  709 </span><span class="spaces"></span><span class="nottickedoff">pDisAmb2Expr (o,_)       = cannotDisamb o</span></span>
+<span class="lineno">  710 </span>
+<span class="lineno">  711 </span>pMean2aMean :: Lang           -- The default language
+<span class="lineno">  712 </span>            -&gt; PandocFormat   -- The default pandocFormat
+<span class="lineno">  713 </span>            -&gt; [PMeaning] -&gt; AMeaning
+<span class="lineno">  714 </span><span class="decl"><span class="nottickedoff">pMean2aMean defLanguage defFormat pmeanings</span>
+<span class="lineno">  715 </span><span class="spaces"> </span><span class="nottickedoff">= AMeaning [ pMarkup2aMarkup defLanguage defFormat pmarkup | PMeaning pmarkup &lt;-pmeanings ]</span></span>
+<span class="lineno">  716 </span>pMess2aMess :: Lang           -- The default language
+<span class="lineno">  717 </span>            -&gt; PandocFormat   -- The default pandocFormat
+<span class="lineno">  718 </span>            -&gt; PMessage -&gt; A_Markup
+<span class="lineno">  719 </span><span class="decl"><span class="nottickedoff">pMess2aMess defLanguage defFormat (PMessage x) = pMarkup2aMarkup defLanguage defFormat x</span></span>
+<span class="lineno">  720 </span>pMarkup2aMarkup :: Lang           -- The default language
+<span class="lineno">  721 </span>                -&gt; PandocFormat   -- The default pandocFormat
+<span class="lineno">  722 </span>                -&gt; P_Markup -&gt; A_Markup
+<span class="lineno">  723 </span><span class="decl"><span class="nottickedoff">pMarkup2aMarkup defLanguage defFormat</span>
+<span class="lineno">  724 </span><span class="spaces">   </span><span class="nottickedoff">P_Markup  { mLang   = ml</span>
+<span class="lineno">  725 </span><span class="spaces">             </span><span class="nottickedoff">, mFormat = mpdf</span>
+<span class="lineno">  726 </span><span class="spaces">             </span><span class="nottickedoff">, mString = str</span>
+<span class="lineno">  727 </span><span class="spaces">             </span><span class="nottickedoff">}</span>
+<span class="lineno">  728 </span><span class="spaces"> </span><span class="nottickedoff">= A_Markup { amLang = fromMaybe defLanguage ml -- The language is always defined; if not by the user, then by default.</span>
+<span class="lineno">  729 </span><span class="spaces">            </span><span class="nottickedoff">, amFormat = fmt</span>
+<span class="lineno">  730 </span><span class="spaces">            </span><span class="nottickedoff">, amPandoc = string2Blocks fmt str</span>
+<span class="lineno">  731 </span><span class="spaces">            </span><span class="nottickedoff">}</span>
+<span class="lineno">  732 </span><span class="spaces">     </span><span class="nottickedoff">where</span>
+<span class="lineno">  733 </span><span class="spaces">       </span><span class="nottickedoff">fmt = fromMaybe defFormat mpdf</span></span>           -- The pandoc format is always defined; if not by the user, then by default.
+<span class="lineno">  734 </span>
+<span class="lineno">  735 </span>-- helpers for generating a lattice, not having to write `Atom' all the time
+<span class="lineno">  736 </span>-- TODO: Names are inconsistent: maybe call these either mUnion &amp; mIsc or mJoin &amp; mMeet? Or even lJoin and lMeet to denote the lattice.
+<span class="lineno">  737 </span>mjoin,mIsc :: a -&gt; a -&gt; FreeLattice a
+<span class="lineno">  738 </span><span class="decl"><span class="nottickedoff">mjoin a b = Join (Atom a) (Atom b)</span></span>
+<span class="lineno">  739 </span><span class="decl"><span class="nottickedoff">mIsc  a b = Meet (Atom a) (Atom b)</span></span>
+<span class="lineno">  740 </span>-- intended for finding the right expression on terms like (Src,fst)
+<span class="lineno">  741 </span>resolve :: t -&gt; (SrcOrTgt, t -&gt; (t1, (t2, t2))) -&gt; (SrcOrTgt, (t1, t2))
+<span class="lineno">  742 </span><span class="decl"><span class="nottickedoff">resolve es (p,f)</span>
+<span class="lineno">  743 </span><span class="spaces"> </span><span class="nottickedoff">= case (p,f es) of</span>
+<span class="lineno">  744 </span><span class="spaces">  </span><span class="nottickedoff">(Src,(e,(b,_))) -&gt; (Src,(e,b))</span>
+<span class="lineno">  745 </span><span class="spaces">  </span><span class="nottickedoff">(Tgt,(e,(_,b))) -&gt; (Tgt,(e,b))</span></span>
+<span class="lineno">  746 </span>
+<span class="lineno">  747 </span>maybeOverGuarded :: Applicative f =&gt; (t -&gt; f a) -&gt; Maybe t -&gt; f (Maybe a)
+<span class="lineno">  748 </span><span class="decl"><span class="nottickedoff">maybeOverGuarded _ Nothing = pure Nothing</span>
+<span class="lineno">  749 </span><span class="spaces"></span><span class="nottickedoff">maybeOverGuarded f (Just x) = Just &lt;$&gt; f x</span></span>
+<span class="lineno">  750 </span>
+<span class="lineno">  751 </span>data TT a  -- (In order of increasing strictness. If you are unsure which to pick: just use MBE, it'll usually work fine)
+<span class="lineno">  752 </span> = UNI a a -- find the union of these types, return it.
+<span class="lineno">  753 </span> | ISC a a -- find the intersection of these types, return it.
+<span class="lineno">  754 </span> | MBE a a -- must be equal: must be (made) of equal type. If these types are comparable, it returns the greatest.
+<span class="lineno">  755 </span> | MBG a a -- The first of these types must be the greatest, if so, return it (error otherwise)
+<span class="lineno">  756 </span> -- SJC: difference between UNI and MBE
+<span class="lineno">  757 </span> -- in general, UNI is less strict than MBE:
+<span class="lineno">  758 </span> --   suppose A ≤ C, B ≤ C, and C is the least such concept (e.g. if A≤D and B≤D then C≤D)
+<span class="lineno">  759 </span> --   in this case UNI A B will yield C (if both A and B are generalizable), while MBE A B will give an error
+<span class="lineno">  760 </span> --   note that in case of A ≤ C, B ≤ C, A ≤ D, B ≤ D (and there is no order between C and D), both will give an error
+<span class="lineno">  761 </span> --   the error message, however, should be different:
+<span class="lineno">  762 </span> --     for MBE it says that A and B must be of the same type, and suggests adding an order between A and B
+<span class="lineno">  763 </span> --     for UNI it says that it cannot decide whether A \/ B is of type C or D, and suggests adding an order between C and D
+<span class="lineno">  764 </span> --   In addition, MBE requires that both sides are not generalizable. UNI does not, and simply propagates this property.
+<span class="lineno">  765 </span> -- MBG is like MBE, but will only try to generalize the right hand side (when allowed)
+<span class="lineno">  766 </span>
+<span class="lineno">  767 </span>deriv' :: (Applicative f)
+<span class="lineno">  768 </span>       =&gt; ((SrcOrTgt, t -&gt; (Expression, (Bool, Bool))), (SrcOrTgt, t -&gt; (Expression, (Bool, Bool))))
+<span class="lineno">  769 </span>       -&gt; t
+<span class="lineno">  770 </span>       -&gt; f ((String, Bool), (String, Bool))
+<span class="lineno">  771 </span><span class="decl"><span class="nottickedoff">deriv' (a,b) es = let (sourceOrTarget1, (e1, t1)) = resolve es a</span>
+<span class="lineno">  772 </span><span class="spaces">                      </span><span class="nottickedoff">(sourceOrTarget2, (e2, t2)) = resolve es b</span>
+<span class="lineno">  773 </span><span class="spaces">                  </span><span class="nottickedoff">in pure ((getConcept sourceOrTarget1 e1, t1), (getConcept sourceOrTarget2 e2, t2))</span></span>
+<span class="lineno">  774 </span>instance Functor TT where
+<span class="lineno">  775 </span>  <span class="decl"><span class="nottickedoff">fmap f (UNI a b) = UNI (f a) (f b)</span>
+<span class="lineno">  776 </span><span class="spaces">  </span><span class="nottickedoff">fmap f (ISC a b) = ISC (f a) (f b)</span>
+<span class="lineno">  777 </span><span class="spaces">  </span><span class="nottickedoff">fmap f (MBE a b) = MBE (f a) (f b)</span>
+<span class="lineno">  778 </span><span class="spaces">  </span><span class="nottickedoff">fmap f (MBG a b) = MBG (f a) (f b)</span></span>
+<span class="lineno">  779 </span>  
+<span class="lineno">  780 </span>-- TODO: would probably be better to return an A_Concept
+<span class="lineno">  781 </span>getConcept :: SrcOrTgt -&gt; Expression -&gt; String
+<span class="lineno">  782 </span><span class="decl"><span class="nottickedoff">getConcept Src = name . source</span>
+<span class="lineno">  783 </span><span class="spaces"></span><span class="nottickedoff">getConcept Tgt = name . target</span></span>
+<span class="lineno">  784 </span>
+
+</pre>
+</body>
+</html>

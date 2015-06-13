@@ -1,0 +1,77 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-warn-orphans #-}
+<span class="lineno">    2 </span>{- COPIED FROM http://hackage.haskell.org/package/altfloat-0.3.1
+<span class="lineno">    3 </span> - Disabled Sortable instances for instances of Prelude.Ord -}
+<span class="lineno">    4 </span>{-
+<span class="lineno">    5 </span> - Copyright (C) 2009-2010 Nick Bowler.
+<span class="lineno">    6 </span> -
+<span class="lineno">    7 </span> - License BSD2:  2-clause BSD license.  See LICENSE for full terms.
+<span class="lineno">    8 </span> - This is free software: you are free to change and redistribute it.
+<span class="lineno">    9 </span> - There is NO WARRANTY, to the extent permitted by law.
+<span class="lineno">   10 </span> -}
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>-- | 'Poset' and 'Sortable' instances for instances of 'Prelude.Ord'
+<span class="lineno">   13 </span>{-# LANGUAGE CPP #-}
+<span class="lineno">   14 </span>module Database.Design.Ampersand.Core.Poset.Instances where
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>import qualified Database.Design.Ampersand.Core.Poset.Internal as Poset
+<span class="lineno">   17 </span>import Database.Design.Ampersand.Core.Poset.Internal (Poset, partialOrder)
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>import Data.Ratio
+<span class="lineno">   20 </span>import Data.Word
+<span class="lineno">   21 </span>import Data.Int
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>#define POSET_ORD_INSTANCE(ctx, v) instance ctx Poset (v) where { \
+<span class="lineno">   24 </span>    compare = (partialOrder .) . compare; \
+<span class="lineno">   25 </span>    (&lt;)     = (&lt;); \
+<span class="lineno">   26 </span>    (&lt;=)    = (&lt;=); \
+<span class="lineno">   27 </span>    (&gt;=)    = (&gt;=); \
+<span class="lineno">   28 </span>    (&gt;)     = (&gt;); \
+<span class="lineno">   29 </span>    (&lt;==&gt;)  = const $ const True; \
+<span class="lineno">   30 </span>    (&lt;/=&gt;)  = const $ const False }
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>#define SORTABLE_ORD_INSTANCE(ctx, v) instance ctx Sortable (v) where { \
+<span class="lineno">   33 </span>    isOrdered = const True; \
+<span class="lineno">   34 </span>    sortBy f = sortBy $ (totalOrder .) . f; \
+<span class="lineno">   35 </span>    max    = max; \
+<span class="lineno">   36 </span>    min    = min; }
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>#define ORD_INSTANCE(ctx, v) \
+<span class="lineno">   39 </span>    POSET_ORD_INSTANCE(ctx, v); \
+<span class="lineno">   40 </span> {- SORTABLE_ORD_INSTANCE(ctx, v); -} \
+<span class="lineno">   41 </span>    instance ctx Poset.Ord (v)
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>ORD_INSTANCE(, Bool)
+<span class="lineno">   44 </span>ORD_INSTANCE(, Char)
+<span class="lineno">   45 </span>ORD_INSTANCE(, Int)
+<span class="lineno">   46 </span>ORD_INSTANCE(, Int8)
+<span class="lineno">   47 </span>ORD_INSTANCE(, Int16)
+<span class="lineno">   48 </span>ORD_INSTANCE(, Int32)
+<span class="lineno">   49 </span>ORD_INSTANCE(, Int64)
+<span class="lineno">   50 </span>ORD_INSTANCE(, Word)
+<span class="lineno">   51 </span>ORD_INSTANCE(, Word8)
+<span class="lineno">   52 </span>ORD_INSTANCE(, Word16)
+<span class="lineno">   53 </span>ORD_INSTANCE(, Word32)
+<span class="lineno">   54 </span>ORD_INSTANCE(, Word64)
+<span class="lineno">   55 </span>ORD_INSTANCE(, Integer)
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>ORD_INSTANCE(Integral a =&gt;, Ratio a)
+
+</pre>
+</body>
+</html>

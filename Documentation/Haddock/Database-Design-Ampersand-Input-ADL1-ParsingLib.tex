@@ -1,0 +1,134 @@
+\haddockmoduleheading{Database.Design.Ampersand.Input.ADL1.ParsingLib}
+\label{module:Database.Design.Ampersand.Input.ADL1.ParsingLib}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Database.Design.Ampersand.Input.ADL1.ParsingLib (
+    AmpParser,  pIsThere,  optList,  (<$>),  (<|>),  (<$),  (<*>),  (<*), 
+    (*>),  (<??>),  sepBy,  sepBy1,  many,  many1,  opt,  try,  choice, 
+    pMaybe,  currPos,  posOf,  valPosOf,  pAtom,  pConid,  pString,  pExpl, 
+    pVarid,  pComma,  pParens,  pBraces,  pBrackets,  pChevrons,  pKey, 
+    pOperator,  pDash,  pSemi,  pColon,  pZero,  pOne,  pInteger
+  ) where\end{verbatim}}
+\haddockendheader
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+type\ AmpParser\ a\ =\ ParsecT\ {\char 91}Token{\char 93}\ FilePos\ Identity\ a
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+pIsThere\ ::\ AmpParser\ a\ ->\ AmpParser\ Bool
+]
+\item[
+optList\ ::\ AmpParser\ {\char 91}a{\char 93}\ ->\ AmpParser\ {\char 91}a{\char 93}
+]
+\item[
+(<{\char '44}>)\ ::\ Functor\ f\ =>\ (a\ ->\ b)\ ->\ f\ a\ ->\ f\ b
+]
+\item[
+(<|>)\ ::\ ParsecT\ s\ u\ m\ a\ ->\ ParsecT\ s\ u\ m\ a\ ->\ ParsecT\ s\ u\ m\ a
+]
+\item[
+(<{\char '44})\ ::\ a\ ->\ AmpParser\ b\ ->\ AmpParser\ a
+]
+\item[
+(<*>)\ ::\ Applicative\ f\ =>\ forall\ a\ b.\ f\ (a\ ->\ b)\ ->\ f\ a\ ->\ f\ b
+]
+\item[
+(<*)\ ::\ Applicative\ f\ =>\ forall\ a\ b.\ f\ a\ ->\ f\ b\ ->\ f\ a
+]
+\item[
+(*>)\ ::\ Applicative\ f\ =>\ forall\ a\ b.\ f\ a\ ->\ f\ b\ ->\ f\ b
+]
+\item[
+(<??>)\ ::\ AmpParser\ a\ ->\ AmpParser\ (a\ ->\ a)\ ->\ AmpParser\ a
+]
+\item[
+sepBy\ ::\ Stream\ s\ m\ t\ =>\ ParsecT\ s\ u\ m\ a\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ->\ ParsecT\ s\ u\ m\ sep\ ->\ ParsecT\ s\ u\ m\ {\char 91}a{\char 93}
+]
+\item[
+sepBy1\ ::\ Stream\ s\ m\ t\ =>\ ParsecT\ s\ u\ m\ a\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ->\ ParsecT\ s\ u\ m\ sep\ ->\ ParsecT\ s\ u\ m\ {\char 91}a{\char 93}
+]
+\item[
+many\ ::\ ParsecT\ s\ u\ m\ a\ ->\ ParsecT\ s\ u\ m\ {\char 91}a{\char 93}
+]
+\item[
+many1\ ::\ Stream\ s\ m\ t\ =>\ ParsecT\ s\ u\ m\ a\ ->\ ParsecT\ s\ u\ m\ {\char 91}a{\char 93}
+]
+\item[
+opt\ ::\ AmpParser\ a\ ->\ a\ ->\ AmpParser\ a
+]
+\item[
+try\ ::\ ParsecT\ s\ u\ m\ a\ ->\ ParsecT\ s\ u\ m\ a
+]
+\item[
+choice\ ::\ Stream\ s\ m\ t\ =>\ {\char 91}ParsecT\ s\ u\ m\ a{\char 93}\ ->\ ParsecT\ s\ u\ m\ a
+]
+\item[
+pMaybe\ ::\ AmpParser\ a\ ->\ AmpParser\ (Maybe\ a)
+]
+\item[
+currPos\ ::\ AmpParser\ Origin
+]
+\item[
+posOf\ ::\ Show\ a\ =>\ AmpParser\ a\ ->\ AmpParser\ Origin
+]
+\item[
+valPosOf\ ::\ Show\ a\ =>\ AmpParser\ a\ ->\ AmpParser\ (a,\ Origin)
+]
+\item[
+pAtom\ ::\ AmpParser\ String
+]
+\item[
+pConid\ ::\ AmpParser\ String
+]
+\item[
+pString\ ::\ AmpParser\ String
+]
+\item[
+pExpl\ ::\ AmpParser\ String
+]
+\item[
+pVarid\ ::\ AmpParser\ String
+]
+\item[
+pComma\ ::\ AmpParser\ String
+]
+\item[
+pParens\ ::\ AmpParser\ a\ ->\ AmpParser\ a
+]
+\item[
+pBraces\ ::\ AmpParser\ a\ ->\ AmpParser\ a
+]
+\item[
+pBrackets\ ::\ AmpParser\ a\ ->\ AmpParser\ a
+]
+\item[
+pChevrons\ ::\ AmpParser\ a\ ->\ AmpParser\ a
+]
+\item[
+pKey\ ::\ String\ ->\ AmpParser\ String
+]
+\item[
+pOperator\ ::\ String\ ->\ AmpParser\ String
+]
+\item[
+pDash\ ::\ AmpParser\ String
+]
+\item[
+pSemi\ ::\ AmpParser\ String
+]
+\item[
+pColon\ ::\ AmpParser\ String
+]
+\item[
+pZero\ ::\ AmpParser\ String
+]
+\item[
+pOne\ ::\ AmpParser\ String
+]
+\item[
+pInteger\ ::\ AmpParser\ Int
+]
+\end{haddockdesc}

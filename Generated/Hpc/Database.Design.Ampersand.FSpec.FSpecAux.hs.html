@@ -1,0 +1,147 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=CP850">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="lineno">    1 </span>module Database.Design.Ampersand.FSpec.FSpecAux 
+<span class="lineno">    2 </span>  (getDeclarationTableInfo,getConceptTableInfo)
+<span class="lineno">    3 </span>where
+<span class="lineno">    4 </span>import Database.Design.Ampersand.Basics
+<span class="lineno">    5 </span>import Database.Design.Ampersand.Core.AbstractSyntaxTree
+<span class="lineno">    6 </span>import Database.Design.Ampersand.Classes.Relational(isTrue)
+<span class="lineno">    7 </span>import Database.Design.Ampersand.FSpec.ToFSpec.NormalForms(disjNF)
+<span class="lineno">    8 </span>import Database.Design.Ampersand.FSpec.Plug(plugpath)
+<span class="lineno">    9 </span>import Database.Design.Ampersand.FSpec.FSpec
+<span class="lineno">   10 </span>import Data.List
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>fatal :: Int -&gt; String -&gt; a
+<span class="lineno">   13 </span><span class="decl"><span class="nottickedoff">fatal = fatalMsg &quot;FSpecAux&quot;</span></span>
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>--WHY bestaat sqlRelPlugs?
+<span class="lineno">   16 </span>-- | sqlRelPlugs levert alle mogelijkheden om een plug met twee velden te vinden waarin (primitieve) expressie e is opgeslagen.
+<span class="lineno">   17 </span>-- | sqlRelPlugs mag alleen gebruikt worden voor primitieve expressies EDcD, EDcI, en EDcV
+<span class="lineno">   18 </span>-- | Als (plug,sf,tf) `elem` sqlRelPlugs fSpec e, dan geldt e = (fldexpr sf)~;(fldexpr tf)
+<span class="lineno">   19 </span>-- | Als sqlRelPlugs fSpec e = [], dan volstaat een enkele tabel lookup niet om e te bepalen
+<span class="lineno">   20 </span>-- | Opletten dus, met de nieuwe ISA-structuur van 2013, omdat daarin tabellen bestaan met disjuncte verzamelingen...
+<span class="lineno">   21 </span>sqlRelPlugs :: FSpec -&gt; Expression  -&gt; [(PlugSQL,SqlField,SqlField)] --(plug,source,target)
+<span class="lineno">   22 </span><span class="decl"><span class="nottickedoff">sqlRelPlugs fSpec e</span>
+<span class="lineno">   23 </span><span class="spaces">   </span><span class="nottickedoff">= [ (plug,fld0,fld1)</span>
+<span class="lineno">   24 </span><span class="spaces">     </span><span class="nottickedoff">| InternalPlug plug&lt;-plugInfos fSpec</span>
+<span class="lineno">   25 </span><span class="spaces">     </span><span class="nottickedoff">, (fld0,fld1)&lt;-sqlPlugFields fSpec plug e</span>
+<span class="lineno">   26 </span><span class="spaces">     </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   27 </span>
+<span class="lineno">   28 </span>-- return table name and source and target column names for relation rel, or nothing if the relation is not found
+<span class="lineno">   29 </span>getDeclarationTableInfo :: FSpec -&gt; Declaration -&gt; (PlugSQL,SqlField,SqlField)
+<span class="lineno">   30 </span><span class="decl"><span class="nottickedoff">getDeclarationTableInfo fSpec decl =</span>
+<span class="lineno">   31 </span><span class="spaces"> </span><span class="nottickedoff">case decl of</span>
+<span class="lineno">   32 </span><span class="spaces">   </span><span class="nottickedoff">Sgn{} -&gt;</span>
+<span class="lineno">   33 </span><span class="spaces">      </span><span class="nottickedoff">case sqlRelPlugs fSpec (EDcD decl) of</span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="nottickedoff">[plugInfo] -&gt; plugInfo</span>
+<span class="lineno">   35 </span><span class="spaces">            </span><span class="nottickedoff">[]         -&gt; fatal 527 &quot;Reference to a non-existing plug.&quot;</span>
+<span class="lineno">   36 </span><span class="spaces">            </span><span class="nottickedoff">[(t1,src1,trg1),(t2,src2,trg2)]</span>
+<span class="lineno">   37 </span><span class="spaces">               </span><span class="nottickedoff">-&gt; if t1 ==t2 &amp;&amp; src1 == trg2 &amp;&amp; trg1 == src2</span>
+<span class="lineno">   38 </span><span class="spaces">                  </span><span class="nottickedoff">then (t1,src1,trg1)</span>
+<span class="lineno">   39 </span><span class="spaces">                  </span><span class="nottickedoff">else fatal 426 $ &quot;Multiple plugs for relation &quot;++ show decl ++&quot;\n&quot; ++</span>
+<span class="lineno">   40 </span><span class="spaces">                            </span><span class="nottickedoff">intercalate &quot;\n\n&quot; (map showPInfo [(t1,src1,trg1),(t2,src2,trg2)])</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="nottickedoff">pinfos     -&gt; fatal 428 $ &quot;Multiple plugs for relation &quot;++ show decl ++&quot;\n&quot; ++</span>
+<span class="lineno">   42 </span><span class="spaces">                            </span><span class="nottickedoff">intercalate &quot;\n\n&quot; (map showPInfo pinfos)</span>
+<span class="lineno">   43 </span><span class="spaces">                      </span><span class="nottickedoff">-- TODO: some relations return multiple plugs (see ticket #217)</span>
+<span class="lineno">   44 </span><span class="spaces">   </span><span class="nottickedoff">_     -&gt; fatal 420 &quot;getDeclarationTableInfo must not be used on this type of declaration!&quot;</span>
+<span class="lineno">   45 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
+<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">showPInfo (tab, src, trg) = intercalate &quot;  \n&quot;</span>
+<span class="lineno">   47 </span><span class="spaces">                                 </span><span class="nottickedoff">[ &quot;Table: &quot;++name tab</span>
+<span class="lineno">   48 </span><span class="spaces">                                 </span><span class="nottickedoff">, &quot;  sourceField: &quot;++fldname src</span>
+<span class="lineno">   49 </span><span class="spaces">                                 </span><span class="nottickedoff">, &quot;  targetField: &quot;++fldname trg</span>
+<span class="lineno">   50 </span><span class="spaces">                                 </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>
+<span class="lineno">   53 </span>getConceptTableInfo :: FSpec -&gt; A_Concept -&gt; (PlugSQL,SqlField)
+<span class="lineno">   54 </span><span class="decl"><span class="nottickedoff">getConceptTableInfo fSpec cpt </span>
+<span class="lineno">   55 </span><span class="spaces">  </span><span class="nottickedoff">= case lookupCpt fSpec cpt of</span>
+<span class="lineno">   56 </span><span class="spaces">      </span><span class="nottickedoff">[]    -&gt; fatal 55 $ &quot;No plug found for concept '&quot;++name cpt++&quot;'.&quot;</span>
+<span class="lineno">   57 </span><span class="spaces">      </span><span class="nottickedoff">(x:_) -&gt; x</span></span>  --Any of the resulting plugs should do. 
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>--iff proven that e is equivalent to plugexpr
+<span class="lineno">   60 </span>--   AND not proven that e is not equivalent to plugexpr
+<span class="lineno">   61 </span>--then return (fld0,fld1)
+<span class="lineno">   62 </span>--TODO -&gt; can you prove for all e whether e is equivalent to plugexpr or not?
+<span class="lineno">   63 </span>sqlPlugFields :: FSpec -&gt; PlugSQL -&gt; Expression  -&gt; [(SqlField, SqlField)]
+<span class="lineno">   64 </span><span class="decl"><span class="nottickedoff">sqlPlugFields fSpec p e' =</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">let e = disjNF (getOpts fSpec) e' -- SJ20140207 Why is this normalization necessary?</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">in nub</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">[(fld0,fld1)</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">| fld0&lt;-[f |f&lt;-plugFields p,target (fldexpr f)==source e] --fld0 must be a field matching the source of e</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">, fld1&lt;-[f |f&lt;-plugFields p,target (fldexpr f)==target e] --fld1 must be a field matching the target of e</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">, Just plugexpr &lt;- [plugpath p fld0 fld1] --the smallest expression from fld0 to fld1 (both in same plug)</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">, let se = fldexpr fld0</span>
+<span class="lineno">   72 </span><span class="spaces">              </span><span class="nottickedoff">te = fldexpr fld1</span>
+<span class="lineno">   73 </span><span class="spaces">              </span><span class="nottickedoff">bs = (isTrue.disjNF (getOpts fSpec)) (notCpl e .\/. flp se .:. te)    --       e |- se~;te</span>
+<span class="lineno">   74 </span><span class="spaces">              </span><span class="nottickedoff">bt = (isTrue.disjNF (getOpts fSpec)) (notCpl (flp se .:. te) .\/. e)  --       se~;te |- e</span>
+<span class="lineno">   75 </span><span class="spaces">        </span><span class="nottickedoff">, --reasons why e is equivalent to plugexpr:</span>
+<span class="lineno">   76 </span><span class="spaces">           </span><span class="nottickedoff">--because e and plugexpr are equal</span>
+<span class="lineno">   77 </span><span class="spaces">           </span><span class="nottickedoff">e==plugexpr</span>
+<span class="lineno">   78 </span><span class="spaces">     </span><span class="nottickedoff">--   || because1 e fld0 fld1</span>
+<span class="lineno">   79 </span><span class="spaces">     </span><span class="nottickedoff">--OR e is equivalent to plugexpr for some other reason (requires reasoning)</span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="nottickedoff">|| bs &amp;&amp; bt     ]</span></span>                                          --       e = se~;te
+<span class="lineno">   81 </span>        {- the above should be enough.. but the relation algebra calculations
+<span class="lineno">   82 </span>           are not good enough yet. In particular:
+<span class="lineno">   83 </span>             isFalse ((I/\x);e /\ -e)
+<span class="lineno">   84 </span>           and
+<span class="lineno">   85 </span>             isTrue  ((I/\e;e~);e \/ -e)
+<span class="lineno">   86 </span>           do not work (these should yield True instead of False in both cases)
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>           The code below fixes exactly these ommissions
+<span class="lineno">   89 </span>      --
+<span class="lineno">   90 </span>        || (isProp (se) &amp;&amp; (te == e)
+<span class="lineno">   91 </span>           &amp;&amp; (isTrue$disjNF (getOpts fSpec)$ let c = source e in (EDcI c ./\. simplF [e,flp e] ) .\/. notCpl se))
+<span class="lineno">   92 </span>        || (isProp (te) &amp;&amp; se==flp e
+<span class="lineno">   93 </span>           &amp;&amp; (isTrue$disjNF (getOpts fSpec)$ let c = source e in (EDcI c ./\. simplF [e,flp e] ) .\/. notCpl te))
+<span class="lineno">   94 </span>        -- found another exception:
+<span class="lineno">   95 </span>        --     isFalse (I;I /\ -I)
+<span class="lineno">   96 </span>        --   and
+<span class="lineno">   97 </span>        --     isTrue  (I;I \/ -I)
+<span class="lineno">   98 </span>        --   yield False, but should yield True
+<span class="lineno">   99 </span>        --
+<span class="lineno">  100 </span>        || (  (se == te) &amp;&amp; isIdent e &amp;&amp; (isSur se)  )
+<span class="lineno">  101 </span>        , --TODO -&gt; reasons why e is not equivalent to plugexpr:
+<span class="lineno">  102 </span>        True
+<span class="lineno">  103 </span>        ]
+<span class="lineno">  104 </span>  where
+<span class="lineno">  105 </span>  -- simplF: replace a;a~ by I if INJ&amp;TOT
+<span class="lineno">  106 </span>  simplF ks = simplify ( if null fs || null (head fs) then replF ks else replF $ head fs )
+<span class="lineno">  107 </span>    where fs = [ts | ECps ts &lt;- [simplify $ ECps ks]] -- if null, replF will probably not do a lot.
+<span class="lineno">  108 </span>  simplF ks = case simplify (foldr1 .:. ks) of
+<span class="lineno">  109 </span>                 t@ECps{} -&gt; simplify (replF (exprCps2list t))
+<span class="lineno">  110 </span>                 _        -&gt; simplify (replF ks)
+<span class="lineno">  111 </span>           -- null occurs especialy in cases of [I;e] and [e;I]
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>  replF [k:k2]    | k == flp k2 &amp;&amp; isInj k &amp;&amp; isTot k = EDcI (source k)
+<span class="lineno">  114 </span>  replF (k:k2:ks) | k == flp k2 &amp;&amp; isInj k &amp;&amp; isTot k = replF ks
+<span class="lineno">  115 </span>  replF [a]                                           = a
+<span class="lineno">  116 </span>  replF (k:k2:ks) | fs /= [k2:ks]
+<span class="lineno">  117 </span>   = case res of ECps{} -&gt; replF (exprCps2list res) ; _ -&gt; ECps (k,res)
+<span class="lineno">  118 </span>     where res = replF (k2:ks)
+<span class="lineno">  119 </span>           fs  = case res of ECps{} -&gt; [exprCps2list res] ; _ -&gt; []
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>  replF [] -- this should not occur here, and if it does, it might cause errors in other code that should be solved here
+<span class="lineno">  122 </span>   = fatal 542 &quot;Could not define a properly typed I for ECps[] in replF in sqlPlugFields in Prototype/RelBinGenSQL.hs&quot;
+<span class="lineno">  123 </span>           -- this error does not guarantee, however, that simplF yields no ECps []. In particular: simplify (ECps [I;I]) == ECps []
+<span class="lineno">  124 </span>  replF ks = ECps (ks)
+<span class="lineno">  125 </span>  -----------------
+<span class="lineno">  126 </span>  -}
+<span class="lineno">  127 </span>                                 
+
+</pre>
+</body>
+</html>
