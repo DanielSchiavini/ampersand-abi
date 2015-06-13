@@ -29,7 +29,7 @@ After analyzing the current Ampersand parser error messages, we identified the f
 	It is unlikely that users will easily find the exact originating issue in their source file when they are overwhelmed with a multitude of error messages. % using plural to avoid repeating his/her
 \end {description}
 %
-Based on the objective Ampersand parser error characteristics, we defined the following definition to distinguish between good, bad and average error messages:
+Based on these objective properties to judge que quality of the parsing errors, we defined the following criteria to distinguish between good, bad and average error messages:
 %
 \begin{description}
 	\item [Bad error message] A message is considered to be bad if one of the criteria blow is fulfilled:
@@ -47,18 +47,18 @@ Based on the objective Ampersand parser error characteristics, we defined the fo
 	\item [Average error message] A message is considered to be of average quality if one of the criteria blow is fulfilled:
 		\begin{description}
 			\item [Position]
-			The position has a deviation between 5 and 10 columns positions from where the actual error is made.
+			The position has a deviation between 5 and 10 column positions from where the actual error is made.
 			\item [Accuracy]~
 				\begin{itemize}
-					\item 	The provided error description is not an exact description of the error but provides however useful information to discover the actual issue.
-					\item 	The provided error description is not appointing the main, originating error but the link to the actual error can be discovered based on the provided information.
+					\item 	The provided error description is not an exact description of the error, but provides 6useful information to discover the actual issue.
+					\item 	The provided error description is not appointing the main originating error, but the link to the actual error can be discovered based on the provided information.
 					\item 	The provided hint is incorrect.
 				\end {itemize}
 			\item[Conciseness]
 			2 or 3 errors are mentioned by the Ampersand parser.
 		\end {description}
 		
-	\item [Good error message] We can state that any error message being not bad nor average is good.
+	\item [Good error message] We state that any error message being not bad nor average is good.
 \end {description}
 
 \subsubsection{Gathering process}

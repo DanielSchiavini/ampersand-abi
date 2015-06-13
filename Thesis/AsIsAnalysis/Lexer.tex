@@ -5,33 +5,33 @@
 The lexer module is responsible to split up the input stream into tokens.
 Tokens are meaningful pieces of the input string that can be recognized by the parser.
 
-The following improvement points were identified after analysis:
+The following improvement points were identified after the analysis:
 \begin{description}
   \item[Dispersed error messages]
     The error messages produced by the lexer are of good quality.
     Each error message is however defined directly within the corresponding lexer function making the maintenance harder.
   \item[Complex token structure]
-    The token structure is complex and confusing.
-    Two values are present in the token, of which one \texttt{val1} is never used.
-    There is no distinction between the values used to identify the content of the token and the ones to determine the position of the token.
+    The token structure is complex and confusing (the structure is given below).
+    Two values are present in the token, of which one (\texttt{val1}) is never used.
+    There is no distinction between the values used to identify the content of the token and the ones to determine the position of the token, i.e. they are in the same data type.
   \item[Module structuring]
     In the lexer, the actual lexing functions are intermingled with data types, supporting functions and error message texts.
-    This makes the lexer hard to understand and to maintain.
+    This makes the lexer harder to understand and to maintain.
   \item[Language support]
-    The errors are returned in English only, no multilingual support is available.
+    The errors are returned in English only, no multilingual support is available (or easy to implement).
   \item[No support for warnings]
-    The lexer can only return errors, warnings are not supported. 
+    The lexer can only return errors, warnings are not supported.
   \item[Strings only]
-    Token values are stored as strings for all types, with no conversion of integer values.
+    Token values are stored as strings for all types, with no conversion of values, e.g. integers.
   \item[Lacking documentation]
     There was no documentation available on how the lexer was designed and structured.
 \end{description}
 
-
 \subsubsection{Token structure}
+\label{lexer-token}
 The old token has the following structure:
 
-\begin{verbatim}
+\begin{haskell}
 data Token = Tok { tp' :: TokenType
                  , val1 :: String
                  , val2 :: String
@@ -57,7 +57,7 @@ data TokenType
   | TkSpace
   | TkError
   deriving (Eq, Ord)
-\end{verbatim}
+\end{haskell}
 %
 The arguments have the following purpose:
 \begin{description}

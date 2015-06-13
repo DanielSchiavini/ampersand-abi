@@ -103,24 +103,20 @@ In this section we explain why each of the remaining try statements are necessar
   
   \item[Labels and Terms]
     In the productions \texttt{Att} and \texttt{RuleDef}, we see very similar ambiguities:
-    \begin{quote}
-        \texttt{Att ::= LabelProps? Term}\\
-        \texttt{RuleDef ::= `RULE' Label? Rule Meaning* Message* Violation?}
-    \end{quote}
+    \begin{ebnf}
+     Att ::= LabelProps? Term
+     RuleDef ::= `RULE' Label? Rule Meaning* Message* Violation?\end{ebnf}
     Wherein:
-    \begin{quote}
-        \texttt{Label ::= ADLid ':'}\\
-        \texttt{LabelProps ::= ADLid (`{' ADLidListList `}')? `:'}\\
-        \texttt{Rule ::= Term ('=' Term | '|-' Term)?}
-    \end{quote}
+    \begin{ebnf}
+     Label ::= ADLid ':'
+     LabelProps ::= ADLid (`{' ADLidListList `}')? `:'
+     Rule ::= Term ('=' Term | '|-' Term)?\end{ebnf}
     And one of the possible productions of \texttt{Term} is:
-    \begin{quote}
-        \texttt{Term ::= Trm2 ::= Trm3 ::= Trm4 ::= Trm5 ::= Trm6 ::= RelationRef ::= NamedRel ::= Varid Sign?}
-    \end{quote}
+    \begin{ebnf}
+     Term ::= Trm2 ::= Trm3 ::= Trm4 ::= Trm5 ::= Trm6 ::= RelationRef ::= NamedRel ::= Varid Sign?\end{ebnf}
     While:
-    \begin{quote}
-        \texttt{ADLid ::= Varid | Conid | String}
-    \end{quote}
+    \begin{ebnf}
+     ADLid ::= Varid | Conid | String\end{ebnf}
     
     What happens here is that when the parser encounters a \texttt{Varid}, it cannot define whether it is part of the (optional) \texttt{Label} production or if no \texttt{Label} was given and the \texttt{Varid} is part of a \texttt{Term}/\texttt{NamedRel} production.
     

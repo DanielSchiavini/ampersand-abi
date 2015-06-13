@@ -40,7 +40,7 @@ Based on the improvement topics mentioned in \autoref{analysis:lexer}, a new tok
 Each token contains the lexeme: a part of the input string defining the token type and content, plus the position of the token in the input file.
 The token structure is defined as follows:
 
-\begin{verbatim}
+\begin{haskell}
 data Token = Tok { tokLex :: Lexeme
                  , tokPos :: FilePos
                  }
@@ -57,7 +57,7 @@ data Lexeme  = LexSymbol      Char
              | LexConId       String
              | LexVarId       String
   deriving (Eq, Ord)
-\end{verbatim}
+\end{haskell}
 %
 \texttt{Lexeme} is the combination of the token type and the actual token content, sliced from the input string.
 \texttt{FilePos} is used to keep track of the original position of the lexeme in the input string.

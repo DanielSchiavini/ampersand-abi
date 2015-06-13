@@ -6,14 +6,15 @@
 
 \subsection{Parsing Libraries \& Friendly Errors (R-M)}
 \label{domain:parsing}
-The main objective of this research is to gather enough technical information to support building the new Ampersand parser.
-It focuses on knowledge acquisition in two interrelated fronts: a search for the parsing library best suited for this project and what constitutes good error messages.
+The research on parsing library and user-friendly error messages was done by Daniel Schiavini.
+The objective was to gather enough technical information to support building the new Ampersand parser.
+It focuses on knowledge acquisition in two interrelated fronts: a search for the parsing library best suited for this project and defining what constitutes good error messages.
 
-The first choice made is to use a combinator library, instead of a parser generator.
-The main reason to avoid the parser generators is that it is hard to generate useful feedback.
+The first choice made was to use a combinator library, instead of a parser generator.
+The main reason to avoid parser generators is that it is hard to generate useful feedback.
 It was then made clear that besides generating good messages, those messages should also be customizable.
 Considering the library design, documentation, features, generated errors and error customization, Parsec was judged to be the best suited library for the new parser.
-The advice to use Parsec was accepted by the customer.
+This advice to use Parsec was accepted by the customer.
 
 A list of important consideration points on developing good feedback has been collected through the literature.
 Finally, other factors external to the software are also very important for giving useful feedback.

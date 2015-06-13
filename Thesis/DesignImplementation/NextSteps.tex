@@ -35,16 +35,16 @@ This section summarizes our improvement suggestions, both generic as specific on
    
    The parser function will use the order of the notation to extract the needed information:
 
-   \begin{verbatim}
+   \begin{haskell}
           pViewAtt :: AmpParser P_ObjectDef
-          pViewAtt = rebuild <$> currPos <*> optLabelProps <*> pTerm
+          pViewAtt = rebuild <\$> currPos <*> optLabelProps <*> pTerm
               where rebuild pos (nm, strs) ctx = P_Obj nm pos ctx mView msub strs
                     mView = Nothing
                     msub  = Nothing
-    \end{verbatim}
+   \end{haskell}
  
    When we look at the data type as defined in the parse tree, the following order is defined:
-   \begin{verbatim}
+   \begin{haskell}
          data P_ObjDef a =
                   P_Obj { obj_nm :: String          
                              , obj_pos :: Origin  
@@ -52,8 +52,8 @@ This section summarizes our improvement suggestions, both generic as specific on
                              , obj_mView :: Maybe String 
                              , obj_msub :: Maybe (P_SubIfc a)  
                              , obj_strs :: [[String]]
-                             } 
-    \end{verbatim}
+                             }
+    \end{haskell}
 
     As the order of the parameters in the parse tree and the parser are different, the intermediate function \texttt{rebuild} is used to align both types to each other.
    Our personal experience was that these rebuild functions make the parser code more difficult to understand and hence, to maintain.

@@ -11,10 +11,10 @@ EBNF is a notation technique with the goal to express a context free grammar lik
 At the beginning of the project, we noticed that the existing EBNF diagram was outdated and not in line anymore with the actual syntax of Ampersand.
 As the EBNF is the crucial source of information in building the new parser, the first focus was to update the old EBNF to represent the actual Ampersand Syntax.
 
-\subsubsection{The actual EBNF diagram}
 Through reverse engineering, we checked all Haskell functions on the actual syntax they implement.
 In the source of the new parser, all the grammar expressions are placed above the actual parser function as code annotations to support code maintainability.
 
+\subsubsection{The actual EBNF diagram}
 The derived syntax is up to date and visualized using a railroad diagram, an ideal technique to create a visual representation of context free grammars.
 Several railroad diagram generators are available on the internet, free of charge.
 We used the railroad diagram generator created by Gunter Rademacher, available on \texttt{\url{http://bottlecaps.de/rr/ui}}.
@@ -23,5 +23,3 @@ The generated diagrams with the corresponding EBNF productions are available in 
 One interesting plus is that during the project we found a bug in the Railroad Diagram Generator.
 The tool would crash with the \texttt{Trm4} expressions.
 This bug was reported to the author Gunther Rademacher, who promptly fixed the issue.
-
-The EBNF diagram is available in appendix of this document. todo: reference
