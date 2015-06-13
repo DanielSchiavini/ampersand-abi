@@ -31,28 +31,30 @@ This section summarizes our improvement suggestions, both generic as specific on
    These functions can be recognized in the parser as rebuild or reorder functions.
    An example of such a rebuild action is given below:
 
-   The syntax notation of \texttt{ViewAtt} is defined as: \texttt{ViewAtt ::= LabelProps? Term}
+   The syntax notation of \texttt{ViewAtt} is defined as:
+   \begin{ebnf}
+    ViewAtt ::= LabelProps? Term\end{ebnf}
    
    The parser function will use the order of the notation to extract the needed information:
 
    \begin{haskell}
-          pViewAtt :: AmpParser P_ObjectDef
-          pViewAtt = rebuild <\$> currPos <*> optLabelProps <*> pTerm
-              where rebuild pos (nm, strs) ctx = P_Obj nm pos ctx mView msub strs
-                    mView = Nothing
-                    msub  = Nothing
+  pViewAtt :: AmpParser P_ObjectDef
+  pViewAtt = rebuild <\$> currPos <*> optLabelProps <*> pTerm
+      where rebuild pos (nm, strs) ctx = P_Obj nm pos ctx mView msub strs
+            mView = Nothing
+            msub  = Nothing
    \end{haskell}
  
    When we look at the data type as defined in the parse tree, the following order is defined:
    \begin{haskell}
-         data P_ObjDef a =
-                  P_Obj { obj_nm :: String          
-                             , obj_pos :: Origin  
-                             , obj_ctx :: Term a
-                             , obj_mView :: Maybe String 
-                             , obj_msub :: Maybe (P_SubIfc a)  
-                             , obj_strs :: [[String]]
-                             }
+ data P_ObjDef a =
+    P_Obj { obj_nm :: String          
+               , obj_pos :: Origin  
+               , obj_ctx :: Term a
+               , obj_mView :: Maybe String 
+               , obj_msub :: Maybe (P_SubIfc a)  
+               , obj_strs :: [[String]]
+               }
     \end{haskell}
 
     As the order of the parameters in the parse tree and the parser are different, the intermediate function \texttt{rebuild} is used to align both types to each other.

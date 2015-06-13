@@ -50,10 +50,9 @@ In this section we explain why each of the remaining try statements are necessar
 \begin{description}
   \item[Classify]
     This ambiguity in the grammar arises from the \texttt{Classify} and \texttt{GenDef} productions:
-    \begin{quote}
-        \texttt{Classify ::= `CLASSIFY' ConceptRef `IS' Cterm}\\
-        \texttt{GenDef ::= (`CLASSIFY' | `SPEC') ConceptRef `ISA' ConceptRef}
-    \end{quote}
+    \begin{ebnf}
+     Classify ::= `CLASSIFY' ConceptRef `IS' Cterm
+     GenDef ::= (`CLASSIFY' | `SPEC') ConceptRef `ISA' ConceptRef\end{ebnf}
     When the parser encounters \texttt{`CLASSIFY'}, it cannot define whether it found a \texttt{Classify} or a \texttt{GenDef} production.
     Therefore, the parser must consume the keyword and a \texttt{ConceptRef} before consuming either \texttt{`IS'} or \texttt{`ISA'} and determining which production is applicable.
     
@@ -63,10 +62,9 @@ In this section we explain why each of the remaining try statements are necessar
   
   \item[Role]
     This ambiguity in the grammar arises from the \texttt{RoleRelation} and \texttt{RoleRule} productions:
-    \begin{quote}
-        \texttt{RoleRelation ::= `ROLE' RoleList `EDITS' NamedRelList}\\
-        \texttt{RoleRule ::= `ROLE' RoleList `MAINTAINS' ADLidList}
-    \end{quote}
+    \begin{ebnf}
+     RoleRelation ::= `ROLE' RoleList `EDITS' NamedRelList
+     RoleRule ::= `ROLE' RoleList `MAINTAINS' ADLidList\end{ebnf}
     When the parser encounters \texttt{`ROLE'}, it cannot define whether it is a \texttt{RoleRelation} or a \texttt{RoleRule} production.
     Therefore, the parser must consume the keyword and a \texttt{RoleList} (which may be long) before consuming either \texttt{`MAINTAINS'} or \texttt{`EDITS'} and determining which production is applicable.
     
@@ -75,10 +73,9 @@ In this section we explain why each of the remaining try statements are necessar
   
   \item[View]
     This ambiguity in the grammar arises from the \texttt{FancyViewDef} and \texttt{ViewDefLegacy} productions:
-    \begin{quote}
-        \texttt{FancyViewDef ::= `VIEW' Label ConceptOneRefPos `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'}\\
-        \texttt{ViewDefLegacy ::= (`VIEW' | `KEY') LabelProps ConceptOneRefPos `(' ViewSegmentList `)' }
-    \end{quote}
+    \begin{ebnf}
+     FancyViewDef ::= `VIEW' Label ConceptOneRefPos `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'
+     ViewDefLegacy ::= (`VIEW' | `KEY') LabelProps ConceptOneRefPos `(' ViewSegmentList `)'\end{ebnf}
     When the parser encounters \texttt{`VIEW'}, it cannot define whether it found a \texttt{FancyViewDef} or a \texttt{ViewDefLegacy} production.
     In this case, defining which construction is applicable is even more complicated.
     This decision must, in the worst case, be delayed until the parser encounters a \texttt{`\{'} or \texttt{'('}.
@@ -88,16 +85,14 @@ In this section we explain why each of the remaining try statements are necessar
     
   \item[Multiplicity]
     This ambiguity in the grammar arises from the \texttt{Mult} production:
-    \begin{quote}
-        \texttt{Mult ::= (`0' | `1') `..' (`1' | `*') | `*' | `1'}
-    \end{quote}
+    \begin{ebnf}
+     Mult ::= (`0' | `1') `..' (`1' | `*') | `*' | `1'\end{ebnf}
     When the parser encounters \texttt{`1'}, it cannot define whether it found the first or the last production.
     The parser must therefore read the next token before choosing the right option.
     
     In order to solve this issue, we advise to refactor the grammar (and the parser) to have the following production:
-    \begin{quote}
-        \texttt{Mult ::= `0' `..' (`1' | `*') | `1'(`..' (`1' | `*'))? | `*'}
-    \end{quote}
+    \begin{ebnf}
+     Mult ::= `0' `..' (`1' | `*') | `1'(`..' (`1' | `*'))? | `*'\end{ebnf}
     %
     We did not refactor the code in this manner because the \texttt{pMult} parser does more than only parsing: it also changes the representation of the found constructions before creating the parse tree.
   
