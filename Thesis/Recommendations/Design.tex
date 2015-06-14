@@ -11,8 +11,8 @@ This section summarizes our improvement suggestions, both generic as specific on
 \begin{description}
   \item[Syntax improvements]
     In the syntax, we discovered some statements which are not pure LL(k) statements.
-    The Parsec \texttt{try} function allows the backtracking in the parser, avoiding that input is consumed which is still needed in another parse statements if the parse function can not succeed successfully.
-    Using \texttt{try} we can handle this situation but the backtracking has a negative impact of the parser performance whilst it adds complexity to the parser module. 
+    The Parsec \code{try} function allows the backtracking in the parser, avoiding that input is consumed which is still needed in another parse statements if the parse function can not succeed successfully.
+    Using \code{try} we can handle this situation but the backtracking has a negative impact of the parser performance whilst it adds complexity to the parser module. 
     Our suggestion is to further optimize the Ampersand syntax to establish a pure predictive syntax in which no backtracking is needed.
     This will not only improve the parser performance and maintainability, the syntax simplifications will .
     The syntax statements in which backtracking is needed, including the reasons why, are listed in section \ref{design:backtracking}.
@@ -31,7 +31,7 @@ This section summarizes our improvement suggestions, both generic as specific on
    These functions can be recognized in the parser as rebuild or reorder functions.
    An example of such a rebuild action is given below:
 
-   The syntax notation of \texttt{ViewAtt} is defined as:
+   The syntax notation of \code{ViewAtt} is defined as:
    \begin{ebnf}
     ViewAtt ::= LabelProps? Term\end{ebnf}
    
@@ -57,7 +57,7 @@ This section summarizes our improvement suggestions, both generic as specific on
                }
     \end{haskell}
 
-    As the order of the parameters in the parse tree and the parser are different, the intermediate function \texttt{rebuild} is used to align both types to each other.
+    As the order of the parameters in the parse tree and the parser are different, the intermediate function \code{rebuild} is used to align both types to each other.
    Our personal experience was that these rebuild functions make the parser code more difficult to understand and hence, to maintain.
    To further decrease the code complexity, we suggest to try to eliminate these rebuild functions by restructuring some data types in the parse tree.
 
@@ -65,7 +65,7 @@ This section summarizes our improvement suggestions, both generic as specific on
     Our analysis of the new error messages showed that the quality of these improved distinctively.
     Parsec provides to possibility to overrule the standard Parsec error message by an own formulated message.
     During our implementation we decided to stick to the standard if the standard error message was, at least, sufficient.
-    If the Ampersand teams want to tweak some error message after all, this can be realized using the \texttt{<?>} Parsec function.
-    Placing the \texttt{<?>} after the parser, followed by a string, changes the standard Parsec text after the keyword `expecting'.
+    If the Ampersand teams want to tweak some error message after all, this can be realized using the \code{<?>} Parsec function.
+    Placing the \code{<?>} after the parser, followed by a string, changes the standard Parsec text after the keyword `expecting'.
 
 \end{description}
