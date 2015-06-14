@@ -79,7 +79,7 @@
   However, now that the parser is being delivered, it should be integrated with the other existing Ampersand/Sentinel tests.
   We leave the option open for the Ampersand development team to either add the Sentinel jobs to this test suite, or to add the parser test suite to the Sentinel jobs.
   
-  \subsubsection{Test coverage (R-M)}
+  \subsubsection{Test coverage}
   %TODO: Update the numbers when delivery is ready.
   The main objective of the test suite is naturally to test the parser.
   By using HPC (Haskell Program Coverage) we verified that the most important parts of the code were well tested.
@@ -90,4 +90,5 @@
   
   Note that the parts of the code that were not tested, could not be tested for two reasons: only valid ADL files are tested automatically; the incorrect files are tested manually (see \autoref{tests:errors}).
   The other reason is that the ADL files provided did not contain all possible grammar constructions.
+  Given the extend to which the errors are tested manually we believe that the full test coverage will be very close to 100%.
   
