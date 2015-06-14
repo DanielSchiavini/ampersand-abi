@@ -4,9 +4,6 @@
 \label{design:new-parser}
 The mainstream design of the new parser has not changed much.
 While the new parser may still be recognizable for the Ampersand developers, several improvements have been made.
-In this subsection, we depict the high-level architecture of the parser.
-In the remainder of this section, other aspects of the new parser are covered: Code quality in \autoref{design:software-quality}, improved error messages in \autoref{design:errors} and the new test suite in \autoref{sec:tests}.
-A more complete documentation of all delivered software is given in the project documentation \citepr{documentation}.
 
 As decided during the research for domain \& techniques (see \autoref{domain:parsing}), the parser has been rebuilt with the Parsec combinator library.
 Basically, each EBNF rule receives its own parser function.
@@ -30,6 +27,7 @@ For developers, the main differences between Parsec and the uulib are:
     This is described in \autoref{design:backtracking}.
   \item Parsec does not try to solve parsing errors.
     The parser stops immediately after the first issue.
+   This way, the user is not overwhelmed with irrelevant information.
     See also the error analysis in \autoref{design:errors}.
   \item Error messages are customizable by using the \texttt{<?>} operator.
     This is also suggested in \autoref{design:next-steps}.
@@ -44,7 +42,7 @@ In order to explain the differences on backtracking behavior between the uulib a
 \textsl{To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in uu-parsinglib. Effectively the latter is a try which just looks ahead one symbol. In that respect it is less powerful than the try construct from Parsec, in which you specify that a specific construct has to be present completely. And then there is the underlying different overall strategy. Parsec uses a back-tracking strategy with explicit tries to commit, whereas uu-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.}
 \end{quote}
 %
-We can therefore conclude that the try-statements in Parsec are undesirable.
+We can therefore conclude that try-statements in Parsec are undesirable.
 However, they are necessary when the grammar is ambiguous.
 In this section we explain why each of the remaining try statements are necessary, and how these issues can be resolved:
 \begin{description}
