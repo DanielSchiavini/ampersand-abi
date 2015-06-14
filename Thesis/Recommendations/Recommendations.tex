@@ -1,7 +1,22 @@
 % !TEX root = ../Thesis.tex
 
+% overzicht van alle topics, samengevat waar mogelijk, die nog als todo staan of waar we verdere verbertering voorstellen
 \section{Recommendations}
 \label{sec:recommendations}
-\input{Recommendations/Overview}
+Although we believe the new parser is a large step forward, we also recognize that there are still improvements to be made.
+
+Ampersand is growing and changing in a fast pace.
+This is a direct consequence of a project involved with research and active development.
+In such projects, it is often impossible to predict which functionalities will be necessary and to design the domain-specific language accordingly beforehand.
+
+As expected we see that most of the remaining issues are related to the grammar ambiguities that force backtracking.
+Also the parse tree is not consistently designed.
+These issues are mentioned in \autoref{recommendations:design}.
+Other improvements are also possible in the test framework delivered.
+Those are mentioned in \autoref{recommendations:tests}.
+
+\input{Recommendations/Design}
 \input{Recommendations/Syntax}
 \input{Recommendations/Coding}
+\input{Recommendations/Tests}
+\input{Recommendations/Website}
