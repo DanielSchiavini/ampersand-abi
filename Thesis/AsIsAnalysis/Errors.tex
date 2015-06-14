@@ -29,10 +29,10 @@ After analyzing the current Ampersand parser error messages, we identified the f
 	It is unlikely that users will easily find the exact originating issue in their source file when they are overwhelmed with a multitude of error messages. % using plural to avoid repeating his/her
 \end {description}
 %
-Based on these objective properties to judge que quality of the parsing errors, we defined the following criteria to distinguish between good, bad and average error messages:
+Based on these objective properties to judge que quality of the parsing errors, we defined the following criteria to distinguish between good, bad and average, but acceptable, error messages:
 %
 \begin{description}
-	\item [Bad error message] A message is considered to be bad if one of the criteria blow is fulfilled:
+	\item [Bad error message] A message is considered to be bad if one of the criteria below is fulfilled:
 		\begin{description}
 			\item [Position]
 			The position has a deviation of more then 1 line or 10 column positions from where the actual error is made.
@@ -44,7 +44,7 @@ Based on these objective properties to judge que quality of the parsing errors, 
 			\item[Conciseness]
 			More then distinct 3 errors are mentioned by the Ampersand parser.
 		\end {description}
-	\item [Average error message] A message is considered to be of average quality if one of the criteria blow is fulfilled:
+	\item [Acceptable error message] A message is considered to be of average, but acceptable, quality if one of the criteria below is fulfilled:
 		\begin{description}
 			\item [Position]
 			The position has a deviation between 5 and 10 column positions from where the actual error is made.
@@ -58,7 +58,7 @@ Based on these objective properties to judge que quality of the parsing errors, 
 			2 or 3 errors are mentioned by the Ampersand parser.
 		\end {description}
 		
-	\item [Good error message] We state that any error message being not bad nor average is good.
+	\item [Good error message] We state that any error message being not bad nor acceptable is good.
 \end {description}
 
 \subsubsection{Gathering process}
@@ -85,7 +85,7 @@ This analysis clearly confirms the statement that the quality of the error messa
 	\begin{tabular}{llrlr}
     Error quality  & \multicolumn{2}{c}{Old parser}     \\
 		Good           & 19          & 22,35\%         \\
-		Average        & 18          & 21,18\%       \\
+		Acceptable        & 18          & 21,18\%       \\
 		Bad            & 48          & 56,47\%           \\
 		\rowcolor[HTML]{BBBBBB}
 		\textbf{Total} & \textbf{85} & \textbf{100,00\%} 
