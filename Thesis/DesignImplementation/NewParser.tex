@@ -101,21 +101,18 @@ In this section we explain why each of the remaining try statements are necessar
     We did not refactor the code in this manner because the \code{pMult} parser does more than only parsing: it also changes the representation of the found constructions before creating the parse tree.
   
   \item[Labels and Terms]
-    In the productions \code{Att} and \code{RuleDef}, we see very similar ambiguities:
+    In two of the productions of the grammar, an ambiguity arises when an optional \code{Label} production is followed by a \code{Term} production (\code{Label? Term}).
+    The issue is that \code{Label}, \code{LabelProps}, \code{Rule} and \code{Term} may all begin with a \code{Varid}:
+    \begin{ebnf}
+     Label ::= ADLid `:' => Varid `:'
+     LabelProps ::= ADLid (`{'ADLidListList`}')? `:' => Varid `:'
+     Rule ::= Term (`=' Term | `|-' Term)? => Term
+     Term => Trm2 => Trm3 => Trm4 => Trm5 => Trm6 => RelationRef => NamedRel => Varid Sign?\end{ebnf}
+    %
+    This ambiguity exists in the \code{Att} and \code{RuleDef} productions:
     \begin{ebnf}
      Att ::= LabelProps? Term
      RuleDef ::= `RULE' Label? Rule Meaning* Message* Violation?\end{ebnf}
-    Wherein:
-    \begin{ebnf}
-     Label ::= ADLid ':'
-     LabelProps ::= ADLid (`{' ADLidListList `}')? `:'
-     Rule ::= Term ('=' Term | '|-' Term)?\end{ebnf}
-    And one of the possible productions of \code{Term} is:
-    \begin{ebnf}
-     Term ::= Trm2 ::= Trm3 ::= Trm4 ::= Trm5 ::= Trm6 ::= RelationRef ::= NamedRel ::= Varid Sign?\end{ebnf}
-    While:
-    \begin{ebnf}
-     ADLid ::= Varid | Conid | String\end{ebnf}
     
     What happens here is that when the parser encounters a \code{Varid}, it cannot define whether it is part of the (optional) \code{Label} production or if no \code{Label} was given and the \code{Varid} is part of a \code{Term}/\code{NamedRel} production.
     
