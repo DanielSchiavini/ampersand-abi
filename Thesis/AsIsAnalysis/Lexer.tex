@@ -29,15 +29,18 @@ The following improvement points were identified after the analysis:
 
 \subsubsection{Token structure}
 \label{lexer-token}
-The old token has the following structure:
+The old token has the as structure depicted below.
+Note that the comments have been added by us, only in this document.
 
 \begin{haskell}
-data Token = Tok { tp' :: TokenType
-                 , val1 :: String
-                 , val2 :: String
-                 , pos :: !Pos
-                 , file :: !Filename
-                 }
+data Token = Tok
+ { tp'  :: TokenType -- Identification of the token type
+ , val1 :: String    -- This string argument is not used in the lexer.
+                     -- For keywords it is filled in but never read.
+ , val2 :: String    -- The actual token content, stored as a string
+ , pos  :: !Pos      -- Line and column number
+ , file :: !Filename -- File name in which the token is located.
+ }
 
 data TokenType
   = TkSymbol
@@ -58,19 +61,4 @@ data TokenType
   | TkError
   deriving (Eq, Ord)
 \end{haskell}
-%
-%TODO: Add the description as comment in the code, with the explanation that the comments are written by us
-The arguments have the following purpose:
-\begin{description}
-  \item[TokenType]
-    Identification of the token type. %, i.e. \code{TkSymbol}, \code{TkVarid}, \code{TkConid}, \code{TkKeyword}, \code{TkOp}, \code{TkString}, \code{TkExpl}, \code{TkAtom}, \code{TkChar}, \code{TkInteger8}, \code{TkInteger10}, \code{TkInteger16}, \code{TkTextnm}, \code{TkTextln}, \code{TkSpace} or \code{TkError}.
-  \item[val1]
-    This string argument is not used in the lexer.
-    In the case of a \code{keyToken} creation, the value is filled in, but we could not find any purpose for this argument.
-  \item[val2]
-    The actual token content, stored as a string, including the integer values.
-  \item[pos]
-    Line and column number.
-  \item[file]
-     Filename in which the token is located.
-\end{description}
+
