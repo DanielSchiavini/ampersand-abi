@@ -1,0 +1,73 @@
+\documentclass[a4paper,12pt,titlepage]{scrartcl}
+\usepackage{scrpage2}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2cm, right=2cm, landscape]{geometry}
+\usepackage[affil-it]{authblk}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{longtable}
+\usepackage{multicol}
+
+% Here we set up the header, meta-information and front matter
+\date{December 16, 2014}      %// Today's date will appear when this is commented out.
+\newcommand{\version}{1.0}
+
+% title page
+\author{Daniel S. C. Schiavini en Maarten Baertoen}
+\affil{Open Universiteit Nederland, faculteit Informatica \\
+	T61327 - Afstudeerproject bachelor informatica}
+\title{Error comparison report}
+\subtitle{Useful feedback in the Ampersand parser\\
+	~\\
+	Phase 3d: Project Documentation}
+\publishers{Version \version}
+
+% header
+\pagestyle{scrheadings}
+\setheadsepline{0.2pt}
+\clearscrheadings
+\automark[section]{chapter}
+\ihead{Daniel S.C. Schiavini en Maarten Baertsoen}
+\ohead{Parsing libraries \& error messages}
+\cfoot{\pagemark}
+
+% code listings
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{%
+    basicstyle=\small\ttfamily,
+    breakatwhitespace=true,          % sets if automatic breaks should only happen at whitespace
+    breaklines=true,                 % sets automatic line breaking
+    commentstyle=\color{mygreen},    % comment style
+    keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+    keywordstyle=\color{blue},       % keyword style
+    numbersep=5pt,                   % how far the line-numbers are from the code
+    numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+    stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+    stringstyle=\color{mymauve},     % string literal style
+}
+
+\lstnewenvironment{haskell}{\lstset{language=Haskell,numbers=left, otherkeywords={}, deletekeywords={}}}{}
+\lstnewenvironment{adl}{\lstset{language=Haskell,numbers=left, otherkeywords={INCLUDE,CONTEXT,ENDCONTEXT,EXTENDS,THEMES,META,PATTERN,ENDPATTERN,PROCESS,ENDPROCESS,INTERFACE,CLASS,FOR,BOX,ROWS,TABS,COLS,INITIAL,SQLPLUG,PHPPLUG,TYPE,POPULATION,CONTAINS,UNI,INJ,SUR,TOT,SYM,ASY,TRN,RFX,IRF,AUT,PROP,ALWAYS,RULE,MESSAGE,VIOLATION,SRC,TGT,TEST,RELATION,MEANING,CONCEPT,IDENT,VIEW,ENDVIEW,DEFAULT,TXT,PRIMHTML,TEMPLATE,KEY,IMPORT,SPEC,ISA,IS,I,V,CLASSIFY,PRAGMA,PURPOSE,IN,REF,ENGLISH,DUTCH,REST,HTML,LATEX,MARKDOWN,ONE,BYPLUG,ROLE,EDITS,MAINTAINS}, deletekeywords={String}}}{}
+\lstnewenvironment{ebnf}{\lstset{language=Haskell, numbers=none, otherkeywords={::=,=>}, deletekeywords={String}}}{}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+% Now the document starts
+\begin{document}
+\maketitle
+\newpage
+\section{Introduction}
+This document is part of the graduation project `Useful feedback in the Ampersand parser' of the computer science bachelor at the Open University of the Netherlands.
+It presents a comparison between the error messages presented by the previous and the new Ampersand parser.
+
+\section{Error list}
+\input{List/GenErrorList}
+\end{document}
