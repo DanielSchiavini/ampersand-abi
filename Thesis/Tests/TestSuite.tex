@@ -79,6 +79,11 @@
   However, now that the parser is being delivered, it should be integrated with the other existing Ampersand/Sentinel tests.
   We leave the option open for the Ampersand development team to either add the Sentinel jobs to this test suite, or to add the parser test suite to the Sentinel jobs.
   
-  \subsubsection{Test coverage (D)}
-  TODO: HPC test coverage description.
-  
+  \subsubsection{Test coverage (R-M)}
+  %TODO: Update the numbers when delivery is ready.
+  The main objective of the test suite is naturally to test the parser.
+  By using HPC (Haskell Program Coverage) we verified that the most important parts of the code were well tested.
+  For instance, the \code{Parser} module is covered by 96\%.
+  \code{ParsingLib} is 87\% covered, while the module \code{Lexer} is 82\% tested.
+  Finally, the module \code{PrettyPrinters} is 98\% covered.
+  The complete list with the code coverage is available in the generated HPC report, which is part of the project documentation \citepr{documentation}.
