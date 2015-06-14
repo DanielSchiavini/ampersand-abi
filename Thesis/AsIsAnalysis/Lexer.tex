@@ -12,7 +12,7 @@ The following improvement points were identified after the analysis:
     Each error message is however defined directly within the corresponding lexer function making the maintenance harder.
   \item[Complex token structure]
     The token structure is complex and confusing (the structure is given below).
-    Two values are present in the token, of which one (\texttt{val1}) is never used.
+    Two values are present in the token, of which one (\code{val1}) is never used.
     There is no distinction between the values used to identify the content of the token and the ones to determine the position of the token, i.e. they are in the same data type.
   \item[Module structuring]
     In the lexer, the actual lexing functions are intermingled with data types, supporting functions and error message texts.
@@ -63,10 +63,10 @@ data TokenType
 The arguments have the following purpose:
 \begin{description}
   \item[TokenType]
-    Identification of the token type. %, i.e. \texttt{TkSymbol}, \texttt{TkVarid}, \texttt{TkConid}, \texttt{TkKeyword}, \texttt{TkOp}, \texttt{TkString}, \texttt{TkExpl}, \texttt{TkAtom}, \texttt{TkChar}, \texttt{TkInteger8}, \texttt{TkInteger10}, \texttt{TkInteger16}, \texttt{TkTextnm}, \texttt{TkTextln}, \texttt{TkSpace} or \texttt{TkError}.
+    Identification of the token type. %, i.e. \code{TkSymbol}, \code{TkVarid}, \code{TkConid}, \code{TkKeyword}, \code{TkOp}, \code{TkString}, \code{TkExpl}, \code{TkAtom}, \code{TkChar}, \code{TkInteger8}, \code{TkInteger10}, \code{TkInteger16}, \code{TkTextnm}, \code{TkTextln}, \code{TkSpace} or \code{TkError}.
   \item[val1]
     This string argument is not used in the lexer.
-    In the case of a \texttt{keyToken} creation, the value is filled in, but we could not find any purpose for this argument.
+    In the case of a \code{keyToken} creation, the value is filled in, but we could not find any purpose for this argument.
   \item[val2]
     The actual token content, stored as a string, including the integer values.
   \item[pos]
