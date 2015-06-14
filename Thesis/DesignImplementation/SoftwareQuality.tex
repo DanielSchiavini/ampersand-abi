@@ -1,17 +1,49 @@
 % !TEX root = ../Thesis.tex
 
-\subsection{Sofware Quality Factors (M)}
+\subsection{Software Quality Factors (R-D)}
 \label{design:software-quality}
-% Maintainability
+In our project plan \citepr{plan} multiple non-functional requirement are included in the project scope.
+Improving the code maintainability is one of the most important non-functional requirements.
+
+To assure that these non-functional requirements are correctly addressed, we defined some measures to adhere to during the full project life cycle.
 
 \subsubsection{Documentation}
-\lipsum[2]
-% Haddock + EBNF comments
+All important design decisions we made together with the code we delivered need to be documented.
+This documentation is needed for the Ampersand team to have a clear insight in the way the new parser is structured and how it is integrated in Ampersand.
+The availability of this documentation is crucial for the maintainability of the new parser.
+The following documentation is therefore included in this project:
+
+\begin{description}
+  \item[System design]
+    A general system overview of the new system, describing the goal and purpose of each module, how it is designed to achieve it's goals and how it is integrated in the system architecture.
+  \item[Code annotations]
+    Haddock is the de-facto standard for generating Haskell documentation. 
+    This documentation generator generates HTML code based on the comments in the Haskell source code.
+    It is important to know that Haddock only documents the functions that are experted through the module.
+    The needed code documentation in this project is not limited to the experted functions, so besides the code annotations of the exported functions, the internal functions need to be code annotated as well to explain their way of working.
+  \item[EBNF comments]
+    The EBNF structure is the leading structure of how the Ampersand syntax is composed and hence, how the parser functions are defined.
+    As described in \autoref{analysis:grammar}, the actual EBNF is retrieved through re-engineering.
+    Each parser function corresponds to a specific EBNF syntax rule and this rule is consistently annotated in the code just above the parse function.
+
+\end{description}
 
 \subsubsection{Readability}
-\lipsum[4]
-% HLint + Shorter code + refactorings
+  In the as-is analysis of the current parser, we noticed that the code has been through several enhancement iterations over the past years.
+  These repetitive small changes through these iterations reflected in parts of the code which has become too elaborated or sometimes even obsolete.
+
+  Each code statement in the parser and lexer is reviewed, and were possible re-factored, to be as razor sharp as possible. 
+  The delivered code is now as concise as possible without compromising the readability of the code.
+
+  In addition, the code review tool HLint is used.
+  This tool provides a full overview of all the possible code optimization suggestions that can further optimize the readability of the source code. 
+  These suggestions cover topics such as redundant brackets, parameter reductions and shortcut notations.
+
+  All HLint warnings regarding the new parser and lexer are fully addressed before the code is delivered the the customer.
 
 \subsubsection{Performance}
-\lipsum[5]
-% Efficiency
+  Performance is a requirement often made in software engineering projects which is difficult to measure before the software is actually used in a production environment.
+  For he new Ampersand parser, we pro-actively identified the topics that could have an impact on the resulting parsing performance.
+  In the design of the new parser, the performance aspect that makes an important difference is the use of the \code{try} statement.
+  Several modifications are carried though to avoid the use of the \code{try} statement. 
+  A full list of remaining \code{try} statements, together with our suggestions how to solve them, is provided in section \autoref{design:backtracking}
