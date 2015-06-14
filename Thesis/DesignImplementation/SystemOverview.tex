@@ -1,19 +1,14 @@
 % !TEX root = ../Documentation.tex
 
-\subsection{System overview (D)}
+\subsection{System overview (R-M)}
   The parser module overview is given in \autoref{fig:ParserModules}.
-  Each of the modules are described in the following subsection.
-  %
   \begin{figure}[ht]%
-    \includegraphics[width=\columnwidth]{Figures/ParserModules}
-    \caption{The parser modules and their relationships}
+    \centering
+    \includegraphics[width=0.7\columnwidth]{Figures/ParserModules}
+    \caption{The modules relevant for the parser and their relationships}
     \label{fig:ParserModules}
   \end{figure}%
-  TODO: Add the exported functions to each module.
-
-  \subsubsection{Modules}
-  \label{design:parser-modules}
-  In this section a short description of each module is given:
+  Each module has the following responsibilities:
   %
   \begin{description}
     \item[Parsing] module that implements the interface of the parser with the rest of the system.
@@ -34,6 +29,6 @@
     \item[CtxError] contains the data structures responsible for the parse errors and their location.
       This module has not been refactored as a part of this project.
     
-    \item[Lexer] module responsible for recognizing the input characters and converting them to tokens.
+    \item[Lexer/LexerToken] modules responsible for recognizing the input characters and converting them to tokens.
       The new lexer, together with its sub-modules, is described in \autoref{design:new-lexer}.
   \end{description}
