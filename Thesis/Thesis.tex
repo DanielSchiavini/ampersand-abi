@@ -13,6 +13,15 @@
 \usepackage{multicol}
 \usepackage[toc,page]{appendix}
 
+% header
+\pagestyle{scrheadings}
+\setheadsepline{0.2pt}
+\clearscrheadings
+\automark[section]{chapter}
+\ihead{D.S.C. Schiavini and M. Baertsoen}
+\ohead{Useful feedback in the Ampersand parser}
+\cfoot{\pagemark}
+
 % code listings
 \usepackage{listings}
 \usepackage{color}
@@ -76,14 +85,6 @@
 	%~\\\normalfont
 	%\version}
 % \publishers{\normalfont\normalsize\parbox{0.8\linewidth}{\textbf{Abstract}. \lipsum[1]}}
-
-% header
-\pagestyle{scrheadings}
-\setheadsepline{0.2pt}
-\clearscrheadings
-\automark[section]{chapter}
-\ohead{Useful feedback in the Ampersand parser}
-\cfoot{\pagemark}
 
 % URL's
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}
