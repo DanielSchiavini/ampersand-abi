@@ -18,29 +18,15 @@
 \usepackage[export]{adjustbox}
 \usepackage[toc,page]{appendix}
 
-%citations
-\usepackage{multibib}
-\newcites{pr}{Project references}
-\newcites{ac}{Academic references}
-\newcites{nac}{Other references}
-
-% code for generating glossary, from http://tex.stackexchange.com/a/5837/59718
-%\usepackage[acronym,toc]{glossaries}
-%\usepackage{glossary-mcols}
-%\newcommand{\dict}[2]{%
-%  \newglossaryentry{#1}{name=#1,description={#2}}%
-%  \glslink{#1}{}%
-%}
-%\makeglossaries
-
 % Here we set up the header, meta-information and front matter
 %\date{December 16, 2014}      %// Today's date will appear when this is commented out.
-\newcommand{\version}{1.0}
+\newcommand{\version}{1.1}
 
 % title page
 \author{Daniel S. C. Schiavini and Maarten Baertsoen}
-\affil{Open Universiteit Nederland, faculteit Informatica \\
-	T61327 - Afstudeerproject bachelor informatica}
+\affil{Open Universiteit Nederland\\
+  Faculteit Management, Science and Technology \\
+  T61327 - Afstudeerproject bachelor informatica}
 \title{Team Reflection}
 \subtitle{Useful feedback in the Ampersand parser\\
 	~\\
@@ -58,6 +44,9 @@
 
 % URL's
 \renewcommand*{\UrlFont}{\footnotesize\ttfamily}
+\renewcommand*{\sectionautorefname}{Section}
+\renewcommand*{\subsectionautorefname}{Subsection}
+\renewcommand*{\subsubsectionautorefname}{Subsection}
 
 % hyphenation 
 \hyphenation{
@@ -90,6 +79,5 @@
 \input{Planning/Planning}
 \input{Assessment/Assessment}
 \newpage
-
 \input{Appendices/Appendices}
 \end{document}
