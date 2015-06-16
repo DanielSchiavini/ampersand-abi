@@ -1,35 +1,31 @@
 % !TEX root = ../Thesis.tex
 
 \subsection{Other objectives}
-While designing and implementing the new Ampersand parser, the following objectives were also important:
+While designing and implementing the new Ampersand parser, besides the generation of better user feedback, the following objectives were also important:
 \begin{itemize}
   \item \textbf{Integration}: The new parser must interface with the remaining Ampersand modules.
     It must thus be implemented in Haskell.
   \item \textbf{Libraries}: Since different implementation options are available, it was important to choose the most suitable Haskell parsing framework.
   \item \textbf{Maintainability}: Well-written and maintainable code is a must for the Ampersand project, since it is an open-source project.
-    The maintainability must be either maintained or improved; otherwise the parser will not be taken into production.
+    The maintainability must be either preserved or improved; otherwise the parser will not be taken into production.
   \item \textbf{Tests}: Testing the parser well was a task for this project.
-    The suggestion is to use testing tools to improve the process, e.g. QuickCheck.
+    The suggestion is to use testing tools to improve the tests, e.g. QuickCheck \cite{project-description}.
   \item \textbf{Pretty-printing}: This is important in order to test the parser.
 \dict{HPC}{Haskell Program Coverage}%
 \dict{Haddock}{Software documentation generator for the Haskell programming language}%
 \dict{HLint}{Statical analysis software that suggests maintainability improvements}%
   \item \textbf{Tools}: Within the Haskell community, several tools are popular to verify code quality and generate documentation, e.g. HPC, Haddock and HLint.
-  \item \textbf{Fixed syntax}: The new parser must process the same inputs as the previous parser.
-  \item \textbf{Fixed parse tree}: The new parser must produce the same outputs as the previous parser.
-    Any further changes must be applied to the rest of the Ampersand system.
-\end{itemize}
-
-During the project planning phase, some additional requirements have been identified:
-\begin{itemize}
+  %TODO: Bastiaan said we should make the above an objective. What does he mean?
+  \item \textbf{Backwards compatible}: The new parser must process the same inputs and produce the same outputs as the previous parser.
+    Any changes to the parser output may have consequences to the rest of the system, and we have to adapt the rest of the system if we change the parser output.
   \item \textbf{Git/GitHub}: The changed software had to be integrated into the GitHub Ampersand project.
     The development itself happened in a separate branch of a separate fork, so that deliveries could be merged in a smooth way.
     This was an especially hard requirement for us, since we had no experience with Git.
   \item \textbf{Cabal}: The building system for Haskell had to be maintained as the building platform.
   \item \textbf{EBNF}: The syntax of the Ampersand grammar was specified in EBNF notation but was not up-to-date.
-    Any changes to the syntax had to be documented according with this notation.
+    Any changes to the syntax had to be documented in this notation.
     One option was to add the EBNF as comment in the source code in order to make clear that the complete grammar is implemented correctly.
+    %TODO: We mention "one" option, but do not support this choice
 \end{itemize}
 
 On top of the project goals, we also wanted to help the university and other students with our results.
-Finally, building up knowledge was also important for us (i.e. functional programming, Haskell, compilers, parsers, LaTeX, Ampersand, business rules and research in general).
