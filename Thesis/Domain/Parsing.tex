@@ -6,12 +6,15 @@
 
 \subsection{Parsing libraries \& friendly errors}
 \label{domain:parsing}
-The research on parsing library and user-friendly error messages was done by Daniel Schiavini.
+The research on parsing libraries and user-friendly error messages was done by Daniel Schiavini.
 The objective was to gather enough technical information to support the design and implementation of the new Ampersand parser.
 It focuses on knowledge acquisition in two interrelated fronts: a search for the parsing library best suited for this project and defining what constitutes good error messages.
 
+%TODO: Expand more on this research, this text is not understandable by itself
 The first choice made was to use a combinator library, instead of a parser generator.
-The main reason to avoid parser generators is that it is hard to generate useful feedback.
+The main reason we had to avoid parser generators is that they implement LR grammars of which the internal workings are harder to understand.
+Therefore it seems to be harder to generate good error messages when the user and the programmers understand less of the parser workings.
+
 It was then made clear that besides generating good messages, those messages should also be customizable.
 Considering the library design, documentation, features, generated errors and error customization, Parsec was judged to be the best suited library for the new parser.
 This advice to use Parsec was accepted by the customer.
