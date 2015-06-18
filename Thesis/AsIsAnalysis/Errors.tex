@@ -2,65 +2,67 @@
 
 \subsection{Errors}
 \label{analysis:errors}
-%TODO: Bastiaan suggests we should try to use the definition of the error manifesto by Yang et al. (page 32 of his doctor)
 In this section, we analyze the error messages given by the previous parser.
 The results of this analysis are compared with the new parser in \autoref{tests:errors}.
 
 \subsubsection{Error message qualification}
 The user friendliness and correctness of an error message is a subjective topic and therefore we need to start with a definition to objectively judge the quality of an error message.
-After analyzing the current Ampersand parser error messages, we identified the following objective aspects of an Ampersand parser error message:
+In order to identify the objective aspects of an Ampersand parser error message, we decided to use an existing definition.
+Yang et al.~suggest a manifesto to measure the quality of reported type error messages \citeac{yang2001improving,yang2000improved}.
+According to this manifesto, a good error report should have the following properties.
+\begin{itemize}
+  \item \textbf{Correct:} An error message is emitted only for illegal programs, while correct programs are accepted without an error report.
+  \item \textbf{Accurate:} The report should be comprehensive, and the reported error sites should all be relevant and contribute to the problem. Moreover, to understand the problem, only these sites should be inspected.
+  \item \textbf{Intuitive:} It should be close to human reasoning, and not follow any mechanical inference techniques. In particular, internal type variables should be introduced with extreme care.
+  \item \textbf{Succinct:} An error report should maximize the amount of helpful information, and minimize irrelevant details. This requires a delicate balance between being too detailed and being too terse.
+  \item \textbf{Source-based:} Reported fragments should come from the actual source, and should not be introduced by the compiler. In particular, no desugared expressions should be reported.
+\end{itemize}
+
+\noindent
+To expand on the error manifesto, we consider the following characteristics to be part of intuitive errors:
+\begin{itemize}
+  \item	\textbf{\small How does the provided error description outline the discovered error:}
+      Providing the user with a good description of the encountered syntax issue will support a fast error resolution.
+      When the issue is vaguely described without pinpointing the exact issue, the error resolution will be time consuming.
+  \item	\textbf{\small Pinpointing the correct error}:
+      An error can lead to multiple subsequent issues.
+      These issues are, however, irrelevant for the user and the Ampersand parser should provide the exact origin of the issues.
+  \item	\textbf{\small Quality of the hint:}
+    The message can provide a hint for a solution together with the error message to support the user with the error resolution.
+\end {itemize}
+%
+Based on these objective properties to judge the quality of the parsing errors, we define the following criteria to distinguish between good, bad and average (but acceptable) error messages:
+%
+% position is renamed to to accuracy.
+% accuracy is renamed to intuitive
+% conciseness is renamed to succint
 %
 \begin{description}
-	\item [Position]
-	Each error messages reports the correct position (file, line number and column) of where the user committed the error.
-	\item [Accuracy]
-	The accuracy of an error message is measured based upon the following characteristics:
-	\begin{enumerate}
-		\item	\textbf{\small How does the provided error description outline the discovered error:}
-				Providing the user with a good description of the encountered syntax issue will support a fast error resolution.
-				When the issue is vaguely described without pinpointing the exact issue, the error resolution will be time consuming.
-		\item	\textbf{\small Pinpointing the correct error}:
-				An error can lead to multiple subsequent issues.
-				These issues are, however, irrelevant for the user and the Ampersand parser should provide the exact origin of the issues.
-		\item	\textbf{\small Quality of the hint:}
-			The message can provide a hint for a solution together with the error message to support the user with the error resolution.
-	\end {enumerate}
-    \item[Conciseness]
-	Providing a good error description is one thing, but this one message can be hidden between several other error messages that result from the initial error.
-	It is unlikely that users will easily find the exact originating issue in their source file when they are overwhelmed with a multitude of error messages. % using plural to avoid repeating his/her
-\end {description}
-%
-Based on these objective properties to judge the quality of the parsing errors, we defined the following criteria to distinguish between good, bad and average (but acceptable) error messages:
-%
-%TODO: Bastiaan doesn't think there's a main originating error. See his review in page 15.
-\begin{description}
-	\item [Bad error message] A message is considered to be bad if one of the criteria below is fulfilled:
-		\begin{description}
-			\item [Position]
-			The position has a deviation of more than one line or ten column positions from where the actual error is made.
-			\item [Accuracy]~
-				\begin{itemize}
-					\item 	The provided error description is useless for the user to determine the actual error.
-					\item 	The provided error description is not appointing the main, originating error without any correlation towards this main error.
-				\end {itemize}
-			\item[Conciseness]
-			More than distinct three errors are mentioned by the Ampersand parser.
-		\end {description}
-	\item [Acceptable error message] A message is considered to be of average, but acceptable, quality if one of the criteria below is fulfilled:
-		\begin{description}
-			\item [Position]
-			The position has a deviation between five and ten column positions from where the actual error is made.
-			\item [Accuracy]~
-				\begin{itemize}
-					\item 	The provided error description is not an exact description of the error, but provides 6useful information to discover the actual issue.
-					\item 	The provided error description is not appointing the main originating error, but the link to the actual error can be discovered based on the provided information.
-					\item 	The provided hint is incorrect.
-				\end {itemize}
-			\item[Conciseness]
-			two or three errors are mentioned by the Ampersand parser.
-		\end {description}
+	\item [Bad error message:] A message is considered to be bad if one of the criteria below is fulfilled:
+		\begin{itemize}
+			\item \textbf{Incorrect:} An error message is given while the program is correct or no message is given for an incorrect program.
+			\item \textbf{Inaccurate:}
+        The parser gives a source position that is irrelevant to solve the problem.
+        The given position has a deviation of more than one line or ten column positions from a relevant position.
+			\item \textbf{Unintuitive:}
+					The provided error description is useless for the user to determine the actual error, or it appoints an error without any relation to this main error.
+			\item \textbf{Not succinct:}
+        More than three distinct errors are mentioned by the Ampersand parser.
+      \item \textbf{Not source-based:}
+        The given error does not come from the actual source.
+		\end {itemize}
+	\item [Acceptable error message:] A message is considered to be of average (but acceptable) quality if one of the criteria below is fulfilled:
+		\begin{itemize}
+			\item \textbf{Inaccurate:}
+			The position has a deviation between five and ten column positions from a relevant source position.
+			\item \textbf{Unintuitive:}
+        The provided error description is not appointing the error, but the link to the actual error can be discovered based on the provided information.
+        An error is also considered acceptable if it provides an intuitive error message together with an unintuitive hint.
+			\item \textbf{Not succinct:}
+        Two or three errors are mentioned by the Ampersand parser.
+		\end {itemize}
 		
-	\item [Good error message] Any error message that is not bad nor acceptable is good.
+	\item [Good error message:] Any error message that is not bad nor acceptable is good.
 \end {description}
 
 \subsubsection{Gathering process}
