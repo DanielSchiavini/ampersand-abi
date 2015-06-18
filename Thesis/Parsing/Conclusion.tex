@@ -2,14 +2,15 @@
 
 \subsection{Conclusion}
 \label{parsing:conclusion}
-In \autoref{parsing:libraries}, the advice was given to use a combinator library for the new parser of Ampersand.
+In \autoref{parsing:generators}, the advice was given to use a combinator library for the new parser of Ampersand.
 The main reason to avoid the parser generators is that it is hard to generate useful feedback.
-Then, in \autoref{parsing:errors}, it was made even more clear that besides generating good messages, those messages should also be customizable.
+Then, in \autoref{parsing:libraries}, two different libraries have been investigated.
+In \autoref{parsing:errors}, it was made clear that besides generating good messages, those messages should also be customizable.
 
 Therefore, the advice of this research is to use the combinator library that offers the highest level of customization in error messages, Parsec.
 Although the uu-parsinglib seems to also be a very good choice, the experiences from the Helium compiler \citeac{helium-parser} should be also considered.
-Besides, the Parsec library offers better support.
+Besides, the Parsec library seems to offer better support.
 
-A list of important consideration points has also been collected through the literature and can be found in \autoref{parsing:errors}, more specifically \ref{parsing:errors-ampersand}.
-Finally, other factors external to the software are also very important for giving useful feedback.
+A list of important consideration points has also been collected through the literature and can be found in \autoref{parsing:errors}.
+Finally, other factors besides the errors are also very important for giving useful feedback.
 One of the most important factors is that the documentation should be always kept available, up-to-date, clear and concise.
