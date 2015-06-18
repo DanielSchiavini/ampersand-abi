@@ -1,15 +1,16 @@
 % !TEX root = ../Thesis.tex
 
-\subsection{Lexer}
+\subsection{Scanner}
 \label{analysis:lexer}
-The lexer module is responsible to split up the input stream into tokens.
-Tokens are meaningful pieces of the input string that can be recognized by the parser.
+As part of the system analysis, we also analyzed the existing scanner/lexer.
+The scanner is responsible to split up the input stream into tokens.
+Tokens are atomic and categorized pieces of information from the input string that can be recognized by the parser.
 
 The following improvement points were identified after the analysis:
 \begin{description}
   \item[Dispersed error messages]
     The error messages produced by the lexer are of good quality.
-    Each error message is however defined directly within the corresponding lexer function making the maintenance harder.
+    Each error message is, however, defined directly within the corresponding lexer function making the maintenance harder.
   \item[Complex token structure]
     The token structure is complex and confusing (the structure is given below).
     Two values are present in the token, of which one (\code{val1}) is never used.
@@ -18,18 +19,17 @@ The following improvement points were identified after the analysis:
     In the lexer, the actual lexing functions are intermingled with data types, supporting functions and error message texts.
     This makes the lexer harder to understand and to maintain.
   \item[Language support]
-    The errors are returned in English only, no multilingual support is available (or easy to implement).
+    The errors are returned in English only; no multilingual support is available (or easy to implement).
   \item[No support for warnings]
-    The lexer can only return errors, warnings are not supported.
+    The lexer can only return errors.
+    Warnings are not supported.
   \item[Strings only]
     Token values are stored as strings for all types, with no conversion of values, e.g. integers.
   \item[Lacking documentation]
     There was no documentation available on how the lexer was designed and structured.
 \end{description}
 
-\subsubsection{Token structure}
-\label{lexer-token}
-The old token has the as structure depicted below.
+The tokens from the old parser are represented by the following data type.
 Note that the comments have been added by us, only in this document.
 
 \begin{haskell}

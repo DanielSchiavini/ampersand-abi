@@ -6,9 +6,9 @@
 \subsubsection{Getting the EBNF in good shape}
 \dict{EBNF}{Extended Backus-Naur Form}%
 \dict{Extended Backus-Naur Form}{Notation technique for documenting context-free grammars}%
-The Ampersand grammar is described using the EBNF notation. 
-EBNF is a notation technique with the goal to express a context free grammar like Ampersand.
-At the beginning of the project, we noticed that the existing EBNF diagram was outdated and not in line anymore with the actual syntax of Ampersand.
+The Ampersand grammar is described using EBNF notation. 
+EBNF is a notation technique with the goal to express a context free grammar like ADL's.
+The existing EBNF was outdated and not in line anymore with the actual syntax of Ampersand.
 As the EBNF is the crucial source of information in building the new parser, the first focus was to update the old EBNF to represent the actual Ampersand Syntax.
 
 Through reverse engineering, we checked all Haskell functions on the actual syntax they implement.
@@ -20,6 +20,6 @@ Several railroad diagram generators are available on the internet, free of charg
 We used the railroad diagram generator created by Gunter Rademacher, available on \code{\url{http://bottlecaps.de/rr/ui}}.
 The generated diagrams with the corresponding EBNF productions are available in the \hyperref[app:docs]{project documentation (appendix)}.
 
-One interesting plus is that during the project we found a bug in the Railroad Diagram Generator.
+One interesting outcome is that during the project we found a bug in the Railroad Diagram Generator.
 The tool would crash with the \code{Trm4} expressions.
 This bug was reported to the author Gunther Rademacher, who promptly fixed the issue.

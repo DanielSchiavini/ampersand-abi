@@ -12,10 +12,9 @@ Basically, both the old and the new parser must be able to make a conversion fro
 	\label{fig:data-flow-1}
 \end{figure}
 
-Often, the parsing component is separated into a lexer (that converts text to tokens) and the actual parser (that converts the tokens into the parse tree).
+Often, the parsing component is separated into a lexer/scanner (that converts text to tokens) and the actual parser (that converts the tokens into the parse tree).
 Since this separation is considered beneficial for both maintainability and performance \citeac{parsec}, we assumed from the beginning that the new Ampersand parser would be separated in this way.
 This is depicted in \autoref{fig:data-flow-2}.
-The previous parser also had a separate lexer, but it was named scanner instead.
 %
 \begin{figure}[htb!]
 	\centering

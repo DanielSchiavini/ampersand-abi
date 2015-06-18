@@ -2,8 +2,9 @@
 
 \subsection{Errors}
 \label{analysis:errors}
+%TODO: Bastiaan suggests we should try to use the definition of the error manifesto by Yang et al. (page 32 of his doctor)
 In this section, we analyze the error messages given by the previous parser.
-The results of this analysis are compared to the new parser in \autoref{tests:errors}.
+The results of this analysis are compared with the new parser in \autoref{tests:errors}.
 
 \subsubsection{Error message qualification}
 The user friendliness and correctness of an error message is a subjective topic and therefore we need to start with a definition to objectively judge the quality of an error message.
@@ -11,43 +12,44 @@ After analyzing the current Ampersand parser error messages, we identified the f
 %
 \begin{description}
 	\item [Position]
-	Each error messages is accompanied with the correct position (file, line number and column) of where the error was found.
+	Each error messages reports the correct position (file, line number and column) of where the user committed the error.
 	\item [Accuracy]
 	The accuracy of an error message is measured based upon the following characteristics:
 	\begin{enumerate}
-		\item	\textbf{\small How does the provided error description exactly outlines the discovered error:}
+		\item	\textbf{\small How does the provided error description outline the discovered error:}
 				Providing the user with a good description of the encountered syntax issue will support a fast error resolution.
 				When the issue is vaguely described without pinpointing the exact issue, the error resolution will be time consuming.
 		\item	\textbf{\small Pinpointing the correct error}:
-				An error can invoke multiple subsequent issues. 
-				These issues are however irrelevant for the user and the Ampersand parser should provide the exact origin of the issues.
+				An error can lead to multiple subsequent issues.
+				These issues are, however, irrelevant for the user and the Ampersand parser should provide the exact origin of the issues.
 		\item	\textbf{\small Quality of the hint:}
-			The parser provides a hint for a solution together with the error message to support the user with the error resolution.
+			The message can provide a hint for a solution together with the error message to support the user with the error resolution.
 	\end {enumerate}
     \item[Conciseness]
 	Providing a good error description is one thing, but this one message can be hidden between several other error messages that result from the initial error.
 	It is unlikely that users will easily find the exact originating issue in their source file when they are overwhelmed with a multitude of error messages. % using plural to avoid repeating his/her
 \end {description}
 %
-Based on these objective properties to judge que quality of the parsing errors, we defined the following criteria to distinguish between good, bad and average, but acceptable, error messages:
+Based on these objective properties to judge the quality of the parsing errors, we defined the following criteria to distinguish between good, bad and average (but acceptable) error messages:
 %
+%TODO: Bastiaan doesn't think there's a main originating error. See his review in page 15.
 \begin{description}
 	\item [Bad error message] A message is considered to be bad if one of the criteria below is fulfilled:
 		\begin{description}
 			\item [Position]
-			The position has a deviation of more then 1 line or 10 column positions from where the actual error is made.
+			The position has a deviation of more than one line or ten column positions from where the actual error is made.
 			\item [Accuracy]~
 				\begin{itemize}
 					\item 	The provided error description is useless for the user to determine the actual error.
 					\item 	The provided error description is not appointing the main, originating error without any correlation towards this main error.
 				\end {itemize}
 			\item[Conciseness]
-			More then distinct 3 errors are mentioned by the Ampersand parser.
+			More than distinct three errors are mentioned by the Ampersand parser.
 		\end {description}
 	\item [Acceptable error message] A message is considered to be of average, but acceptable, quality if one of the criteria below is fulfilled:
 		\begin{description}
 			\item [Position]
-			The position has a deviation between 5 and 10 column positions from where the actual error is made.
+			The position has a deviation between five and ten column positions from where the actual error is made.
 			\item [Accuracy]~
 				\begin{itemize}
 					\item 	The provided error description is not an exact description of the error, but provides 6useful information to discover the actual issue.
@@ -55,10 +57,10 @@ Based on these objective properties to judge que quality of the parsing errors, 
 					\item 	The provided hint is incorrect.
 				\end {itemize}
 			\item[Conciseness]
-			2 or 3 errors are mentioned by the Ampersand parser.
+			two or three errors are mentioned by the Ampersand parser.
 		\end {description}
 		
-	\item [Good error message] We state that any error message being not bad nor acceptable is good.
+	\item [Good error message] Any error message that is not bad nor acceptable is good.
 \end {description}
 
 \subsubsection{Gathering process}

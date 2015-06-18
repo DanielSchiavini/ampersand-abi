@@ -5,26 +5,31 @@
 The previous Ampersand parser was generally well organized, so we mapped each ENBF rule to a different parsing function.
 However, several flaws were observed as improvement points.
 We addressed these flaws in our project where possible.
-The flaws we were not able to solve, due to the constraints of our project, are summarized in section \autoref{sec:recommendations}.
+The flaws we were not able to solve, due to the constraints of our project, are summarized in \autoref{sec:recommendations}.
 During this project, we focused on the following issues:
 \begin{description}
   \item[Lacking documentation]
     There was no documentation on the recognized grammar.
     The last EBNF available was not updated in a long while.
   
-  \item[Ad-hoc transformations]
-    The parser was built with the applicative interface of the uulib.
+  \item[Incompatible parse tree]
+    The parser was built with an applicative interface.
     The applicative operators were thus used in sequence to recognize each of the accepted grammar productions.
     One of the advantages of the applicative interface is that the code can look very close to the grammar without any `boiler-plate' code.
     However, the parser was often forced to change the order and format of the parsed structures, because the parse tree did not match the grammar productions (i.e. many rebuild functions).
-    
+  
+  \item[Data transformations]
+    Normally, a parser is only supposed to recognize a grammar and convert the input to a parse tree.
+    However, in the old parser some transformations and simplifications are executed (e.g. removing double negations).
+    That makes the parser unnecessarily complex and violates the design principle of encapsulation.
+  
   \item[Long file]
     Since all the grammar constructions -- plus help functions -- were in a single file, the parser was hardly readable.
     It summed a total of 823 lines of code only in the \code{Parser} module.
     %TODO: The new parser is still large, also because of the (outdated) comments. We should review the comments in there and when done we should add the amount of lines to the thesis.
   
   \item[Pretty printing]
-    It used to be impossible to print the parse tree back to ADL-code.
+    It was not possible to print the parse tree back to ADL-code.
     That made it harder to develop and test the parser properly.
   
   \item[Test suite]
@@ -39,5 +44,5 @@ During this project, we focused on the following issues:
     \autoref{analysis:errors} expands on this point.
 \end{description}
 %
-Although it may be hard to resolve all the mentioned issues, we believe our efforts have payed off well.
+Although it may be hard to resolve all the mentioned issues, we believe our efforts have paid off well.
 In \autoref{design:new-parser} we describe how the new parser was designed.
