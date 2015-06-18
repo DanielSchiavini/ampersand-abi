@@ -1,4 +1,4 @@
-Produced error;Covered by old scanner/parser;displayed error;Position;Accuracy;Concisenss;Overall ;displayed error;Position correct;Accuracy correct;Concisenss correct;Overall
+ï»¿Produced error;Covered by old scanner/parser;displayed error;Position;Accuracy;Concisenss;Overall ;displayed error;Position correct;Accuracy correct;Concisenss correct;Overall
 use of 'CORNCEPT' instead of CONCEPT;Yes;"Error(s) found:
 
 before upper case identifier CORNCEPT at line 7, column 1 of file ""Hypotheek.adl
@@ -688,7 +688,7 @@ werkgever :: Arbeidsrelatie -> Persoon
 PRAGMA ""In"" ""is"" ""de werkgever""
 MEANING ""Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult.""
 PURPOSE RELATION werkgever
-{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies één werkgever heeft.-}
+{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies Ã©Ã©n werkgever heeft.-}
 
 ENDPATTERN";;"Error(s) found:
 
@@ -823,7 +823,7 @@ Try inserting symbol upper case identifier ?uc?";Good;Good;Bad;Bad;"PE ""Archite
 unexpected Upper case identifier PRAGMQA
 expecting Keyword ""RULE"", Keyword ""CLASSIFY"", Keyword ""RELATION"", Keyword ""CONCEPT"", Keyword ""SPEC"", Keyword ""IDENT"", Keyword ""VIEW"", Keyword ""KEY"", Keyword ""PURPOSE"", Keyword ""POPULATION"" or Keyword ""ENDPATTERN""";Good;Good;Good;Good
 "PURPOSE RELATION werkgever
---{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies één werkgever heeft.-}";;"Error(s) found:
+--{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies Ã©Ã©n werkgever heeft.-}";;"Error(s) found:
 
 before ""ENDPATTERN"" at line 22, column 1 of file ""testfile_mba.adl""
 Expecting symbol [ or ""HTML"" or ""IN"" or ""LATEX"" or ""MARKDOWN"" or ""REF"" or ""REST""
@@ -1771,7 +1771,7 @@ expecting Keyword ""RULE"", Keyword ""CLASSIFY"", Keyword ""RELATION"", Keyword 
 unexpected Upper case identifier CLASIFY
 expecting Keyword ""RULE"", Keyword ""CLASSIFY"", Keyword ""RELATION"", Keyword ""CONCEPT"", Keyword ""SPEC"", Keyword ""IDENT"", Keyword ""VIEW"", Keyword ""KEY"", Keyword ""PURPOSE"", Keyword ""POPULATION"" or Keyword ""ENDPATTERN""
 ";Good;Good;Good;Good
-{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies één werkgever heeft.-};;"Error(s) found:
+{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies Ã©Ã©n werkgever heeft.-};;"Error(s) found:
 
 before ""="" at line 86, column 3 of file ""testfile_mba.adl""
 Expecting lower case identifier ?lc? or ""CLASSIFY"" or ""CONCEPT"" or ""ENDPATTERN""

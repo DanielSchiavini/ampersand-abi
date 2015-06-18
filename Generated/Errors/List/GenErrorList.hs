@@ -1,4 +1,4 @@
-﻿module GenErrorList where
+﻿module GenErrorList (main) where
 
 import Text.Parsec
 import Text.Parsec.Error
@@ -28,13 +28,14 @@ parseCSV :: FilePath -> String -> Either ParseError [[String]]
 parseCSV file input = parse csvFile file input
 
 formatLatex :: [[String]] -> String
-formatLatex (_:xss) = intercalate "\n\n\\hrulefill\n\n" (map formatLine xss)
+formatLatex (_:xss) = intercalate "\n\n\\hrulefill\n\n" $ map formatLine (zip [1..] xss)
 formatLatex _ = ""
 
-formatLine :: [String] -> String
-formatLine ("":_) = ""
-formatLine (code:coveredOld:oldError:oldPosition:oldAccuracy:oldConcisenss:oldResult:newError:newPosition:newAccuracy:newConciseness:newResult:_) =
-    intercalate "\n  " [ "\\begin{description}"
+formatLine :: (Int, [String]) -> String
+formatLine (i,("":_)) = ""
+formatLine (i,(code:coveredOld:oldError:oldPosition:oldAccuracy:oldConcisenss:oldResult:newError:newPosition:newAccuracy:newConciseness:newResult:_)) =
+    intercalate "\n  " [ "\\subsection{Error type " ++ formatNr i ++ "}"
+                       , "\\begin{description}"
                        , "\\item[Incorrect ADL]" ++ formatCode code
                        , "\\item[Previous error]" ++ formatError oldError
                        , "\\item[Previous evaluation]" ++ formatEv oldPosition oldAccuracy oldConcisenss oldResult
@@ -47,13 +48,26 @@ formatLine (code:coveredOld:oldError:oldPosition:oldAccuracy:oldConcisenss:oldRe
           formatEv pos acc conc res =
             intercalate "\n    " [ "~\\\\"
                                  , "\\begin{itemize}"
-                                 , "\\item \\textbf{Position:} " ++ formatCell pos
-                                 , "\\item \\textbf{Accuracy:} " ++ formatCell acc
-                                 , "\\item \\textbf{Conciseness:} " ++ formatCell conc
+                                 , "\\item \\textbf{Accurate:} " ++ formatCell pos
+                                 , "\\item \\textbf{Intuitive:} " ++ formatCell acc
+                                 , "\\item \\textbf{Succint:} " ++ formatCell conc
                                  , "\\item \\textbf{Evaluation: " ++ formatCell res ++ "}"
                                  , "\\end{itemize}"
                                  ]
 formatLine _ = ""
+
+formatNr :: Int -> String
+formatNr i | i < 10 = "0"++show i
+           | otherwise = show i
+
+writeIncorrectLaTeX :: [[String]] -> IO ()
+writeIncorrectLaTeX xss = UTF.writeFile "GenErrorList.tex" (formatLatex xss)
+
+writeIncorrectADLs :: [[String]] -> IO ()
+writeIncorrectADLs (_:xss) = do mapM writeADL (zip [1..] xss); return ()
+    where writeADL :: (Int, [String]) -> IO ()
+          writeADL (i,(x:xs)) = UTF.writeFile ("../Scripts/ErrorType" ++ formatNr i ++ ".adl") x
+writeIncorrectADLs _ = return ()
 
 formatCell :: String -> String
 formatCell "" = ""
@@ -70,8 +84,9 @@ formatCell (c:cs)    = (c:formatCell cs)
 
 main :: IO ()
 main = do let file = "ErrorList.csv"
-          csv <- readFile file
+          csv <- UTF.readFile file
           case parseCSV file csv of
                 Left err  -> putStrLn (show (errorPos err) ++ ":" ++ showErr (errorMessages err))
-                Right xss -> UTF.writeFile "GenErrorList.tex" (formatLatex xss)
+                Right xss -> do writeIncorrectLaTeX xss
+                                writeIncorrectADLs xss
           where showErr = showErrorMessages "or" "unknown parse error"   "expecting" "unexpected" "end of input"

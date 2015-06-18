@@ -15,6 +15,7 @@ cd Errors
 call build.bat
 cd ..
 copy Errors\Errors.pdf Documentation\Errors
+xcopy /S Errors\Scripts\*.adl Documentation\Errors\Scripts\
 
 mkdir Documentation\Ebnf
 copy Ebnf\index.html Documentation\Ebnf\
