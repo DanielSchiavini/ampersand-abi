@@ -58,7 +58,8 @@ This section summarizes our improvement suggestions, both generic as specific on
     \end{haskell}
     As the order of the parameters in the parse tree and the parser are different, the local function \code{rebuild} is used to align both types to each other.
    Our personal experience was that these rebuild functions make the parser code more difficult to understand and hence, to maintain.
-  During the project, we have reordered some of the structures of the parse tree, however, we could not do it for all structures.
+   During the project, we have reordered some of the structures of the parse tree.
+   However, we could not do it for all structures.
    To further decrease the code complexity, we suggest to try to eliminate these rebuild functions by restructuring data types in the parse tree.
 
   \item[Manual overrule of error message]

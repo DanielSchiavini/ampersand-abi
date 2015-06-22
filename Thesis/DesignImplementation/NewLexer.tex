@@ -4,13 +4,12 @@
 \label{design:new-lexer}
 
 \subsubsection{The rationale behind the new lexer}
-
-In the design of the new Ampersand parser, the first decision to tackle is whether to keep the existing scanner, the former name of the lexer module within Ampersand, or to implement a new one.
-During the analysis of the error improvement areas, as described in \autoref{sec:analysis}, the main improvements are identified within the old parser.
+In the design of the new Ampersand parser, the first decision to tackle is whether to keep the existing scanner/lexer or to implement a new one.
+In the analysis of the error improvement areas in \autoref{sec:analysis}, the main improvements are identified within the old parser.
 The error feedback quality, produced by the scanner module, is higher and therefore, there is no stringent need to re-implement the scanner.
 On the other hand, given the aspect that Parsec is identified as the new parser library, keeping the current scanner would result in the utilization of two different libraries providing more of less the same functionality.
 
-The alternative of keeping the existing scanner would deliver a perfect functional solution, but mixing these two libraries will increase the complexity of the solution, decreasing the maintainability.
+The alternative of keeping the existing scanner would deliver a perfect functional solution, but mixing these two libraries would increase the complexity of the solution, thus decreasing the maintainability.
 To avoid this decrease in maintainability, the decision is to implement the parser and scanner based on the same library.
 
 During the implementation of the lexer module, replacing the old scanner, additional attention was given to further improve the quality of the error messages.
@@ -30,8 +29,8 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
  
     \item[LexerMonad] contains a monad definition that supports lexing with context.
       It tracks for example the location in the input and the warnings that may be generated.
-      This module is a re-use the  Helium parser, without any modifications to the functions we use.
-      All not used functions are removed to improve the code maintainability.
+      This module is based on the Helium lexer, without any modifications to the used functions.
+      All unused functions are removed to improve the code maintainability.
       
       The following functions or types are used in the Ampersand lexer:
 	  \begin{itemize}
@@ -52,7 +51,7 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
     \item[LexerBinaryTrees] module responsible for searching binary trees in an efficient way, to support the token recognition.
     This is the previously existing \code{UU\_BinaryTrees} module which is renamed to match the used naming structure of the new lexer modules.
 
-    \item[LexerToken] contains the data structure, and corresponding show function, that represents the input tokens for the lexer.
+    \item[LexerToken] contains the data structure and corresponding show function that represents the input tokens for the lexer.
 	
   \end{description}
 
@@ -71,13 +70,13 @@ data Lexeme  = LexSymbol      Char           -- Single character
              | LexOperator    String         -- Operator
              | LexKeyword     String         -- Keyword
              | LexString      String         -- String
-             | LexExpl        String         -- Explain   (Expl ::= '{+' Any* '-}')
-             | LexAtom        String         -- Atom      (Atom ::= "'" Any* "'")
+             | LexExpl        String         -- Explanation
+             | LexAtom        String         -- Atom
              | LexDecimal     Int            -- Decimal integer
              | LexOctal       Int            -- Octal integer
              | LexHex         Int            -- Hexadecimal integer
-             | LexConId       String         -- Conid     (Conid ::= UpperChar (Char | '_')*)
-             | LexVarId       String         -- Varid     (Varid ::= (LowerChar | '_') (Char | '_')*)
+             | LexConId       String         -- Upper case identifier
+             | LexVarId       String         -- Lower case identifier
   deriving (Eq, Ord)
 \end{haskell}
 %
@@ -85,5 +84,6 @@ data Lexeme  = LexSymbol      Char           -- Single character
 \code{FilePos} is used to keep track of the original position of the lexeme in the input string.
 
 During the lexer processing, the input file is processed sequentially.
-All kinds of different accepted constructions are checked in a specific order, and each time a match is found, the lexeme is extracted from the input string and the token is created.
+All kinds of different accepted constructions are checked in a specific order.
+Each time a match is found, the lexeme is extracted from the input string and a token is created.
 In the token creation (function \code{returnToken}), the position and the lexeme are grouped into a token, then the next lexer iteration is started.
