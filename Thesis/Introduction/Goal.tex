@@ -1,9 +1,43 @@
 % !TEX root = ../Thesis.tex
 
-\subsection{Goal of this document}
-The main objective of this document is to depict a full overview of the project's research objectives and the choices towards the new Ampersand parser.
-By reading this document, one should have a clear view on the project goals, the reasons why decisions were made and the actual results.
-This document explains thus the requirements, the design and implementation decisions taken for the development of a new Ampersand parser.
+\subsection{Goals}
+Business rules promise to improve the quality and efficiency of the requirements elicitation process in information system projects.
+Once the business rules are consistently and coherently defined, they form a knowledge repository used for the provisioning of information within organizations.
+However, there used to be a large difference between the rules as seen by the Business Rules Manifesto and way these were supported by software systems.
+With this issue in mind, the Ampersand approach was developed, giving focus to rules formulated in agreements instead of actions.
 
-Several additional documents were created through the project's life cycle.
-To avoid repetition of text, this documents refers to these documents as much as possible.
+Ampersand is an approach for the use of business rules to define the business processes.
+Users describe the business rules in a formal language (ADL) and Ampersand compiles those rules into functional specification, documentation and working software prototypes.
+
+Over the years, the compiler has been extensively used, extended and improved.
+However, the parser component has never been carefully analyzed for improvements.
+In particular, the quality of the error messages (hence the user friendliness) is an attention point.
+
+Our assignment, given by Prof.dr. Stef Joosten, is thus to redesign and implement a new parser for Ampersand, providing user friendly error feedback.
+In order to improve the error messages, Daniel Schiavini has researched the qualities of error messages and the options for parsing within Haskell.
+The main conclusion was to rewrite the parser using another parsing library, namely Parsec.
+On the other hand, Maarten Baertsoen researched business rules and the Ampersand approach more thoroughly.
+
+To guarantee the quality of the software delivered, we implemented a new library for testing the parser automatically.
+We added the possibility to `pretty print' the parsing tree back into ADL code.
+Several efforts have been made to improve the code quality in the aspects of readability, extensibility, maintainability, documentation and performance.
+
+During development, we often merged the development code with the other developments.
+While this cost some effort, it allowed us to take the new parser into production as soon as it was ready.
+
+Besides improvements in the parser itself, we have studied the ADL grammar itself.
+The grammar documentation was not up-to-date, so it was our task to reverse engineer the code to determine the recognized language.
+The updated grammar is now available as code annotations and documentation.
+In order to make the grammar more clear, performant and unambiguous, refactorings were applied without changing the language accepted by the parser.
+
+Finally, a thorough analysis on the error message quality showed that the old parser gave good error messages in 22\% of the time, while the new parser improved this percentage up to 82\%.
+Also, bad quality messages went down from 56\% to 1\%.
+
+In this presentation, we will show how the new parser achieved it goals and how this will allow for Ampersand to continue growing.
+This will save time and effort for students, researchers and commercial users.
+
+By understanding what kind of messages the Ampersand users expect, we have developed a new parser for Ampersand based on the Parsec library.
+This new parser improves both the error messages and the software properties related to readability, extensibility and maintainability.
+Besides the parser itself, a suite of automated tests has been developed to assure the quality of the parsing results.
+
+In this thesis we show how the parser was implemented and how this improved parser will allow Ampersand to continue growing.
