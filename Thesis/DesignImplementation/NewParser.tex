@@ -38,19 +38,18 @@ For developers, the main differences between Parsec and the uulib are:
 \subsubsection{Backtracking}
 \label{design:backtracking}
 In order to explain the differences on backtracking behavior between the uulib and Parsec, we quote here Doaitse Swierstra, the author of the uulib \citenac{swierstra-parsec}:
-%todo: insprong vermijden bij de quote
 \begin{quote}
-\textsl{
+\textsl{%
   To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in uu-parsinglib.
   Effectively the latter is a try which just looks ahead one symbol.
-  In that respect it is less powerful than the try construct from Parsec, in which you specify that a specific construct has to be present completely.
+  In that respect it is less powerful than the \code{try} construct from Parsec, in which you specify that a specific construct has to be present completely.
   And then there is the underlying different overall strategy.
   Parsec uses a back-tracking strategy with explicit tries to commit, whereas uu-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.
 }
 \end{quote}
-%todo: extra duiding dat de try statements een impact hebben op de foutmeldingen en de onderhoudbaarheid van de code
-We can therefore conclude that try-statements in Parsec are undesirable, and should be avoided by refactoring the underlying grammar.
-However, they are necessary when the grammar is not left-factored, resulting in ambiguous grammar.
+Although the \code{try} construct for backtracking in Parsec is very powerful, it is also undesirable:
+Backtracking increases the parser's memory usage, speed, maintainability and the quality of the error messages \citeac{parsec}.
+However, they are necessary when the grammar is not left-factored \citeac{parsec}.
 In this section we explain why each of the remaining try statements are necessary, and how these issues can be resolved:
 \begin{description}
   \item[Classify]
@@ -79,7 +78,7 @@ In this section we explain why each of the remaining try statements are necessar
   \item[View]
     This ambiguity in the grammar arises from the \code{FancyViewDef} and \code{ViewDefLegacy} productions:
     \begin{ebnf}
-     FancyViewDef ::= `VIEW' Label ConceptOneRefPos `DEFAULT'? `\{' ViewObjList `\}' HtmlView? `ENDVIEW'
+     FancyViewDef ::= `VIEW' Label ConceptOneRefPos `DEFAULT'? `{' ViewObjList `}' HtmlView? `ENDVIEW'
      ViewDefLegacy ::= (`VIEW' | `KEY') LabelProps ConceptOneRefPos `(' ViewSegmentList `)'\end{ebnf}
     When the parser encounters \code{`VIEW'}, it cannot define whether it found a \code{FancyViewDef} or a \code{ViewDefLegacy} production.
     In this case, defining which construction is applicable is even more complicated.
