@@ -57,7 +57,7 @@ In this section we explain why each of the remaining try statements are necessar
     \begin{ebnf}
      Classify ::= `CLASSIFY' ConceptRef `IS' Cterm
      GenDef ::= (`CLASSIFY' | `SPEC') ConceptRef `ISA' ConceptRef\end{ebnf}
-    When the parser encounters \code{`CLASSIFY'}, it cannot determine whether it found a \code{Classify} or a \code{GenDef} production.
+    When the parser encounters \code{`CLASSIFY'}, the parser cannot determine whether it found a \code{Classify} or a \code{GenDef} production.
     Therefore, the parser must consume the keyword and a \code{ConceptRef} before consuming either \code{`IS'} or \code{`ISA'} and determining which production is applicable.
     
     In order to solve this issue, one must choose a different keyword or symbol for each of the productions.

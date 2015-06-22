@@ -3,33 +3,38 @@
 \subsection{Conclusion}
 \label{sec:approachconclusion}
 Based on the theoretical approach and the practical usage, this section provides some conclusion regarding the methodology as well as the supporting tool.
-All strengths, weaknesses, opportunities and threats mentioned in this document are summarized in the SWOT diagram below.
+All strengths, weaknesses, opportunities and threats mentioned in this document are summarized in the SWOT diagram in \autoref{SWOT-Analysis}.
 
+\begin{table}[ht!]
+\small
+\begin{tabular}{|p{8cm}||p{8cm}|}
+\cellcolor[HTML]{9B9B9B}\textbf{Strengths} & \cellcolor[HTML]{9B9B9B}\textbf{Weakness} \\
 
-\begin{table}[h]
-%\centering
- %\caption{SWOT Analysis}
-\caption{SWOT Analysis}
-\label{SWOT Analysis}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{l
->{\columncolor[HTML]{656565}}l l}
-\cline{1-1} \cline{3-3}
-\multicolumn{1}{|l|}{\cellcolor[HTML]{9B9B9B}Strengths}                                                                                                                                                                                                                                                                                                                                      & \multicolumn{1}{l|}{\cellcolor[HTML]{656565}} & \multicolumn{1}{l|}{\cellcolor[HTML]{9B9B9B}Weakness}                                                                                                                                                                 \\ \cline{1-1} \cline{3-3} 
-\cellcolor[HTML]{FFFFFF}- End-2-end approach and consistency assurance using relational algebra                                                                                                                                                                                                                                                                                              &                                               & \cellcolor[HTML]{FFFFFF}- No User Interface                                                                                                                                                                           \\
-- Availability of supporting tools                                                                                                                                                                                                                                                                                                                                                           &                                               & - No distinction between mandatory and optional requirements                                                                                                                                                          \\
-- Communication is aligned to the knowledge, skills and role of the receiver                                                                                                                                                                                                                                                                                                                &                                               & - No specific support to support Agile approaches                                                                                                                                                                     \\
-- Reduced effort --\textgreater cost efficiency\footnote{* cost reduction measured on real life projects in which the Ampersand method as used \citenac{joosten2007deriving}}.                                                                                                                                                                                                                                                                                                                                               &                                               & - Feedback of errors during the compilation process are insufficient                                                                                                                                                      \\
-- Thorough training available                                                                                                                                                                                                                                                                                                                                                                &                                               & - Maintainability of the code can be improved                                                                                                                                                                         \\
-- Automated creation of prototypes for stakeholder alignment                                                                                                                                                                                                                                                                                                                                 &                                               &                                                                                                                                                                                                                       \\
-- Creation of design artifacts as an accelerator                                                                                                                                                                                                                                                                                                                                             &                                               &                                                                                                                                                                                                                       \\
-- Usability on real life projects                                                                                                                                                                                                                                                                                                                                                            &                                               &                                                                                                                                                                                                                       \\ \cline{1-1} \cline{3-3} 
-\multicolumn{1}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000} Opportunity}}                                                                                                                                                                                                                                                                                                             & \multicolumn{1}{l|}{\cellcolor[HTML]{656565}} & \multicolumn{1}{l|}{\cellcolor[HTML]{9B9B9B}Threats}                                                                                                                                                                  \\ \cline{1-1} \cline{3-3} 
-\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}l@{}}- Evolution to bigger, more complex and more integrated \\projects increases the need to assure that all requirements are \\consistently respected whilst the effort needed to assure this consistency \\raises exponentially on these kind of projects. No, or very little, methods \\can offer support to deal with this.\end{tabular} &                                               & \cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}l@{}}- Emerging techniques such as cloud based solutions and \\COTS products requires another requirement engineering techniques \\than the formal  methods\end{tabular} \\
-\begin{tabular}[c]{@{}l@{}}- Stakeholders in software engineering projects want a greater control \\over the articulated requirements\end{tabular}                                                                                                                                                                                                                                            &                                               & - Short time to market projects using agile approaches and incremental deliveries                                                                                                                                     \\
-- Cost reduction is stressed in almost each software project                                                                                                                                                                                                                                                                                                                                 & \cellcolor[HTML]{343434}                      &                                                                                                                                                                                                                      
+- End-2-end approach and consistency assurance using relational algebra\newline
+- Availability of supporting tools \newline
+- Communication is aligned to the knowledge, skills and role of the receiver \newline
+- Reduced effort $\rightarrow$ cost efficiency* \newline
+- Thorough training available \newline
+- Automated creation of prototypes for stakeholder alignment \newline
+- Creation of design artifacts as an accelerator \newline
+- Usability on real life projects &%
+%
+- No user interface\newline
+- No distinction between mandatory and optional requirements \newline
+- No specific support to support Agile approaches \newline
+- Feedback of errors during the compilation process are insufficient \newline
+- Maintainability of the code can be improved \\\hline\hline
+
+\cellcolor[HTML]{9B9B9B}\textbf{Opportunity} & \cellcolor[HTML]{9B9B9B}\textbf{Threats} \\
+- Evolution to bigger, more complex and more integrated projects increases the need to assure that all requirements are consistently respected whilst the effort needed to assure this consistency raises exponentially on these kind of projects. No, or very little, methods can offer support to deal with this.\newline
+- Emerging techniques such as cloud based solutions and COTS products requires another requirement engineering techniques than the formal  methods &
+
+- Stakeholders in software engineering projects want a greater control over the articulated requirements\newline
+- Short time to market projects using agile approaches and incremental deliveries\newline
+- Cost reduction is stressed in almost each software project \\\hline
 \end{tabular}
-}
+\caption[SWOT Analysis]{SWOT Analysis\\\footnotesize * cost reduction measured on real life projects in which the Ampersand method as used \citenac{joosten2007deriving}}
+\label{SWOT-Analysis}
 \end{table}
 
 \subsubsection{Future road map}
