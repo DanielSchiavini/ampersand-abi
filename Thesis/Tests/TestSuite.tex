@@ -6,7 +6,9 @@
   The source code can be found in the folder \code{src/Database/Design/Ampersand/Test} within the Ampersand repository.
 
   The test suite runs in three steps (see \autoref{fig:TestModules}).
-  %todo: korte intro van de drie stappen
+  The first step is to check if a list of input files can be parsed successfully. 
+  If no issues are found during the parsing, the same list is used by the module \code{RunAmpersand} in which all input scripts are processed completely by Ampersand.
+  As a final step, a series of random generated parse tree structures is generated, translated in ADL files and tested.
   Each of the modules are described in the following subsection.
   %
   \begin{figure}[ht]%
@@ -25,12 +27,7 @@
       The \code{main} function calls each of the other modules in sequence, stopping if any of them returns \code{False}.
       When all tests have been successful, the return code is \code{ExitSuccess}.
       Otherwise, the return code is naturally \code{ExitFailure}.
-    
-    \item[TestScripts] retrieves a list of scripts that can be used for the different tests.
-      It searches for tests within the folder \code{ArchitectureAndDesign}, and contains a list of scripts from the \code{ampersand-models} repository, that can be changed at a later moment if wished.
-      Note that all the ADL-scripts listed in this section must be correct for the parser and the type checker.
-      During development, the list was limited to the scripts that could be successfully executed by the original Ampersand version.
-    
+	  
     \item[ParserTest] exports three functions that are the core of testing the parser:
       \begin{itemize}
         \item \code{parseScripts} receives a list of files to parse, and checks that every file can be parsed successfully.
@@ -40,7 +37,15 @@
     
     \item[RunAmpersand] receives a list of files, and checks that every file can be executed successfully by Ampersand.
       This tests thus not only the parser, but also the interface between the parser and the type checker, as the rest of the Ampersand chain.
-    
+  \end{description}
+	  
+  The following modules are supporting one ore more of the three main modules:
+  \begin{description}	  
+    \item[TestScripts] retrieves a list of scripts that can be used for the different tests.
+      It searches for tests within the folder \code{ArchitectureAndDesign}, and contains a list of scripts from the \code{ampersand-models} repository, that can be changed at a later moment if wished.
+      Note that all the ADL-scripts listed in this section must be correct for the parser and the type checker.
+      During development, the list was limited to the scripts that could be successfully executed by the original Ampersand version.   
+	  
     \item[QuickChecks] generates random parse tree structures and generates the corresponding ADL-script by pretty printing the parse tree.
       This ADL-script is then fed back to the parser through the \code{parseReparse} function, to verify that the parser can accept any random input.
       More information on the quick checks is given in subsection~\ref{tests:quick-check}.
