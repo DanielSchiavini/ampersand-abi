@@ -5,11 +5,13 @@
 
 \subsubsection{The rationale behind the new lexer}
 
-In the design of the new Ampersand parser, the question arose whether to keep the current scanner, the former name of the lexer module within Ampersand, or to implement a new one.
-After the analysis of the error improvement areas, as described in \autoref{sec:analysis}, the main improvements were identified within the actual parser.
-The error feedback quality produced by the scanner module was higher and therefore, there was no stringent need to re-implement the scanner.
-On the other hand, given the aspect that Parsec was defined as the new parser library, keeping the current scanner would have resulted in the utilization of two different libraries providing more of less the same functionality.
-To avoid a decrease in maintainability, the decision is made to implement the parser and scanner based on the same library.
+In the design of the new Ampersand parser, the first decision to tackle is whether to keep the existing scanner, the former name of the lexer module within Ampersand, or to implement a new one.
+During the analysis of the error improvement areas, as described in \autoref{sec:analysis}, the main improvements are identified within the old parser.
+The error feedback quality, produced by the scanner module, is higher and therefore, there is no stringent need to re-implement the scanner.
+On the other hand, given the aspect that Parsec is identified as the new parser library, keeping the current scanner would result in the utilization of two different libraries providing more of less the same functionality.
+
+The alternative of keeping the existing scanner would deliver a perfect functional solution, but mixing these two libraries will increase the complexity of the solution, decreasing the maintainability.
+To avoid this decrease in maintainability, the decision is to implement the parser and scanner based on the same library.
 
 During the implementation of the lexer module, replacing the old scanner, additional attention was given to further improve the quality of the error messages.
 The scanner module is renamed to lexer to stress the aspect that the principle of lexemes is used in the new scanner.
@@ -28,7 +30,9 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
  
     \item[LexerMonad] contains a monad definition that supports lexing with context.
       It tracks for example the location in the input and the warnings that may be generated.
-	  This module is re-used without any modification out of the  Helium parser.
+      This module is a re-use the  Helium parser, without any modifications to the functions we use.
+      All not used functions are removed to improve the code maintainability.
+      
       The following functions or types are used in the Ampersand lexer:
 	  \begin{itemize}
 		\item \textbf{LexerMonad} is the main monadic type used in the lexer returning an error or a list of tokens together with a list of warnings
@@ -43,7 +47,7 @@ The lexer is the main module, in which the actual lexing is done, and to do so, 
 	  The show functions for the error and warning are maintained in this module.
 	  
     \item[LexerTexts] fetches the correct description of an error or a warning out of the \code{LexerTexts} module.
-	  This centralization provides an easy entry point for the maintenance of the actual messages as these messages are no longer dispersed over the module functions.
+	  The centralization of the error message texts provides an easy entry point for the maintenance of the actual messages as these messages are no longer dispersed over the module functions.
 	  
     \item[LexerBinaryTrees] module responsible for searching binary trees in an efficient way, to support the token recognition.
     This is the previously existing \code{UU\_BinaryTrees} module which is renamed to match the used naming structure of the new lexer modules.
@@ -58,6 +62,7 @@ Based on the improvement topics mentioned in \autoref{analysis:lexer}, a new tok
 Each token contains the lexeme: a part of the input string defining the token type and content, plus the position of the token in the input file.
 The token structure is defined as follows:
 
+%todo: comments bijvoegen bij de lexemes ter verduidelijking van de inhoud
 \begin{haskell}
 data Token = Tok { tokLex :: Lexeme
                  , tokPos :: FilePos
