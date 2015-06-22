@@ -62,23 +62,22 @@ Based on the improvement topics mentioned in \autoref{analysis:lexer}, a new tok
 Each token contains the lexeme: a part of the input string defining the token type and content, plus the position of the token in the input file.
 The token structure is defined as follows:
 
-%todo: comments bijvoegen bij de lexemes ter verduidelijking van de inhoud
 \begin{haskell}
 data Token = Tok { tokLex :: Lexeme
                  , tokPos :: FilePos
                  }
                         
-data Lexeme  = LexSymbol      Char
-             | LexOperator    String
-             | LexKeyword     String
-             | LexString      String
-             | LexExpl        String
-             | LexAtom        String
-             | LexDecimal     Int
-             | LexOctal       Int
-             | LexHex         Int
-             | LexConId       String
-             | LexVarId       String
+data Lexeme  = LexSymbol      Char           -- Single character
+             | LexOperator    String         -- Operator
+             | LexKeyword     String         -- Keyword
+             | LexString      String         -- String
+             | LexExpl        String         -- Explain   (Expl ::= '{+' Any* '-}')
+             | LexAtom        String         -- Atom      (Atom ::= "'" Any* "'")
+             | LexDecimal     Int            -- Decimal integer
+             | LexOctal       Int            -- Octal integer
+             | LexHex         Int            -- Hexadecimal integer
+             | LexConId       String         -- Conid     (Conid ::= UpperChar (Char | '_')*)
+             | LexVarId       String         -- Varid     (Varid ::= (LowerChar | '_') (Char | '_')*)
   deriving (Eq, Ord)
 \end{haskell}
 %
