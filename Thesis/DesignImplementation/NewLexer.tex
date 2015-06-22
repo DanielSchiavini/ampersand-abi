@@ -62,21 +62,21 @@ Each token contains the lexeme: a part of the input string defining the token ty
 The token structure is defined as follows:
 
 \begin{haskell}
-data Token = Tok { tokLex :: Lexeme
-                 , tokPos :: FilePos
+data Token = Tok { tokLex :: Lexeme    -- ^ The lexeme (defined below)
+                 , tokPos :: FilePos   -- ^ The file position
                  }
 
-data Lexeme  = LexSymbol      Char           -- Single character
-             | LexOperator    String         -- Operator
-             | LexKeyword     String         -- Keyword
-             | LexString      String         -- String
-             | LexExpl        String         -- Explanation
-             | LexAtom        String         -- Atom
-             | LexDecimal     Int            -- Decimal integer
-             | LexOctal       Int            -- Octal integer
-             | LexHex         Int            -- Hexadecimal integer
-             | LexConId       String         -- Upper case identifier
-             | LexVarId       String         -- Lower case identifier
+data Lexeme  = LexSymbol      Char     -- ^ Single character
+             | LexOperator    String   -- ^ Operator
+             | LexKeyword     String   -- ^ Keyword
+             | LexString      String   -- ^ String
+             | LexExpl        String   -- ^ Explanation
+             | LexAtom        String   -- ^ Atom
+             | LexDecimal     Int      -- ^ Decimal integer
+             | LexOctal       Int      -- ^ Octal integer
+             | LexHex         Int      -- ^ Hexadecimal integer
+             | LexConId       String   -- ^ Upper case identifier
+             | LexVarId       String   -- ^ Lower case identifier
   deriving (Eq, Ord)
 \end{haskell}
 %
