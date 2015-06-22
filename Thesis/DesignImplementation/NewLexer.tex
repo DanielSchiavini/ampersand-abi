@@ -65,20 +65,7 @@ The token structure is defined as follows:
 data Token = Tok { tokLex :: Lexeme
                  , tokPos :: FilePos
                  }
-                        
-<<<<<<< .merge_file_a04036
-data Lexeme = LexSymbol    Char       -- Single character
-            | LexOperatorString  -- Operator
-            | LexKeyword String  -- Keyword
-            | LexString  String  -- String
-            | LexExpl    String  -- Explain ('{+' Any* '-}')
-            | LexAtom    String  -- Atom    ("'" Any* "'")
-            | LexDecimal Int     -- Decimal integer
-            | LexOctal   Int     -- Octal integer
-            | LexHex     Int     -- Hexadecimal integer
-            | LexConId   String  -- Conid (UpperChar (Char| '_')*))
-            | LexVarId   String  -- Varid ((LowerChar|'_')(Char|'_')*))
-=======
+
 data Lexeme  = LexSymbol      Char           -- Single character
              | LexOperator    String         -- Operator
              | LexKeyword     String         -- Keyword
@@ -90,7 +77,6 @@ data Lexeme  = LexSymbol      Char           -- Single character
              | LexHex         Int            -- Hexadecimal integer
              | LexConId       String         -- Upper case identifier
              | LexVarId       String         -- Lower case identifier
->>>>>>> .merge_file_a02320
   deriving (Eq, Ord)
 \end{haskell}
 %
