@@ -2,10 +2,10 @@
 
 \subsection{New parser}
 \label{design:new-parser}
-The mainstream design of the new parser has not changed much.
+The high-level design of the new parser has not changed much.
 While the new parser may still be recognizable for the Ampersand developers, several improvements have been made.
 
-As decided during the research for domain \& techniques (see \autoref{domain:parsing}), the parser has been rebuilt with the Parsec combinator library.
+As decided during the research for domain and techniques (see \autoref{domain:parsing}), the parser has been rebuilt with the Parsec combinator library.
 Basically, each EBNF rule receives its own parser function.
 Thanks to the combinator operators, each parsing function also looks very similar to its corresponding EBNF.
 
@@ -18,7 +18,7 @@ This was done only when the code readability could be improved by doing so.
 
 \subsubsection{Parsec}
 \label{design:parsing-lib}
-As mentioned earlier, and described in research context document \citenac{parsing}, the new Ampersand parser has been rebuilt with another parsing library, namely Parsec.
+As mentioned earlier, and described in the research context document \citenac{parsing}, the new Ampersand parser has been rebuilt with another parsing library, namely Parsec.
 However, for the Ampersand developers, the source code of the parser will still look very familiar, thanks to the applicative interface.
 For developers, the main differences between Parsec and the uulib are:
 \begin{itemize}
@@ -32,12 +32,13 @@ For developers, the main differences between Parsec and the uulib are:
   \item Error messages are customizable by using the \code{<?>} operator.
     This is also suggested in \autoref{sec:recommendations}.
   \item Some combinators have a different name, e.g. one must use \code{option} instead of \code{opt}.
-    Assuming the documentation found on Hackage is clear and sufficient, interface differences are not documented here.
+    Because the documentation found on Hackage is clear and sufficient, interface differences are not documented here.
 \end{itemize}
 
 \subsubsection{Backtracking}
 \label{design:backtracking}
 In order to explain the differences on backtracking behavior between the uulib and Parsec, we quote here Doaitse Swierstra, the author of the uulib \citenac{swierstra-parsec}:
+%todo: insprong vermijden bij de quote
 \begin{quote}
 \textsl{
   To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in uu-parsinglib.
@@ -47,9 +48,9 @@ In order to explain the differences on backtracking behavior between the uulib a
   Parsec uses a back-tracking strategy with explicit tries to commit, whereas uu-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.
 }
 \end{quote}
-%
-We can therefore conclude that try-statements in Parsec are undesirable.
-However, they are necessary when the grammar is ambiguous.
+%todo: extra duiding dat de try statements een impact hebben op de foutmeldingen en de onderhoudbaarheid van de code
+We can therefore conclude that try-statements in Parsec are undesirable, and should be avoided by refactoring the underlying grammar.
+However, they are necessary when the grammar is not left-factored, resulting in ambiguous grammar.
 In this section we explain why each of the remaining try statements are necessary, and how these issues can be resolved:
 \begin{description}
   \item[Classify]
@@ -57,7 +58,7 @@ In this section we explain why each of the remaining try statements are necessar
     \begin{ebnf}
      Classify ::= `CLASSIFY' ConceptRef `IS' Cterm
      GenDef ::= (`CLASSIFY' | `SPEC') ConceptRef `ISA' ConceptRef\end{ebnf}
-    When the parser encounters \code{`CLASSIFY'}, it cannot define whether it found a \code{Classify} or a \code{GenDef} production.
+    When the parser encounters \code{`CLASSIFY'}, it cannot determine whether it found a \code{Classify} or a \code{GenDef} production.
     Therefore, the parser must consume the keyword and a \code{ConceptRef} before consuming either \code{`IS'} or \code{`ISA'} and determining which production is applicable.
     
     In order to solve this issue, one must choose a different keyword or symbol for each of the productions.
@@ -69,7 +70,7 @@ In this section we explain why each of the remaining try statements are necessar
     \begin{ebnf}
      RoleRelation ::= `ROLE' RoleList `EDITS' NamedRelList
      RoleRule ::= `ROLE' RoleList `MAINTAINS' ADLidList\end{ebnf}
-    When the parser encounters \code{`ROLE'}, it cannot define whether it is a \code{RoleRelation} or a \code{RoleRule} production.
+    When the parser encounters \code{`ROLE'}, it cannot determine whether it is a \code{RoleRelation} or a \code{RoleRule} production.
     Therefore, the parser must consume the keyword and a \code{RoleList} (which may be long) before consuming either \code{`MAINTAINS'} or \code{`EDITS'} and determining which production is applicable.
     
     In order to solve this issue, one must choose a different keyword for each of the productions, merge the two options to have the same representation in the parse tree, or refactor the parser so that the two options are parsed together.
@@ -83,7 +84,7 @@ In this section we explain why each of the remaining try statements are necessar
     When the parser encounters \code{`VIEW'}, it cannot define whether it found a \code{FancyViewDef} or a \code{ViewDefLegacy} production.
     In this case, defining which construction is applicable is even more complicated.
     This decision must, in the worst case, be delayed until the parser encounters a \code{`\{'} or \code{'('}.
-    That's because the productions \code{Label} and \code{LabelProps} are not disjoint, and \code{`DEFAULT'} is optional.
+    That is because the productions \code{Label} and \code{LabelProps} are not disjoint, and \code{`DEFAULT'} is optional.
     
     In order to solve this issue, we advise to merge or drop the legacy statement.
     
