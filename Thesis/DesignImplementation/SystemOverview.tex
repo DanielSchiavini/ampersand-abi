@@ -6,19 +6,34 @@
   \begin{figure}[ht]%
     \centering
     \includegraphics[width=0.7\columnwidth]{Figures/ParserModules}
-    \caption{The modules relevant for the parser and their relationships}
+    \caption{The modules relevant for the parser and their dependencies}
     \label{fig:ParserModules}
   \end{figure}%
-  Each module has the following responsibilities:
+
+  The parsing process starts in the module \code{Parsing}.
+  As a first step, the input string is sliced into tokens by the \code{lexer} module.
+  Once the input string is separated into the token structure as defined in the module \code{LexerToken} the next step is to actually parse the tokens by the \code{Parser}.
+  The parser will use the \code{ParsingLib} to create the parse tree as defined in \code{ParseTree}.
+
+  ~\\\noindent
+  Each main module has the following responsibilities:
   %
   \begin{description}
     \item[Parsing] module that implements the interface of the parser with the rest of the system.
       It is responsible for reading the input files, calling the lexer and the parser and returning a parse tree as result (or a parse error).
 
+    \item[Lexer/LexerToken] modules responsible for recognizing the input characters and converting them to tokens.
+      The new lexer, together with its sub-modules, splits the input strings into the token structure defined in \code{LexerToken}.
+      This list of tokens is the actual input for the parser.
+
     \item[Parser] module responsible for executing the parsing itself.
       It accepts the tokens that are allowed in each grammar production and generates the corresponding parse tree.
       The parser is described in \autoref{design:new-parser}.
-      
+ \end{description}
+
+  \noindent
+  Several supporting modules are defined used by one or more main modules:
+  \begin{description}
     \item[ParsingLib] library that contains several useful functions to assist the parser, e.g. token recognition.
       These functions are not depending on the specific grammar rules.
       
@@ -30,6 +45,4 @@
     \item[CtxError] contains the data structures responsible for the parse errors and their location.
       This module has not been refactored as a part of this project.
     
-    \item[Lexer/LexerToken] modules responsible for recognizing the input characters and converting them to tokens.
-      The new lexer, together with its sub-modules, is described in \autoref{design:new-lexer}.
   \end{description}

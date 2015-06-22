@@ -1,0 +1,62 @@
+% !TEX root = ../Parsing.tex
+
+\subsection{Conclusion}
+\label{sec:approachconclusion}
+Based on the theoretical approach and the practical usage, this section provides some conclusion regarding the methodology as well as the supporting tool.
+All strengths, weaknesses, opportunities and threats mentioned in this document are summarized in the SWOT diagram below.
+
+
+\begin{table}[h]
+%\centering
+ %\caption{SWOT Analysis}
+\caption{SWOT Analysis}
+\label{SWOT Analysis}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l
+>{\columncolor[HTML]{656565}}l l}
+\cline{1-1} \cline{3-3}
+\multicolumn{1}{|l|}{\cellcolor[HTML]{9B9B9B}Strengths}                                                                                                                                                                                                                                                                                                                                      & \multicolumn{1}{l|}{\cellcolor[HTML]{656565}} & \multicolumn{1}{l|}{\cellcolor[HTML]{9B9B9B}Weakness}                                                                                                                                                                 \\ \cline{1-1} \cline{3-3} 
+\cellcolor[HTML]{FFFFFF}- End-2-end approach and consistency assurance using relational algebra                                                                                                                                                                                                                                                                                              &                                               & \cellcolor[HTML]{FFFFFF}- No User Interface                                                                                                                                                                           \\
+- Availability of supporting tools                                                                                                                                                                                                                                                                                                                                                           &                                               & - No distinction between mandatory and optional requirements                                                                                                                                                          \\
+- Communication is aligned to the knowledge, skills and role of the receiver                                                                                                                                                                                                                                                                                                                &                                               & - No specific support to support Agile approaches                                                                                                                                                                     \\
+- Reduced effort --\textgreater cost efficiency\footnote{* cost reduction measured on real life projects in which the Ampersand method as used \citenac{joosten2007deriving}}.                                                                                                                                                                                                                                                                                                                                               &                                               & - Feedback of errors during the compilation process are insufficient                                                                                                                                                      \\
+- Thorough training available                                                                                                                                                                                                                                                                                                                                                                &                                               & - Maintainability of the code can be improved                                                                                                                                                                         \\
+- Automated creation of prototypes for stakeholder alignment                                                                                                                                                                                                                                                                                                                                 &                                               &                                                                                                                                                                                                                       \\
+- Creation of design artifacts as an accelerator                                                                                                                                                                                                                                                                                                                                             &                                               &                                                                                                                                                                                                                       \\
+- Usability on real life projects                                                                                                                                                                                                                                                                                                                                                            &                                               &                                                                                                                                                                                                                       \\ \cline{1-1} \cline{3-3} 
+\multicolumn{1}{|l|}{\cellcolor[HTML]{9B9B9B}{\color[HTML]{000000} Opportunity}}                                                                                                                                                                                                                                                                                                             & \multicolumn{1}{l|}{\cellcolor[HTML]{656565}} & \multicolumn{1}{l|}{\cellcolor[HTML]{9B9B9B}Threats}                                                                                                                                                                  \\ \cline{1-1} \cline{3-3} 
+\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}l@{}}- Evolution to bigger, more complex and more integrated \\projects increases the need to assure that all requirements are \\consistently respected whilst the effort needed to assure this consistency \\raises exponentially on these kind of projects. No, or very little, methods \\can offer support to deal with this.\end{tabular} &                                               & \cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}l@{}}- Emerging techniques such as cloud based solutions and \\COTS products requires another requirement engineering techniques \\than the formal  methods\end{tabular} \\
+\begin{tabular}[c]{@{}l@{}}- Stakeholders in software engineering projects want a greater control \\over the articulated requirements\end{tabular}                                                                                                                                                                                                                                            &                                               & - Short time to market projects using agile approaches and incremental deliveries                                                                                                                                     \\
+- Cost reduction is stressed in almost each software project                                                                                                                                                                                                                                                                                                                                 & \cellcolor[HTML]{343434}                      &                                                                                                                                                                                                                      
+\end{tabular}
+}
+\end{table}
+
+\subsubsection{Future road map}
+
+Not surprisingly, several of the current weaknesses of the methodology will be addressed in the future Ampersand road map to strengthen the power of the Ampersand Approach:
+\begin{description}
+	\item[Improved generator] Instead of working prototypes, a more powerful generator will be built that can generate complex and full-scale systems.
+	\item[Structure repository] The requirements engineer will be offered a wide range of standard structures as a starting point to further tune to the specific project requirements.
+	This will allow the requirements engineer to focus more on the specific requirements needs.
+	\item[Graphical user interface] A GUI will provide a full blown working environment for the requirement engineer providing real time syntax and other structure issues. 
+	This will reduce the amount of errors found during compilation and hence increase the efficiency and user satisfaction. 
+	A good compiler that provides useful feedback will remain important to tackle the issues not found in real-time during the requirement editing.
+	\item[Agile approach] Short functional iterations, in which prototypes are generated, will be supported to embed the base principles of agile approaches.
+	\item[Feedback of compiler messages] As part of this project, the compiler will be revised to provide clear and useful errors messages.
+\end{description}
+
+\subsubsection{Concluding remarks}
+Without doubt, the application of formal methods can enhance the quality of the actual delivered system as the quality of the full software engineering process. 
+Besides the positive effects, most of the formal techniques include some disadvantages due to which these methods are often neglected. 
+During the elaboration of the Ampersand method, Joosten clearly focused on a method, and supporting tools, that can be used on large real life projects. 
+The use of relational algebra to assure end-2-end consistency, the formatting of requirements in natural language for business user alignment together with the supporting tools which automate, otherwise time consuming, checks and  generate useful design artifacts including working prototypes is ground-breaking.
+
+The Ampersand methodology has a large potential to gain an important position next to other formal methods. 
+Two identified weaknesses, the quality of the feedback and the maintainability of the code will be tackled in the next phases of the graduation project of  Daniel S.C. Schiavini and Maarten Baertsoen.
+
+
+
+
+
+

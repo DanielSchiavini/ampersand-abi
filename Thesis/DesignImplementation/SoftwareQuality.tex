@@ -11,16 +11,19 @@ To assure that these non-functional requirements are correctly addressed, we def
 All important design decisions we made together with the code we delivered need to be documented.
 This documentation is needed for the Ampersand team to have a clear insight in the way the new parser is structured and how it is integrated in Ampersand.
 The availability of this documentation is crucial for the maintainability of the new parser.
-The following documentation is therefore included in this project:
+The following documentation is delivered as a result of this ABI project:
+\dict{ABI}{Afstudeerproject Bachelor Informatica (graduation project for the computer science bachelor)}%
 %
 \begin{description}
   \item[System design]
     A general system overview of the new system, describing the goal and purpose of each module, how it is designed to achieve its goals and how it is integrated in the system architecture.
+   The system design is integrated in this thesis document.
   \item[Code annotations]
     Haddock is the de-facto standard for generating Haskell documentation. 
-    This documentation generator generates HTML code based on the comments in the Haskell source code.
-    It is important to notice that Haddock normally only generates documentation of the functions that are exported by each module.
-    Besides the code annotations of the exported functions, internal functions that are important or difficult to understand can be documented as well.
+    This documentation generator generates HTML based on the comments in the Haskell source code.
+    It is important to remark that Haddock normally only generates documentation of the functions that are exported by each module.
+    It is however important that all functions are well documented, including the internal ones, and therefore, the internal functions are documented using regular, non-Haddock, code annotations.
+    The code annotations, in the source code, together with the Haddock documentation are delivered as an appendix to this document.
   \item[EBNF comments]
     The EBNF structure is the most important documentation of how the Ampersand syntax is composed and how the parser functions are defined.
     As described in \autoref{analysis:grammar}, the actual EBNF is retrieved through reverse engineering.
@@ -33,7 +36,7 @@ The following documentation is therefore included in this project:
   In the as-is analysis of the current parser, we noticed that the code has been through several feature additions over the past years.
   These repetitive small changes reflected in parts of the code which has become too elaborated or sometimes even obsolete.
 
-  Each code statement in the parser and lexer is reviewed, and were possible refactored, to be as concise as possible.
+  Each code statement in the parser and lexer is analyzed by the project team and, where possible, refactored to be as concise as possible.
   The delivered code is now as short as possible without compromising the readability of the code.
 
   In addition, the code review tool HLint is used.
@@ -43,8 +46,8 @@ The following documentation is therefore included in this project:
   The HLint report for the delivered code is available in the \hyperref[app:docs]{project documentation (appendix)}.
 
 \subsubsection{Performance}
-  Performance is a requirement often made in software engineering projects which is difficult to measure before the software is actually used in a production environment.
+  Performance is a requirement often made in software engineering projects that is difficult to measure before the software is actually used in a production environment.
   For the new Ampersand parser, we proactively identified the topics that could have an impact on the resulting parsing performance.
   In the design of the new parser, a performance aspect that makes an important difference is the parser backtracking (with the \code{try} function).
-  Several refactorings in the grammar are carried though to avoid the use of the \code{try} function. 
+  Several refactorings in the grammar are carried through to avoid the use of the \code{try} function. 
   A full list of remaining backtracking productions, together with our suggestions how to solve them, is provided in section \autoref{design:backtracking}.

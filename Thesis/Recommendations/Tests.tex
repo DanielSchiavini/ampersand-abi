@@ -2,12 +2,12 @@
 
 \subsection{Test Suite}
 \label{recommendations:tests}
-  In this section we name a couple changes that can be done to improve the test suite in the future:
+  In this section we name a couple of changes that can be done to improve the test suite in the future:
   \begin{description}
     \item[Sentinel] During the development of the new parser, we worked in a separate fork.
       Our changes were not being tested in the Ampersand test server (Sentinel).
       Since we did not have access to this server, we developed a separate test suite.
-      It may be pertinent to integrate the Sentinel jobs into the test suite or to integrate the test suite into the Sentinel jobs.
+      It may be better to integrate the Sentinel jobs into the test suite or to integrate the test suite into the Sentinel jobs.
     
     \item[Output] Currently, part of the test suite outputs are written by using the \code{Debug.Trace} module.
       From a purely functional perspective, using this module may be undesirable.

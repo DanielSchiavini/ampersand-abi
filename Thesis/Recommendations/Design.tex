@@ -5,24 +5,26 @@
 During the parser reimplementation and code refactoring to enhance the code maintainability, we noticed potential improvement topics in Ampersand.
 Where possible, with respect to our project requirements and our milestones, we integrated these topics in the new parser.
 Some topics we could not handle due to time constraints or given the undesired impact on the surrounding modules.
-It would be a pity if these improvement ideas were lost as these can help the Ampersand team to further enhance the tool.
+These improvement ideas can help the Ampersand team to further enhance the tool and therefore, these topics are listed in this section.
 This section summarizes our improvement suggestions, both generic as specific ones, for the Ampersand tool.
 
 \begin{description}
   \item[Syntax improvements]
     In the syntax, we discovered some statements which are not pure LL(1) statements.
-    The Parsec \code{try} function allows the backtracking in the parser, avoiding that input is consumed which is still needed in another parse statements if the parse function cannot succeed successfully.
-    Using \code{try} we can handle this situation but the backtracking has a negative impact of the parser performance whilst it adds complexity to the parser module.
+    The Parsec \code{try} function allows the backtracking in the parser, avoiding that input is consumed which is still needed in other parse statements if the parse function cannot succeed successfully.
+    Using \code{try} we can handle this situation, but the backtracking has a negative impact of the parser performance whilst it adds complexity to the parser module.
     Our suggestion is to further optimize the Ampersand syntax to establish a pure predictive syntax in which no backtracking is needed.
     This will not only improve the parser performance and maintainability, the syntax simplifications may also make it easier for new users to learn the language.
     The syntax statements in which backtracking is needed, including the reasons why and how to solve them, are listed in section \ref{design:backtracking}.
 
   \item[Warnings]
     An improvement point in the new lexer is that warnings are now supported. 
-    Warnings are however not yet integrated in the Ampersand tool.
+    Warnings are, however, not yet integrated in the Ampersand tool.
     There is no need to stop the compiling process for warnings, still the reasons behind them can make sense.
     Warnings can, however, support the user identifying the cause of unexpected results, although the compilation could be completed successfully.
     Our suggestion is to add a list of warnings to the design artifacts of Ampersand, available for the user to reflect on.
+
+   %todo: voorbeeld warning bijvoegen
   \item[Uniform parse tree structure]
    In the parse tree, not all data types are constructed in correspondence to the syntax of the Ampersand language.
    Several restructuring functions are used in the parser to reformulate the result of the parse functions to match the constructor type in the parse tree.
@@ -36,7 +38,7 @@ This section summarizes our improvement suggestions, both generic as specific on
 %
    \begin{haskell}
     pViewAtt :: AmpParser P_ObjectDef
-    pViewAtt = rebuild <\$> currPos <*> optLabelProps <*> pTerm
+    pViewAtt = rebuild <$> currPos <*> optLabelProps <*> pTerm
         where rebuild pos (nm, strs) ctx =
           P_Obj nm pos ctx mView msub strs
           mView = Nothing
@@ -56,12 +58,12 @@ This section summarizes our improvement suggestions, both generic as specific on
     \end{haskell}
     As the order of the parameters in the parse tree and the parser are different, the local function \code{rebuild} is used to align both types to each other.
    Our personal experience was that these rebuild functions make the parser code more difficult to understand and hence, to maintain.
-  During the project, we have reordered some of the structures of the parse tree, however we could not do it for all structures.
+  During the project, we have reordered some of the structures of the parse tree, however, we could not do it for all structures.
    To further decrease the code complexity, we suggest to try to eliminate these rebuild functions by restructuring data types in the parse tree.
 
   \item[Manual overrule of error message]
     Our analysis of the new error messages showed that the quality of these improved distinctively.
-    Parsec provides to possibility to overrule the standard Parsec error message by an own formulated message.
+    Parsec provides the possibility to overrule the standard Parsec error message by an own formulated message.
     During our implementation we decided to stick to the standard if the standard error message was at least sufficient.
     If the Ampersand teams want to tweak error messages after all, this can be realized using the \code{<?>} Parsec operator.
     Placing the \code{<?>} after the parser, followed by a string, changes the standard Parsec text after the word `expecting'.
@@ -69,6 +71,5 @@ This section summarizes our improvement suggestions, both generic as specific on
   \item [Smaller improvements]
     In the actual parser code, some smaller improvement topics are identified with comments.
     However, resolving these independent minor topics impacts the parse tree and therefore, these modifications are still open.
-    Providing an exhaustive overview of these topics in this document would jeopardize the briefness and conciseness of the document.
-    All improvement topics are however documented in the code itself. 
+    All improvement topics are documented in the code itself. 
 \end{description}

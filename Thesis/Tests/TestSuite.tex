@@ -5,7 +5,10 @@
   This test suite has been used to verify the performance and correctness of the new parser.
   The source code can be found in the folder \code{src/Database/Design/Ampersand/Test} within the Ampersand repository.
 
-  The test suite runs in three steps, which are depicted in \autoref{fig:TestModules}.
+  The test suite runs in three steps (see \autoref{fig:TestModules}).
+  The first step is to check if a list of input files can be parsed successfully. 
+  If no issues are found during the parsing, the same list is used by the module \code{RunAmpersand} in which all input scripts are processed completely by Ampersand.
+  As a final step, a series of random generated parse tree structures is generated, translated in ADL files and tested.
   Each of the modules are described in the following subsection.
   %
   \begin{figure}[ht]%
@@ -14,6 +17,7 @@
     \label{fig:TestModules}
   \end{figure}%
 
+  %todo: herwerking op basis van de opmerkingen van Bastiaan
   \subsubsection{Modules}
   \label{tests:test-modules}
   In this section a short description of each module is given:%
@@ -23,12 +27,7 @@
       The \code{main} function calls each of the other modules in sequence, stopping if any of them returns \code{False}.
       When all tests have been successful, the return code is \code{ExitSuccess}.
       Otherwise, the return code is naturally \code{ExitFailure}.
-    
-    \item[TestScripts] retrieves a list of scripts that can be used for the different tests.
-      It searches for tests within the folder \code{ArchitectureAndDesign}, and contains a list of scripts from the \code{ampersand-models} repository, that can be changed at a later moment if wished.
-      Note that all the ADL-scripts listed in this section must be correct for the parser and the type checker.
-      During development, the list was limited to the scripts that could be successfully executed by the original Ampersand version.
-    
+	  
     \item[ParserTest] exports three functions that are the core of testing the parser:
       \begin{itemize}
         \item \code{parseScripts} receives a list of files to parse, and checks that every file can be parsed successfully.
@@ -38,7 +37,15 @@
     
     \item[RunAmpersand] receives a list of files, and checks that every file can be executed successfully by Ampersand.
       This tests thus not only the parser, but also the interface between the parser and the type checker, as the rest of the Ampersand chain.
-    
+  \end{description}
+	  
+  The following modules are supporting one ore more of the three main modules:
+  \begin{description}	  
+    \item[TestScripts] retrieves a list of scripts that can be used for the different tests.
+      It searches for tests within the folder \code{ArchitectureAndDesign}, and contains a list of scripts from the \code{ampersand-models} repository, that can be changed at a later moment if wished.
+      Note that all the ADL-scripts listed in this section must be correct for the parser and the type checker.
+      During development, the list was limited to the scripts that could be successfully executed by the original Ampersand version.   
+	  
     \item[QuickChecks] generates random parse tree structures and generates the corresponding ADL-script by pretty printing the parse tree.
       This ADL-script is then fed back to the parser through the \code{parseReparse} function, to verify that the parser can accept any random input.
       More information on the quick checks is given in subsection~\ref{tests:quick-check}.
@@ -75,7 +82,7 @@
   
   \subsubsection{Running the tests}
   During the parser development, the \code{main} function of the parser tests has been executed manually, through a batch file.
-  This is mainly done because the project team did not have access to the Sentinel server, and no documentation was available on how to run Sentinel locally in a Windows machine.
+  This is mainly done because the project team did not have access to the Sentinel server, and no documentation was available on how to run Sentinel locally on a Windows machine.
   However, now that the parser is being delivered, it should be integrated with the other existing Ampersand/Sentinel tests.
   We leave the option open for the Ampersand development team to either add the Sentinel jobs to this test suite, or to add the parser test suite to the Sentinel jobs.
   
@@ -90,5 +97,5 @@
   
   Note that the parts of the code that were not tested, could not be tested for two reasons: only valid ADL files are tested automatically; the incorrect files are tested manually (see \autoref{tests:errors}).
   The other reason is that the ADL files provided did not contain all possible grammar constructions.
-  Given the extend to which the errors are tested manually we believe that the full test coverage will be very close to 100%.
+  Given the extend to which the errors are tested manually we believe that the full test coverage will be very close to 100\%.
   
