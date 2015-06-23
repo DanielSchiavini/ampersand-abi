@@ -38,6 +38,7 @@ The following syntax error is reported as an error by both the old and the new p
 \begin{adl}
    CONTEXT DeliverySimple INCLUDE FILEPATH IN ENGLISH
 \end{adl}
+%TODO: Check why the above sentence is printing half blue and half black
 
 The main issue in the example is that the requirement engineer misplaced the language reference as this had to be mentioned before the include statement.
 This error is indicated by the new parser in the following way:
@@ -48,7 +49,7 @@ This error is indicated by the new parser in the following way:
 \end{error}
 
 This error message is concise, and provides a good indication of the error position and the expected input.
-The old parser reported the same syntax error in a very elaborated and indistinct way:
+The old parser reported the same syntax error in a very elaborated and distinct way:
 \begin{error}
    Error(s) found:
 
@@ -82,6 +83,7 @@ The old parser reported the same syntax error in a very elaborated and indistinc
    Try inserting symbol explanation {+-}
 \end{error}
 
+\noindent
 General remarks and highlights:
  \begin{itemize}
 	\item 	If the error qualification was defined in a less strict way, the numbers would be slightly different as some bad errors would be judged as being acceptable. 
