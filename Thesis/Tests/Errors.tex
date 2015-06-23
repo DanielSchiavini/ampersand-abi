@@ -36,11 +36,12 @@ A typical example of an error message improvement is presented below.
 
 The following syntax error is reported as an error by both the old and the new parser:
 \begin{adl}
-   CONTEXT DeliverySimple INCLUDE FILEPATH IN ENGLISH
+   CONTEXT DeliverySimple INCLUDE 0FILEPATH IN ENGLISH
 \end{adl}
 %TODO: Check why the above sentence is printing half blue and half black
 
 The main issue in the example is that the requirement engineer misplaced the language reference as this had to be mentioned before the include statement.
+In addition, the include statement should be a string, the main error, however, remains the incorrect position of the lanuage reference.
 This error is indicated by the new parser in the following way:
 \begin{error}
    "ArchitectureAndDesign/Syntax/testfile_mba.adl" (line 1, column 24):
