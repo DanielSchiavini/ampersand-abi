@@ -4,7 +4,7 @@
 Business rules promise to improve the quality and efficiency of the requirements elicitation process in information system projects.
 Once the business rules are consistently and coherently defined, they form a knowledge repository used for the provisioning of information within organizations.
 However, there used to be a large difference between the rules as seen by the Business Rules Manifesto and the way these were supported by software systems. 
-In practice, the methodologies supporting business rules in the domain of requirement engineering often focused on theoretical approaches, required expert knowledge and lacked the supporting tools to be used commercial scale.
+In practice, the methodologies supporting business rules in the domain of requirement engineering often focused on theoretical approaches, required expert knowledge and lacked the supporting tools to be used in commercial scale.
 With this issue in mind, the Ampersand approach was developed to tackle these imperfections, giving focus to rules formulated in agreements instead of actions.
 
 Ampersand is an approach for the use of business rules to define business processes.
@@ -29,10 +29,8 @@ Several efforts have been made to improve the code quality in the aspects of rea
 Besides improvements in the parser, we have studied the grammar of ADL.
 The grammar documentation was not up-to-date, so we reverse engineered the code to determine the recognized language.
 
-Besides, refactoring was applied without changing the language accepted by the parser, in order to maintain the parser's performance and to increase the maintainability of the code.
+Besides, refactoring was applied without changing the language accepted by the parser, in order to improve the parser's performance and its maintainability.
 The new parser improves both the error message quality and the software properties related to readability, extensibility and maintainability.
 
 Finally, a thorough analysis on the error message quality showed that the old parser gave good error messages in 22\% of the time, while the new parser improved this percentage to 82\%.
 Also, bad quality messages went down from 21\% to 1\%.
-
-
