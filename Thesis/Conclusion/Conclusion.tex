@@ -3,26 +3,24 @@
 %conclusies en aanbevelingen, aanbevelingen voor vervolg / uitbreiding, plusminus 2 pagina's, gezamenlijke tekst.
 \section{Conclusion}
 \label{sec:conclusion}
-Reimplementing a new parser in Ampersand is a challenge in which different aspects need to be considered.
+Implementing a new parser for Ampersand is a challenge in which different aspects need to be considered.
 Ampersand has the objective to provide an answer to known issues related to formal techniques used to define software requirements.
-By using natural language in combination with relational algebra to define business rules, the rules a presented in a way the can be understood by a business analyst while the consistency is guaranteed.
-The keystone of the methodology is a supporting tool, generating useful design artifices and working prototypes.
+By using natural language in combination with relational algebra to define business rules, the rules are presented in a way that can be understood by business analysts while guaranteeing consistency.
+The keystone of the methodology is the supporting tool, which generates useful design artifacts and working prototypes.
 
-To improve the user feedback quality of the Ampersand parser, a combinator library is preferred instead of a parser generator due to the high level of error customisation. 
-Out of several parser combinators, the Parsec library had the best references and support documentation and is therefore the parser of choice for the Ampersand project.
+To improve the user feedback quality of the Ampersand parser, a combinator library is preferred instead of a parser generator since it is easier to understand and errors are more customizable.
+Out of several parsing libraries, the Parsec library had the best references and support documentation and is therefore the library of choice for the Ampersand project.
 
-Based on our own definition of good and bad error messages, the initial measurement of the old parser clearly envisioned the need for improvement.
-In addition, due to the organic growth of the parser coding, a code simplification was a necessity.
+Based on a error manifesto for defining good and bad error messages, the initial measurement of the old parser clearly envisioned the need for improvement.
+In addition, due to the organic growth of the parser coding, code simplification was a necessity.
+To achieve this, several tools are used, a new test suite is developed and good documentation is written.
+Grammar optimizations to avoid the need for backtracking and data restructuring to align the parse tree on the grammar have also improved the code maintainability.
 
-Grammar optimisations, avoiding the need for backtracking, data restructuring to align the parse tree on the grammar are important topics to improve the code maintainability.
-Best practices such a good documentation of the design and the implementation are of course created.
+For the future, several additional improvement areas outside the scope of this project are identified.
+These topics include the introduction of warnings, the further grammar optimization to a pure predictive parser and additional optimizations towards the parse tree.
 
 Based on the error result analysis as described in \autoref{tests:errors} and the overall code maintainability actions, we believe we succeeded in the realization of our project goals.
+It must be said that it will take some time before the actual benefits will be visible, since it takes some time before the Ampersand users can be consulted about the improved user feedback from the parser.
 
-It must be said that it will take some time before the actual benefits will be visible because it takes some time before the Ampersand users can be interviewed about the improved user feedback from the parser.
 One of the criteria to further stimulate and promote the introduction of Ampersand in both commercial and educational contexts is the availability of a large user base.
 We are convinced that this project will improve the customer satisfaction, which on its turn will have a positive feedback on the user base extension.
-
-During the project, several additional improvement areas, outside the scope of this project, are identified by the project team.
-These topics include the introduction of warnings, the further grammar optimisation to a pure predictive parser and additional optimisations towards the parse tree.
-We are convinced that the recommendations mentioned in this document can further support the growth. of the Ampersand project.
