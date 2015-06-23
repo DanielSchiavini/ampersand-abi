@@ -3,9 +3,9 @@
 \subsection{Goals}
 Business rules promise to improve the quality and efficiency of the requirements elicitation process in information system projects.
 Once the business rules are consistently and coherently defined, they form a knowledge repository used for the provisioning of information within organizations.
-However, there used to be a large difference between the rules as seen by the Business Rules Manifesto and the way these were supported by software systems.
-%todo: kunnen we iets meer zeggen over dit verschil?
-With this issue in mind, the Ampersand approach was developed, giving focus to rules formulated in agreements instead of actions.
+However, there used to be a large difference between the rules as seen by the Business Rules Manifesto and the way these were supported by software systems. 
+In practice, the methodologies supporting business rules in the domain of requirement engineering often focused on theoretical approaches, required expert knowledge and lacked the supporting tools to be used commercial scale.
+With this issue in mind, the Ampersand approach was developed to tackle these imperfections, giving focus to rules formulated in agreements instead of actions.
 
 Ampersand is an approach for the use of business rules to define business processes.
 Users describe the business rules in a formal language (ADL) and Ampersand compiles those rules into functional specification, documentation and working software prototypes.
@@ -18,22 +18,21 @@ By understanding what kind of messages the Ampersand users expect, we have devel
 The main conclusion was to rewrite the parser using another parsing library, namely Parsec.
 In parallel, Maarten Baertsoen researched business rules and the Ampersand approach more thoroughly.
 
-%todo:vanaf hier wordt het een conclusie en geen 'goals' meer
+In this thesis, we will show how the new parser is strongly improved and how this will allow for Ampersand to continue growing.
+This will save time and effort for students, researchers and commercial users.
+
+Several  important aspects of this project are presented.
 To guarantee the quality of the software delivered, we implemented a new library for testing the parser automatically.
 We added the possibility to `pretty print' the parsing tree back into ADL code.
 Several efforts have been made to improve the code quality in the aspects of readability, extensibility, maintainability, documentation and performance.
 
-During development, we often merged the development code with the other developments.
-While this cost some effort, it allowed us to take the new parser into production as soon as it was ready.
-
 Besides improvements in the parser, we have studied the grammar of ADL.
 The grammar documentation was not up-to-date, so we reverse engineered the code to determine the recognized language.
-The updated grammar is now available as code annotations and documentation.
-Besides, refactorings were applied without changing the language accepted by the parser, in order to improve the parser's performance, maintainability and error reporting.
-This new parser improves both the error messages and the software properties related to readability, extensibility and maintainability.
+
+Besides, refactoring was applied without changing the language accepted by the parser, in order to maintain the parser's performance and to increase the maintainability of the code.
+The new parser improves both the error message quality and the software properties related to readability, extensibility and maintainability.
 
 Finally, a thorough analysis on the error message quality showed that the old parser gave good error messages in 22\% of the time, while the new parser improved this percentage to 82\%.
 Also, bad quality messages went down from 21\% to 1\%.
 
-In this thesis, we will show how the new parser is strongly improved and how this will allow for Ampersand to continue growing.
-This will save time and effort for students, researchers and commercial users.
+
