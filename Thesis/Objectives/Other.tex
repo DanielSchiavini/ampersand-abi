@@ -24,8 +24,9 @@ While designing and implementing the new Ampersand parser, besides the generatio
   \item \textbf{Cabal}: The building system for Haskell had to be maintained as the building platform.
   \item \textbf{EBNF}: The syntax of the Ampersand grammar was specified in EBNF notation but was not up-to-date.
     Any changes to the syntax had to be documented in this notation.
-    One option was to add the EBNF as comment in the source code in order to make clear that the complete grammar is implemented correctly.
-    %TODO: We mention "one" option, but do not support this choice
+    Updating the grammar in a separate file was one option.
+    Another option was to add the EBNF as comment in the source code as well, in order to make clear that the complete grammar is implemented correctly.
+	The last option is chosen to keep the EBNF close to the actual code to stimulate the simultaneous maintenance of both the code and the EBNF notations.
 \end{itemize}
 
 On top of the project goals, we also wanted to help the university and other students with our results.
