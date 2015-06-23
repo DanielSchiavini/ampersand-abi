@@ -32,7 +32,65 @@ The error in question is given when the \code{Meta} statement is used with only 
 Given the simple structure of the notation, we assume that the reference to the line number of the \code{Meta} is sufficient although the error message is unclear.
 Therefore, this message is kept as is.
 
-%todo: voorbeeld van een foutmelding
+A typical example of an error message improvement is presented below.
+
+Following syntax error is reported as an error by the old and the new parser:
+
+\code{
+   CONTEXT DeliverySimple INCLUDE 0FILEPATH IN ENGLISH
+}
+
+The main issue in the example is that the requirement engineer misplaced the language reference as this had to be mentioned before the include statement.
+This error is indicated by the new parser in the following way:
+
+\code{
+   "ArchitectureAndDesign/Syntax/testfile_mba.adl" (line 1, column 24):
+   unexpected Keyword "INCLUDE“
+   expecting Keyword "IN
+}
+
+This error message is concise, and provides a good indication of the error position and the expected input.
+The old parser reported the same syntax error in a very elaborated and indistinct way:
+\code{
+   Error(s) found:
+
+   before "0" at line 1, column 32 of file "testfile_mba.adl"
+   Expecting string ""
+   Try deleting symbol "0" at line 1, column 32 of file "testfile_mba.adl"
+
+   ==============================
+
+   before upper case identifier FILEPATH at line 1, column 33 of file "testfile_mba
+   .adl"
+   Expecting string ""
+   Try inserting symbol string ""
+
+   ==============================
+
+   before upper case identifier FILEPATH at line 1, column 33 of file "testfile_mba
+   .adl"
+   Expecting lower case identifier ?lc? or "CLASSIFY" or "CONCEPT" or "ENDCONTEXT"
+   or "IDENT" or "INCLUDE" or "INTERFACE" or "KEY" or "META" or "PATTERN" or "PHPPL
+   UG" or "POPULATION" or "PROCESS" or "PURPOSE" or "RELATION" or "RULE" or "SPEC"
+   or "SQLPLUG" or "THEMES" or "VIEW"
+   Try inserting symbol "PURPOSE"
+
+   ==============================
+
+   before upper case identifier FILEPATH at line 1, column 33 of file "testfile_mba
+   .adl"
+   Expecting "CONCEPT" or "CONTEXT" or "IDENT" or "INTERFACE" or "PATTERN" or "PROC
+   ESS" or "RELATION" or "RULE" or "VIEW"
+   Try inserting symbol "CONCEPT"
+
+   ==============================
+
+   before lower case identifier clientName at line 14, column 1 of file "testfile_m
+   ba.adl"
+   Expecting "HTML" or "LATEX" or "MARKDOWN" or "REF" or "REST" or explanation {+-}
+
+   Try inserting symbol explanation {+-}
+}
 
 General remarks and highlights:
  \begin{itemize}
