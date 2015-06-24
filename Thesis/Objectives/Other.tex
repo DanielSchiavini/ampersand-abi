@@ -1,7 +1,7 @@
 % !TEX root = ../Thesis.tex
 
 \subsection{Other objectives}
-While designing and implementing the new Ampersand parser, besides the generation of better user feedback, the following objectives were also important:
+Besides the generation of better user feedback, the following objectives were also important for the parser:
 \begin{itemize}
   \item \textbf{Integration}: The new parser must interface with the remaining Ampersand modules.
     It must thus be implemented in Haskell.
@@ -25,8 +25,9 @@ While designing and implementing the new Ampersand parser, besides the generatio
   \item \textbf{EBNF}: The syntax of the Ampersand grammar was specified in EBNF notation but was not up-to-date.
     Any changes to the syntax had to be documented in this notation.
     Updating the grammar in a separate file was one option.
-    Another option was to add the EBNF as comment in the source code as well, in order to make clear that the complete grammar is implemented correctly.
-	The last option is chosen to keep the EBNF close to the actual code to stimulate the simultaneous maintenance of both the code and the EBNF notations.
+    Another option was to add the EBNF as comment in the source code, in order to make clear that the grammar is implemented correctly.
+    The last option is chosen to keep the EBNF close to the actual code.
+    This stimulates the simultaneous maintenance of both the code and the EBNF notations.
 \end{itemize}
-
+%
 On top of the project goals, we also wanted to help the university and other students with our results.

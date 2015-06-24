@@ -66,7 +66,7 @@ data Token = Tok { tokLex :: Lexeme    -- ^ The lexeme (defined below)
                  , tokPos :: FilePos   -- ^ The file position
                  }
 
-data Lexeme  = LexSymbol      Char     -- ^ Single character
+data Lexeme  = LexSymbol      Char     -- ^ Single character symbol
              | LexOperator    String   -- ^ Operator
              | LexKeyword     String   -- ^ Keyword
              | LexString      String   -- ^ String

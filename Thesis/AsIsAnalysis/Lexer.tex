@@ -43,22 +43,21 @@ data Token = Tok
  }
 
 data TokenType
-  = TkSymbol
-  | TkVarid
-  | TkConid
-  | TkKeyword
-  | TkOp
-  | TkString
-  | TkExpl
-  | TkAtom
-  | TkChar
-  | TkInteger8
-  | TkInteger10
-  | TkInteger16
-  | TkTextnm
-  | TkTextln
-  | TkSpace
-  | TkError
+  = TkSymbol    -- ^ Single character symbol
+  | TkVarid     -- ^ Lower case identifier
+  | TkConid     -- ^ Upper case identifier
+  | TkKeyword   -- ^ Keyword
+  | TkOp        -- ^ Operator
+  | TkString    -- ^ String
+  | TkExpl      -- ^ Explanation
+  | TkAtom      -- ^ Atom
+  | TkChar      -- ^ Single character
+  | TkInteger8  -- ^ Octal integer
+  | TkInteger10 -- ^ Decimal integer
+  | TkInteger16 -- ^ Hexadecimal integer
+  | TkTextnm    -- ^ Unused
+  | TkTextln    -- ^ Unused
+  | TkSpace     -- ^ Unused
+  | TkError     -- ^ Unused
   deriving (Eq, Ord)
 \end{haskell}
-
