@@ -1,5 +1,7 @@
 @REM First the documentation
 
+SET BOX=..\..\..\Dropbox\OU\39~42 Afstudeerproject\Ampersand
+
 cd Generated\Haddock
 @REM call Generate.bat
 cd ..\..
@@ -25,10 +27,10 @@ xcopy "Generated\Ampersand for Notepad++.xml" Package\Documentation\
 
 @REM Other documents
 mkdir Package\Delivered
-copy Parsing\Parsing.pdf Package\Delivered\
-copy Planning\Planning.pdf Package\Delivered\
-copy ResearchContext\ResearchContext.pdf Package\Delivered\
-copy AmpersandApproach\AmpersandApproach.pdf Package\Delivered\
+copy "%BOX%\Parsing\Parsing v1.0.pdf" Package\Delivered\
+copy "%BOX%\Planning\Planning v2.*.pdf" Package\Delivered\
+copy "%BOX%\fase 3b - Onderzoekscontext\ResearchContext v1.0.pdf" Package\Delivered\
+copy "%BOX%\Ampersand Methodology\AmpersandApproach v1.0.pdf" Package\Delivered\
 
 @REM Main documents
 cd Thesis
@@ -41,9 +43,12 @@ cd ..
 copy TeamReflection\TeamReflection.pdf Package\
 
 @REM Code and timesheet
-xcopy /S ..\ampersand\src\Database\Design\Ampersand\Input\ADL1\Pars*.hs Package\Code\
-xcopy /S ..\ampersand\src\Database\Design\Ampersand\Input\ADL1\Lex*.hs Package\Code\
-xcopy "..\..\..\Dropbox\OU\39~42 Afstudeerproject\Ampersand\Time tracking ABI.xlsx" Package\Documentation\
+xcopy /S ..\ampersand\src\Database\Design\Ampersand\Input\ADL1\Pars*.hs Package\Code\Input\
+xcopy /S ..\ampersand\src\Database\Design\Ampersand\Input\ADL1\Lex*.hs Package\Code\Input\
+xcopy /S ..\ampersand\src\Database\Design\Ampersand\Test\*.hs Package\Code\Test\
+xcopy /S ..\ampersand\src\Database\Design\Ampersand\Core\Parse*.hs Package\Code\Core\
+xcopy /S ..\ampersand\src\Database\Design\Ampersand\ADL1\Pretty*.hs Package\Code\Core\
+xcopy "%BOX%\Time tracking ABI.xlsx" Package\Documentation\
 
 @REM  Packaging it all
 cd Package
