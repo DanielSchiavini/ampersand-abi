@@ -82,18 +82,18 @@ span.spaces    { background: white }
 <span class="lineno">   66 </span><span class="spaces"> </span><span class="istickedoff">do { contents &lt;- fmap stripBOM $ B.readFile pth</span>
 <span class="lineno">   67 </span><span class="spaces">    </span><span class="istickedoff">-- Exceptions from decodeUtf8 only show the offending byte, which is not helpful, so we validate the file ourselves to get a good error message.</span>
 <span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">; let res = case validateUTF8 $ contents of</span>
-<span class="lineno">   69 </span><span class="spaces">                 </span><span class="istickedoff">Just utf8PrefixRev -&gt; <span class="nottickedoff">let utf8Lines = lines . unpack . decodeUtf8 $ utf8PrefixRev</span></span>
-<span class="lineno">   70 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">in  Left $ &quot;Invalid UTF-8 character at line &quot;++ show (length utf8Lines) ++</span></span>
-<span class="lineno">   71 </span><span class="spaces">                                           </span><span class="istickedoff"><span class="nottickedoff">case reverse utf8Lines of </span></span>
-<span class="lineno">   72 </span><span class="spaces">                                             </span><span class="istickedoff"><span class="nottickedoff">[]   -&gt; &quot;&quot; -- won't happen</span></span>
-<span class="lineno">   73 </span><span class="spaces">                                             </span><span class="istickedoff"><span class="nottickedoff">ln:_ -&gt; &quot; : &quot; ++ show (length ln + 1) ++ &quot; (column nr when viewed as UTF-8)\n&quot; ++ </span></span>
-<span class="lineno">   74 </span><span class="spaces">                                                     </span><span class="istickedoff"><span class="nottickedoff">&quot;Text preceding invalid character:\n&quot; ++ &quot;...&quot; ++ (reverse . take 50 . reverse $ ln)++&quot;&lt;INVALID CHARACTER&gt;&quot;</span> </span>
+<span class="lineno">   69 </span><span class="spaces">                 </span><span class="istickedoff">Just utf8PrefixRev -&gt; let utf8Lines = lines . unpack . decodeUtf8 $ utf8PrefixRev</span>
+<span class="lineno">   70 </span><span class="spaces">                                       </span><span class="istickedoff">in  Left $ &quot;Invalid UTF-8 character at line &quot;++ show (length utf8Lines) ++</span>
+<span class="lineno">   71 </span><span class="spaces">                                           </span><span class="istickedoff">case reverse utf8Lines of </span>
+<span class="lineno">   72 </span><span class="spaces">                                             </span><span class="istickedoff">[]   -&gt; <span class="nottickedoff">&quot;&quot;</span> -- won't happen</span>
+<span class="lineno">   73 </span><span class="spaces">                                             </span><span class="istickedoff">ln:_ -&gt; &quot; : &quot; ++ show (length ln + 1) ++ &quot; (column nr when viewed as UTF-8)\n&quot; ++ </span>
+<span class="lineno">   74 </span><span class="spaces">                                                     </span><span class="istickedoff">&quot;Text preceding invalid character:\n&quot; ++ &quot;...&quot; ++ (reverse . take 50 . reverse $ ln)++&quot;&lt;INVALID CHARACTER&gt;&quot; </span>
 <span class="lineno">   75 </span><span class="spaces">                 </span><span class="istickedoff">Nothing -&gt; let txt = decodeUtf8 $ contents</span>
 <span class="lineno">   76 </span><span class="spaces">                            </span><span class="istickedoff">in  Right $ unpack txt</span>
-<span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">; seq (either <span class="nottickedoff">length</span> length res) $ return res -- force decodeUtf8 exceptions</span>
-<span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">} `catch` <span class="nottickedoff">\exc -&gt;</span></span>
-<span class="lineno">   79 </span><span class="spaces"> </span><span class="istickedoff"><span class="nottickedoff">do { return $ Left $ show (exc :: SomeException) --  should not occur if validateUTF8 works correctly</span></span>
-<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">}</span></span></span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">; seq (either length length res) $ return res -- force decodeUtf8 exceptions</span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">} `catch` \exc -&gt;</span>
+<span class="lineno">   79 </span><span class="spaces"> </span><span class="istickedoff">do { return $ Left $ show (exc :: SomeException) --  should not occur if validateUTF8 works correctly</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">}</span></span>
 <span class="lineno">   81 </span>
 <span class="lineno">   82 </span>readFile :: FilePath -&gt; IO String
 <span class="lineno">   83 </span><span class="decl"><span class="nottickedoff">readFile = liftM (toString . stripBOM) . B.readFile . encodeString</span></span>
@@ -121,26 +121,26 @@ span.spaces    { background: white }
 <span class="lineno">  105 </span>
 <span class="lineno">  106 </span>-- Return Nothing if bs is valid UTF-8, or Just the maximum valid prefix if it contains an invalid character
 <span class="lineno">  107 </span>validateUTF8 :: B.ByteString -&gt; Maybe B.ByteString
-<span class="lineno">  108 </span><span class="decl"><span class="istickedoff">validateUTF8 bs = fmap <span class="nottickedoff">(B.pack . reverse)</span> $ validate <span class="nottickedoff">[]</span> $ B.unpack bs</span>
+<span class="lineno">  108 </span><span class="decl"><span class="istickedoff">validateUTF8 bs = fmap (B.pack . reverse) $ validate [] $ B.unpack bs</span>
 <span class="lineno">  109 </span><span class="spaces">  </span><span class="istickedoff">where validate :: [Word8] -&gt; [Word8] -&gt; Maybe [Word8]</span>
 <span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">validate _         []                                     = Nothing</span>
-<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">validate validated (w:ws)            | bitMask0xxxxxxx w  = validate <span class="nottickedoff">(w : validated)</span> ws</span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">validate validated (w:ws)            | bitMask0xxxxxxx w  = validate (w : validated) ws</span>
 <span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">validate validated (w1:w2:ws)        | bitMask110xxxxx w1 </span>
-<span class="lineno">  113 </span><span class="spaces">                                            </span><span class="istickedoff">&amp;&amp; bitMask10xxxxxx w2 = validate <span class="nottickedoff">(w2:w1 : validated)</span> ws</span>
-<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">validate validated (w1:w2:w3:ws)     | <span class="tickonlytrue">bitMask1110xxxx w1</span></span>
-<span class="lineno">  115 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="tickonlytrue">&amp;&amp; bitMask10xxxxxx w2</span></span>
-<span class="lineno">  116 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="tickonlytrue">&amp;&amp; bitMask10xxxxxx w3</span> = validate <span class="nottickedoff">(w3:w2:w1 : validated)</span> ws</span>
-<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">validate validated (w1:w2:w3:w4:ws)  | <span class="nottickedoff">bitMask11110xxx w1</span></span>
-<span class="lineno">  118 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">&amp;&amp; bitMask10xxxxxx w2</span></span>
-<span class="lineno">  119 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">&amp;&amp; bitMask10xxxxxx w3</span></span>
-<span class="lineno">  120 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">&amp;&amp; bitMask10xxxxxx w4</span> = <span class="nottickedoff">validate (w4:w3:w2:w1 : validated) ws</span></span>
-<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">validate validated _                                      = <span class="nottickedoff">Just validated</span></span>
+<span class="lineno">  113 </span><span class="spaces">                                            </span><span class="istickedoff">&amp;&amp; bitMask10xxxxxx w2 = validate (w2:w1 : validated) ws</span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">validate validated (w1:w2:w3:ws)     | bitMask1110xxxx w1</span>
+<span class="lineno">  115 </span><span class="spaces">                                            </span><span class="istickedoff">&amp;&amp; bitMask10xxxxxx w2</span>
+<span class="lineno">  116 </span><span class="spaces">                                            </span><span class="istickedoff">&amp;&amp; bitMask10xxxxxx w3 = validate <span class="nottickedoff">(w3:w2:w1 : validated)</span> ws</span>
+<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">validate validated (w1:w2:w3:w4:ws)  | <span class="tickonlyfalse">bitMask11110xxx w1</span></span>
+<span class="lineno">  118 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="tickonlyfalse">&amp;&amp; <span class="nottickedoff">bitMask10xxxxxx w2</span></span></span>
+<span class="lineno">  119 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="tickonlyfalse"><span class="nottickedoff">&amp;&amp; bitMask10xxxxxx w3</span></span></span>
+<span class="lineno">  120 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="tickonlyfalse"><span class="nottickedoff">&amp;&amp; bitMask10xxxxxx w4</span></span> = <span class="nottickedoff">validate (w4:w3:w2:w1 : validated) ws</span></span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">validate validated _                                      = Just validated</span>
 <span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff"></span>
 <span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff">bitMask0xxxxxxx w = w .&amp;. (bit 7)                                 == 0</span>
 <span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff">bitMask10xxxxxx w = w .&amp;. (bit 7 + bit 6)                         == bit 7</span>
 <span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">bitMask110xxxxx w = w .&amp;. (bit 7 + bit 6 + bit 5)                 == bit 7 + bit 6</span>
 <span class="lineno">  126 </span><span class="spaces">        </span><span class="istickedoff">bitMask1110xxxx w = w .&amp;. (bit 7 + bit 6 + bit 5 + bit 4)         == bit 7 + bit 6 + bit 5</span>
-<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">bitMask11110xxx w = w .&amp;. (bit 7 + bit 6 + bit 5 + bit 4 + bit 3) == bit 7 + bit 6 + bit 5 + bit 4</span></span></span>
+<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff">bitMask11110xxx w = w .&amp;. (bit 7 + bit 6 + bit 5 + bit 4 + bit 3) == bit 7 + bit 6 + bit 5 + bit 4</span></span>
 
 </pre>
 </body>

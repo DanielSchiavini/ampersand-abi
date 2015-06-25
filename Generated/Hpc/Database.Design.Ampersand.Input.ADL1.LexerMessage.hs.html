@@ -14,142 +14,99 @@ span.spaces    { background: white }
 </head>
 <body>
 <pre>
-<span class="lineno">    1 </span>{-| Module      :  LexerMessage
-<span class="lineno">    2 </span>    License     :  GPL
-<span class="lineno">    3 </span>
-<span class="lineno">    4 </span>    Maintainer  :  helium@cs.uu.nl
-<span class="lineno">    5 </span>    Stability   :  experimental
-<span class="lineno">    6 </span>    Portability :  portable
-<span class="lineno">    7 </span>-}
-<span class="lineno">    8 </span>
-<span class="lineno">    9 </span>module Database.Design.Ampersand.Input.ADL1.LexerMessage
-<span class="lineno">   10 </span>    ( LexerError(..)
-<span class="lineno">   11 </span>    , LexerErrorInfo(..)
-<span class="lineno">   12 </span>    , LexerWarning(..)
-<span class="lineno">   13 </span>    , LexerWarningInfo(..)
-<span class="lineno">   14 </span>    , keepOneTabWarning
-<span class="lineno">   15 </span>    , isLooksLikeFloatWarningInfo
-<span class="lineno">   16 </span>    , showLexerErrorInfo
-<span class="lineno">   17 </span>    , showLexerWarningInfo
-<span class="lineno">   18 </span>    , showLexerWarnings
-<span class="lineno">   19 </span>    ) where
-<span class="lineno">   20 </span>
-<span class="lineno">   21 </span>import Data.List (intercalate)
-<span class="lineno">   22 </span>import Database.Design.Ampersand.Input.ADL1.FilePos(FilePos)
-<span class="lineno">   23 </span>import qualified Database.Design.Ampersand.Input.ADL1.LexerTexts as Texts
-<span class="lineno">   24 </span>
-<span class="lineno">   25 </span>--TODO: Delete the code commented out
-<span class="lineno">   26 </span>{-
-<span class="lineno">   27 </span>
-<span class="lineno">   28 </span>instance HasMessage LexerError where
-<span class="lineno">   29 </span>    getRanges (LexerError _ (StillOpenAtEOF brackets)) =
-<span class="lineno">   30 </span>        reverse (map (sourcePosToRange . fst) brackets)
-<span class="lineno">   31 </span>    getRanges (LexerError pos (UnexpectedClose _ pos2 _)) =
-<span class="lineno">   32 </span>        map sourcePosToRange [pos, pos2]
-<span class="lineno">   33 </span>    getRanges (LexerError pos _) =
-<span class="lineno">   34 </span>        [ sourcePosToRange pos ]
-<span class="lineno">   35 </span>    getMessage (LexerError _ info) = 
-<span class="lineno">   36 </span>        let (line:rest) = showLexerErrorInfo info
-<span class="lineno">   37 </span>        in MessageOneLiner (MessageString line) :
-<span class="lineno">   38 </span>            [ MessageHints Texts.hint [ MessageString s | s &lt;- rest ] ]
-<span class="lineno">   39 </span>
-<span class="lineno">   40 </span>sourcePosToRange :: FilePos -&gt; Range
-<span class="lineno">   41 </span>sourcePosToRange pos = 
-<span class="lineno">   42 </span>    let name = sourceName pos; line = sourceLine pos; col = sourceColumn pos
-<span class="lineno">   43 </span>        position = Position_Position name line col
-<span class="lineno">   44 </span>    in Range_Range position position
-<span class="lineno">   45 </span> -}
-<span class="lineno">   46 </span>
-<span class="lineno">   47 </span>data LexerError = LexerError FilePos LexerErrorInfo
-<span class="lineno">   48 </span>    deriving(<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">   49 </span>
-<span class="lineno">   50 </span>data LexerErrorInfo
-<span class="lineno">   51 </span>    = UnterminatedComment
-<span class="lineno">   52 </span>        | UnterminatedPurpose
-<span class="lineno">   53 </span>    | UnterminatedAtom
-<span class="lineno">   54 </span>    | UnexpectedChar Char
-<span class="lineno">   55 </span>    | NonTerminatedString String
-<span class="lineno">   56 </span>    | TooManyClose Char
-<span class="lineno">   57 </span>        -- In UnexpectedClose, first char is the closing bracket we see, 
-<span class="lineno">   58 </span>        -- second char is the closing bracket we would like to see first
-<span class="lineno">   59 </span>        -- e.g. [(1,3]  =&gt;  UnexpectedClose ']' ... ')'
-<span class="lineno">   60 </span>    | UnexpectedClose Char FilePos Char
-<span class="lineno">   61 </span>    | StillOpenAtEOF [(FilePos, Char)]
-<span class="lineno">   62 </span>    deriving(<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">   63 </span>
-<span class="lineno">   64 </span>showLexerErrorInfo :: LexerErrorInfo -&gt; [String]
-<span class="lineno">   65 </span><span class="decl"><span class="nottickedoff">showLexerErrorInfo info =</span>
-<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">case info of</span>
-<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">UnterminatedComment          -&gt; [ Texts.lexerUnterminatedComment               ]</span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">UnterminatedPurpose          -&gt; [ Texts.lexerUnterminatedPurpose               ]</span>
-<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">UnterminatedAtom             -&gt; [ Texts.lexerUnterminatedAtom                  ]</span>
-<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">UnexpectedChar c             -&gt; [ Texts.lexerUnexpectedChar c                  ]</span>
-<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">NonTerminatedString _        -&gt; [ Texts.lexerNonTerminatedString, correctStrings ]</span>
-<span class="lineno">   72 </span><span class="spaces">        </span><span class="nottickedoff">TooManyClose c                 -&gt; [ Texts.lexerTooManyClose c ]</span>
-<span class="lineno">   73 </span><span class="spaces">        </span><span class="nottickedoff">UnexpectedClose c1 _ c2        -&gt;   Texts.lexerUnexpectedClose c1 c2</span>
-<span class="lineno">   74 </span><span class="spaces">        </span><span class="nottickedoff">StillOpenAtEOF [b]             -&gt; [ Texts.lexerStillOpenAtEOF [ show (snd b) ] ]</span>
-<span class="lineno">   75 </span><span class="spaces">        </span><span class="nottickedoff">StillOpenAtEOF bs              -&gt; [ Texts.lexerStillOpenAtEOF (reverse (map (show.snd) bs)) ]</span></span>
-<span class="lineno">   76 </span>            -- 'reverse' because positions will be sorted and brackets are
-<span class="lineno">   77 </span>            -- reported in reversed order
-<span class="lineno">   78 </span>
-<span class="lineno">   79 </span>correctStrings :: String
-<span class="lineno">   80 </span><span class="decl"><span class="nottickedoff">correctStrings = Texts.lexerCorrectStrings</span></span>
-<span class="lineno">   81 </span>
-<span class="lineno">   82 </span>{-
-<span class="lineno">   83 </span>instance HasMessage LexerWarning where
-<span class="lineno">   84 </span>    getRanges (LexerWarning pos (NestedComment pos2)) =
-<span class="lineno">   85 </span>       map sourcePosToRange [ pos, pos2 ]
-<span class="lineno">   86 </span>    getRanges (LexerWarning pos _) =
-<span class="lineno">   87 </span>        [ sourcePosToRange pos ]
-<span class="lineno">   88 </span>    getMessage (LexerWarning _ info) = 
-<span class="lineno">   89 </span>        let (line:rest) = showLexerWarningInfo info
-<span class="lineno">   90 </span>        in MessageOneLiner (MessageString (Texts.warning ++ &quot;: &quot; ++ line)) :
-<span class="lineno">   91 </span>            [ MessageHints Texts.hint [ MessageString s | s &lt;- rest ] ]
-<span class="lineno">   92 </span>-}
-<span class="lineno">   93 </span>
-<span class="lineno">   94 </span>data LexerWarning =
-<span class="lineno">   95 </span>    LexerWarning FilePos LexerWarningInfo
-<span class="lineno">   96 </span>
-<span class="lineno">   97 </span>data LexerWarningInfo 
-<span class="lineno">   98 </span>    = TabCharacter
-<span class="lineno">   99 </span>    | LooksLikeFloatNoFraction String
-<span class="lineno">  100 </span>    | LooksLikeFloatNoDigits String
-<span class="lineno">  101 </span>    | NestedComment FilePos
-<span class="lineno">  102 </span>    | UtfChar
-<span class="lineno">  103 </span>    | CommentOperator
-<span class="lineno">  104 </span>
-<span class="lineno">  105 </span>showLexerWarnings :: [LexerWarning] -&gt; String
-<span class="lineno">  106 </span><span class="decl"><span class="nottickedoff">showLexerWarnings ws = intercalate &quot;\n-----------\n&quot; $ map showWarning ws</span>
-<span class="lineno">  107 </span><span class="spaces">            </span><span class="nottickedoff">where showWarning (LexerWarning pos info) = &quot;Warning: &quot; ++</span>
-<span class="lineno">  108 </span><span class="spaces">                    </span><span class="nottickedoff">intercalate &quot;\n&quot; (showLexerWarningInfo info) ++ &quot; &quot; ++ show pos</span></span>
-<span class="lineno">  109 </span>
-<span class="lineno">  110 </span>showLexerWarningInfo :: LexerWarningInfo -&gt; [String]
-<span class="lineno">  111 </span><span class="decl"><span class="nottickedoff">showLexerWarningInfo info = </span>
-<span class="lineno">  112 </span><span class="spaces">    </span><span class="nottickedoff">case info of</span>
-<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">TabCharacter                    -&gt; Texts.lexerTabCharacter</span>
-<span class="lineno">  114 </span><span class="spaces">        </span><span class="nottickedoff">LooksLikeFloatNoFraction digits -&gt; Texts.lexerLooksLikeFloatNoFraction digits</span>
-<span class="lineno">  115 </span><span class="spaces">        </span><span class="nottickedoff">LooksLikeFloatNoDigits fraction -&gt; Texts.lexerLooksLikeFloatNoDigits fraction</span>
-<span class="lineno">  116 </span><span class="spaces">        </span><span class="nottickedoff">NestedComment _                 -&gt; Texts.lexerNestedComment</span>
-<span class="lineno">  117 </span><span class="spaces">        </span><span class="nottickedoff">UtfChar                         -&gt; Texts.lexerUtfChar</span>
-<span class="lineno">  118 </span><span class="spaces">        </span><span class="nottickedoff">CommentOperator                 -&gt; Texts.lexerCommentOperator</span></span>
-<span class="lineno">  119 </span>
-<span class="lineno">  120 </span>-- TODO: This is only valid for haskell.. Probably more of the warnings too!
-<span class="lineno">  121 </span>keepOneTabWarning :: [LexerWarning] -&gt; [LexerWarning]
-<span class="lineno">  122 </span><span class="decl"><span class="nottickedoff">keepOneTabWarning = keepOneTab True</span>
-<span class="lineno">  123 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
-<span class="lineno">  124 </span><span class="spaces">    </span><span class="nottickedoff">keepOneTab isFirst (warning@(LexerWarning _ TabCharacter):rest)</span>
-<span class="lineno">  125 </span><span class="spaces">        </span><span class="nottickedoff">| isFirst   = warning : keepOneTab False rest</span>
-<span class="lineno">  126 </span><span class="spaces">        </span><span class="nottickedoff">| otherwise = keepOneTab isFirst rest</span>
-<span class="lineno">  127 </span><span class="spaces">    </span><span class="nottickedoff">keepOneTab isFirst (warning:rest) = </span>
-<span class="lineno">  128 </span><span class="spaces">        </span><span class="nottickedoff">warning : keepOneTab isFirst rest</span>
-<span class="lineno">  129 </span><span class="spaces">    </span><span class="nottickedoff">keepOneTab _ [] = []</span></span>
-<span class="lineno">  130 </span>
-<span class="lineno">  131 </span>isLooksLikeFloatWarningInfo :: LexerWarningInfo -&gt; Bool
-<span class="lineno">  132 </span><span class="decl"><span class="nottickedoff">isLooksLikeFloatWarningInfo warningInfo =</span>
-<span class="lineno">  133 </span><span class="spaces">   </span><span class="nottickedoff">case warningInfo of</span>
-<span class="lineno">  134 </span><span class="spaces">      </span><span class="nottickedoff">LooksLikeFloatNoFraction _ -&gt; True</span>
-<span class="lineno">  135 </span><span class="spaces">      </span><span class="nottickedoff">LooksLikeFloatNoDigits _   -&gt; True</span>
-<span class="lineno">  136 </span><span class="spaces">      </span><span class="nottickedoff">_                          -&gt; False</span></span>
+<span class="lineno">    1 </span>{- Based on module LexerMessage from Helium (GPL license) -}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Database.Design.Ampersand.Input.ADL1.LexerMessage
+<span class="lineno">    4 </span>    ( LexerError(..)
+<span class="lineno">    5 </span>    , LexerErrorInfo(..)
+<span class="lineno">    6 </span>    , LexerWarning(..)
+<span class="lineno">    7 </span>    , LexerWarningInfo(..)
+<span class="lineno">    8 </span>    , keepOneTabWarning
+<span class="lineno">    9 </span>    , showLexerErrorInfo
+<span class="lineno">   10 </span>    , showLexerWarningInfo
+<span class="lineno">   11 </span>    ) where
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>import Database.Design.Ampersand.Input.ADL1.FilePos(FilePos)
+<span class="lineno">   14 </span>import qualified Database.Design.Ampersand.Input.ADL1.LexerTexts as Texts
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>-- | Defines a lexer error
+<span class="lineno">   17 </span>data LexerError = LexerError FilePos LexerErrorInfo -- ^ The lexer file position and error information
+<span class="lineno">   18 </span>    deriving(<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>-- | Defines the different lexer error types
+<span class="lineno">   21 </span>data LexerErrorInfo
+<span class="lineno">   22 </span>    -- | The comment was not terminated
+<span class="lineno">   23 </span>    = UnterminatedComment
+<span class="lineno">   24 </span>        -- | The purpose statement was not terminated
+<span class="lineno">   25 </span>    | UnterminatedPurpose
+<span class="lineno">   26 </span>    -- | The atom was not terminated
+<span class="lineno">   27 </span>    | UnterminatedAtom
+<span class="lineno">   28 </span>    -- | The character was unexpected
+<span class="lineno">   29 </span>    | UnexpectedChar Char
+<span class="lineno">   30 </span>    -- | The string was not terminated
+<span class="lineno">   31 </span>    | NonTerminatedString String
+<span class="lineno">   32 </span>    -- | In UnexpectedClose, first char is the closing bracket we see, 
+<span class="lineno">   33 </span>    --   second char is the closing bracket we would like to see first
+<span class="lineno">   34 </span>    --   e.g. [(1,3]  =&gt;  UnexpectedClose ']' ... ')'
+<span class="lineno">   35 </span>    | TooManyClose Char
+<span class="lineno">   36 </span>    -- | An unexpected closing bracket was found
+<span class="lineno">   37 </span>    | UnexpectedClose Char FilePos Char
+<span class="lineno">   38 </span>    -- | Brackets were not closed at the end of the file
+<span class="lineno">   39 </span>    | StillOpenAtEOF [(FilePos, Char)]
+<span class="lineno">   40 </span>    deriving(<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>-- | Converts the error information into a list of error messages
+<span class="lineno">   43 </span>showLexerErrorInfo :: LexerErrorInfo -- ^ The error information
+<span class="lineno">   44 </span>                   -&gt; [String] -- ^ The error messages
+<span class="lineno">   45 </span><span class="decl"><span class="nottickedoff">showLexerErrorInfo info =</span>
+<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">case info of</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="nottickedoff">UnterminatedComment          -&gt; [ Texts.lexerUnterminatedComment               ]</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="nottickedoff">UnterminatedPurpose          -&gt; [ Texts.lexerUnterminatedPurpose               ]</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="nottickedoff">UnterminatedAtom             -&gt; [ Texts.lexerUnterminatedAtom                  ]</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="nottickedoff">UnexpectedChar c             -&gt; [ Texts.lexerUnexpectedChar c                  ]</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="nottickedoff">NonTerminatedString _        -&gt; [ Texts.lexerNonTerminatedString, correctStrings ]</span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="nottickedoff">TooManyClose c                 -&gt; [ Texts.lexerTooManyClose c ]</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="nottickedoff">UnexpectedClose c1 _ c2        -&gt;   Texts.lexerUnexpectedClose c1 c2</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="nottickedoff">StillOpenAtEOF [b]             -&gt; [ Texts.lexerStillOpenAtEOF [ show (snd b) ] ]</span>
+<span class="lineno">   55 </span><span class="spaces">        </span><span class="nottickedoff">StillOpenAtEOF bs              -&gt; [ Texts.lexerStillOpenAtEOF (reverse (map (show.snd) bs)) ]</span></span>
+<span class="lineno">   56 </span>            -- 'reverse' because positions will be sorted and brackets are
+<span class="lineno">   57 </span>            -- reported in reversed order
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>correctStrings :: String
+<span class="lineno">   60 </span><span class="decl"><span class="nottickedoff">correctStrings = Texts.lexerCorrectStrings</span></span>
+<span class="lineno">   61 </span>
+<span class="lineno">   62 </span>-- | Defines a lexer warning
+<span class="lineno">   63 </span>data LexerWarning =
+<span class="lineno">   64 </span>    LexerWarning FilePos LexerWarningInfo -- ^ The lexer file position and warning information
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>-- | Defines the different lexer warning types
+<span class="lineno">   67 </span>data LexerWarningInfo
+<span class="lineno">   68 </span>    = TabCharacter -- ^ Tab character was encountered
+<span class="lineno">   69 </span>    | NestedComment FilePos  -- ^ Nested comment was encountered
+<span class="lineno">   70 </span>    | UtfChar -- ^ The UTF BOM character was found
+<span class="lineno">   71 </span>    | CommentOperator -- ^ Syntax coloring cannot handle names containing --
+<span class="lineno">   72 </span>
+<span class="lineno">   73 </span>-- | Converts the warning information into a list of warning messages
+<span class="lineno">   74 </span>showLexerWarningInfo :: LexerWarningInfo  -- ^ The warning information
+<span class="lineno">   75 </span>                     -&gt; [String] -- ^ The warning messages
+<span class="lineno">   76 </span><span class="decl"><span class="nottickedoff">showLexerWarningInfo info = </span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">case info of</span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="nottickedoff">TabCharacter                    -&gt; Texts.lexerTabCharacter</span>
+<span class="lineno">   79 </span><span class="spaces">        </span><span class="nottickedoff">NestedComment _                 -&gt; Texts.lexerNestedComment</span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="nottickedoff">UtfChar                         -&gt; Texts.lexerUtfChar</span>
+<span class="lineno">   81 </span><span class="spaces">        </span><span class="nottickedoff">CommentOperator                 -&gt; Texts.lexerCommentOperator</span></span>
+<span class="lineno">   82 </span>
+<span class="lineno">   83 </span>-- | Generates a TabCharacter warning
+<span class="lineno">   84 </span>keepOneTabWarning :: [LexerWarning] -- ^ The old warnings
+<span class="lineno">   85 </span>                  -&gt; [LexerWarning] -- ^ The new warnings
+<span class="lineno">   86 </span><span class="decl"><span class="nottickedoff">keepOneTabWarning = keepOneTab True</span>
+<span class="lineno">   87 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="nottickedoff">keepOneTab isFirst (warning@(LexerWarning _ TabCharacter):rest)</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="nottickedoff">| isFirst   = warning : keepOneTab False rest</span>
+<span class="lineno">   90 </span><span class="spaces">        </span><span class="nottickedoff">| otherwise = keepOneTab isFirst rest</span>
+<span class="lineno">   91 </span><span class="spaces">    </span><span class="nottickedoff">keepOneTab isFirst (warning:rest) = </span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="nottickedoff">warning : keepOneTab isFirst rest</span>
+<span class="lineno">   93 </span><span class="spaces">    </span><span class="nottickedoff">keepOneTab _ [] = []</span></span>
 
 </pre>
 </body>

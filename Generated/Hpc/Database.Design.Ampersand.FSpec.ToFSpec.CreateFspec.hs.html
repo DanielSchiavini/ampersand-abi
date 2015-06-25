@@ -42,70 +42,70 @@ span.spaces    { background: white }
 <span class="lineno">   26 </span>-- | create an FSpec, based on the provided command-line options.
 <span class="lineno">   27 </span>createFSpec :: Options  -- ^The options derived from the command line
 <span class="lineno">   28 </span>            -&gt; IO(Guarded FSpec)
-<span class="lineno">   29 </span><span class="decl"><span class="nottickedoff">createFSpec opts =</span>
-<span class="lineno">   30 </span><span class="spaces">  </span><span class="nottickedoff">do userP_Ctx &lt;- parseADL opts (fileName opts) -- the P_Context of the user's sourceFile</span>
-<span class="lineno">   31 </span><span class="spaces">     </span><span class="nottickedoff">genFiles userP_Ctx &gt;&gt; genTables userP_Ctx</span>
-<span class="lineno">   32 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
-<span class="lineno">   33 </span><span class="spaces">    </span><span class="nottickedoff">genFiles :: Guarded P_Context -&gt; IO(Guarded ())</span>
-<span class="lineno">   34 </span><span class="spaces">    </span><span class="nottickedoff">genFiles uCtx </span>
-<span class="lineno">   35 </span><span class="spaces">      </span><span class="nottickedoff">= case pCtx2Fspec uCtx of</span>
-<span class="lineno">   36 </span><span class="spaces">          </span><span class="nottickedoff">Errors es -&gt; return(Errors es)</span>
-<span class="lineno">   37 </span><span class="spaces">          </span><span class="nottickedoff">Checked uFspec</span>
-<span class="lineno">   38 </span><span class="spaces">            </span><span class="nottickedoff">-&gt;   when (genASTFile opts) (doGenMetaFile AST uFspec)</span>
-<span class="lineno">   39 </span><span class="spaces">              </span><span class="nottickedoff">&gt;&gt; when (genGenericsFile opts) (doGenMetaFile Generics uFspec)</span>
-<span class="lineno">   40 </span><span class="spaces">              </span><span class="nottickedoff">&gt;&gt; return (Checked ())</span>
-<span class="lineno">   41 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">   42 </span><span class="spaces">    </span><span class="nottickedoff">genTables :: Guarded P_Context -&gt; IO(Guarded FSpec)</span>
-<span class="lineno">   43 </span><span class="spaces">    </span><span class="nottickedoff">genTables uCtx= case whatTablesToCreateExtra of</span>
-<span class="lineno">   44 </span><span class="spaces">       </span><span class="nottickedoff">Nothing </span>
-<span class="lineno">   45 </span><span class="spaces">         </span><span class="nottickedoff">-&gt; return (pCtx2Fspec uCtx)</span>
-<span class="lineno">   46 </span><span class="spaces">       </span><span class="nottickedoff">Just mType</span>
-<span class="lineno">   47 </span><span class="spaces">         </span><span class="nottickedoff">-&gt; do rapP_Ctx &lt;- getFormalFile mType -- the P_Context of the </span>
-<span class="lineno">   48 </span><span class="spaces">               </span><span class="nottickedoff">let populationPctx       = unguard ( grind mType &lt;$&gt; pCtx2Fspec uCtx)</span>
-<span class="lineno">   49 </span><span class="spaces">                   </span><span class="nottickedoff">populatedRapPctx     = merge.sequenceA $ [rapP_Ctx,populationPctx]</span>
-<span class="lineno">   50 </span><span class="spaces">                   </span><span class="nottickedoff">metaPopulatedRapPctx = toMeta opts &lt;$&gt; populatedRapPctx</span>
-<span class="lineno">   51 </span><span class="spaces">                   </span><span class="nottickedoff">allCombinedPctx      = merge.sequenceA $ [uCtx, metaPopulatedRapPctx]</span>
-<span class="lineno">   52 </span><span class="spaces">               </span><span class="nottickedoff">return $ pCtx2Fspec allCombinedPctx -- the RAP specification that is populated with the user's 'things' is returned.</span>
-<span class="lineno">   53 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">   54 </span><span class="spaces">    </span><span class="nottickedoff">whatTablesToCreateExtra :: Maybe MetaType</span>
-<span class="lineno">   55 </span><span class="spaces">    </span><span class="nottickedoff">whatTablesToCreateExtra </span>
-<span class="lineno">   56 </span><span class="spaces">       </span><span class="nottickedoff">| genASTTables opts     = Just AST</span>
-<span class="lineno">   57 </span><span class="spaces">       </span><span class="nottickedoff">| genGenericTables opts = Just Generics</span>
-<span class="lineno">   58 </span><span class="spaces">       </span><span class="nottickedoff">| otherwise             = Nothing</span>
-<span class="lineno">   59 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">   60 </span><span class="spaces">    </span><span class="nottickedoff">getFormalFile :: MetaType -&gt; IO(Guarded P_Context)</span>
-<span class="lineno">   61 </span><span class="spaces">    </span><span class="nottickedoff">getFormalFile mType</span>
-<span class="lineno">   62 </span><span class="spaces">     </span><span class="nottickedoff">= do let file = ampersandDataDir opts </span>
-<span class="lineno">   63 </span><span class="spaces">                    </span><span class="nottickedoff">&lt;/&gt; &quot;FormalAmpersand&quot; </span>
-<span class="lineno">   64 </span><span class="spaces">                    </span><span class="nottickedoff">&lt;/&gt; (case mType of</span>
-<span class="lineno">   65 </span><span class="spaces">                           </span><span class="nottickedoff">Generics -&gt; &quot;Generics.adl&quot;</span>
-<span class="lineno">   66 </span><span class="spaces">                           </span><span class="nottickedoff">AST -&gt; &quot;FormalAmpersand.adl&quot;)</span>
-<span class="lineno">   67 </span><span class="spaces">          </span><span class="nottickedoff">exists &lt;- doesFileExist file</span>
-<span class="lineno">   68 </span><span class="spaces">          </span><span class="nottickedoff">if exists then parseADL opts file</span>
-<span class="lineno">   69 </span><span class="spaces">          </span><span class="nottickedoff">else fatal 98 $ unlines</span>
-<span class="lineno">   70 </span><span class="spaces">                 </span><span class="nottickedoff">[ &quot;Ampersand isn't installed properly. Couldn't read:&quot;</span>
-<span class="lineno">   71 </span><span class="spaces">                 </span><span class="nottickedoff">, &quot;  &quot;++show file</span>
-<span class="lineno">   72 </span><span class="spaces">                 </span><span class="nottickedoff">, &quot;  (Make sure you have the latest content of Ampersand data. You might need to re-install ampersand...)&quot;</span>
-<span class="lineno">   73 </span><span class="spaces">                 </span><span class="nottickedoff">]</span>
-<span class="lineno">   74 </span><span class="spaces">    </span><span class="nottickedoff"></span>
-<span class="lineno">   75 </span><span class="spaces">    </span><span class="nottickedoff"></span>
-<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">toFspec :: A_Context -&gt; Guarded FSpec</span>
-<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">toFspec = pure . makeFSpec opts</span>
-<span class="lineno">   78 </span><span class="spaces">    </span><span class="nottickedoff">pCtx2Fspec :: Guarded P_Context -&gt; Guarded FSpec</span>
-<span class="lineno">   79 </span><span class="spaces">    </span><span class="nottickedoff">pCtx2Fspec c = unguard $ toFspec &lt;$&gt; (unguard $ pCtx2aCtx opts &lt;$&gt; c)</span>
-<span class="lineno">   80 </span><span class="spaces">    </span><span class="nottickedoff">merge :: Guarded [P_Context] -&gt; Guarded P_Context</span>
-<span class="lineno">   81 </span><span class="spaces">    </span><span class="nottickedoff">merge ctxs = fmap f ctxs</span>
-<span class="lineno">   82 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
-<span class="lineno">   83 </span><span class="spaces">       </span><span class="nottickedoff">f []     = fatal 77 $ &quot;merge must not be applied to an empty list&quot;</span>
-<span class="lineno">   84 </span><span class="spaces">       </span><span class="nottickedoff">f (c:cs) = foldr mergeContexts c cs</span>
-<span class="lineno">   85 </span><span class="spaces">    </span><span class="nottickedoff">grind :: MetaType -&gt; FSpec -&gt; Guarded P_Context</span>
-<span class="lineno">   86 </span><span class="spaces">    </span><span class="nottickedoff">grind mType fSpec</span>
-<span class="lineno">   87 </span><span class="spaces">      </span><span class="nottickedoff">= fmap fstIfNoIncludes $ parseCtx f c</span>
-<span class="lineno">   88 </span><span class="spaces">      </span><span class="nottickedoff">where (f,c) = makeMetaPopulationFile mType fSpec</span>
-<span class="lineno">   89 </span><span class="spaces">            </span><span class="nottickedoff">fstIfNoIncludes (a,includes)</span>
-<span class="lineno">   90 </span><span class="spaces">             </span><span class="nottickedoff">= case includes of </span>
-<span class="lineno">   91 </span><span class="spaces">               </span><span class="nottickedoff">[] -&gt; a</span>
-<span class="lineno">   92 </span><span class="spaces">               </span><span class="nottickedoff">_  -&gt; fatal 83 &quot;Meatgrinder returns included file. That isn't anticipated.&quot;</span></span>
+<span class="lineno">   29 </span><span class="decl"><span class="istickedoff">createFSpec opts =</span>
+<span class="lineno">   30 </span><span class="spaces">  </span><span class="istickedoff">do userP_Ctx &lt;- parseADL opts (fileName opts) -- the P_Context of the user's sourceFile</span>
+<span class="lineno">   31 </span><span class="spaces">     </span><span class="istickedoff">genFiles userP_Ctx &gt;&gt; genTables userP_Ctx</span>
+<span class="lineno">   32 </span><span class="spaces">   </span><span class="istickedoff">where</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">genFiles :: Guarded P_Context -&gt; IO(Guarded ())</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">genFiles uCtx </span>
+<span class="lineno">   35 </span><span class="spaces">      </span><span class="istickedoff">= case pCtx2Fspec uCtx of</span>
+<span class="lineno">   36 </span><span class="spaces">          </span><span class="istickedoff">Errors es -&gt; return<span class="nottickedoff">(Errors es)</span></span>
+<span class="lineno">   37 </span><span class="spaces">          </span><span class="istickedoff">Checked uFspec</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">-&gt;   when (genASTFile opts) <span class="nottickedoff">(doGenMetaFile AST uFspec)</span></span>
+<span class="lineno">   39 </span><span class="spaces">              </span><span class="istickedoff">&gt;&gt; when (genGenericsFile opts) <span class="nottickedoff">(doGenMetaFile Generics uFspec)</span></span>
+<span class="lineno">   40 </span><span class="spaces">              </span><span class="istickedoff">&gt;&gt; return <span class="nottickedoff">(Checked ())</span></span>
+<span class="lineno">   41 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">genTables :: Guarded P_Context -&gt; IO(Guarded FSpec)</span>
+<span class="lineno">   43 </span><span class="spaces">    </span><span class="istickedoff">genTables uCtx= case whatTablesToCreateExtra of</span>
+<span class="lineno">   44 </span><span class="spaces">       </span><span class="istickedoff">Nothing </span>
+<span class="lineno">   45 </span><span class="spaces">         </span><span class="istickedoff">-&gt; return (pCtx2Fspec uCtx)</span>
+<span class="lineno">   46 </span><span class="spaces">       </span><span class="istickedoff">Just mType</span>
+<span class="lineno">   47 </span><span class="spaces">         </span><span class="istickedoff">-&gt; <span class="nottickedoff">do rapP_Ctx &lt;- getFormalFile mType -- the P_Context of the </span></span>
+<span class="lineno">   48 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">let populationPctx       = unguard ( grind mType &lt;$&gt; pCtx2Fspec uCtx)</span></span>
+<span class="lineno">   49 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">populatedRapPctx     = merge.sequenceA $ [rapP_Ctx,populationPctx]</span></span>
+<span class="lineno">   50 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">metaPopulatedRapPctx = toMeta opts &lt;$&gt; populatedRapPctx</span></span>
+<span class="lineno">   51 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">allCombinedPctx      = merge.sequenceA $ [uCtx, metaPopulatedRapPctx]</span></span>
+<span class="lineno">   52 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">return $ pCtx2Fspec allCombinedPctx</span> -- the RAP specification that is populated with the user's 'things' is returned.</span>
+<span class="lineno">   53 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">whatTablesToCreateExtra :: Maybe MetaType</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">whatTablesToCreateExtra </span>
+<span class="lineno">   56 </span><span class="spaces">       </span><span class="istickedoff">| <span class="tickonlyfalse">genASTTables opts</span>     = <span class="nottickedoff">Just AST</span></span>
+<span class="lineno">   57 </span><span class="spaces">       </span><span class="istickedoff">| <span class="tickonlyfalse">genGenericTables opts</span> = <span class="nottickedoff">Just Generics</span></span>
+<span class="lineno">   58 </span><span class="spaces">       </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>             = Nothing</span>
+<span class="lineno">   59 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   60 </span><span class="spaces">    </span><span class="istickedoff">getFormalFile :: MetaType -&gt; IO(Guarded P_Context)</span>
+<span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">getFormalFile mType</span></span>
+<span class="lineno">   62 </span><span class="spaces">     </span><span class="istickedoff"><span class="nottickedoff">= do let file = ampersandDataDir opts </span></span>
+<span class="lineno">   63 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;/&gt; &quot;FormalAmpersand&quot; </span></span>
+<span class="lineno">   64 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;/&gt; (case mType of</span></span>
+<span class="lineno">   65 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">Generics -&gt; &quot;Generics.adl&quot;</span></span>
+<span class="lineno">   66 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">AST -&gt; &quot;FormalAmpersand.adl&quot;)</span></span>
+<span class="lineno">   67 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">exists &lt;- doesFileExist file</span></span>
+<span class="lineno">   68 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">if exists then parseADL opts file</span></span>
+<span class="lineno">   69 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">else fatal 98 $ unlines</span></span>
+<span class="lineno">   70 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Ampersand isn't installed properly. Couldn't read:&quot;</span></span>
+<span class="lineno">   71 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">, &quot;  &quot;++show file</span></span>
+<span class="lineno">   72 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">, &quot;  (Make sure you have the latest content of Ampersand data. You might need to re-install ampersand...)&quot;</span></span>
+<span class="lineno">   73 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   74 </span><span class="spaces">    </span><span class="istickedoff"></span>
+<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff"></span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">toFspec :: A_Context -&gt; Guarded FSpec</span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">toFspec = pure . <span class="nottickedoff">makeFSpec opts</span></span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">pCtx2Fspec :: Guarded P_Context -&gt; Guarded FSpec</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">pCtx2Fspec c = unguard $ toFspec &lt;$&gt; (unguard $ pCtx2aCtx <span class="nottickedoff">opts</span> &lt;$&gt; c)</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">merge :: Guarded [P_Context] -&gt; Guarded P_Context</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">merge ctxs = fmap f ctxs</span></span>
+<span class="lineno">   82 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">where</span></span>
+<span class="lineno">   83 </span><span class="spaces">       </span><span class="istickedoff"><span class="nottickedoff">f []     = fatal 77 $ &quot;merge must not be applied to an empty list&quot;</span></span>
+<span class="lineno">   84 </span><span class="spaces">       </span><span class="istickedoff"><span class="nottickedoff">f (c:cs) = foldr mergeContexts c cs</span></span>
+<span class="lineno">   85 </span><span class="spaces">    </span><span class="istickedoff">grind :: MetaType -&gt; FSpec -&gt; Guarded P_Context</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">grind mType fSpec</span></span>
+<span class="lineno">   87 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">= fmap fstIfNoIncludes $ parseCtx f c</span></span>
+<span class="lineno">   88 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">where (f,c) = makeMetaPopulationFile mType fSpec</span></span>
+<span class="lineno">   89 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fstIfNoIncludes (a,includes)</span></span>
+<span class="lineno">   90 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">= case includes of </span></span>
+<span class="lineno">   91 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">[] -&gt; a</span></span>
+<span class="lineno">   92 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">_  -&gt; fatal 83 &quot;Meatgrinder returns included file. That isn't anticipated.&quot;</span></span></span>
 <span class="lineno">   93 </span>            
 <span class="lineno">   94 </span>     
 <span class="lineno">   95 </span>getPopulationsFrom :: Options -&gt; FilePath -&gt; IO (Guarded [Population])

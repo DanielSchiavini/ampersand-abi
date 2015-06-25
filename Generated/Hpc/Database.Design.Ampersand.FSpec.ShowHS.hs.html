@@ -586,9 +586,9 @@ span.spaces    { background: white }
 <span class="lineno">  570 </span>-- showHSName vd = haskellIdentifier (&quot;vdef_&quot;++name vd)
 <span class="lineno">  571 </span>
 <span class="lineno">  572 </span>instance ShowHS ViewSegment where
-<span class="lineno">  573 </span> <span class="decl"><span class="nottickedoff">showHS _     _      (ViewText str)   = &quot;ViewText &quot;++show str</span>
-<span class="lineno">  574 </span><span class="spaces"> </span><span class="nottickedoff">showHS _     _      (ViewHtml str)   = &quot;ViewHtml &quot;++show str</span>
-<span class="lineno">  575 </span><span class="spaces"> </span><span class="nottickedoff">showHS opts indent (ViewExp objDef) = &quot;ViewExp &quot;++ showHS opts (indent++&quot;            &quot;) objDef</span></span>
+<span class="lineno">  573 </span> <span class="decl"><span class="nottickedoff">showHS _     _     (ViewText i str)    = &quot;ViewText &quot;++show i ++show str</span>
+<span class="lineno">  574 </span><span class="spaces"> </span><span class="nottickedoff">showHS _     _     (ViewHtml i str)    = &quot;ViewHtml &quot;++show i ++show str</span>
+<span class="lineno">  575 </span><span class="spaces"> </span><span class="nottickedoff">showHS opts indent (ViewExp  i objDef) = &quot;ViewExp &quot; ++show i ++showHS opts (indent++&quot;            &quot;) objDef</span></span>
 <span class="lineno">  576 </span>
 <span class="lineno">  577 </span>instance ShowHS Population where
 <span class="lineno">  578 </span> <span class="decl"><span class="nottickedoff">showHS _ indent pop</span>
@@ -635,7 +635,7 @@ span.spaces    { background: white }
 <span class="lineno">  619 </span><span class="spaces">        </span><span class="nottickedoff">]++indent++&quot;    }&quot;</span></span>
 <span class="lineno">  620 </span>
 <span class="lineno">  621 </span>instance ShowHS SubInterface where
-<span class="lineno">  622 </span> <span class="decl"><span class="nottickedoff">showHS _     _      (InterfaceRef n) = &quot;InterfaceRef &quot;++show n</span>
+<span class="lineno">  622 </span> <span class="decl"><span class="nottickedoff">showHS _     _      (InterfaceRef isLink n) = &quot;InterfaceRef &quot;++show isLink ++&quot; &quot;++show n</span>
 <span class="lineno">  623 </span><span class="spaces"> </span><span class="nottickedoff">showHS opts indent (Box x cl objs) = &quot;Box (&quot;++showHS opts indent x++&quot;) (&quot;++showHS opts indent cl++&quot;)&quot;++indent++&quot;     (&quot;++showHS opts (indent++&quot;     &quot;) objs++&quot;)&quot;</span></span>
 <span class="lineno">  624 </span>
 <span class="lineno">  625 </span>instance ShowHS Expression where

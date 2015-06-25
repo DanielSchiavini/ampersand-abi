@@ -37,8 +37,8 @@ formatLine (i,(code:coveredOld:oldError:oldPosition:oldAccuracy:oldConcisenss:ol
     intercalate "\n  " [ "\\subsection{Error type " ++ formatNr i ++ "}"
                        , "\\begin{description}"
                        , "\\item[Incorrect ADL]" ++ formatCode code
-                       , "\\item[Previous error]" ++ formatError oldError
-                       , "\\item[Previous evaluation]" ++ formatEv oldPosition oldAccuracy oldConcisenss oldResult
+                       , "\\item[Old error]" ++ formatError oldError
+                       , "\\item[Old evaluation]" ++ formatEv oldPosition oldAccuracy oldConcisenss oldResult
                        , "\\item[New error]" ++ formatError newError
                        , "\\item[New evaluation]" ++ formatEv newPosition newAccuracy newConciseness newResult
                        , "\\end{description}"

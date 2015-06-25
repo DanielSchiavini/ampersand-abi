@@ -113,7 +113,7 @@ span.spaces    { background: white }
 <span class="lineno">   97 </span><span class="decl"><span class="nottickedoff">getAllInterfaceExprs allIfcs ifc = getExprs $ ifcObj ifc</span>
 <span class="lineno">   98 </span><span class="spaces">  </span><span class="nottickedoff">where getExprs Obj{objctx=expr, objmsub=subObj} = </span>
 <span class="lineno">   99 </span><span class="spaces">          </span><span class="nottickedoff">expr : case subObj of Nothing                -&gt; []</span>
-<span class="lineno">  100 </span><span class="spaces">                                </span><span class="nottickedoff">Just (InterfaceRef nm) -&gt;</span>
+<span class="lineno">  100 </span><span class="spaces">                                </span><span class="nottickedoff">Just (InterfaceRef _ nm) -&gt;</span>
 <span class="lineno">  101 </span><span class="spaces">                                  </span><span class="nottickedoff">case filter (\rIfc -&gt; name rIfc == nm) $ allIfcs of -- Follow interface ref</span>
 <span class="lineno">  102 </span><span class="spaces">                                    </span><span class="nottickedoff">[]      -&gt; fatal 65 $ &quot;Referenced interface &quot; ++ nm ++ &quot; missing&quot;</span>
 <span class="lineno">  103 </span><span class="spaces">                                    </span><span class="nottickedoff">(_:_:_) -&gt; fatal 66 $ &quot;Multiple declarations of referenced interface &quot; ++ nm</span>

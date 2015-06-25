@@ -86,29 +86,29 @@ span.spaces    { background: white }
 <span class="lineno">   70 </span><span class="spaces"></span><span class="nottickedoff">foldrMapExpression _ _ a  EMp1{}      = a</span></span>
 <span class="lineno">   71 </span>
 <span class="lineno">   72 </span>primitives :: Expression -&gt; [Expression]
-<span class="lineno">   73 </span><span class="decl"><span class="nottickedoff">primitives expr =</span>
-<span class="lineno">   74 </span><span class="spaces">  </span><span class="nottickedoff">case expr of</span>
-<span class="lineno">   75 </span><span class="spaces">    </span><span class="nottickedoff">(EEqu (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">(EImp (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">(EIsc (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   78 </span><span class="spaces">    </span><span class="nottickedoff">(EUni (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   79 </span><span class="spaces">    </span><span class="nottickedoff">(EDif (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   80 </span><span class="spaces">    </span><span class="nottickedoff">(ELrs (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   81 </span><span class="spaces">    </span><span class="nottickedoff">(ERrs (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   82 </span><span class="spaces">    </span><span class="nottickedoff">(EDia (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   83 </span><span class="spaces">    </span><span class="nottickedoff">(ECps (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   84 </span><span class="spaces">    </span><span class="nottickedoff">(ERad (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   85 </span><span class="spaces">    </span><span class="nottickedoff">(EPrd (l,r)) -&gt; primitives l `uni` primitives r</span>
-<span class="lineno">   86 </span><span class="spaces">    </span><span class="nottickedoff">(EKl0 e)     -&gt; primitives e</span>
-<span class="lineno">   87 </span><span class="spaces">    </span><span class="nottickedoff">(EKl1 e)     -&gt; primitives e</span>
-<span class="lineno">   88 </span><span class="spaces">    </span><span class="nottickedoff">(EFlp e)     -&gt; primitives e</span>
-<span class="lineno">   89 </span><span class="spaces">    </span><span class="nottickedoff">(ECpl e)     -&gt; primitives e</span>
-<span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">(EBrk e)     -&gt; primitives e</span>
-<span class="lineno">   91 </span><span class="spaces">    </span><span class="nottickedoff">EDcD{}       -&gt; [expr]</span>
-<span class="lineno">   92 </span><span class="spaces">    </span><span class="nottickedoff">EDcI{}       -&gt; [expr]</span>
-<span class="lineno">   93 </span><span class="spaces">    </span><span class="nottickedoff">EEps{}       -&gt; []  -- Since EEps is inserted for typing reasons only, we do not consider it a primitive..</span>
-<span class="lineno">   94 </span><span class="spaces">    </span><span class="nottickedoff">EDcV{}       -&gt; [expr]</span>
-<span class="lineno">   95 </span><span class="spaces">    </span><span class="nottickedoff">EMp1{}       -&gt; [expr]</span></span>
+<span class="lineno">   73 </span><span class="decl"><span class="istickedoff">primitives expr =</span>
+<span class="lineno">   74 </span><span class="spaces">  </span><span class="istickedoff">case expr of</span>
+<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">(EEqu (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">(EImp (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">(EIsc (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">(EUni (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">(EDif (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">(ELrs (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">(ERrs (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">(EDia (l,r)) -&gt; <span class="nottickedoff">primitives l `uni` primitives r</span></span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">(ECps (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">(ERad (l,r)) -&gt; primitives l `uni` primitives r</span>
+<span class="lineno">   85 </span><span class="spaces">    </span><span class="istickedoff">(EPrd (l,r)) -&gt; <span class="nottickedoff">primitives l `uni` primitives r</span></span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">(EKl0 e)     -&gt; primitives e</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">(EKl1 e)     -&gt; primitives e</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">(EFlp e)     -&gt; primitives e</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">(ECpl e)     -&gt; primitives e</span>
+<span class="lineno">   90 </span><span class="spaces">    </span><span class="istickedoff">(EBrk e)     -&gt; primitives e</span>
+<span class="lineno">   91 </span><span class="spaces">    </span><span class="istickedoff">EDcD{}       -&gt; [expr]</span>
+<span class="lineno">   92 </span><span class="spaces">    </span><span class="istickedoff">EDcI{}       -&gt; [expr]</span>
+<span class="lineno">   93 </span><span class="spaces">    </span><span class="istickedoff">EEps{}       -&gt; []  -- Since EEps is inserted for typing reasons only, we do not consider it a primitive..</span>
+<span class="lineno">   94 </span><span class="spaces">    </span><span class="istickedoff">EDcV{}       -&gt; [expr]</span>
+<span class="lineno">   95 </span><span class="spaces">    </span><span class="istickedoff">EMp1{}       -&gt; [expr]</span></span>
 <span class="lineno">   96 </span>
 <span class="lineno">   97 </span>-- | The rule of De Morgan requires care with respect to the complement.
 <span class="lineno">   98 </span>--   The following function provides a function to manipulate with De Morgan correctly.
@@ -152,48 +152,48 @@ span.spaces    { background: white }
 <span class="lineno">  136 </span><span class="decl"><span class="nottickedoff">isNeg = not . isPos</span></span>
 <span class="lineno">  137 </span>
 <span class="lineno">  138 </span>isMp1 :: Expression -&gt; Bool
-<span class="lineno">  139 </span><span class="decl"><span class="nottickedoff">isMp1 EMp1{} = True</span>
-<span class="lineno">  140 </span><span class="spaces"></span><span class="nottickedoff">isMp1 _ = False</span></span>
+<span class="lineno">  139 </span><span class="decl"><span class="istickedoff">isMp1 EMp1{} = True</span>
+<span class="lineno">  140 </span><span class="spaces"></span><span class="istickedoff">isMp1 _ = False</span></span>
 <span class="lineno">  141 </span>
 <span class="lineno">  142 </span>isEEps :: Expression -&gt; Bool
 <span class="lineno">  143 </span><span class="decl"><span class="nottickedoff">isEEps EEps{} = True</span>
 <span class="lineno">  144 </span><span class="spaces"></span><span class="nottickedoff">isEEps _ = False</span></span>
 <span class="lineno">  145 </span>
 <span class="lineno">  146 </span>exprIsc2list, exprUni2list, exprCps2list, exprRad2list, exprPrd2list :: Expression -&gt; [Expression]
-<span class="lineno">  147 </span><span class="decl"><span class="nottickedoff">exprIsc2list (EIsc (l,r)) = exprIsc2list l++exprIsc2list r</span>
-<span class="lineno">  148 </span><span class="spaces"></span><span class="nottickedoff">exprIsc2list r            = [r]</span></span>
+<span class="lineno">  147 </span><span class="decl"><span class="istickedoff">exprIsc2list (EIsc (l,r)) = exprIsc2list l++exprIsc2list r</span>
+<span class="lineno">  148 </span><span class="spaces"></span><span class="istickedoff">exprIsc2list r            = [r]</span></span>
 <span class="lineno">  149 </span><span class="decl"><span class="nottickedoff">exprUni2list (EUni (l,r)) = exprUni2list l++exprUni2list r</span>
 <span class="lineno">  150 </span><span class="spaces"></span><span class="nottickedoff">exprUni2list r            = [r]</span></span>
-<span class="lineno">  151 </span><span class="decl"><span class="nottickedoff">exprCps2list (ECps (l,r)) = exprCps2list l++exprCps2list r</span>
-<span class="lineno">  152 </span><span class="spaces"></span><span class="nottickedoff">exprCps2list r            = [r]</span></span>
+<span class="lineno">  151 </span><span class="decl"><span class="istickedoff">exprCps2list (ECps (l,r)) = exprCps2list l++exprCps2list r</span>
+<span class="lineno">  152 </span><span class="spaces"></span><span class="istickedoff">exprCps2list r            = [r]</span></span>
 <span class="lineno">  153 </span><span class="decl"><span class="nottickedoff">exprRad2list (ERad (l,r)) = exprRad2list l++exprRad2list r</span>
 <span class="lineno">  154 </span><span class="spaces"></span><span class="nottickedoff">exprRad2list r            = [r]</span></span>
 <span class="lineno">  155 </span><span class="decl"><span class="nottickedoff">exprPrd2list (EPrd (l,r)) = exprPrd2list l++exprPrd2list r</span>
 <span class="lineno">  156 </span><span class="spaces"></span><span class="nottickedoff">exprPrd2list r            = [r]</span></span>
 <span class="lineno">  157 </span>
 <span class="lineno">  158 </span>insParentheses :: Expression -&gt; Expression
-<span class="lineno">  159 </span><span class="decl"><span class="nottickedoff">insParentheses expr = insPar 0 expr</span>
-<span class="lineno">  160 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
-<span class="lineno">  161 </span><span class="spaces">     </span><span class="nottickedoff">wrap :: Integer -&gt; Integer -&gt; Expression -&gt; Expression</span>
-<span class="lineno">  162 </span><span class="spaces">     </span><span class="nottickedoff">wrap i j e' = if i&lt;=j then e' else EBrk (insPar 0 e')</span>
-<span class="lineno">  163 </span><span class="spaces">     </span><span class="nottickedoff">insPar :: Integer -&gt; Expression -&gt; Expression</span>
-<span class="lineno">  164 </span><span class="spaces">     </span><span class="nottickedoff">insPar i  (EEqu (l,r)) = wrap i 0 (insPar 1 l .==. insPar 1 r)</span>
-<span class="lineno">  165 </span><span class="spaces">     </span><span class="nottickedoff">insPar i  (EImp (l,r)) = wrap i 0 (insPar 1 l .|-. insPar 1 r)</span>
-<span class="lineno">  166 </span><span class="spaces">     </span><span class="nottickedoff">insPar i x@EIsc{}      = wrap i 2 (foldr1 (./\.) [insPar 3 e | e&lt;-exprIsc2list x ])</span>
-<span class="lineno">  167 </span><span class="spaces">     </span><span class="nottickedoff">insPar i x@EUni{}      = wrap i 2 (foldr1 (.\/.) [insPar 3 e | e&lt;-exprUni2list x ])</span>
-<span class="lineno">  168 </span><span class="spaces">     </span><span class="nottickedoff">insPar i  (EDif (l,r)) = wrap i 4 (insPar 5 l .-. insPar 5 r)</span>
-<span class="lineno">  169 </span><span class="spaces">     </span><span class="nottickedoff">insPar i  (ELrs (l,r)) = wrap i 6 (insPar 7 l ./. insPar 7 r)</span>
-<span class="lineno">  170 </span><span class="spaces">     </span><span class="nottickedoff">insPar i  (ERrs (l,r)) = wrap i 6 (insPar 7 l .\. insPar 7 r)</span>
-<span class="lineno">  171 </span><span class="spaces">     </span><span class="nottickedoff">insPar i  (EDia (l,r)) = wrap i 6 (insPar 7 l .&lt;&gt;. insPar 7 r)</span>
-<span class="lineno">  172 </span><span class="spaces">     </span><span class="nottickedoff">insPar i x@ECps{}      = wrap i 8 (foldr1 (.:.) [insPar 9 e | e&lt;-exprCps2list x ])</span>
-<span class="lineno">  173 </span><span class="spaces">     </span><span class="nottickedoff">insPar i x@ERad{}      = wrap i 8 (foldr1 (.!.) [insPar 9 e | e&lt;-exprRad2list x ])</span>
-<span class="lineno">  174 </span><span class="spaces">     </span><span class="nottickedoff">insPar i x@EPrd{}      = wrap i 8 (foldr1 (.*.) [insPar 9 e | e&lt;-exprPrd2list x ])</span>
-<span class="lineno">  175 </span><span class="spaces">     </span><span class="nottickedoff">insPar _  (EKl0 e)     = EKl0 (insPar 10 e)</span>
-<span class="lineno">  176 </span><span class="spaces">     </span><span class="nottickedoff">insPar _  (EKl1 e)     = EKl1 (insPar 10 e)</span>
-<span class="lineno">  177 </span><span class="spaces">     </span><span class="nottickedoff">insPar _  (EFlp e)     = EFlp (insPar 10 e)</span>
-<span class="lineno">  178 </span><span class="spaces">     </span><span class="nottickedoff">insPar _  (ECpl e)     = ECpl (insPar 10 e)</span>
-<span class="lineno">  179 </span><span class="spaces">     </span><span class="nottickedoff">insPar i  (EBrk e)     = insPar i e</span>
-<span class="lineno">  180 </span><span class="spaces">     </span><span class="nottickedoff">insPar _  x            = x</span></span>
+<span class="lineno">  159 </span><span class="decl"><span class="istickedoff">insParentheses expr = insPar 0 expr</span>
+<span class="lineno">  160 </span><span class="spaces">   </span><span class="istickedoff">where</span>
+<span class="lineno">  161 </span><span class="spaces">     </span><span class="istickedoff">wrap :: Integer -&gt; Integer -&gt; Expression -&gt; Expression</span>
+<span class="lineno">  162 </span><span class="spaces">     </span><span class="istickedoff">wrap i j e' = if <span class="tickonlytrue">i&lt;=j</span> then e' else <span class="nottickedoff">EBrk (insPar 0 e')</span></span>
+<span class="lineno">  163 </span><span class="spaces">     </span><span class="istickedoff">insPar :: Integer -&gt; Expression -&gt; Expression</span>
+<span class="lineno">  164 </span><span class="spaces">     </span><span class="istickedoff">insPar i  (EEqu (l,r)) = <span class="nottickedoff">wrap i 0 (insPar 1 l .==. insPar 1 r)</span></span>
+<span class="lineno">  165 </span><span class="spaces">     </span><span class="istickedoff">insPar i  (EImp (l,r)) = <span class="nottickedoff">wrap i 0 (insPar 1 l .|-. insPar 1 r)</span></span>
+<span class="lineno">  166 </span><span class="spaces">     </span><span class="istickedoff">insPar i x@EIsc{}      = wrap i 2 (foldr1 (./\.) [insPar 3 e | e&lt;-exprIsc2list x ])</span>
+<span class="lineno">  167 </span><span class="spaces">     </span><span class="istickedoff">insPar i x@EUni{}      = <span class="nottickedoff">wrap i 2 (foldr1 (.\/.) [insPar 3 e | e&lt;-exprUni2list x ])</span></span>
+<span class="lineno">  168 </span><span class="spaces">     </span><span class="istickedoff">insPar i  (EDif (l,r)) = <span class="nottickedoff">wrap i 4 (insPar 5 l .-. insPar 5 r)</span></span>
+<span class="lineno">  169 </span><span class="spaces">     </span><span class="istickedoff">insPar i  (ELrs (l,r)) = <span class="nottickedoff">wrap i 6 (insPar 7 l ./. insPar 7 r)</span></span>
+<span class="lineno">  170 </span><span class="spaces">     </span><span class="istickedoff">insPar i  (ERrs (l,r)) = <span class="nottickedoff">wrap i 6 (insPar 7 l .\. insPar 7 r)</span></span>
+<span class="lineno">  171 </span><span class="spaces">     </span><span class="istickedoff">insPar i  (EDia (l,r)) = <span class="nottickedoff">wrap i 6 (insPar 7 l .&lt;&gt;. insPar 7 r)</span></span>
+<span class="lineno">  172 </span><span class="spaces">     </span><span class="istickedoff">insPar i x@ECps{}      = wrap i 8 (foldr1 (.:.) [insPar <span class="nottickedoff">9</span> e | e&lt;-exprCps2list x ])</span>
+<span class="lineno">  173 </span><span class="spaces">     </span><span class="istickedoff">insPar i x@ERad{}      = <span class="nottickedoff">wrap i 8 (foldr1 (.!.) [insPar 9 e | e&lt;-exprRad2list x ])</span></span>
+<span class="lineno">  174 </span><span class="spaces">     </span><span class="istickedoff">insPar i x@EPrd{}      = <span class="nottickedoff">wrap i 8 (foldr1 (.*.) [insPar 9 e | e&lt;-exprPrd2list x ])</span></span>
+<span class="lineno">  175 </span><span class="spaces">     </span><span class="istickedoff">insPar _  (EKl0 e)     = <span class="nottickedoff">EKl0 (insPar 10 e)</span></span>
+<span class="lineno">  176 </span><span class="spaces">     </span><span class="istickedoff">insPar _  (EKl1 e)     = <span class="nottickedoff">EKl1 (insPar 10 e)</span></span>
+<span class="lineno">  177 </span><span class="spaces">     </span><span class="istickedoff">insPar _  (EFlp e)     = EFlp (insPar <span class="nottickedoff">10</span> e)</span>
+<span class="lineno">  178 </span><span class="spaces">     </span><span class="istickedoff">insPar _  (ECpl e)     = <span class="nottickedoff">ECpl (insPar 10 e)</span></span>
+<span class="lineno">  179 </span><span class="spaces">     </span><span class="istickedoff">insPar i  (EBrk e)     = insPar i e</span>
+<span class="lineno">  180 </span><span class="spaces">     </span><span class="istickedoff">insPar _  x            = x</span></span>
 <span class="lineno">  181 </span>
 <span class="lineno">  182 </span>{-
 <span class="lineno">  183 </span>   insPar 0 (r/\s/\t/\x/\y |- p)

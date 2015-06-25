@@ -84,12 +84,12 @@ span.spaces    { background: white }
 <span class="lineno">   68 </span>--                   I{}   -&gt; True
 <span class="lineno">   69 </span>
 <span class="lineno">   70 </span>instance Relational Declaration where
-<span class="lineno">   71 </span>    <span class="decl"><span class="nottickedoff">multiplicities d = case d of</span>
-<span class="lineno">   72 </span><span class="spaces">           </span><span class="nottickedoff">Sgn {}       -&gt; case decprps_calc d of</span>
-<span class="lineno">   73 </span><span class="spaces">                             </span><span class="nottickedoff">Nothing -&gt; decprps d</span>
-<span class="lineno">   74 </span><span class="spaces">                             </span><span class="nottickedoff">Just ps -&gt; ps</span>
-<span class="lineno">   75 </span><span class="spaces">           </span><span class="nottickedoff">Isn{}        -&gt; [Uni,Tot,Inj,Sur,Sym,Asy,Trn,Rfx]</span>
-<span class="lineno">   76 </span><span class="spaces">           </span><span class="nottickedoff">Vs{}         -&gt; [Tot,Sur]</span></span>
+<span class="lineno">   71 </span>    <span class="decl"><span class="istickedoff">multiplicities d = case d of</span>
+<span class="lineno">   72 </span><span class="spaces">           </span><span class="istickedoff">Sgn {}       -&gt; case decprps_calc d of</span>
+<span class="lineno">   73 </span><span class="spaces">                             </span><span class="istickedoff">Nothing -&gt; decprps d</span>
+<span class="lineno">   74 </span><span class="spaces">                             </span><span class="istickedoff">Just ps -&gt; <span class="nottickedoff">ps</span></span>
+<span class="lineno">   75 </span><span class="spaces">           </span><span class="istickedoff">Isn{}        -&gt; <span class="nottickedoff">[Uni,Tot,Inj,Sur,Sym,Asy,Trn,Rfx]</span></span>
+<span class="lineno">   76 </span><span class="spaces">           </span><span class="istickedoff">Vs{}         -&gt; <span class="nottickedoff">[Tot,Sur]</span></span></span>
 <span class="lineno">   77 </span>    <span class="decl"><span class="nottickedoff">isProp d = case d of         -- &gt; tells whether the argument is a property.</span>
 <span class="lineno">   78 </span><span class="spaces">           </span><span class="nottickedoff">Sgn {}       -&gt; null ([Asy,Sym]&gt;-multiplicities d)</span>
 <span class="lineno">   79 </span><span class="spaces">           </span><span class="nottickedoff">Isn{}        -&gt; True</span>

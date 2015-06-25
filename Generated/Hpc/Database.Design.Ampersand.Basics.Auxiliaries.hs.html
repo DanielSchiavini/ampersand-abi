@@ -35,8 +35,8 @@ span.spaces    { background: white }
 <span class="lineno">   19 </span>-- Example&gt; eqClass &quot;Mississippi&quot; = [&quot;M&quot;,&quot;iiii&quot;,&quot;ssss&quot;,&quot;pp&quot;]
 <span class="lineno">   20 </span>--
 <span class="lineno">   21 </span>eqClass :: (a -&gt; a -&gt; Bool) -&gt; [a] -&gt; [[a]]
-<span class="lineno">   22 </span><span class="decl"><span class="nottickedoff">eqClass _ [] = []</span>
-<span class="lineno">   23 </span><span class="spaces"></span><span class="nottickedoff">eqClass f (x:xs) = (x:[e |e&lt;-xs, f x e]) : eqClass f [e |e&lt;-xs, not (f x e)]</span></span>
+<span class="lineno">   22 </span><span class="decl"><span class="istickedoff">eqClass _ [] = []</span>
+<span class="lineno">   23 </span><span class="spaces"></span><span class="istickedoff">eqClass f (x:xs) = (x:[e |e&lt;-xs, f x e]) : eqClass f [e |e&lt;-xs, not (f x e)]</span></span>
 <span class="lineno">   24 </span>
 <span class="lineno">   25 </span>-- | eqCl is used for gathering things that are equal wrt some criterion f.
 <span class="lineno">   26 </span>--   For instance, if you want to have persons with the same name:
@@ -44,17 +44,17 @@ span.spaces    { background: white }
 <span class="lineno">   28 </span>-- Example&gt; eqCl (=='s') &quot;Mississippi&quot; = &quot;ssss&quot;
 <span class="lineno">   29 </span>
 <span class="lineno">   30 </span>eqCl :: Eq b =&gt; (a -&gt; b) -&gt; [a] -&gt; [[a]]
-<span class="lineno">   31 </span><span class="decl"><span class="nottickedoff">eqCl _ [] = []</span>
-<span class="lineno">   32 </span><span class="spaces"></span><span class="nottickedoff">eqCl f (x:xs) = (x:[e |e&lt;-xs, f x==f e]) : eqCl f [e |e&lt;-xs, f x/=f e]</span></span>
+<span class="lineno">   31 </span><span class="decl"><span class="istickedoff">eqCl _ [] = []</span>
+<span class="lineno">   32 </span><span class="spaces"></span><span class="istickedoff">eqCl f (x:xs) = (x:[e |e&lt;-xs, f x==f e]) : eqCl f [e |e&lt;-xs, f x/=f e]</span></span>
 <span class="lineno">   33 </span>
 <span class="lineno">   34 </span>-- | getCycles returns a list of cycles in the edges list (each edge is a pair of a from-vertex
 <span class="lineno">   35 </span>--   and a list of to-vertices)
 <span class="lineno">   36 </span>getCycles :: Eq a =&gt; [(a, [a])] -&gt; [[a]]
-<span class="lineno">   37 </span><span class="decl"><span class="nottickedoff">getCycles edges =</span>
-<span class="lineno">   38 </span><span class="spaces">  </span><span class="nottickedoff">let allVertices = nub . concat $ [ from : to | (from, to) &lt;- edges ]</span>
-<span class="lineno">   39 </span><span class="spaces">      </span><span class="nottickedoff">keyFor v = fromMaybe (error &quot;FATAL&quot;) $ elemIndex v allVertices</span>
-<span class="lineno">   40 </span><span class="spaces">      </span><span class="nottickedoff">graphEdges = [ (v, keyFor v , map keyFor vs)  | (v, vs) &lt;- edges ]</span>
-<span class="lineno">   41 </span><span class="spaces">  </span><span class="nottickedoff">in  [ vs | CyclicSCC vs &lt;- stronglyConnComp graphEdges ]</span></span>
+<span class="lineno">   37 </span><span class="decl"><span class="istickedoff">getCycles edges =</span>
+<span class="lineno">   38 </span><span class="spaces">  </span><span class="istickedoff">let allVertices = nub . concat $ [ from : to | (from, to) &lt;- edges ]</span>
+<span class="lineno">   39 </span><span class="spaces">      </span><span class="istickedoff">keyFor v = fromMaybe <span class="nottickedoff">(error &quot;FATAL&quot;)</span> $ elemIndex v allVertices</span>
+<span class="lineno">   40 </span><span class="spaces">      </span><span class="istickedoff">graphEdges = [ (<span class="nottickedoff">v</span>, keyFor v , map keyFor vs)  | (v, vs) &lt;- edges ]</span>
+<span class="lineno">   41 </span><span class="spaces">  </span><span class="istickedoff">in  [ <span class="nottickedoff">vs</span> | CyclicSCC vs &lt;- stronglyConnComp graphEdges ]</span></span>
 <span class="lineno">   42 </span>
 <span class="lineno">   43 </span>
 <span class="lineno">   44 </span>-- |  Warshall's transitive closure algorithm

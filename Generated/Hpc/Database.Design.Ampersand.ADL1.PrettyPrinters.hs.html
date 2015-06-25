@@ -15,7 +15,7 @@ span.spaces    { background: white }
 <body>
 <pre>
 <span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-warn-orphans #-}
-<span class="lineno">    2 </span>module Database.Design.Ampersand.ADL1.PrettyPrinters
+<span class="lineno">    2 </span>module Database.Design.Ampersand.ADL1.PrettyPrinters(prettyPrint)
 <span class="lineno">    3 </span>where
 <span class="lineno">    4 </span>
 <span class="lineno">    5 </span>import Text.PrettyPrint.Leijen
@@ -47,8 +47,8 @@ span.spaces    { background: white }
 <span class="lineno">   31 </span><span class="decl"><span class="istickedoff">perlinePrefix pref xs = vsep $ map addPrefix xs</span>
 <span class="lineno">   32 </span><span class="spaces">           </span><span class="istickedoff">where addPrefix x = text pref &lt;+&gt; pretty x</span></span>
 <span class="lineno">   33 </span>
-<span class="lineno">   34 </span>quoteWith :: String -&gt; String -&gt; String -&gt; Doc
-<span class="lineno">   35 </span><span class="decl"><span class="nottickedoff">quoteWith l r x = enclose (text l) (text r) (text x)</span></span>
+<span class="lineno">   34 </span>--quoteWith :: String -&gt; String -&gt; String -&gt; Doc
+<span class="lineno">   35 </span>--quoteWith l r x = enclose (text l) (text r) (text x)
 <span class="lineno">   36 </span>
 <span class="lineno">   37 </span>quote :: String -&gt; Doc
 <span class="lineno">   38 </span><span class="decl"><span class="istickedoff">quote = dquotes.text.escapeAll</span>
@@ -179,7 +179,7 @@ span.spaces    { background: white }
 <span class="lineno">  163 </span>instance Pretty P_Declaration where
 <span class="lineno">  164 </span>    <span class="decl"><span class="istickedoff">pretty (P_Sgn nm sign prps pragma mean popu _ plug) =</span>
 <span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff">text &quot;RELATION&quot; &lt;+&gt; text nm &lt;~&gt; sign &lt;+&gt; props &lt;+&gt; byplug &lt;+\&gt; pragmas &lt;+\&gt; prettyhsep mean &lt;+\&gt; content</span>
-<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff">where props   = if <span class="tickonlyfalse">prps == [Sym, Asy]</span> then <span class="nottickedoff">text &quot;[PROP]&quot;</span></span>
+<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff">where props   = if prps == [Sym, Asy] then text &quot;[PROP]&quot;</span>
 <span class="lineno">  167 </span><span class="spaces">                        </span><span class="istickedoff">else text &quot;[&quot; &lt;&gt; listOf prps &lt;&gt; text &quot;]&quot;</span>
 <span class="lineno">  168 </span><span class="spaces">              </span><span class="istickedoff">byplug  | plug        = text &quot;BYPLUG&quot;</span>
 <span class="lineno">  169 </span><span class="spaces">                      </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>   = empty</span>
@@ -293,7 +293,7 @@ span.spaces    { background: white }
 <span class="lineno">  277 </span>instance Pretty a =&gt; Pretty (P_SubIfc a) where
 <span class="lineno">  278 </span>    <span class="decl"><span class="istickedoff">pretty p = case p of</span>
 <span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff">P_Box _ c bs         -&gt; box_type c &lt;+&gt; text &quot;[&quot; &lt;&gt; listOf bs &lt;&gt; text &quot;]&quot;</span>
-<span class="lineno">  280 </span><span class="spaces">                </span><span class="istickedoff">P_InterfaceRef _ str -&gt; text &quot;INTERFACE&quot; &lt;+&gt; maybeQuote str</span>
+<span class="lineno">  280 </span><span class="spaces">                </span><span class="istickedoff">P_InterfaceRef _ isLink str -&gt; text ((if isLink then &quot;LINKTO &quot;else &quot;&quot;)++&quot;INTERFACE&quot;) &lt;+&gt; maybeQuote str</span>
 <span class="lineno">  281 </span><span class="spaces">            </span><span class="istickedoff">where box_type Nothing  = text &quot;BOX&quot;</span>
 <span class="lineno">  282 </span><span class="spaces">                  </span><span class="istickedoff">box_type (Just x) = text x</span></span> -- ROWS, COLS, TABS
 <span class="lineno">  283 </span>
@@ -322,10 +322,10 @@ span.spaces    { background: white }
 <span class="lineno">  306 </span>    <span class="decl"><span class="istickedoff">pretty (ViewHtmlTemplateFile str) = text &quot;HTML&quot; &lt;+&gt; text &quot;TEMPLATE&quot; &lt;+&gt; quote str</span></span>
 <span class="lineno">  307 </span>
 <span class="lineno">  308 </span>instance Pretty a =&gt; Pretty (P_ViewSegmt a) where
-<span class="lineno">  309 </span>    <span class="decl"><span class="istickedoff">pretty (P_ViewExp (P_Obj nm _ ctx _ _ _))</span>
-<span class="lineno">  310 </span><span class="spaces">                            </span><span class="istickedoff">= maybeQuote nm &lt;+&gt; text &quot;:&quot; &lt;~&gt; ctx</span>
-<span class="lineno">  311 </span><span class="spaces">    </span><span class="istickedoff">pretty (P_ViewText txt) = text &quot;TXT&quot; &lt;+&gt; quote txt</span>
-<span class="lineno">  312 </span><span class="spaces">    </span><span class="istickedoff">pretty (P_ViewHtml htm) = text &quot;PRIMHTML&quot; &lt;+&gt; quote htm</span></span>
+<span class="lineno">  309 </span>    <span class="decl"><span class="istickedoff">pretty (P_ViewExp _ (P_Obj nm _ ctx _ _ _))</span>
+<span class="lineno">  310 </span><span class="spaces">                              </span><span class="istickedoff">= maybeQuote nm &lt;+&gt; text &quot;:&quot; &lt;~&gt; ctx</span>
+<span class="lineno">  311 </span><span class="spaces">    </span><span class="istickedoff">pretty (P_ViewText _ txt) = text &quot;TXT&quot; &lt;+&gt; quote txt</span>
+<span class="lineno">  312 </span><span class="spaces">    </span><span class="istickedoff">pretty (P_ViewHtml _ htm) = text &quot;PRIMHTML&quot; &lt;+&gt; quote htm</span></span>
 <span class="lineno">  313 </span>                        
 <span class="lineno">  314 </span>instance Pretty PPurpose where
 <span class="lineno">  315 </span>    <span class="decl"><span class="istickedoff">pretty (PRef2 _ obj markup refIds) =</span>

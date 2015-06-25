@@ -17,7 +17,7 @@ span.spaces    { background: white }
 <span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable #-}
 <span class="lineno">    2 </span>{-# LANGUAGE DeriveGeneric #-}
 <span class="lineno">    3 </span>module Database.Design.Ampersand.Core.ParseTree (
-<span class="lineno">    4 </span>     P_Context(..), mergeContexts
+<span class="lineno">    4 </span>     P_Context(..), mergeContexts, mkContextOfPopsOnly
 <span class="lineno">    5 </span>   , Meta(..)
 <span class="lineno">    6 </span>   , MetaObj(..)
 <span class="lineno">    7 </span>   , P_RoleRelation(..)
@@ -76,20 +76,20 @@ span.spaces    { background: white }
 <span class="lineno">   60 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_lang</span></span></span> ::   Lang             -- ^ The default language specified on the top-level context
 <span class="lineno">   61 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_markup</span></span></span> :: Maybe PandocFormat  -- ^ The default markup format for free text in this context
 <span class="lineno">   62 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_thms</span></span></span> ::   [String]         -- ^ Names of patterns/processes to be printed in the functional specification. (For partial documents.)
-<span class="lineno">   63 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_pats</span></span></span> ::   [P_Pattern]      -- ^ The patterns defined in this context
-<span class="lineno">   64 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_rs</span></span></span> ::     [P_Rule TermPrim] -- ^ All user defined rules in this context, but outside patterns and outside processes
-<span class="lineno">   65 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_ds</span></span></span> ::     [P_Declaration]  -- ^ The relations defined in this context, outside the scope of patterns
-<span class="lineno">   66 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_cs</span></span></span> ::     [ConceptDef]     -- ^ The concept definitions defined in this context, outside the scope of patterns
-<span class="lineno">   67 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_ks</span></span></span> ::     [P_IdentDef]     -- ^ The identity definitions defined in this context, outside the scope of patterns
-<span class="lineno">   68 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_rrules</span></span></span> :: [P_RoleRule]     -- ^ The MAINTAIN definitions defined in this context, outside the scope of patterns
-<span class="lineno">   69 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_rrels</span></span></span> ::  [P_RoleRelation] -- ^ The assignment of roles to Relations. (EDITS statements)
-<span class="lineno">   70 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_vs</span></span></span> ::     [P_ViewDef]      -- ^ The view definitions defined in this context, outside the scope of patterns
-<span class="lineno">   71 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_gs</span></span></span> ::     [P_Gen]          -- ^ The gen definitions defined in this context, outside the scope of patterns
-<span class="lineno">   72 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_ifcs</span></span></span> ::   [P_Interface]    -- ^ The interfaces defined in this context
-<span class="lineno">   73 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_ps</span></span></span> ::     [PPurpose]       -- ^ The purposes defined in this context, outside the scope of patterns and processes
-<span class="lineno">   74 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_pops</span></span></span> ::   [P_Population]   -- ^ The populations defined in this context
-<span class="lineno">   75 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_sql</span></span></span> ::    [P_ObjectDef]    -- ^ user defined sqlplugs, taken from the Ampersand script
-<span class="lineno">   76 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_php</span></span></span> ::    [P_ObjectDef]    -- ^ user defined phpplugs, taken from the Ampersand script
+<span class="lineno">   63 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_pats</span></span></span> ::   [P_Pattern]      -- ^ The patterns defined in this context
+<span class="lineno">   64 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_rs</span></span></span> ::     [P_Rule TermPrim] -- ^ All user defined rules in this context, but outside patterns and outside processes
+<span class="lineno">   65 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_ds</span></span></span> ::     [P_Declaration]  -- ^ The relations defined in this context, outside the scope of patterns
+<span class="lineno">   66 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_cs</span></span></span> ::     [ConceptDef]     -- ^ The concept definitions defined in this context, outside the scope of patterns
+<span class="lineno">   67 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_ks</span></span></span> ::     [P_IdentDef]     -- ^ The identity definitions defined in this context, outside the scope of patterns
+<span class="lineno">   68 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_rrules</span></span></span> :: [P_RoleRule]     -- ^ The MAINTAIN definitions defined in this context, outside the scope of patterns
+<span class="lineno">   69 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_rrels</span></span></span> ::  [P_RoleRelation] -- ^ The assignment of roles to Relations. (EDITS statements)
+<span class="lineno">   70 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_vs</span></span></span> ::     [P_ViewDef]      -- ^ The view definitions defined in this context, outside the scope of patterns
+<span class="lineno">   71 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_gs</span></span></span> ::     [P_Gen]          -- ^ The gen definitions defined in this context, outside the scope of patterns
+<span class="lineno">   72 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_ifcs</span></span></span> ::   [P_Interface]    -- ^ The interfaces defined in this context
+<span class="lineno">   73 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_ps</span></span></span> ::     [PPurpose]       -- ^ The purposes defined in this context, outside the scope of patterns and processes
+<span class="lineno">   74 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_pops</span></span></span> ::   [P_Population]   -- ^ The populations defined in this context
+<span class="lineno">   75 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_sql</span></span></span> ::    [P_ObjectDef]    -- ^ user defined sqlplugs, taken from the Ampersand script
+<span class="lineno">   76 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">ctx_php</span></span></span> ::    [P_ObjectDef]    -- ^ user defined phpplugs, taken from the Ampersand script
 <span class="lineno">   77 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ctx_metas</span></span></span> ::  [Meta]         -- ^ generic meta information (name/value pairs) that can be used for experimenting without having to modify the adl syntax
 <span class="lineno">   78 </span>         } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
 <span class="lineno">   79 </span>
@@ -111,7 +111,7 @@ span.spaces    { background: white }
 <span class="lineno">   95 </span>data P_RoleRelation
 <span class="lineno">   96 </span>   = P_RR { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rr_Pos</span></span></span> :: Origin      -- ^ position in the Ampersand script
 <span class="lineno">   97 </span>          , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rr_Roles</span></span></span> :: [Role]      -- ^ list of roles
-<span class="lineno">   98 </span>          , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">rr_Rels</span></span></span> :: [P_NamedRel] -- ^ list of named relations
+<span class="lineno">   98 </span>          , <span class="istickedoff"><span class="decl"><span class="istickedoff">rr_Rels</span></span></span> :: [P_NamedRel] -- ^ list of named relations
 <span class="lineno">   99 </span>          } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)       -- deriving Show is just for debugging
 <span class="lineno">  100 </span>instance Eq P_RoleRelation where <span class="decl"><span class="nottickedoff">rr==rr' = origin rr==origin rr'</span></span>
 <span class="lineno">  101 </span>instance Traced P_RoleRelation where
@@ -120,9 +120,9 @@ span.spaces    { background: white }
 <span class="lineno">  104 </span> -- | A RoleRule r means that a role called 'mRoles r' must maintain the process rule called 'mRules r'
 <span class="lineno">  105 </span>data P_RoleRule
 <span class="lineno">  106 </span>   = Maintain
-<span class="lineno">  107 </span>     { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">mPos</span></span></span> :: Origin      -- ^ position in the Ampersand script
+<span class="lineno">  107 </span>     { <span class="istickedoff"><span class="decl"><span class="istickedoff">mPos</span></span></span> :: Origin      -- ^ position in the Ampersand script
 <span class="lineno">  108 </span>     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">mRoles</span></span></span> :: [Role]    -- ^ name of a role
-<span class="lineno">  109 </span>     , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">mRules</span></span></span> :: [String]  -- ^ name of a Rule
+<span class="lineno">  109 </span>     , <span class="istickedoff"><span class="decl"><span class="istickedoff">mRules</span></span></span> :: [String]  -- ^ name of a Rule
 <span class="lineno">  110 </span>     } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>) -- deriving (Eq, Show) is just for debugging
 <span class="lineno">  111 </span>
 <span class="lineno">  112 </span>data Role = Role String deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span> )   -- deriving (Eq, Show) is just for debugging
@@ -134,30 +134,30 @@ span.spaces    { background: white }
 <span class="lineno">  118 </span> <span class="decl"><span class="nottickedoff">origin = mPos</span></span>
 <span class="lineno">  119 </span>
 <span class="lineno">  120 </span>data P_Pattern
-<span class="lineno">  121 </span>   = P_Pat { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_pos</span></span></span> :: Origin           -- ^ the starting position in the file in which this pattern was declared.
-<span class="lineno">  122 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_nm</span></span></span> :: String            -- ^ Name of this pattern
-<span class="lineno">  123 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_rls</span></span></span> :: [P_Rule TermPrim]         -- ^ The user defined rules in this pattern
-<span class="lineno">  124 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_gns</span></span></span> :: [P_Gen]          -- ^ The generalizations defined in this pattern
-<span class="lineno">  125 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_dcs</span></span></span> :: [P_Declaration]  -- ^ The relations that are declared in this pattern
-<span class="lineno">  126 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_RRuls</span></span></span> :: [P_RoleRule]   -- ^ The assignment of roles to rules.
-<span class="lineno">  127 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_RRels</span></span></span> :: [P_RoleRelation] -- ^ The assignment of roles to Relations.
-<span class="lineno">  128 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_cds</span></span></span> :: [ConceptDef]     -- ^ The concept definitions defined in this pattern
-<span class="lineno">  129 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_ids</span></span></span> :: [P_IdentDef]     -- ^ The identity definitions defined in this pattern
-<span class="lineno">  130 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_vds</span></span></span> :: [P_ViewDef]      -- ^ The view definitions defined in this pattern
-<span class="lineno">  131 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_xps</span></span></span> :: [PPurpose]       -- ^ The purposes of elements defined in this pattern
-<span class="lineno">  132 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_pop</span></span></span> :: [P_Population]   -- ^ The populations that are local to this pattern
+<span class="lineno">  121 </span>   = P_Pat { <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_pos</span></span></span> :: Origin           -- ^ the starting position in the file in which this pattern was declared.
+<span class="lineno">  122 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_nm</span></span></span> :: String            -- ^ Name of this pattern
+<span class="lineno">  123 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_rls</span></span></span> :: [P_Rule TermPrim]         -- ^ The user defined rules in this pattern
+<span class="lineno">  124 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_gns</span></span></span> :: [P_Gen]          -- ^ The generalizations defined in this pattern
+<span class="lineno">  125 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_dcs</span></span></span> :: [P_Declaration]  -- ^ The relations that are declared in this pattern
+<span class="lineno">  126 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_RRuls</span></span></span> :: [P_RoleRule]   -- ^ The assignment of roles to rules.
+<span class="lineno">  127 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_RRels</span></span></span> :: [P_RoleRelation] -- ^ The assignment of roles to Relations.
+<span class="lineno">  128 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_cds</span></span></span> :: [ConceptDef]     -- ^ The concept definitions defined in this pattern
+<span class="lineno">  129 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_ids</span></span></span> :: [P_IdentDef]     -- ^ The identity definitions defined in this pattern
+<span class="lineno">  130 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_vds</span></span></span> :: [P_ViewDef]      -- ^ The view definitions defined in this pattern
+<span class="lineno">  131 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_xps</span></span></span> :: [PPurpose]       -- ^ The purposes of elements defined in this pattern
+<span class="lineno">  132 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">pt_pop</span></span></span> :: [P_Population]   -- ^ The populations that are local to this pattern
 <span class="lineno">  133 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pt_end</span></span></span> :: Origin           -- ^ the end position in the file in which this pattern was declared.
 <span class="lineno">  134 </span>           }   deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)       -- for debugging purposes
 <span class="lineno">  135 </span>
 <span class="lineno">  136 </span>instance Named P_Pattern where
-<span class="lineno">  137 </span> <span class="decl"><span class="nottickedoff">name = pt_nm</span></span>
+<span class="lineno">  137 </span> <span class="decl"><span class="istickedoff">name = pt_nm</span></span>
 <span class="lineno">  138 </span>
 <span class="lineno">  139 </span>instance Traced P_Pattern where
 <span class="lineno">  140 </span> <span class="decl"><span class="nottickedoff">origin = pt_pos</span></span>
 <span class="lineno">  141 </span>
 <span class="lineno">  142 </span>data ConceptDef
 <span class="lineno">  143 </span>   = Cd  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cdpos</span></span></span> :: Origin   -- ^ The position of this definition in the text of the Ampersand source (filename, line number and column number).
-<span class="lineno">  144 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cdcpt</span></span></span> :: String   -- ^ The name of the concept for which this is the definition. If there is no such concept, the conceptdefinition is ignored.
+<span class="lineno">  144 </span>         , <span class="istickedoff"><span class="decl"><span class="istickedoff">cdcpt</span></span></span> :: String   -- ^ The name of the concept for which this is the definition. If there is no such concept, the conceptdefinition is ignored.
 <span class="lineno">  145 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cdplug</span></span></span>:: Bool     -- ^ Whether the user specifically told Ampersand not to store this concept in the database
 <span class="lineno">  146 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cddef</span></span></span> :: String   -- ^ The textual definition of this concept.
 <span class="lineno">  147 </span>         , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">cdtyp</span></span></span> :: String   -- ^ The (SQL) type of this concept.
@@ -170,16 +170,16 @@ span.spaces    { background: white }
 <span class="lineno">  154 </span>instance Traced ConceptDef where
 <span class="lineno">  155 </span> <span class="decl"><span class="nottickedoff">origin = cdpos</span></span>
 <span class="lineno">  156 </span>instance Named ConceptDef where
-<span class="lineno">  157 </span> <span class="decl"><span class="nottickedoff">name = cdcpt</span></span>
+<span class="lineno">  157 </span> <span class="decl"><span class="istickedoff">name = cdcpt</span></span>
 <span class="lineno">  158 </span>
 <span class="lineno">  159 </span>data P_Declaration =
-<span class="lineno">  160 </span>      P_Sgn { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_nm</span></span></span> :: String    -- ^ the name of the declaration
-<span class="lineno">  161 </span>            , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_sign</span></span></span> :: P_Sign    -- ^ the type. Parser must guarantee it is not empty.
-<span class="lineno">  162 </span>            , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_prps</span></span></span> :: Props     -- ^ the user defined multiplicity properties (Uni, Tot, Sur, Inj) and algebraic properties (Sym, Asy, Trn, Rfx)
+<span class="lineno">  160 </span>      P_Sgn { <span class="istickedoff"><span class="decl"><span class="istickedoff">dec_nm</span></span></span> :: String    -- ^ the name of the declaration
+<span class="lineno">  161 </span>            , <span class="istickedoff"><span class="decl"><span class="istickedoff">dec_sign</span></span></span> :: P_Sign    -- ^ the type. Parser must guarantee it is not empty.
+<span class="lineno">  162 </span>            , <span class="istickedoff"><span class="decl"><span class="istickedoff">dec_prps</span></span></span> :: Props     -- ^ the user defined multiplicity properties (Uni, Tot, Sur, Inj) and algebraic properties (Sym, Asy, Trn, Rfx)
 <span class="lineno">  163 </span>            , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_pragma</span></span></span> :: [String]  -- ^ Three strings, which form the pragma. E.g. if pragma consists of the three strings: &quot;Person &quot;, &quot; is married to person &quot;, and &quot; in Vegas.&quot;
 <span class="lineno">  164 </span>                                      -- ^    then a tuple (&quot;Peter&quot;,&quot;Jane&quot;) in the list of links means that Person Peter is married to person Jane in Vegas.
 <span class="lineno">  165 </span>            , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_Mean</span></span></span> :: [PMeaning]  -- ^ the optional meaning of a declaration, possibly more than one for different languages.
-<span class="lineno">  166 </span>            , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_popu</span></span></span> :: Pairs     -- ^ the list of tuples, of which the relation consists.
+<span class="lineno">  166 </span>            , <span class="istickedoff"><span class="decl"><span class="istickedoff">dec_popu</span></span></span> :: Pairs     -- ^ the list of tuples, of which the relation consists.
 <span class="lineno">  167 </span>            , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_fpos</span></span></span> :: Origin    -- ^ the position in the Ampersand source file where this declaration is declared. Not all decalartions come from the ampersand souce file.
 <span class="lineno">  168 </span>            , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">dec_plug</span></span></span> :: Bool      -- ^ if true, this relation may not be stored in or retrieved from the standard database (it should be gotten from a Plug of some sort instead)
 <span class="lineno">  169 </span>            } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span> -- for debugging and testing only
@@ -241,54 +241,54 @@ span.spaces    { background: white }
 <span class="lineno">  225 </span>   | PCpl Origin (Term a)           -- ^ Complement
 <span class="lineno">  226 </span>   | PBrk Origin (Term a)           -- ^ bracketed expression ( ... )
 <span class="lineno">  227 </span>   deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>) -- deriving Show for debugging purposes
-<span class="lineno">  228 </span>instance Functor Term where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
+<span class="lineno">  228 </span>instance Functor Term where <span class="decl"><span class="istickedoff">fmap = fmapDefault</span></span>
 <span class="lineno">  229 </span>instance Foldable Term where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
 <span class="lineno">  230 </span>instance Traversable Term where
-<span class="lineno">  231 </span> <span class="decl"><span class="nottickedoff">traverse f' x</span>
-<span class="lineno">  232 </span><span class="spaces">  </span><span class="nottickedoff">= case x of</span>
-<span class="lineno">  233 </span><span class="spaces">    </span><span class="nottickedoff">Prim a -&gt; Prim &lt;$&gt; f' a</span>
-<span class="lineno">  234 </span><span class="spaces">    </span><span class="nottickedoff">PEqu o a b -&gt; PEqu o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  235 </span><span class="spaces">    </span><span class="nottickedoff">PImp o a b -&gt; PImp o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  236 </span><span class="spaces">    </span><span class="nottickedoff">PIsc o a b -&gt; PIsc o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  237 </span><span class="spaces">    </span><span class="nottickedoff">PUni o a b -&gt; PUni o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  238 </span><span class="spaces">    </span><span class="nottickedoff">PDif o a b -&gt; PDif o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  239 </span><span class="spaces">    </span><span class="nottickedoff">PLrs o a b -&gt; PLrs o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  240 </span><span class="spaces">    </span><span class="nottickedoff">PRrs o a b -&gt; PRrs o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  241 </span><span class="spaces">    </span><span class="nottickedoff">PDia o a b -&gt; PDia o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  242 </span><span class="spaces">    </span><span class="nottickedoff">PCps o a b -&gt; PCps o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  243 </span><span class="spaces">    </span><span class="nottickedoff">PRad o a b -&gt; PRad o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  244 </span><span class="spaces">    </span><span class="nottickedoff">PPrd o a b -&gt; PPrd o &lt;$&gt; f a &lt;*&gt; f b</span>
-<span class="lineno">  245 </span><span class="spaces">    </span><span class="nottickedoff">PKl0 o a   -&gt; PKl0 o &lt;$&gt; f a</span>
-<span class="lineno">  246 </span><span class="spaces">    </span><span class="nottickedoff">PKl1 o a   -&gt; PKl1 o &lt;$&gt; f a</span>
-<span class="lineno">  247 </span><span class="spaces">    </span><span class="nottickedoff">PFlp o a   -&gt; PFlp o &lt;$&gt; f a</span>
-<span class="lineno">  248 </span><span class="spaces">    </span><span class="nottickedoff">PCpl o a   -&gt; PCpl o &lt;$&gt; f a</span>
-<span class="lineno">  249 </span><span class="spaces">    </span><span class="nottickedoff">PBrk o a   -&gt; PBrk o &lt;$&gt; f a</span>
-<span class="lineno">  250 </span><span class="spaces">  </span><span class="nottickedoff">where f = traverse f'</span></span>
+<span class="lineno">  231 </span> <span class="decl"><span class="istickedoff">traverse f' x</span>
+<span class="lineno">  232 </span><span class="spaces">  </span><span class="istickedoff">= case x of</span>
+<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff">Prim a -&gt; Prim &lt;$&gt; f' a</span>
+<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">PEqu o a b -&gt; PEqu <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  235 </span><span class="spaces">    </span><span class="istickedoff">PImp o a b -&gt; PImp o &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  236 </span><span class="spaces">    </span><span class="istickedoff">PIsc o a b -&gt; PIsc <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  237 </span><span class="spaces">    </span><span class="istickedoff">PUni o a b -&gt; PUni <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  238 </span><span class="spaces">    </span><span class="istickedoff">PDif o a b -&gt; PDif <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  239 </span><span class="spaces">    </span><span class="istickedoff">PLrs o a b -&gt; PLrs <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  240 </span><span class="spaces">    </span><span class="istickedoff">PRrs o a b -&gt; PRrs <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">PDia o a b -&gt; <span class="nottickedoff">PDia o &lt;$&gt; f a &lt;*&gt; f b</span></span>
+<span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff">PCps o a b -&gt; PCps o &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  243 </span><span class="spaces">    </span><span class="istickedoff">PRad o a b -&gt; PRad <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  244 </span><span class="spaces">    </span><span class="istickedoff">PPrd o a b -&gt; PPrd <span class="nottickedoff">o</span> &lt;$&gt; f a &lt;*&gt; f b</span>
+<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff">PKl0 o a   -&gt; PKl0 <span class="nottickedoff">o</span> &lt;$&gt; f a</span>
+<span class="lineno">  246 </span><span class="spaces">    </span><span class="istickedoff">PKl1 o a   -&gt; PKl1 <span class="nottickedoff">o</span> &lt;$&gt; f a</span>
+<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff">PFlp o a   -&gt; PFlp <span class="nottickedoff">o</span> &lt;$&gt; f a</span>
+<span class="lineno">  248 </span><span class="spaces">    </span><span class="istickedoff">PCpl o a   -&gt; PCpl <span class="nottickedoff">o</span> &lt;$&gt; f a</span>
+<span class="lineno">  249 </span><span class="spaces">    </span><span class="istickedoff">PBrk o a   -&gt; PBrk <span class="nottickedoff">o</span> &lt;$&gt; f a</span>
+<span class="lineno">  250 </span><span class="spaces">  </span><span class="istickedoff">where f = traverse f'</span></span>
 <span class="lineno">  251 </span>
 <span class="lineno">  252 </span>instance Functor P_SubIfc where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
 <span class="lineno">  253 </span>instance Foldable P_SubIfc where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
 <span class="lineno">  254 </span>instance Traversable P_SubIfc where
-<span class="lineno">  255 </span>  <span class="decl"><span class="nottickedoff">traverse _ (P_InterfaceRef a b) = pure (P_InterfaceRef a b)</span>
-<span class="lineno">  256 </span><span class="spaces">  </span><span class="nottickedoff">traverse f (P_Box o c lst) = P_Box o c &lt;$&gt; traverse (traverse f) lst</span></span>
+<span class="lineno">  255 </span>  <span class="decl"><span class="istickedoff">traverse _ (P_InterfaceRef o a b) = pure (P_InterfaceRef <span class="nottickedoff">o</span> <span class="nottickedoff">a</span> b)</span>
+<span class="lineno">  256 </span><span class="spaces">  </span><span class="istickedoff">traverse f (P_Box o c lst) = P_Box <span class="nottickedoff">o</span> <span class="nottickedoff">c</span> &lt;$&gt; traverse (traverse f) lst</span></span>
 <span class="lineno">  257 </span>
 <span class="lineno">  258 </span>instance Traced (P_SubIfc a) where
 <span class="lineno">  259 </span> <span class="decl"><span class="nottickedoff">origin = si_ori</span></span>
 <span class="lineno">  260 </span>
-<span class="lineno">  261 </span>instance Functor P_ObjDef where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
+<span class="lineno">  261 </span>instance Functor P_ObjDef where <span class="decl"><span class="istickedoff">fmap = fmapDefault</span></span>
 <span class="lineno">  262 </span>instance Foldable P_ObjDef where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
 <span class="lineno">  263 </span>instance Traversable P_ObjDef where
-<span class="lineno">  264 </span> <span class="decl"><span class="nottickedoff">traverse f (P_Obj nm pos ctx mView msub strs)</span>
-<span class="lineno">  265 </span><span class="spaces">  </span><span class="nottickedoff">= (\ctx' msub'-&gt;(P_Obj nm pos ctx' mView msub' strs)) &lt;$&gt;</span>
-<span class="lineno">  266 </span><span class="spaces">     </span><span class="nottickedoff">traverse f ctx &lt;*&gt; traverse (traverse f) msub</span></span>
+<span class="lineno">  264 </span> <span class="decl"><span class="istickedoff">traverse f (P_Obj nm pos ctx mView msub strs)</span>
+<span class="lineno">  265 </span><span class="spaces">  </span><span class="istickedoff">= (\ctx' msub'-&gt;(P_Obj nm pos ctx' mView msub' <span class="nottickedoff">strs</span>)) &lt;$&gt;</span>
+<span class="lineno">  266 </span><span class="spaces">     </span><span class="istickedoff">traverse f ctx &lt;*&gt; traverse (traverse f) msub</span></span>
 <span class="lineno">  267 </span>
 <span class="lineno">  268 </span>instance Traced TermPrim where
-<span class="lineno">  269 </span> <span class="decl"><span class="nottickedoff">origin e = case e of</span>
-<span class="lineno">  270 </span><span class="spaces">   </span><span class="nottickedoff">PI orig        -&gt; orig</span>
-<span class="lineno">  271 </span><span class="spaces">   </span><span class="nottickedoff">Pid orig _     -&gt; orig</span>
-<span class="lineno">  272 </span><span class="spaces">   </span><span class="nottickedoff">Patm orig _ _  -&gt; orig</span>
-<span class="lineno">  273 </span><span class="spaces">   </span><span class="nottickedoff">PVee orig      -&gt; orig</span>
-<span class="lineno">  274 </span><span class="spaces">   </span><span class="nottickedoff">Pfull orig _ _ -&gt; orig</span>
-<span class="lineno">  275 </span><span class="spaces">   </span><span class="nottickedoff">PNamedR r      -&gt; origin r</span></span>
+<span class="lineno">  269 </span> <span class="decl"><span class="istickedoff">origin e = case e of</span>
+<span class="lineno">  270 </span><span class="spaces">   </span><span class="istickedoff">PI orig        -&gt; orig</span>
+<span class="lineno">  271 </span><span class="spaces">   </span><span class="istickedoff">Pid orig _     -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  272 </span><span class="spaces">   </span><span class="istickedoff">Patm orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  273 </span><span class="spaces">   </span><span class="istickedoff">PVee orig      -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  274 </span><span class="spaces">   </span><span class="istickedoff">Pfull orig _ _ -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  275 </span><span class="spaces">   </span><span class="istickedoff">PNamedR r      -&gt; origin r</span></span>
 <span class="lineno">  276 </span>   
 <span class="lineno">  277 </span>instance Named TermPrim where
 <span class="lineno">  278 </span> <span class="decl"><span class="nottickedoff">name e = case e of</span>
@@ -300,32 +300,32 @@ span.spaces    { background: white }
 <span class="lineno">  284 </span><span class="spaces">   </span><span class="nottickedoff">PNamedR r   -&gt; name r</span></span>
 <span class="lineno">  285 </span>   
 <span class="lineno">  286 </span>instance Traced P_NamedRel where
-<span class="lineno">  287 </span>  <span class="decl"><span class="nottickedoff">origin (PNamedRel o _ _) = o</span></span>
+<span class="lineno">  287 </span>  <span class="decl"><span class="istickedoff">origin (PNamedRel o _ _) = o</span></span>
 <span class="lineno">  288 </span>
 <span class="lineno">  289 </span>instance Named P_NamedRel where
 <span class="lineno">  290 </span>  <span class="decl"><span class="nottickedoff">name (PNamedRel _ nm _) = nm</span></span>
 <span class="lineno">  291 </span>
 <span class="lineno">  292 </span>instance Traced a =&gt; Traced (Term a) where
-<span class="lineno">  293 </span> <span class="decl"><span class="nottickedoff">origin e = case e of</span>
-<span class="lineno">  294 </span><span class="spaces">   </span><span class="nottickedoff">Prim a         -&gt; origin a</span>
-<span class="lineno">  295 </span><span class="spaces">   </span><span class="nottickedoff">PEqu orig _ _  -&gt; orig</span>
-<span class="lineno">  296 </span><span class="spaces">   </span><span class="nottickedoff">PImp orig _ _  -&gt; orig</span>
-<span class="lineno">  297 </span><span class="spaces">   </span><span class="nottickedoff">PIsc orig _ _  -&gt; orig</span>
-<span class="lineno">  298 </span><span class="spaces">   </span><span class="nottickedoff">PUni orig _ _  -&gt; orig</span>
-<span class="lineno">  299 </span><span class="spaces">   </span><span class="nottickedoff">PDif orig _ _  -&gt; orig</span>
-<span class="lineno">  300 </span><span class="spaces">   </span><span class="nottickedoff">PLrs orig _ _  -&gt; orig</span>
-<span class="lineno">  301 </span><span class="spaces">   </span><span class="nottickedoff">PRrs orig _ _  -&gt; orig</span>
-<span class="lineno">  302 </span><span class="spaces">   </span><span class="nottickedoff">PDia orig _ _  -&gt; orig</span>
-<span class="lineno">  303 </span><span class="spaces">   </span><span class="nottickedoff">PCps orig _ _  -&gt; orig</span>
-<span class="lineno">  304 </span><span class="spaces">   </span><span class="nottickedoff">PRad orig _ _  -&gt; orig</span>
-<span class="lineno">  305 </span><span class="spaces">   </span><span class="nottickedoff">PPrd orig _ _  -&gt; orig</span>
-<span class="lineno">  306 </span><span class="spaces">   </span><span class="nottickedoff">PKl0 orig _    -&gt; orig</span>
-<span class="lineno">  307 </span><span class="spaces">   </span><span class="nottickedoff">PKl1 orig _    -&gt; orig</span>
-<span class="lineno">  308 </span><span class="spaces">   </span><span class="nottickedoff">PFlp orig _    -&gt; orig</span>
-<span class="lineno">  309 </span><span class="spaces">   </span><span class="nottickedoff">PCpl orig _    -&gt; orig</span>
-<span class="lineno">  310 </span><span class="spaces">   </span><span class="nottickedoff">PBrk orig _    -&gt; orig</span></span>
+<span class="lineno">  293 </span> <span class="decl"><span class="istickedoff">origin e = case e of</span>
+<span class="lineno">  294 </span><span class="spaces">   </span><span class="istickedoff">Prim a         -&gt; <span class="nottickedoff">origin a</span></span>
+<span class="lineno">  295 </span><span class="spaces">   </span><span class="istickedoff">PEqu orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  296 </span><span class="spaces">   </span><span class="istickedoff">PImp orig _ _  -&gt; orig</span>
+<span class="lineno">  297 </span><span class="spaces">   </span><span class="istickedoff">PIsc orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  298 </span><span class="spaces">   </span><span class="istickedoff">PUni orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  299 </span><span class="spaces">   </span><span class="istickedoff">PDif orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  300 </span><span class="spaces">   </span><span class="istickedoff">PLrs orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  301 </span><span class="spaces">   </span><span class="istickedoff">PRrs orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  302 </span><span class="spaces">   </span><span class="istickedoff">PDia orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  303 </span><span class="spaces">   </span><span class="istickedoff">PCps orig _ _  -&gt; orig</span>
+<span class="lineno">  304 </span><span class="spaces">   </span><span class="istickedoff">PRad orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  305 </span><span class="spaces">   </span><span class="istickedoff">PPrd orig _ _  -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  306 </span><span class="spaces">   </span><span class="istickedoff">PKl0 orig _    -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  307 </span><span class="spaces">   </span><span class="istickedoff">PKl1 orig _    -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  308 </span><span class="spaces">   </span><span class="istickedoff">PFlp orig _    -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  309 </span><span class="spaces">   </span><span class="istickedoff">PCpl orig _    -&gt; <span class="nottickedoff">orig</span></span>
+<span class="lineno">  310 </span><span class="spaces">   </span><span class="istickedoff">PBrk orig _    -&gt; <span class="nottickedoff">orig</span></span></span>
 <span class="lineno">  311 </span>
-<span class="lineno">  312 </span>data SrcOrTgt = Src | Tgt deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, Generic)
+<span class="lineno">  312 </span>data SrcOrTgt = Src | Tgt deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, Generic)
 <span class="lineno">  313 </span>instance Hashable SrcOrTgt
 <span class="lineno">  314 </span>instance Flippable SrcOrTgt where
 <span class="lineno">  315 </span>  <span class="decl"><span class="nottickedoff">flp Src = Tgt</span>
@@ -348,7 +348,7 @@ span.spaces    { background: white }
 <span class="lineno">  332 </span>                }
 <span class="lineno">  333 </span>  | PairViewExp { pvsOrg :: Origin
 <span class="lineno">  334 </span>                , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pvsSoT</span></span></span> :: SrcOrTgt
-<span class="lineno">  335 </span>                , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pvsExp</span></span></span> :: a
+<span class="lineno">  335 </span>                , <span class="istickedoff"><span class="nottickedoff"><span class="decl"><span class="istickedoff">pvsExp</span></span></span></span> :: a
 <span class="lineno">  336 </span>                } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, Generic)
 <span class="lineno">  337 </span>instance Hashable a =&gt; Hashable (PairViewSegment a)
 <span class="lineno">  338 </span>instance Traced (PairViewSegment a) where
@@ -367,12 +367,12 @@ span.spaces    { background: white }
 <span class="lineno">  351 </span>instance Functor PairViewTerm where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
 <span class="lineno">  352 </span>instance Foldable PairViewTerm where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
 <span class="lineno">  353 </span>instance Traversable PairViewSegment where
-<span class="lineno">  354 </span>  <span class="decl"><span class="nottickedoff">traverse _ (PairViewText ori s) = pure (PairViewText ori s)</span>
-<span class="lineno">  355 </span><span class="spaces">  </span><span class="nottickedoff">traverse f (PairViewExp ori st x) = PairViewExp ori st &lt;$&gt; f x</span></span>
+<span class="lineno">  354 </span>  <span class="decl"><span class="istickedoff">traverse _ (PairViewText ori s) = pure (PairViewText <span class="nottickedoff">ori</span> <span class="nottickedoff">s</span>)</span>
+<span class="lineno">  355 </span><span class="spaces">  </span><span class="istickedoff">traverse f (PairViewExp ori st x) = PairViewExp <span class="nottickedoff">ori</span> st &lt;$&gt; f x</span></span>
 <span class="lineno">  356 </span>instance Functor PairViewSegment where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
 <span class="lineno">  357 </span>instance Foldable PairViewSegment where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
 <span class="lineno">  358 </span>instance Traversable PairView where
-<span class="lineno">  359 </span>  <span class="decl"><span class="nottickedoff">traverse f (PairView s) = PairView &lt;$&gt; traverse (traverse f) s</span></span>
+<span class="lineno">  359 </span>  <span class="decl"><span class="istickedoff">traverse f (PairView s) = PairView &lt;$&gt; traverse (traverse f) s</span></span>
 <span class="lineno">  360 </span>instance Functor PairView where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
 <span class="lineno">  361 </span>instance Foldable PairView where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
 <span class="lineno">  362 </span>
@@ -387,11 +387,11 @@ span.spaces    { background: white }
 <span class="lineno">  371 </span>
 <span class="lineno">  372 </span>instance Traced (P_Rule a) where
 <span class="lineno">  373 </span> <span class="decl"><span class="nottickedoff">origin = rr_fps</span></span>
-<span class="lineno">  374 </span>instance Functor P_Rule where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
+<span class="lineno">  374 </span>instance Functor P_Rule where <span class="decl"><span class="istickedoff">fmap = fmapDefault</span></span>
 <span class="lineno">  375 </span>instance Foldable P_Rule where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
 <span class="lineno">  376 </span>instance Traversable P_Rule where
-<span class="lineno">  377 </span> <span class="decl"><span class="nottickedoff">traverse f (P_Ru fps nm expr mean msg viol)</span>
-<span class="lineno">  378 </span><span class="spaces">  </span><span class="nottickedoff">= (\e v -&gt; P_Ru fps nm e mean msg v) &lt;$&gt; traverse f expr &lt;*&gt; traverse (traverse (traverse f)) viol</span></span>
+<span class="lineno">  377 </span> <span class="decl"><span class="istickedoff">traverse f (P_Ru fps nm expr mean msg viol)</span>
+<span class="lineno">  378 </span><span class="spaces">  </span><span class="istickedoff">= (\e v -&gt; P_Ru <span class="nottickedoff">fps</span> nm e <span class="nottickedoff">mean</span> <span class="nottickedoff">msg</span> v) &lt;$&gt; traverse f expr &lt;*&gt; traverse (traverse (traverse f)) viol</span></span>
 <span class="lineno">  379 </span>
 <span class="lineno">  380 </span>instance Named (P_Rule a) where
 <span class="lineno">  381 </span> <span class="decl"><span class="nottickedoff">name = rr_nm</span></span>
@@ -407,13 +407,13 @@ span.spaces    { background: white }
 <span class="lineno">  391 </span>              } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span> -- for debugging only
 <span class="lineno">  392 </span>
 <span class="lineno">  393 </span>data P_Population
-<span class="lineno">  394 </span>  = P_RelPopu { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">p_orig</span></span></span> ::  Origin  -- the origin
+<span class="lineno">  394 </span>  = P_RelPopu { <span class="istickedoff"><span class="nottickedoff"><span class="decl"><span class="istickedoff">p_orig</span></span></span></span> ::  Origin  -- the origin
 <span class="lineno">  395 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">p_rnme</span></span></span> ::  String  -- the name of a relation
-<span class="lineno">  396 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">p_popps</span></span></span> :: Pairs   -- the contents
+<span class="lineno">  396 </span>              , <span class="istickedoff"><span class="nottickedoff"><span class="decl"><span class="istickedoff">p_popps</span></span></span></span> :: Pairs   -- the contents
 <span class="lineno">  397 </span>              }
 <span class="lineno">  398 </span>  | P_TRelPop { p_orig ::  Origin  -- the origin
 <span class="lineno">  399 </span>              , p_rnme ::  String  -- the name of a relation
-<span class="lineno">  400 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">p_type</span></span></span> ::  P_Sign  -- the signature of the relation
+<span class="lineno">  400 </span>              , <span class="istickedoff"><span class="nottickedoff"><span class="decl"><span class="istickedoff">p_type</span></span></span></span> ::  P_Sign  -- the signature of the relation
 <span class="lineno">  401 </span>              , p_popps :: Pairs   -- the contents
 <span class="lineno">  402 </span>              }
 <span class="lineno">  403 </span>  | P_CptPopu { p_orig ::  Origin  -- the origin
@@ -423,20 +423,20 @@ span.spaces    { background: white }
 <span class="lineno">  407 </span>    deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
 <span class="lineno">  408 </span>
 <span class="lineno">  409 </span>instance Named P_Population where
-<span class="lineno">  410 </span> <span class="decl"><span class="nottickedoff">name P_RelPopu{p_rnme = nm} = nm</span>
-<span class="lineno">  411 </span><span class="spaces"> </span><span class="nottickedoff">name P_TRelPop{p_rnme = nm} = nm</span>
-<span class="lineno">  412 </span><span class="spaces"> </span><span class="nottickedoff">name P_CptPopu{p_cnme = nm} = nm</span></span>
+<span class="lineno">  410 </span> <span class="decl"><span class="istickedoff">name P_RelPopu{p_rnme = nm} = nm</span>
+<span class="lineno">  411 </span><span class="spaces"> </span><span class="istickedoff">name P_TRelPop{p_rnme = nm} = nm</span>
+<span class="lineno">  412 </span><span class="spaces"> </span><span class="istickedoff">name P_CptPopu{p_cnme = nm} = <span class="nottickedoff">nm</span></span></span>
 <span class="lineno">  413 </span>
 <span class="lineno">  414 </span>instance Traced P_Population where
-<span class="lineno">  415 </span> <span class="decl"><span class="nottickedoff">origin = p_orig</span></span>
+<span class="lineno">  415 </span> <span class="decl"><span class="istickedoff">origin = p_orig</span></span>
 <span class="lineno">  416 </span>
 <span class="lineno">  417 </span>data P_Interface =
-<span class="lineno">  418 </span>     P_Ifc { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Name</span></span></span> :: String           -- ^ the name of the interface
+<span class="lineno">  418 </span>     P_Ifc { <span class="istickedoff"><span class="decl"><span class="istickedoff">ifc_Name</span></span></span> :: String           -- ^ the name of the interface
 <span class="lineno">  419 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Class</span></span></span> :: Maybe String    -- ^ the class of the interface
 <span class="lineno">  420 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Params</span></span></span> :: [P_NamedRel]     -- ^ a list of named relations that are editable within this interface.
 <span class="lineno">  421 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Args</span></span></span> :: [[String]]       -- ^ a list of arguments for code generation.
 <span class="lineno">  422 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Roles</span></span></span> :: [Role]        -- ^ a list of roles that may use this interface
-<span class="lineno">  423 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Obj</span></span></span> :: P_ObjectDef       -- ^ the context expression (mostly: I[c])
+<span class="lineno">  423 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">ifc_Obj</span></span></span> :: P_ObjectDef       -- ^ the context expression (mostly: I[c])
 <span class="lineno">  424 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Pos</span></span></span> :: Origin
 <span class="lineno">  425 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ifc_Prp</span></span></span> :: String
 <span class="lineno">  426 </span>           } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
@@ -453,254 +453,282 @@ span.spaces    { background: white }
 <span class="lineno">  437 </span>data P_SubIfc a
 <span class="lineno">  438 </span>              = P_Box          { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">si_ori</span></span></span> :: Origin
 <span class="lineno">  439 </span>                               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">si_class</span></span></span> :: Maybe String
-<span class="lineno">  440 </span>                               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">si_box</span></span></span> :: [P_ObjDef a] }
+<span class="lineno">  440 </span>                               , <span class="istickedoff"><span class="nottickedoff"><span class="decl"><span class="istickedoff">si_box</span></span></span></span> :: [P_ObjDef a] }
 <span class="lineno">  441 </span>              | P_InterfaceRef { si_ori :: Origin
-<span class="lineno">  442 </span>                               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">si_str</span></span></span> :: String }
-<span class="lineno">  443 </span>                deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">  444 </span>
-<span class="lineno">  445 </span>type P_ObjectDef = P_ObjDef TermPrim
-<span class="lineno">  446 </span>data P_ObjDef a =
-<span class="lineno">  447 </span>     P_Obj { <span class="istickedoff"><span class="decl"><span class="istickedoff">obj_nm</span></span></span> :: String          -- ^ view name of the object definition. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface if it is not an empty string.
-<span class="lineno">  448 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">obj_pos</span></span></span> :: Origin         -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number)
-<span class="lineno">  449 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">obj_ctx</span></span></span> :: Term a         -- ^ this expression describes the instances of this object, related to their context.
-<span class="lineno">  450 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">obj_mView</span></span></span> :: Maybe String -- ^ The view that should be used for this object
-<span class="lineno">  451 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">obj_msub</span></span></span> :: Maybe (P_SubIfc a)  -- ^ the attributes, which are object definitions themselves.
-<span class="lineno">  452 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">obj_strs</span></span></span> :: [[String]]    -- ^ directives that specify the interface.
-<span class="lineno">  453 </span>           }  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)       -- just for debugging (zie ook instance Show ObjectDef)
-<span class="lineno">  454 </span>instance Eq (P_ObjDef a) where <span class="decl"><span class="nottickedoff">od==od' = origin od==origin od'</span></span>
-<span class="lineno">  455 </span>instance Named (P_ObjDef a) where
-<span class="lineno">  456 </span> <span class="decl"><span class="nottickedoff">name = obj_nm</span></span>
-<span class="lineno">  457 </span>instance Traced (P_ObjDef a) where
-<span class="lineno">  458 </span> <span class="decl"><span class="nottickedoff">origin = obj_pos</span></span>
-<span class="lineno">  459 </span>
-<span class="lineno">  460 </span>type P_IdentDef = P_IdentDf TermPrim -- this is what is returned by the parser, but we need to change the &quot;TermPrim&quot; for disambiguation
-<span class="lineno">  461 </span>data P_IdentDf a = -- so this is the parametric data-structure
-<span class="lineno">  462 </span>         P_Id { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ix_pos</span></span></span> :: Origin         -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number).
-<span class="lineno">  463 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ix_lbl</span></span></span> :: String         -- ^ the name (or label) of this Identity. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface. It is not an empty string.
-<span class="lineno">  464 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ix_cpt</span></span></span> :: P_Concept      -- ^ this expression describes the instances of this object, related to their context
-<span class="lineno">  465 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ix_ats</span></span></span> :: [P_IdentSegmnt a] -- ^ the constituent segments of this identity. TODO: refactor to a list of terms
-<span class="lineno">  466 </span>              } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">  467 </span>instance Named (P_IdentDf a) where
-<span class="lineno">  468 </span> <span class="decl"><span class="nottickedoff">name = ix_lbl</span></span>
-<span class="lineno">  469 </span>instance Eq (P_IdentDf a) where <span class="decl"><span class="nottickedoff">identity==identity' = origin identity==origin identity'</span></span>
-<span class="lineno">  470 </span>instance Traced (P_IdentDf a) where
-<span class="lineno">  471 </span> <span class="decl"><span class="nottickedoff">origin = ix_pos</span></span>
-<span class="lineno">  472 </span>instance Functor P_IdentDf where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
-<span class="lineno">  473 </span>instance Foldable P_IdentDf where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
-<span class="lineno">  474 </span>instance Traversable P_IdentDf where
-<span class="lineno">  475 </span>  <span class="decl"><span class="nottickedoff">traverse f (P_Id a b c lst) = P_Id a b c &lt;$&gt; traverse (traverse f) lst</span></span>
-<span class="lineno">  476 </span>instance Functor P_IdentSegmnt where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
-<span class="lineno">  477 </span>instance Foldable P_IdentSegmnt where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
-<span class="lineno">  478 </span>instance Traversable P_IdentSegmnt where
-<span class="lineno">  479 </span>  <span class="decl"><span class="nottickedoff">traverse f (P_IdentExp x) = P_IdentExp &lt;$&gt; traverse f x</span></span>
-<span class="lineno">  480 </span>
-<span class="lineno">  481 </span>type P_IdentSegment = P_IdentSegmnt TermPrim
-<span class="lineno">  482 </span>data P_IdentSegmnt a
-<span class="lineno">  483 </span>              = P_IdentExp  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ks_obj</span></span></span> :: P_ObjDef a}
-<span class="lineno">  484 </span>                deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">  485 </span>                
-<span class="lineno">  486 </span>type P_ViewDef = P_ViewD TermPrim
-<span class="lineno">  487 </span>data P_ViewD a =
-<span class="lineno">  488 </span>         P_Vd { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_pos</span></span></span> :: Origin            -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number).
-<span class="lineno">  489 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_lbl</span></span></span> :: String            -- ^ the name (or label) of this View. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface. It is not an empty string.
-<span class="lineno">  490 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_cpt</span></span></span> :: P_Concept         -- ^ the concept for which this view is applicable
-<span class="lineno">  491 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_isDefault</span></span></span> :: Bool        -- ^ whether or not this is the default view for the concept 
-<span class="lineno">  492 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_html</span></span></span> :: Maybe ViewHtmlTemplate -- ^ the html template for this view (not required since we may have other kinds of views as well in the future)
-<span class="lineno">  493 </span>--              , vd_text :: Maybe P_ViewText -- Future extension
-<span class="lineno">  494 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_ats</span></span></span> :: [P_ViewSegmt a]   -- ^ the constituent segments of this view.
-<span class="lineno">  495 </span>              } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">  496 </span>              
-<span class="lineno">  497 </span>instance Named (P_ViewD a) where
-<span class="lineno">  498 </span> <span class="decl"><span class="nottickedoff">name = vd_lbl</span></span>
-<span class="lineno">  499 </span>instance Functor P_ViewD where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
-<span class="lineno">  500 </span>instance Foldable P_ViewD where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
-<span class="lineno">  501 </span>instance Traversable P_ViewD where
-<span class="lineno">  502 </span> <span class="decl"><span class="nottickedoff">traverse fn (P_Vd a b c d e f) = P_Vd a b c d e &lt;$&gt; traverse (traverse fn) f</span></span>
-<span class="lineno">  503 </span>
-<span class="lineno">  504 </span>type P_ViewSegment = P_ViewSegmt TermPrim
-<span class="lineno">  505 </span>data P_ViewSegmt a  = P_ViewExp  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vs_obj</span></span></span> :: P_ObjDef a }
-<span class="lineno">  506 </span>                    | P_ViewText { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vs_txt</span></span></span> :: String }
-<span class="lineno">  507 </span>                    | P_ViewHtml { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vs_htm</span></span></span> :: String }
-<span class="lineno">  508 </span>                      deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">  509 </span>
-<span class="lineno">  510 </span>data ViewHtmlTemplate = ViewHtmlTemplateFile String
-<span class="lineno">  511 </span>--              | ViewHtmlTemplateInline String -- Future extension 
-<span class="lineno">  512 </span>                  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
-<span class="lineno">  513 </span>
-<span class="lineno">  514 </span>{- Future extension:
-<span class="lineno">  515 </span>data ViewText = ViewTextTemplateFile String
-<span class="lineno">  516 </span>              | ViewTextTemplateInline String 
-<span class="lineno">  517 </span>                  deriving (Eq, Show)
-<span class="lineno">  518 </span>-}
-<span class="lineno">  519 </span>
-<span class="lineno">  520 </span>instance Functor P_ViewSegmt where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
-<span class="lineno">  521 </span>instance Foldable P_ViewSegmt where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
-<span class="lineno">  522 </span>instance Traversable P_ViewSegmt where
-<span class="lineno">  523 </span> <span class="decl"><span class="nottickedoff">traverse f (P_ViewExp  a) = P_ViewExp &lt;$&gt; traverse f a</span>
-<span class="lineno">  524 </span><span class="spaces"> </span><span class="nottickedoff">traverse _ (P_ViewText a) = pure (P_ViewText a)</span>
-<span class="lineno">  525 </span><span class="spaces"> </span><span class="nottickedoff">traverse _ (P_ViewHtml a) = pure (P_ViewHtml a)</span></span>
-<span class="lineno">  526 </span>
-<span class="lineno">  527 </span>instance Traced (P_ViewD a) where
-<span class="lineno">  528 </span> <span class="decl"><span class="nottickedoff">origin = vd_pos</span></span>
-<span class="lineno">  529 </span>
+<span class="lineno">  442 </span>                               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">si_isLink</span></span></span> :: Bool --True iff LINKTO is used. (will display as hyperlink)
+<span class="lineno">  443 </span>                               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">si_str</span></span></span> :: String }
+<span class="lineno">  444 </span>                deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  445 </span>
+<span class="lineno">  446 </span>type P_ObjectDef = P_ObjDef TermPrim
+<span class="lineno">  447 </span>data P_ObjDef a =
+<span class="lineno">  448 </span>     P_Obj { <span class="istickedoff"><span class="decl"><span class="istickedoff">obj_nm</span></span></span> :: String          -- ^ view name of the object definition. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface if it is not an empty string.
+<span class="lineno">  449 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">obj_pos</span></span></span> :: Origin         -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number)
+<span class="lineno">  450 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">obj_ctx</span></span></span> :: Term a         -- ^ this expression describes the instances of this object, related to their context.
+<span class="lineno">  451 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">obj_mView</span></span></span> :: Maybe String -- ^ The view that should be used for this object
+<span class="lineno">  452 </span>           , <span class="istickedoff"><span class="decl"><span class="istickedoff">obj_msub</span></span></span> :: Maybe (P_SubIfc a)  -- ^ the attributes, which are object definitions themselves.
+<span class="lineno">  453 </span>           , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">obj_strs</span></span></span> :: [[String]]    -- ^ directives that specify the interface.
+<span class="lineno">  454 </span>           }  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)       -- just for debugging (zie ook instance Show ObjectDef)
+<span class="lineno">  455 </span>instance Eq (P_ObjDef a) where <span class="decl"><span class="nottickedoff">od==od' = origin od==origin od'</span></span>
+<span class="lineno">  456 </span>instance Named (P_ObjDef a) where
+<span class="lineno">  457 </span> <span class="decl"><span class="istickedoff">name = obj_nm</span></span>
+<span class="lineno">  458 </span>instance Traced (P_ObjDef a) where
+<span class="lineno">  459 </span> <span class="decl"><span class="istickedoff">origin = obj_pos</span></span>
+<span class="lineno">  460 </span>
+<span class="lineno">  461 </span>type P_IdentDef = P_IdentDf TermPrim -- this is what is returned by the parser, but we need to change the &quot;TermPrim&quot; for disambiguation
+<span class="lineno">  462 </span>data P_IdentDf a = -- so this is the parametric data-structure
+<span class="lineno">  463 </span>         P_Id { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ix_pos</span></span></span> :: Origin         -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number).
+<span class="lineno">  464 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ix_lbl</span></span></span> :: String         -- ^ the name (or label) of this Identity. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface. It is not an empty string.
+<span class="lineno">  465 </span>              , <span class="istickedoff"><span class="decl"><span class="istickedoff">ix_cpt</span></span></span> :: P_Concept      -- ^ this expression describes the instances of this object, related to their context
+<span class="lineno">  466 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ix_ats</span></span></span> :: [P_IdentSegmnt a] -- ^ the constituent segments of this identity. TODO: refactor to a list of terms
+<span class="lineno">  467 </span>              } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  468 </span>instance Named (P_IdentDf a) where
+<span class="lineno">  469 </span> <span class="decl"><span class="nottickedoff">name = ix_lbl</span></span>
+<span class="lineno">  470 </span>instance Eq (P_IdentDf a) where <span class="decl"><span class="nottickedoff">identity==identity' = origin identity==origin identity'</span></span>
+<span class="lineno">  471 </span>instance Traced (P_IdentDf a) where
+<span class="lineno">  472 </span> <span class="decl"><span class="nottickedoff">origin = ix_pos</span></span>
+<span class="lineno">  473 </span>instance Functor P_IdentDf where <span class="decl"><span class="istickedoff">fmap = fmapDefault</span></span>
+<span class="lineno">  474 </span>instance Foldable P_IdentDf where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
+<span class="lineno">  475 </span>instance Traversable P_IdentDf where
+<span class="lineno">  476 </span>  <span class="decl"><span class="istickedoff">traverse f (P_Id a b c lst) = P_Id <span class="nottickedoff">a</span> b c &lt;$&gt; traverse (traverse f) lst</span></span>
+<span class="lineno">  477 </span>instance Functor P_IdentSegmnt where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
+<span class="lineno">  478 </span>instance Foldable P_IdentSegmnt where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
+<span class="lineno">  479 </span>instance Traversable P_IdentSegmnt where
+<span class="lineno">  480 </span>  <span class="decl"><span class="istickedoff">traverse f (P_IdentExp x) = P_IdentExp &lt;$&gt; traverse f x</span></span>
+<span class="lineno">  481 </span>
+<span class="lineno">  482 </span>type P_IdentSegment = P_IdentSegmnt TermPrim
+<span class="lineno">  483 </span>data P_IdentSegmnt a
+<span class="lineno">  484 </span>              = P_IdentExp  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">ks_obj</span></span></span> :: P_ObjDef a}
+<span class="lineno">  485 </span>                deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  486 </span>                
+<span class="lineno">  487 </span>type P_ViewDef = P_ViewD TermPrim
+<span class="lineno">  488 </span>data P_ViewD a =
+<span class="lineno">  489 </span>         P_Vd { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_pos</span></span></span> :: Origin            -- ^ position of this definition in the text of the Ampersand source file (filename, line number and column number).
+<span class="lineno">  490 </span>              , <span class="istickedoff"><span class="decl"><span class="istickedoff">vd_lbl</span></span></span> :: String            -- ^ the name (or label) of this View. The label has no meaning in the Compliant Service Layer, but is used in the generated user interface. It is not an empty string.
+<span class="lineno">  491 </span>              , <span class="istickedoff"><span class="decl"><span class="istickedoff">vd_cpt</span></span></span> :: P_Concept         -- ^ the concept for which this view is applicable
+<span class="lineno">  492 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_isDefault</span></span></span> :: Bool        -- ^ whether or not this is the default view for the concept 
+<span class="lineno">  493 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_html</span></span></span> :: Maybe ViewHtmlTemplate -- ^ the html template for this view (not required since we may have other kinds of views as well in the future)
+<span class="lineno">  494 </span>--              , vd_text :: Maybe P_ViewText -- Future extension
+<span class="lineno">  495 </span>              , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vd_ats</span></span></span> :: [P_ViewSegmt a]   -- ^ the constituent segments of this view.
+<span class="lineno">  496 </span>              } deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  497 </span>              
+<span class="lineno">  498 </span>instance Named (P_ViewD a) where
+<span class="lineno">  499 </span> <span class="decl"><span class="nottickedoff">name = vd_lbl</span></span>
+<span class="lineno">  500 </span>instance Functor P_ViewD where <span class="decl"><span class="istickedoff">fmap = fmapDefault</span></span>
+<span class="lineno">  501 </span>instance Foldable P_ViewD where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
+<span class="lineno">  502 </span>instance Traversable P_ViewD where
+<span class="lineno">  503 </span> <span class="decl"><span class="istickedoff">traverse fn (P_Vd a b c d e f) = P_Vd <span class="nottickedoff">a</span> b c d <span class="nottickedoff">e</span> &lt;$&gt; traverse (traverse fn) f</span></span>
+<span class="lineno">  504 </span>
+<span class="lineno">  505 </span>type P_ViewSegment = P_ViewSegmt TermPrim
+<span class="lineno">  506 </span>data P_ViewSegmt a  = P_ViewExp  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vs_nr</span></span></span> ::Integer, <span class="istickedoff"><span class="nottickedoff"><span class="decl"><span class="istickedoff">vs_obj</span></span></span></span> :: P_ObjDef a }
+<span class="lineno">  507 </span>                    | P_ViewText { vs_nr ::Integer, <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vs_txt</span></span></span> :: String }
+<span class="lineno">  508 </span>                    | P_ViewHtml { vs_nr ::Integer, <span class="nottickedoff"><span class="decl"><span class="nottickedoff">vs_htm</span></span></span> :: String }
+<span class="lineno">  509 </span>                      deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  510 </span>
+<span class="lineno">  511 </span>data ViewHtmlTemplate = ViewHtmlTemplateFile String
+<span class="lineno">  512 </span>--              | ViewHtmlTemplateInline String -- Future extension 
+<span class="lineno">  513 </span>                  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>)
+<span class="lineno">  514 </span>
+<span class="lineno">  515 </span>{- Future extension:
+<span class="lineno">  516 </span>data ViewText = ViewTextTemplateFile String
+<span class="lineno">  517 </span>              | ViewTextTemplateInline String 
+<span class="lineno">  518 </span>                  deriving (Eq, Show)
+<span class="lineno">  519 </span>-}
+<span class="lineno">  520 </span>
+<span class="lineno">  521 </span>instance Functor P_ViewSegmt where <span class="decl"><span class="nottickedoff">fmap = fmapDefault</span></span>
+<span class="lineno">  522 </span>instance Foldable P_ViewSegmt where <span class="decl"><span class="nottickedoff">foldMap = foldMapDefault</span></span>
+<span class="lineno">  523 </span>instance Traversable P_ViewSegmt where
+<span class="lineno">  524 </span> <span class="decl"><span class="istickedoff">traverse f (P_ViewExp i a) = P_ViewExp <span class="nottickedoff">i</span> &lt;$&gt; traverse f a</span>
+<span class="lineno">  525 </span><span class="spaces"> </span><span class="istickedoff">traverse _ (P_ViewText i a) = pure (P_ViewText <span class="nottickedoff">i</span> <span class="nottickedoff">a</span>)</span>
+<span class="lineno">  526 </span><span class="spaces"> </span><span class="istickedoff">traverse _ (P_ViewHtml i a) = pure (P_ViewHtml <span class="nottickedoff">i</span> <span class="nottickedoff">a</span>)</span></span>
+<span class="lineno">  527 </span>
+<span class="lineno">  528 </span>instance Traced (P_ViewD a) where
+<span class="lineno">  529 </span> <span class="decl"><span class="nottickedoff">origin = vd_pos</span></span>
 <span class="lineno">  530 </span>
-<span class="lineno">  531 </span>-- PPurpose is a parse-time constructor. It contains the name of the object it explains.
-<span class="lineno">  532 </span>-- It is a pre-explanation in the sense that it contains a reference to something that is not yet built by the compiler.
-<span class="lineno">  533 </span>--                       Constructor      name          RefID  Explanation
-<span class="lineno">  534 </span>data PRef2Obj = PRef2ConceptDef String
-<span class="lineno">  535 </span>              | PRef2Declaration P_NamedRel
-<span class="lineno">  536 </span>              | PRef2Rule String
-<span class="lineno">  537 </span>              | PRef2IdentityDef String
-<span class="lineno">  538 </span>              | PRef2ViewDef String
-<span class="lineno">  539 </span>              | PRef2Pattern String
-<span class="lineno">  540 </span>              | PRef2Interface String
-<span class="lineno">  541 </span>              | PRef2Context String
-<span class="lineno">  542 </span>              | PRef2Fspc String
-<span class="lineno">  543 </span>              deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span> -- only for fatal error messages
-<span class="lineno">  544 </span>
-<span class="lineno">  545 </span>instance Named PRef2Obj where
-<span class="lineno">  546 </span>  <span class="decl"><span class="nottickedoff">name pe = case pe of</span>
-<span class="lineno">  547 </span><span class="spaces">     </span><span class="nottickedoff">PRef2ConceptDef str -&gt; str</span>
-<span class="lineno">  548 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Declaration (PNamedRel _ nm mSgn) -&gt; nm++maybe &quot;&quot; show mSgn</span>
-<span class="lineno">  549 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Rule str -&gt; str</span>
-<span class="lineno">  550 </span><span class="spaces">     </span><span class="nottickedoff">PRef2IdentityDef str -&gt; str</span>
-<span class="lineno">  551 </span><span class="spaces">     </span><span class="nottickedoff">PRef2ViewDef str -&gt; str</span>
-<span class="lineno">  552 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Pattern str -&gt; str</span>
-<span class="lineno">  553 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Interface str -&gt; str</span>
-<span class="lineno">  554 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Context str -&gt; str</span>
-<span class="lineno">  555 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Fspc str -&gt; str</span></span>
-<span class="lineno">  556 </span>
-<span class="lineno">  557 </span>data PPurpose = PRef2 { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexPos</span></span></span> :: Origin      -- the position in the Ampersand script of this purpose definition
-<span class="lineno">  558 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexObj</span></span></span> :: PRef2Obj    -- the reference to the object whose purpose is explained
-<span class="lineno">  559 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexMarkup</span></span></span>:: P_Markup  -- the piece of text, including markup and language info
-<span class="lineno">  560 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexRefIDs</span></span></span> :: [String] -- the references (for traceability)
-<span class="lineno">  561 </span>                      } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
-<span class="lineno">  562 </span>
-<span class="lineno">  563 </span>instance Named PPurpose where
-<span class="lineno">  564 </span> <span class="decl"><span class="nottickedoff">name pe = name (pexObj pe)</span></span>
-<span class="lineno">  565 </span>
-<span class="lineno">  566 </span>instance Traced PPurpose where
-<span class="lineno">  567 </span> <span class="decl"><span class="nottickedoff">origin = pexPos</span></span>
-<span class="lineno">  568 </span>
-<span class="lineno">  569 </span>data P_Concept
-<span class="lineno">  570 </span>   = PCpt{ <span class="nottickedoff"><span class="decl"><span class="nottickedoff">p_cptnm</span></span></span> :: String }  -- ^The name of this Concept
-<span class="lineno">  571 </span>   | P_Singleton
-<span class="lineno">  572 </span>--      deriving (Eq, Ord)
-<span class="lineno">  573 </span>-- (Sebastiaan 12 feb 2012) P_Concept has been defined Ord, only because we want to maintain sets of concepts in the type checker for quicker lookups.
-<span class="lineno">  574 </span>-- (Sebastiaan 11 okt 2013) Removed this again, I thought it would be more clean to use newtype for this instead
-<span class="lineno">  575 </span>
-<span class="lineno">  576 </span>instance Named P_Concept where
-<span class="lineno">  577 </span> <span class="decl"><span class="nottickedoff">name (PCpt {p_cptnm = nm}) = nm</span>
-<span class="lineno">  578 </span><span class="spaces"> </span><span class="nottickedoff">name P_Singleton = &quot;ONE&quot;</span></span>
-<span class="lineno">  579 </span>
-<span class="lineno">  580 </span>instance Show P_Concept where
-<span class="lineno">  581 </span> <span class="decl"><span class="nottickedoff">showsPrec _ c = showString (name c)</span></span>
-<span class="lineno">  582 </span>
-<span class="lineno">  583 </span>data P_Sign = P_Sign {<span class="nottickedoff"><span class="decl"><span class="nottickedoff">pSrc</span></span></span> :: P_Concept, <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pTgt</span></span></span> :: P_Concept }
-<span class="lineno">  584 </span>
-<span class="lineno">  585 </span>instance Show P_Sign where
-<span class="lineno">  586 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ sgn =</span>
-<span class="lineno">  587 </span><span class="spaces">      </span><span class="nottickedoff">showString (   &quot;[&quot; ++ show (pSrc sgn)++&quot;*&quot;++show (pTgt sgn) ++ &quot;]&quot; )</span></span>
-<span class="lineno">  588 </span>
-<span class="lineno">  589 </span>data P_Gen =  P_Cy{ <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gen_fp</span></span></span> ::  Origin            -- ^ Position in the Ampersand file
-<span class="lineno">  590 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gen_spc</span></span></span> :: P_Concept         -- ^ Left hand side concept expression
-<span class="lineno">  591 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gen_rhs</span></span></span> :: [P_Concept]       -- ^ Right hand side concept expression
-<span class="lineno">  592 </span>                  }
-<span class="lineno">  593 </span>            | PGen{ gen_fp  :: Origin         -- ^ the position of the GEN-rule
-<span class="lineno">  594 </span>                  , gen_spc :: P_Concept      -- ^ specific concept
-<span class="lineno">  595 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gen_gen</span></span></span> :: P_Concept      -- ^ generic concept
-<span class="lineno">  596 </span>                  }
-<span class="lineno">  597 </span>gen_concs :: P_Gen -&gt; [P_Concept]
-<span class="lineno">  598 </span><span class="decl"><span class="nottickedoff">gen_concs (P_Cy {gen_rhs=x}) = x</span>
-<span class="lineno">  599 </span><span class="spaces"></span><span class="nottickedoff">gen_concs (PGen {gen_gen=x,gen_spc=y}) = [x,y]</span></span>
-<span class="lineno">  600 </span>
-<span class="lineno">  601 </span>instance Show P_Gen where
-<span class="lineno">  602 </span> -- This show is used in error messages.
-<span class="lineno">  603 </span> <span class="decl"><span class="nottickedoff">showsPrec _ g = showString (&quot;CLASSIFY &quot;++show (gen_spc g)++&quot; IS &quot;++show (gen_concs g))</span></span>
-<span class="lineno">  604 </span>
-<span class="lineno">  605 </span>instance Traced P_Gen where
-<span class="lineno">  606 </span> <span class="decl"><span class="nottickedoff">origin = gen_fp</span></span>
-<span class="lineno">  607 </span>
-<span class="lineno">  608 </span>data Lang = Dutch | English deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  531 </span>
+<span class="lineno">  532 </span>-- PPurpose is a parse-time constructor. It contains the name of the object it explains.
+<span class="lineno">  533 </span>-- It is a pre-explanation in the sense that it contains a reference to something that is not yet built by the compiler.
+<span class="lineno">  534 </span>--                       Constructor      name          RefID  Explanation
+<span class="lineno">  535 </span>data PRef2Obj = PRef2ConceptDef String
+<span class="lineno">  536 </span>              | PRef2Declaration P_NamedRel
+<span class="lineno">  537 </span>              | PRef2Rule String
+<span class="lineno">  538 </span>              | PRef2IdentityDef String
+<span class="lineno">  539 </span>              | PRef2ViewDef String
+<span class="lineno">  540 </span>              | PRef2Pattern String
+<span class="lineno">  541 </span>              | PRef2Interface String
+<span class="lineno">  542 </span>              | PRef2Context String
+<span class="lineno">  543 </span>              | PRef2Fspc String
+<span class="lineno">  544 </span>              deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span> -- only for fatal error messages
+<span class="lineno">  545 </span>
+<span class="lineno">  546 </span>instance Named PRef2Obj where
+<span class="lineno">  547 </span>  <span class="decl"><span class="nottickedoff">name pe = case pe of</span>
+<span class="lineno">  548 </span><span class="spaces">     </span><span class="nottickedoff">PRef2ConceptDef str -&gt; str</span>
+<span class="lineno">  549 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Declaration (PNamedRel _ nm mSgn) -&gt; nm++maybe &quot;&quot; show mSgn</span>
+<span class="lineno">  550 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Rule str -&gt; str</span>
+<span class="lineno">  551 </span><span class="spaces">     </span><span class="nottickedoff">PRef2IdentityDef str -&gt; str</span>
+<span class="lineno">  552 </span><span class="spaces">     </span><span class="nottickedoff">PRef2ViewDef str -&gt; str</span>
+<span class="lineno">  553 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Pattern str -&gt; str</span>
+<span class="lineno">  554 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Interface str -&gt; str</span>
+<span class="lineno">  555 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Context str -&gt; str</span>
+<span class="lineno">  556 </span><span class="spaces">     </span><span class="nottickedoff">PRef2Fspc str -&gt; str</span></span>
+<span class="lineno">  557 </span>
+<span class="lineno">  558 </span>data PPurpose = PRef2 { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexPos</span></span></span> :: Origin      -- the position in the Ampersand script of this purpose definition
+<span class="lineno">  559 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexObj</span></span></span> :: PRef2Obj    -- the reference to the object whose purpose is explained
+<span class="lineno">  560 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexMarkup</span></span></span>:: P_Markup  -- the piece of text, including markup and language info
+<span class="lineno">  561 </span>                      , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">pexRefIDs</span></span></span> :: [String] -- the references (for traceability)
+<span class="lineno">  562 </span>                      } deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
+<span class="lineno">  563 </span>
+<span class="lineno">  564 </span>instance Named PPurpose where
+<span class="lineno">  565 </span> <span class="decl"><span class="nottickedoff">name pe = name (pexObj pe)</span></span>
+<span class="lineno">  566 </span>
+<span class="lineno">  567 </span>instance Traced PPurpose where
+<span class="lineno">  568 </span> <span class="decl"><span class="nottickedoff">origin = pexPos</span></span>
+<span class="lineno">  569 </span>
+<span class="lineno">  570 </span>data P_Concept
+<span class="lineno">  571 </span>   = PCpt{ <span class="istickedoff"><span class="nottickedoff"><span class="decl"><span class="istickedoff">p_cptnm</span></span></span></span> :: String }  -- ^The name of this Concept
+<span class="lineno">  572 </span>   | P_Singleton
+<span class="lineno">  573 </span>--      deriving (Eq, Ord)
+<span class="lineno">  574 </span>-- (Sebastiaan 12 feb 2012) P_Concept has been defined Ord, only because we want to maintain sets of concepts in the type checker for quicker lookups.
+<span class="lineno">  575 </span>-- (Sebastiaan 11 okt 2013) Removed this again, I thought it would be more clean to use newtype for this instead
+<span class="lineno">  576 </span>
+<span class="lineno">  577 </span>instance Named P_Concept where
+<span class="lineno">  578 </span> <span class="decl"><span class="istickedoff">name (PCpt {p_cptnm = nm}) = nm</span>
+<span class="lineno">  579 </span><span class="spaces"> </span><span class="istickedoff">name P_Singleton = <span class="nottickedoff">&quot;ONE&quot;</span></span></span>
+<span class="lineno">  580 </span>
+<span class="lineno">  581 </span>instance Show P_Concept where
+<span class="lineno">  582 </span> <span class="decl"><span class="nottickedoff">showsPrec _ c = showString (name c)</span></span>
+<span class="lineno">  583 </span>
+<span class="lineno">  584 </span>data P_Sign = P_Sign {<span class="istickedoff"><span class="decl"><span class="istickedoff">pSrc</span></span></span> :: P_Concept, <span class="istickedoff"><span class="decl"><span class="istickedoff">pTgt</span></span></span> :: P_Concept }
+<span class="lineno">  585 </span>
+<span class="lineno">  586 </span>instance Show P_Sign where
+<span class="lineno">  587 </span>  <span class="decl"><span class="nottickedoff">showsPrec _ sgn =</span>
+<span class="lineno">  588 </span><span class="spaces">      </span><span class="nottickedoff">showString (   &quot;[&quot; ++ show (pSrc sgn)++&quot;*&quot;++show (pTgt sgn) ++ &quot;]&quot; )</span></span>
+<span class="lineno">  589 </span>instance Flippable P_Sign where
+<span class="lineno">  590 </span>  <span class="decl"><span class="nottickedoff">flp sgn = P_Sign { pSrc = pTgt sgn</span>
+<span class="lineno">  591 </span><span class="spaces">                   </span><span class="nottickedoff">, pTgt = pSrc sgn</span>
+<span class="lineno">  592 </span><span class="spaces">                   </span><span class="nottickedoff">}</span></span>
+<span class="lineno">  593 </span>
+<span class="lineno">  594 </span>data P_Gen =  P_Cy{ <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gen_fp</span></span></span> ::  Origin            -- ^ Position in the Ampersand file
+<span class="lineno">  595 </span>                  , <span class="istickedoff"><span class="decl"><span class="istickedoff">gen_spc</span></span></span> :: P_Concept         -- ^ Left hand side concept expression
+<span class="lineno">  596 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gen_rhs</span></span></span> :: [P_Concept]       -- ^ Right hand side concept expression
+<span class="lineno">  597 </span>                  }
+<span class="lineno">  598 </span>            | PGen{ gen_fp  :: Origin         -- ^ the position of the GEN-rule
+<span class="lineno">  599 </span>                  , gen_spc :: P_Concept      -- ^ specific concept
+<span class="lineno">  600 </span>                  , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">gen_gen</span></span></span> :: P_Concept      -- ^ generic concept
+<span class="lineno">  601 </span>                  }
+<span class="lineno">  602 </span>gen_concs :: P_Gen -&gt; [P_Concept]
+<span class="lineno">  603 </span><span class="decl"><span class="istickedoff">gen_concs (P_Cy {gen_rhs=x}) = x</span>
+<span class="lineno">  604 </span><span class="spaces"></span><span class="istickedoff">gen_concs (PGen {gen_gen=x,gen_spc=y}) = [x,y]</span></span>
+<span class="lineno">  605 </span>
+<span class="lineno">  606 </span>instance Show P_Gen where
+<span class="lineno">  607 </span> -- This show is used in error messages.
+<span class="lineno">  608 </span> <span class="decl"><span class="nottickedoff">showsPrec _ g = showString (&quot;CLASSIFY &quot;++show (gen_spc g)++&quot; IS &quot;++show (gen_concs g))</span></span>
 <span class="lineno">  609 </span>
-<span class="lineno">  610 </span>data PandocFormat = HTML | ReST | LaTeX | Markdown deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  611 </span>
-<span class="lineno">  612 </span>type Props = [Prop]
-<span class="lineno">  613 </span>
-<span class="lineno">  614 </span>data Prop      = Uni          -- ^ univalent
-<span class="lineno">  615 </span>               | Inj          -- ^ injective
-<span class="lineno">  616 </span>               | Sur          -- ^ surjective
-<span class="lineno">  617 </span>               | Tot          -- ^ total
-<span class="lineno">  618 </span>               | Sym          -- ^ symmetric
-<span class="lineno">  619 </span>               | Asy          -- ^ antisymmetric
-<span class="lineno">  620 </span>               | Trn          -- ^ transitive
-<span class="lineno">  621 </span>               | Rfx          -- ^ reflexive
-<span class="lineno">  622 </span>               | Irf          -- ^ irreflexive
-<span class="lineno">  623 </span>               | Aut          -- ^ automatically computed (NOTE: this is a hacky way to denote these until we have appropriate syntax)
-<span class="lineno">  624 </span>               | Prop         -- ^ PROP keyword, later replaced by [Sym, Asy]
-<span class="lineno">  625 </span>                 deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Enum</span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Bounded</span></span></span></span>)
-<span class="lineno">  626 </span>instance Show Prop where
-<span class="lineno">  627 </span> <span class="decl"><span class="istickedoff">showsPrec _ Uni = showString &quot;UNI&quot;</span>
-<span class="lineno">  628 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Inj = showString &quot;INJ&quot;</span>
-<span class="lineno">  629 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Sur = showString &quot;SUR&quot;</span>
-<span class="lineno">  630 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Tot = showString &quot;TOT&quot;</span>
-<span class="lineno">  631 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Sym = showString &quot;SYM&quot;</span>
-<span class="lineno">  632 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Asy = showString &quot;ASY&quot;</span>
-<span class="lineno">  633 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Trn = showString &quot;TRN&quot;</span>
-<span class="lineno">  634 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Rfx = showString &quot;RFX&quot;</span>
-<span class="lineno">  635 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Irf = showString &quot;IRF&quot;</span>
-<span class="lineno">  636 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Aut = showString &quot;AUT&quot;</span>
-<span class="lineno">  637 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Prop = showString &quot;PROP&quot;</span></span>
-<span class="lineno">  638 </span>
-<span class="lineno">  639 </span>instance Flippable Prop where
-<span class="lineno">  640 </span> <span class="decl"><span class="nottickedoff">flp Uni = Inj</span>
-<span class="lineno">  641 </span><span class="spaces"> </span><span class="nottickedoff">flp Tot = Sur</span>
-<span class="lineno">  642 </span><span class="spaces"> </span><span class="nottickedoff">flp Sur = Tot</span>
-<span class="lineno">  643 </span><span class="spaces"> </span><span class="nottickedoff">flp Inj = Uni</span>
-<span class="lineno">  644 </span><span class="spaces"> </span><span class="nottickedoff">flp x = x</span></span>
-<span class="lineno">  645 </span>
-<span class="lineno">  646 </span>normalizeProps :: [Prop] -&gt; [Prop]
-<span class="lineno">  647 </span><span class="decl"><span class="istickedoff">normalizeProps = nub.conv.rep</span>
-<span class="lineno">  648 </span><span class="spaces">    </span><span class="istickedoff">where -- replace PROP by SYM, ASY</span>
-<span class="lineno">  649 </span><span class="spaces">          </span><span class="istickedoff">rep (Prop:ps) = [Sym, Asy] ++ rep ps</span>
-<span class="lineno">  650 </span><span class="spaces">          </span><span class="istickedoff">rep (p:ps) = (p:rep ps)</span>
-<span class="lineno">  651 </span><span class="spaces">          </span><span class="istickedoff">rep [] = []</span>
-<span class="lineno">  652 </span><span class="spaces">          </span><span class="istickedoff">-- add Uni and Inj if ps has neither Sym nor Asy</span>
-<span class="lineno">  653 </span><span class="spaces">          </span><span class="istickedoff">conv ps = ps ++ concat [[Uni, Inj] | null ([Sym, Asy]&gt;-ps)]</span></span>
-<span class="lineno">  654 </span>
-<span class="lineno">  655 </span>mergeContexts :: P_Context -&gt; P_Context -&gt; P_Context
-<span class="lineno">  656 </span><span class="decl"><span class="nottickedoff">mergeContexts ctx1 ctx2 =</span>
-<span class="lineno">  657 </span><span class="spaces">  </span><span class="nottickedoff">PCtx{ ctx_nm     = case (filter (not.null) . map ctx_nm) contexts of</span>
-<span class="lineno">  658 </span><span class="spaces">                        </span><span class="nottickedoff">[]    -&gt; &quot;&quot;</span>
-<span class="lineno">  659 </span><span class="spaces">                        </span><span class="nottickedoff">(x:_) -&gt; x</span>
-<span class="lineno">  660 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pos    = concatMap ctx_pos contexts</span>
-<span class="lineno">  661 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_lang   = ctx_lang ctx1 -- By taking the first, we end up with the language of the top-level context</span>
-<span class="lineno">  662 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_markup = foldl orElse Nothing $ map ctx_markup contexts</span>
-<span class="lineno">  663 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_thms   = concatMap ctx_thms contexts</span>
-<span class="lineno">  664 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pats   = concatMap ctx_pats contexts</span>
-<span class="lineno">  665 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rs     = concatMap ctx_rs contexts</span>
-<span class="lineno">  666 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ds     = concatMap ctx_ds contexts</span>
-<span class="lineno">  667 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_cs     = concatMap ctx_cs contexts</span>
-<span class="lineno">  668 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ks     = concatMap ctx_ks contexts</span>
-<span class="lineno">  669 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rrules = concatMap ctx_rrules contexts</span>
-<span class="lineno">  670 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rrels  = concatMap ctx_rrels contexts</span>
-<span class="lineno">  671 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_vs     = concatMap ctx_vs contexts</span>
-<span class="lineno">  672 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_gs     = concatMap ctx_gs contexts</span>
-<span class="lineno">  673 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ifcs   = concatMap ctx_ifcs contexts</span>
-<span class="lineno">  674 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ps     = concatMap ctx_ps contexts</span>
-<span class="lineno">  675 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pops   = concatMap ctx_pops contexts</span>
-<span class="lineno">  676 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_sql    = concatMap ctx_sql contexts</span>
-<span class="lineno">  677 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_php    = concatMap ctx_php contexts</span>
-<span class="lineno">  678 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_metas  = concatMap ctx_metas contexts</span>
-<span class="lineno">  679 </span><span class="spaces">      </span><span class="nottickedoff">}</span>
-<span class="lineno">  680 </span><span class="spaces">    </span><span class="nottickedoff">where contexts = [ctx1,ctx2]</span></span>
-<span class="lineno">  681 </span>
-<span class="lineno">  682 </span>-- | Left-biased choice on maybes
-<span class="lineno">  683 </span>orElse :: Maybe a -&gt; Maybe a -&gt; Maybe a
-<span class="lineno">  684 </span><span class="decl"><span class="nottickedoff">x `orElse` y = case x of</span>
-<span class="lineno">  685 </span><span class="spaces">                 </span><span class="nottickedoff">Just _  -&gt; x</span>
-<span class="lineno">  686 </span><span class="spaces">                 </span><span class="nottickedoff">Nothing -&gt; y</span></span>
-<span class="lineno">  687 </span>
+<span class="lineno">  610 </span>instance Traced P_Gen where
+<span class="lineno">  611 </span> <span class="decl"><span class="nottickedoff">origin = gen_fp</span></span>
+<span class="lineno">  612 </span>
+<span class="lineno">  613 </span>data Lang = Dutch | English deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  614 </span>
+<span class="lineno">  615 </span>data PandocFormat = HTML | ReST | LaTeX | Markdown deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  616 </span>
+<span class="lineno">  617 </span>type Props = [Prop]
+<span class="lineno">  618 </span>
+<span class="lineno">  619 </span>data Prop      = Uni          -- ^ univalent
+<span class="lineno">  620 </span>               | Inj          -- ^ injective
+<span class="lineno">  621 </span>               | Sur          -- ^ surjective
+<span class="lineno">  622 </span>               | Tot          -- ^ total
+<span class="lineno">  623 </span>               | Sym          -- ^ symmetric
+<span class="lineno">  624 </span>               | Asy          -- ^ antisymmetric
+<span class="lineno">  625 </span>               | Trn          -- ^ transitive
+<span class="lineno">  626 </span>               | Rfx          -- ^ reflexive
+<span class="lineno">  627 </span>               | Irf          -- ^ irreflexive
+<span class="lineno">  628 </span>               | Aut          -- ^ automatically computed (NOTE: this is a hacky way to denote these until we have appropriate syntax)
+<span class="lineno">  629 </span>               | Prop         -- ^ PROP keyword, later replaced by [Sym, Asy]
+<span class="lineno">  630 </span>                 deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Enum</span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Bounded</span></span></span></span>)
+<span class="lineno">  631 </span>instance Show Prop where
+<span class="lineno">  632 </span> <span class="decl"><span class="istickedoff">showsPrec _ Uni = showString &quot;UNI&quot;</span>
+<span class="lineno">  633 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Inj = showString &quot;INJ&quot;</span>
+<span class="lineno">  634 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Sur = showString &quot;SUR&quot;</span>
+<span class="lineno">  635 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Tot = showString &quot;TOT&quot;</span>
+<span class="lineno">  636 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Sym = showString &quot;SYM&quot;</span>
+<span class="lineno">  637 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Asy = showString &quot;ASY&quot;</span>
+<span class="lineno">  638 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Trn = showString &quot;TRN&quot;</span>
+<span class="lineno">  639 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Rfx = showString &quot;RFX&quot;</span>
+<span class="lineno">  640 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Irf = showString &quot;IRF&quot;</span>
+<span class="lineno">  641 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Aut = showString &quot;AUT&quot;</span>
+<span class="lineno">  642 </span><span class="spaces"> </span><span class="istickedoff">showsPrec _ Prop = showString &quot;PROP&quot;</span></span>
+<span class="lineno">  643 </span>
+<span class="lineno">  644 </span>instance Flippable Prop where
+<span class="lineno">  645 </span> <span class="decl"><span class="nottickedoff">flp Uni = Inj</span>
+<span class="lineno">  646 </span><span class="spaces"> </span><span class="nottickedoff">flp Tot = Sur</span>
+<span class="lineno">  647 </span><span class="spaces"> </span><span class="nottickedoff">flp Sur = Tot</span>
+<span class="lineno">  648 </span><span class="spaces"> </span><span class="nottickedoff">flp Inj = Uni</span>
+<span class="lineno">  649 </span><span class="spaces"> </span><span class="nottickedoff">flp x = x</span></span>
+<span class="lineno">  650 </span>
+<span class="lineno">  651 </span>normalizeProps :: [Prop] -&gt; [Prop]
+<span class="lineno">  652 </span><span class="decl"><span class="istickedoff">normalizeProps = nub.conv.rep</span>
+<span class="lineno">  653 </span><span class="spaces">    </span><span class="istickedoff">where -- replace PROP by SYM, ASY</span>
+<span class="lineno">  654 </span><span class="spaces">          </span><span class="istickedoff">rep (Prop:ps) = [Sym, Asy] ++ rep ps</span>
+<span class="lineno">  655 </span><span class="spaces">          </span><span class="istickedoff">rep (p:ps) = (p:rep ps)</span>
+<span class="lineno">  656 </span><span class="spaces">          </span><span class="istickedoff">rep [] = []</span>
+<span class="lineno">  657 </span><span class="spaces">          </span><span class="istickedoff">-- add Uni and Inj if ps has neither Sym nor Asy</span>
+<span class="lineno">  658 </span><span class="spaces">          </span><span class="istickedoff">conv ps = ps ++ concat [[Uni, Inj] | null ([Sym, Asy]&gt;-ps)]</span></span>
+<span class="lineno">  659 </span>
+<span class="lineno">  660 </span>mergeContexts :: P_Context -&gt; P_Context -&gt; P_Context
+<span class="lineno">  661 </span><span class="decl"><span class="istickedoff">mergeContexts ctx1 ctx2 =</span>
+<span class="lineno">  662 </span><span class="spaces">  </span><span class="istickedoff">PCtx{ ctx_nm     = case (filter (not.null) . map ctx_nm) contexts of</span>
+<span class="lineno">  663 </span><span class="spaces">                        </span><span class="istickedoff">[]    -&gt; <span class="nottickedoff">&quot;&quot;</span></span>
+<span class="lineno">  664 </span><span class="spaces">                        </span><span class="istickedoff">(x:_) -&gt; x</span>
+<span class="lineno">  665 </span><span class="spaces">      </span><span class="istickedoff">, ctx_pos    = <span class="nottickedoff">concatMap ctx_pos contexts</span></span>
+<span class="lineno">  666 </span><span class="spaces">      </span><span class="istickedoff">, ctx_lang   = <span class="nottickedoff">ctx_lang ctx1</span> -- By taking the first, we end up with the language of the top-level context</span>
+<span class="lineno">  667 </span><span class="spaces">      </span><span class="istickedoff">, ctx_markup = <span class="nottickedoff">foldl orElse Nothing $ map ctx_markup contexts</span></span>
+<span class="lineno">  668 </span><span class="spaces">      </span><span class="istickedoff">, ctx_thms   = <span class="nottickedoff">concatMap ctx_thms contexts</span></span>
+<span class="lineno">  669 </span><span class="spaces">      </span><span class="istickedoff">, ctx_pats   = concatMap ctx_pats contexts</span>
+<span class="lineno">  670 </span><span class="spaces">      </span><span class="istickedoff">, ctx_rs     = concatMap ctx_rs contexts</span>
+<span class="lineno">  671 </span><span class="spaces">      </span><span class="istickedoff">, ctx_ds     = concatMap ctx_ds contexts</span>
+<span class="lineno">  672 </span><span class="spaces">      </span><span class="istickedoff">, ctx_cs     = concatMap ctx_cs contexts</span>
+<span class="lineno">  673 </span><span class="spaces">      </span><span class="istickedoff">, ctx_ks     = concatMap ctx_ks contexts</span>
+<span class="lineno">  674 </span><span class="spaces">      </span><span class="istickedoff">, ctx_rrules = concatMap ctx_rrules contexts</span>
+<span class="lineno">  675 </span><span class="spaces">      </span><span class="istickedoff">, ctx_rrels  = concatMap ctx_rrels contexts</span>
+<span class="lineno">  676 </span><span class="spaces">      </span><span class="istickedoff">, ctx_vs     = concatMap ctx_vs contexts</span>
+<span class="lineno">  677 </span><span class="spaces">      </span><span class="istickedoff">, ctx_gs     = concatMap ctx_gs contexts</span>
+<span class="lineno">  678 </span><span class="spaces">      </span><span class="istickedoff">, ctx_ifcs   = concatMap ctx_ifcs contexts</span>
+<span class="lineno">  679 </span><span class="spaces">      </span><span class="istickedoff">, ctx_ps     = concatMap ctx_ps contexts</span>
+<span class="lineno">  680 </span><span class="spaces">      </span><span class="istickedoff">, ctx_pops   = concatMap ctx_pops contexts</span>
+<span class="lineno">  681 </span><span class="spaces">      </span><span class="istickedoff">, ctx_sql    = concatMap ctx_sql contexts</span>
+<span class="lineno">  682 </span><span class="spaces">      </span><span class="istickedoff">, ctx_php    = concatMap ctx_php contexts</span>
+<span class="lineno">  683 </span><span class="spaces">      </span><span class="istickedoff">, ctx_metas  = <span class="nottickedoff">concatMap ctx_metas contexts</span></span>
+<span class="lineno">  684 </span><span class="spaces">      </span><span class="istickedoff">}</span>
+<span class="lineno">  685 </span><span class="spaces">    </span><span class="istickedoff">where contexts = [ctx1,ctx2]</span></span>
+<span class="lineno">  686 </span>
+<span class="lineno">  687 </span>mkContextOfPopsOnly :: [P_Population] -&gt; P_Context
+<span class="lineno">  688 </span><span class="decl"><span class="nottickedoff">mkContextOfPopsOnly pops = </span>
+<span class="lineno">  689 </span><span class="spaces">  </span><span class="nottickedoff">PCtx{ ctx_nm     = &quot;&quot;</span>
+<span class="lineno">  690 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pos    = []</span>
+<span class="lineno">  691 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_lang   = fatal 686 &quot;No language because of excel import hack. Please report this as a bug&quot;</span>
+<span class="lineno">  692 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_markup = Nothing</span>
+<span class="lineno">  693 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_thms   = []</span>
+<span class="lineno">  694 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pats   = []</span>
+<span class="lineno">  695 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rs     = []</span>
+<span class="lineno">  696 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ds     = []</span>
+<span class="lineno">  697 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_cs     = []</span>
+<span class="lineno">  698 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ks     = []</span>
+<span class="lineno">  699 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rrules = []</span>
+<span class="lineno">  700 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_rrels  = []</span>
+<span class="lineno">  701 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_vs     = []</span>
+<span class="lineno">  702 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_gs     = []</span>
+<span class="lineno">  703 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ifcs   = []</span>
+<span class="lineno">  704 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_ps     = []</span>
+<span class="lineno">  705 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_pops   = pops</span>
+<span class="lineno">  706 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_sql    = []</span>
+<span class="lineno">  707 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_php    = []</span>
+<span class="lineno">  708 </span><span class="spaces">      </span><span class="nottickedoff">, ctx_metas  = []</span>
+<span class="lineno">  709 </span><span class="spaces">      </span><span class="nottickedoff">}</span></span>
+<span class="lineno">  710 </span>-- | Left-biased choice on maybes
+<span class="lineno">  711 </span>orElse :: Maybe a -&gt; Maybe a -&gt; Maybe a
+<span class="lineno">  712 </span><span class="decl"><span class="nottickedoff">x `orElse` y = case x of</span>
+<span class="lineno">  713 </span><span class="spaces">                 </span><span class="nottickedoff">Just _  -&gt; x</span>
+<span class="lineno">  714 </span><span class="spaces">                 </span><span class="nottickedoff">Nothing -&gt; y</span></span>
+<span class="lineno">  715 </span>
 
 </pre>
 </body>

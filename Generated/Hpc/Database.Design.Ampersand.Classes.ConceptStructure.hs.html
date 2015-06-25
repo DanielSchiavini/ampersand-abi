@@ -43,19 +43,19 @@ span.spaces    { background: white }
 <span class="lineno">   27 </span>  relsMentionedIn :: a -&gt; [Declaration]        -- ^ the set of all declaratons used within data structure a. `used within` means that there is a relation that refers to that declaration.
 <span class="lineno">   28 </span>  <span class="decl"><span class="nottickedoff">relsMentionedIn = nub . map prim2rel . primsMentionedIn</span></span>
 <span class="lineno">   29 </span>  primsMentionedIn :: a -&gt; [Expression]
-<span class="lineno">   30 </span>  <span class="decl"><span class="nottickedoff">primsMentionedIn = nub . concatMap primitives . expressionsIn</span></span>
+<span class="lineno">   30 </span>  <span class="decl"><span class="istickedoff">primsMentionedIn = nub . concatMap primitives . expressionsIn</span></span>
 <span class="lineno">   31 </span>  expressionsIn :: a -&gt; [Expression] -- ^The set of all expressions within data structure a
 <span class="lineno">   32 </span>  
 <span class="lineno">   33 </span>  -- | mp1Pops draws the population from singleton expressions.
 <span class="lineno">   34 </span>  mp1Pops :: a -&gt; [Population]
-<span class="lineno">   35 </span>  <span class="decl"><span class="nottickedoff">mp1Pops struc</span>
-<span class="lineno">   36 </span><span class="spaces">   </span><span class="nottickedoff">= [ PCptPopu{ popcpt = cpt (head cl)</span>
-<span class="lineno">   37 </span><span class="spaces">               </span><span class="nottickedoff">, popas = map atm cl } </span>
-<span class="lineno">   38 </span><span class="spaces">     </span><span class="nottickedoff">| cl&lt;-eqCl cpt ((filter isMp1.primsMentionedIn) struc)]</span>
-<span class="lineno">   39 </span><span class="spaces">     </span><span class="nottickedoff">where cpt (EMp1 _ c) = c</span>
-<span class="lineno">   40 </span><span class="spaces">           </span><span class="nottickedoff">cpt _          = fatal 31 &quot;cpt error&quot;</span>
-<span class="lineno">   41 </span><span class="spaces">           </span><span class="nottickedoff">atm (EMp1 a _) = a</span>
-<span class="lineno">   42 </span><span class="spaces">           </span><span class="nottickedoff">atm _          = fatal 31 &quot;atm error&quot;</span></span>
+<span class="lineno">   35 </span>  <span class="decl"><span class="istickedoff">mp1Pops struc</span>
+<span class="lineno">   36 </span><span class="spaces">   </span><span class="istickedoff">= [ PCptPopu{ popcpt = cpt (head cl)</span>
+<span class="lineno">   37 </span><span class="spaces">               </span><span class="istickedoff">, popas = map atm cl } </span>
+<span class="lineno">   38 </span><span class="spaces">     </span><span class="istickedoff">| cl&lt;-eqCl cpt ((filter isMp1.primsMentionedIn) struc)]</span>
+<span class="lineno">   39 </span><span class="spaces">     </span><span class="istickedoff">where cpt (EMp1 _ c) = c</span>
+<span class="lineno">   40 </span><span class="spaces">           </span><span class="istickedoff">cpt _          = <span class="nottickedoff">fatal 31 &quot;cpt error&quot;</span></span>
+<span class="lineno">   41 </span><span class="spaces">           </span><span class="istickedoff">atm (EMp1 a _) = a</span>
+<span class="lineno">   42 </span><span class="spaces">           </span><span class="istickedoff">atm _          = <span class="nottickedoff">fatal 31 &quot;atm error&quot;</span></span></span>
 <span class="lineno">   43 </span>           
 <span class="lineno">   44 </span>prim2rel :: Expression -&gt; Declaration
 <span class="lineno">   45 </span><span class="decl"><span class="nottickedoff">prim2rel e</span>
@@ -73,11 +73,11 @@ span.spaces    { background: white }
 <span class="lineno">   57 </span>
 <span class="lineno">   58 </span>instance ConceptStructure a =&gt; ConceptStructure (Maybe a) where
 <span class="lineno">   59 </span>  <span class="decl"><span class="nottickedoff">concs    ma = maybe [] concs ma</span></span>
-<span class="lineno">   60 </span>  <span class="decl"><span class="nottickedoff">expressionsIn ma = maybe [] expressionsIn ma</span></span>
+<span class="lineno">   60 </span>  <span class="decl"><span class="istickedoff">expressionsIn ma = maybe [] expressionsIn ma</span></span>
 <span class="lineno">   61 </span>
 <span class="lineno">   62 </span>instance ConceptStructure a =&gt; ConceptStructure [a] where
 <span class="lineno">   63 </span>  <span class="decl"><span class="nottickedoff">concs     = nub . concatMap concs</span></span>
-<span class="lineno">   64 </span>  <span class="decl"><span class="nottickedoff">expressionsIn = foldr ((uni) . expressionsIn) []</span></span>
+<span class="lineno">   64 </span>  <span class="decl"><span class="istickedoff">expressionsIn = foldr ((uni) . expressionsIn) []</span></span>
 <span class="lineno">   65 </span>
 <span class="lineno">   66 </span>instance ConceptStructure A_Context where
 <span class="lineno">   67 </span>  <span class="decl"><span class="nottickedoff">concs ctx = foldr uni [ONE]  -- ONE is allways in any context. (see https://github.com/AmpersandTarski/ampersand/issues/70)</span>
@@ -108,11 +108,11 @@ span.spaces    { background: white }
 <span class="lineno">   92 </span>
 <span class="lineno">   93 </span>instance ConceptStructure IdentityDef where
 <span class="lineno">   94 </span>  <span class="decl"><span class="nottickedoff">concs       identity   = [idCpt identity] `uni` concs [objDef | IdentityExp objDef &lt;- identityAts identity]</span></span>
-<span class="lineno">   95 </span>  <span class="decl"><span class="nottickedoff">expressionsIn identity = expressionsIn             [objDef | IdentityExp objDef &lt;- identityAts identity]</span></span>
+<span class="lineno">   95 </span>  <span class="decl"><span class="istickedoff">expressionsIn identity = expressionsIn             [objDef | IdentityExp objDef &lt;- identityAts identity]</span></span>
 <span class="lineno">   96 </span>
 <span class="lineno">   97 </span>instance ConceptStructure ViewDef where
-<span class="lineno">   98 </span>  <span class="decl"><span class="nottickedoff">concs       vd = [vdcpt vd] `uni` concs [objDef | ViewExp objDef &lt;- vdats vd]</span></span>
-<span class="lineno">   99 </span>  <span class="decl"><span class="nottickedoff">expressionsIn vd = expressionsIn        [objDef | ViewExp objDef &lt;- vdats vd]</span></span>
+<span class="lineno">   98 </span>  <span class="decl"><span class="nottickedoff">concs       vd = [vdcpt vd] `uni` concs [objDef | ViewExp _ objDef &lt;- vdats vd]</span></span>
+<span class="lineno">   99 </span>  <span class="decl"><span class="istickedoff">expressionsIn vd = expressionsIn        [objDef | ViewExp _ objDef &lt;- vdats vd]</span></span>
 <span class="lineno">  100 </span>
 <span class="lineno">  101 </span>instance ConceptStructure Expression where
 <span class="lineno">  102 </span>  <span class="decl"><span class="nottickedoff">concs (EDcI c    ) = [c]</span>
@@ -120,7 +120,7 @@ span.spaces    { background: white }
 <span class="lineno">  104 </span><span class="spaces">  </span><span class="nottickedoff">concs (EDcV   sgn) = concs sgn</span>
 <span class="lineno">  105 </span><span class="spaces">  </span><span class="nottickedoff">concs (EMp1 _ c  ) = [c]</span>
 <span class="lineno">  106 </span><span class="spaces">  </span><span class="nottickedoff">concs e            = foldrMapExpression uni concs [] e</span></span>
-<span class="lineno">  107 </span>  <span class="decl"><span class="nottickedoff">expressionsIn e = [e]</span></span>
+<span class="lineno">  107 </span>  <span class="decl"><span class="istickedoff">expressionsIn e = [e]</span></span>
 <span class="lineno">  108 </span>
 <span class="lineno">  109 </span>instance ConceptStructure A_Concept where
 <span class="lineno">  110 </span>  <span class="decl"><span class="nottickedoff">concs         c = [c]</span></span>
@@ -138,17 +138,17 @@ span.spaces    { background: white }
 <span class="lineno">  122 </span>
 <span class="lineno">  123 </span>instance ConceptStructure ObjectDef where
 <span class="lineno">  124 </span>  <span class="decl"><span class="nottickedoff">concs     obj = [target (objctx obj)] `uni` concs (objmsub obj)</span></span>
-<span class="lineno">  125 </span>  <span class="decl"><span class="nottickedoff">expressionsIn obj = foldr (uni) []</span>
-<span class="lineno">  126 </span><span class="spaces">                     </span><span class="nottickedoff">[ (expressionsIn.objctx) obj</span>
-<span class="lineno">  127 </span><span class="spaces">                     </span><span class="nottickedoff">, (expressionsIn.objmsub) obj</span>
-<span class="lineno">  128 </span><span class="spaces">                     </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  125 </span>  <span class="decl"><span class="istickedoff">expressionsIn obj = foldr (uni) []</span>
+<span class="lineno">  126 </span><span class="spaces">                     </span><span class="istickedoff">[ (expressionsIn.objctx) obj</span>
+<span class="lineno">  127 </span><span class="spaces">                     </span><span class="istickedoff">, (expressionsIn.objmsub) obj</span>
+<span class="lineno">  128 </span><span class="spaces">                     </span><span class="istickedoff">]</span></span>
 <span class="lineno">  129 </span>
 <span class="lineno">  130 </span>-- Note that these functions are not recursive in the case of InterfaceRefs (which is of course obvious from their types)
 <span class="lineno">  131 </span>instance ConceptStructure SubInterface where
-<span class="lineno">  132 </span>  <span class="decl"><span class="nottickedoff">concs (Box _ _ objs)           = concs objs</span>
-<span class="lineno">  133 </span><span class="spaces">  </span><span class="nottickedoff">concs (InterfaceRef _)         = []</span></span>
-<span class="lineno">  134 </span>  <span class="decl"><span class="nottickedoff">expressionsIn (Box _ _ objs)   = expressionsIn objs</span>
-<span class="lineno">  135 </span><span class="spaces">  </span><span class="nottickedoff">expressionsIn (InterfaceRef _) = []</span></span>
+<span class="lineno">  132 </span>  <span class="decl"><span class="nottickedoff">concs (Box _ _ objs)         = concs objs</span>
+<span class="lineno">  133 </span><span class="spaces">  </span><span class="nottickedoff">concs InterfaceRef{}         = []</span></span>
+<span class="lineno">  134 </span>  <span class="decl"><span class="istickedoff">expressionsIn (Box _ _ objs) = expressionsIn objs</span>
+<span class="lineno">  135 </span><span class="spaces">  </span><span class="istickedoff">expressionsIn InterfaceRef{} = []</span></span>
 <span class="lineno">  136 </span>
 <span class="lineno">  137 </span>instance ConceptStructure Pattern where
 <span class="lineno">  138 </span>  <span class="decl"><span class="nottickedoff">concs pat = foldr uni []</span>
@@ -159,18 +159,18 @@ span.spaces    { background: white }
 <span class="lineno">  143 </span><span class="spaces">              </span><span class="nottickedoff">, (concs.ptids) pat</span>
 <span class="lineno">  144 </span><span class="spaces">              </span><span class="nottickedoff">, (concs.ptxps) pat</span>
 <span class="lineno">  145 </span><span class="spaces">              </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  146 </span>  <span class="decl"><span class="nottickedoff">expressionsIn p = foldr (uni) []</span>
-<span class="lineno">  147 </span><span class="spaces">                     </span><span class="nottickedoff">[ (expressionsIn.ptrls) p</span>
-<span class="lineno">  148 </span><span class="spaces">                     </span><span class="nottickedoff">, (expressionsIn.ptids) p</span>
-<span class="lineno">  149 </span><span class="spaces">                     </span><span class="nottickedoff">, (expressionsIn.ptvds) p</span>
-<span class="lineno">  150 </span><span class="spaces">                     </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  146 </span>  <span class="decl"><span class="istickedoff">expressionsIn p = foldr (uni) []</span>
+<span class="lineno">  147 </span><span class="spaces">                     </span><span class="istickedoff">[ (expressionsIn.ptrls) p</span>
+<span class="lineno">  148 </span><span class="spaces">                     </span><span class="istickedoff">, (expressionsIn.ptids) p</span>
+<span class="lineno">  149 </span><span class="spaces">                     </span><span class="istickedoff">, (expressionsIn.ptvds) p</span>
+<span class="lineno">  150 </span><span class="spaces">                     </span><span class="istickedoff">]</span></span>
 <span class="lineno">  151 </span>
 <span class="lineno">  152 </span>instance ConceptStructure Interface where
 <span class="lineno">  153 </span>  <span class="decl"><span class="nottickedoff">concs         ifc = concs (ifcObj ifc)</span></span>
-<span class="lineno">  154 </span>  <span class="decl"><span class="nottickedoff">expressionsIn ifc = foldr (uni) []</span>
-<span class="lineno">  155 </span><span class="spaces">                     </span><span class="nottickedoff">[ (expressionsIn.ifcObj) ifc</span>
-<span class="lineno">  156 </span><span class="spaces">                     </span><span class="nottickedoff">, map EDcD $ ifcParams ifc -- Return param declarations as expressions</span>
-<span class="lineno">  157 </span><span class="spaces">                     </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  154 </span>  <span class="decl"><span class="istickedoff">expressionsIn ifc = foldr (uni) []</span>
+<span class="lineno">  155 </span><span class="spaces">                     </span><span class="istickedoff">[ (expressionsIn.ifcObj) ifc</span>
+<span class="lineno">  156 </span><span class="spaces">                     </span><span class="istickedoff">, map EDcD $ ifcParams ifc -- Return param declarations as expressions</span>
+<span class="lineno">  157 </span><span class="spaces">                     </span><span class="istickedoff">]</span></span>
 <span class="lineno">  158 </span>
 <span class="lineno">  159 </span>instance ConceptStructure Declaration where
 <span class="lineno">  160 </span>  <span class="decl"><span class="nottickedoff">concs         d = concs (sign d)</span></span>
@@ -178,14 +178,14 @@ span.spaces    { background: white }
 <span class="lineno">  162 </span>
 <span class="lineno">  163 </span>instance ConceptStructure Rule where
 <span class="lineno">  164 </span>  <span class="decl"><span class="nottickedoff">concs r   = concs (rrexp r) `uni` concs (rrviol r)</span></span>
-<span class="lineno">  165 </span>  <span class="decl"><span class="nottickedoff">expressionsIn r = foldr (uni) []</span>
-<span class="lineno">  166 </span><span class="spaces">                   </span><span class="nottickedoff">[ (expressionsIn.rrexp ) r</span>
-<span class="lineno">  167 </span><span class="spaces">                   </span><span class="nottickedoff">, (expressionsIn.rrviol) r</span>
-<span class="lineno">  168 </span><span class="spaces">                   </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  165 </span>  <span class="decl"><span class="istickedoff">expressionsIn r = foldr (uni) []</span>
+<span class="lineno">  166 </span><span class="spaces">                   </span><span class="istickedoff">[ (expressionsIn.rrexp ) r</span>
+<span class="lineno">  167 </span><span class="spaces">                   </span><span class="istickedoff">, (expressionsIn.rrviol) r</span>
+<span class="lineno">  168 </span><span class="spaces">                   </span><span class="istickedoff">]</span></span>
 <span class="lineno">  169 </span>
 <span class="lineno">  170 </span>instance ConceptStructure (PairView Expression) where
 <span class="lineno">  171 </span>  <span class="decl"><span class="nottickedoff">concs         (PairView ps) = concs         ps</span></span>
-<span class="lineno">  172 </span>  <span class="decl"><span class="nottickedoff">expressionsIn (PairView ps) = expressionsIn ps</span></span>
+<span class="lineno">  172 </span>  <span class="decl"><span class="istickedoff">expressionsIn (PairView ps) = expressionsIn ps</span></span>
 <span class="lineno">  173 </span>
 <span class="lineno">  174 </span>instance ConceptStructure Population where
 <span class="lineno">  175 </span>  <span class="decl"><span class="nottickedoff">concs pop@PRelPopu{} = concs (popdcl pop)</span>
@@ -212,9 +212,9 @@ span.spaces    { background: white }
 <span class="lineno">  196 </span>  <span class="decl"><span class="nottickedoff">concs pvs = case pvs of</span>
 <span class="lineno">  197 </span><span class="spaces">      </span><span class="nottickedoff">PairViewText{} -&gt; []</span>
 <span class="lineno">  198 </span><span class="spaces">      </span><span class="nottickedoff">PairViewExp{}  -&gt; concs (pvsExp pvs)</span></span>
-<span class="lineno">  199 </span>  <span class="decl"><span class="nottickedoff">expressionsIn pvs = case pvs of</span>
-<span class="lineno">  200 </span><span class="spaces">      </span><span class="nottickedoff">PairViewText{} -&gt; []</span>
-<span class="lineno">  201 </span><span class="spaces">      </span><span class="nottickedoff">PairViewExp{}  -&gt; expressionsIn (pvsExp pvs)</span></span>
+<span class="lineno">  199 </span>  <span class="decl"><span class="istickedoff">expressionsIn pvs = case pvs of</span>
+<span class="lineno">  200 </span><span class="spaces">      </span><span class="istickedoff">PairViewText{} -&gt; []</span>
+<span class="lineno">  201 </span><span class="spaces">      </span><span class="istickedoff">PairViewExp{}  -&gt; expressionsIn (pvsExp pvs)</span></span>
 <span class="lineno">  202 </span>
 <span class="lineno">  203 </span>instance ConceptStructure A_Gen where
 <span class="lineno">  204 </span>  <span class="decl"><span class="nottickedoff">concs g@Isa{}  = nub [gengen g,genspc g]</span>

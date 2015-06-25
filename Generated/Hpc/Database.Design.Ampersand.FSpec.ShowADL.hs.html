@@ -66,7 +66,7 @@ span.spaces    { background: white }
 <span class="lineno">   50 </span>instance LanguageDependent ObjectDef where
 <span class="lineno">   51 </span>  <span class="decl"><span class="nottickedoff">mapexprs f l obj = obj{objctx = f l (objctx obj), objmsub = mapexprs f l $ objmsub obj}</span></span>
 <span class="lineno">   52 </span>instance LanguageDependent SubInterface where
-<span class="lineno">   53 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ iref@(InterfaceRef _) = iref</span>
+<span class="lineno">   53 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ iref@(InterfaceRef _ _) = iref</span>
 <span class="lineno">   54 </span><span class="spaces">  </span><span class="nottickedoff">mapexprs f l (Box o cl objs) = Box o cl $ map (mapexprs f l) objs</span></span>
 <span class="lineno">   55 </span>instance LanguageDependent Declaration where
 <span class="lineno">   56 </span>  <span class="decl"><span class="nottickedoff">mapexprs _ _ = id</span></span>
@@ -77,7 +77,7 @@ span.spaces    { background: white }
 <span class="lineno">   61 </span>--------------------------------------------------------------
 <span class="lineno">   62 </span>instance ShowADL (P_SubIfc a) where
 <span class="lineno">   63 </span>  <span class="decl"><span class="nottickedoff">showADL (P_Box{}) = &quot;BOX&quot;</span>
-<span class="lineno">   64 </span><span class="spaces">  </span><span class="nottickedoff">showADL (P_InterfaceRef _ nm) = &quot; INTERFACE &quot;++showstr nm</span></span>
+<span class="lineno">   64 </span><span class="spaces">  </span><span class="nottickedoff">showADL (P_InterfaceRef _ isLink nm) = (if isLink then &quot; LINKTO&quot; else &quot;&quot;)++&quot; INTERFACE &quot;++showstr nm</span></span>
 <span class="lineno">   65 </span>
 <span class="lineno">   66 </span>instance ShowADL ObjectDef where
 <span class="lineno">   67 </span>-- WHY (HJ)? In deze instance van ShowADL worden diverse zaken gebruikt die ik hier niet zou verwachten.
@@ -90,7 +90,7 @@ span.spaces    { background: white }
 <span class="lineno">   74 </span><span class="spaces">               </span><span class="nottickedoff">recur &quot;\n  &quot; (objmsub obj)</span>
 <span class="lineno">   75 </span><span class="spaces">  </span><span class="nottickedoff">where recur :: String -&gt; Maybe SubInterface -&gt; String</span>
 <span class="lineno">   76 </span><span class="spaces">        </span><span class="nottickedoff">recur _   Nothing = &quot;&quot;</span>
-<span class="lineno">   77 </span><span class="spaces">        </span><span class="nottickedoff">recur ind (Just (InterfaceRef nm)) = ind++&quot; INTERFACE &quot;++showstr nm</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="nottickedoff">recur ind (Just (InterfaceRef isLink nm)) = ind++(if isLink then &quot; LINKTO&quot; else &quot;&quot;)++&quot; INTERFACE &quot;++showstr nm</span>
 <span class="lineno">   78 </span><span class="spaces">        </span><span class="nottickedoff">recur ind (Just (Box _ cl objs))</span>
 <span class="lineno">   79 </span><span class="spaces">         </span><span class="nottickedoff">= ind++&quot; BOX&quot; ++ showClass cl ++ &quot; [ &quot;++</span>
 <span class="lineno">   80 </span><span class="spaces">           </span><span class="nottickedoff">intercalate (ind++&quot;     , &quot;)</span>
@@ -135,18 +135,18 @@ span.spaces    { background: white }
 <span class="lineno">  119 </span><span class="spaces"> </span><span class="nottickedoff">showADL English = &quot;IN ENGLISH&quot;</span></span>
 <span class="lineno">  120 </span>
 <span class="lineno">  121 </span>instance ShowADL ExplObj where
-<span class="lineno">  122 </span> <span class="decl"><span class="nottickedoff">showADL e = case e of</span>
-<span class="lineno">  123 </span><span class="spaces">      </span><span class="nottickedoff">ExplConceptDef cd  -&gt; &quot;CONCEPT &quot;++cdcpt cd</span>
-<span class="lineno">  124 </span><span class="spaces">      </span><span class="nottickedoff">ExplDeclaration d  -&gt; &quot;RELATION &quot;++show (name d)</span>
-<span class="lineno">  125 </span><span class="spaces">      </span><span class="nottickedoff">ExplRule str       -&gt; &quot;RULE &quot;++showstr str</span>
-<span class="lineno">  126 </span><span class="spaces">      </span><span class="nottickedoff">ExplIdentityDef str-&gt; &quot;IDENT &quot;++showstr str</span>
-<span class="lineno">  127 </span><span class="spaces">      </span><span class="nottickedoff">ExplViewDef str    -&gt; &quot;VIEW &quot;++showstr str</span>
-<span class="lineno">  128 </span><span class="spaces">      </span><span class="nottickedoff">ExplPattern str    -&gt; &quot;PATTERN &quot;++ showstr str</span>
-<span class="lineno">  129 </span><span class="spaces">      </span><span class="nottickedoff">ExplInterface str  -&gt; &quot;INTERFACE &quot;++showstr str</span>
-<span class="lineno">  130 </span><span class="spaces">      </span><span class="nottickedoff">ExplContext str    -&gt; &quot;CONTEXT &quot;++showstr str</span></span>
+<span class="lineno">  122 </span> <span class="decl"><span class="istickedoff">showADL e = case e of</span>
+<span class="lineno">  123 </span><span class="spaces">      </span><span class="istickedoff">ExplConceptDef cd  -&gt; <span class="nottickedoff">&quot;CONCEPT &quot;++cdcpt cd</span></span>
+<span class="lineno">  124 </span><span class="spaces">      </span><span class="istickedoff">ExplDeclaration d  -&gt; <span class="nottickedoff">&quot;RELATION &quot;++show (name d)</span></span>
+<span class="lineno">  125 </span><span class="spaces">      </span><span class="istickedoff">ExplRule str       -&gt; &quot;RULE &quot;++showstr str</span>
+<span class="lineno">  126 </span><span class="spaces">      </span><span class="istickedoff">ExplIdentityDef str-&gt; <span class="nottickedoff">&quot;IDENT &quot;++showstr str</span></span>
+<span class="lineno">  127 </span><span class="spaces">      </span><span class="istickedoff">ExplViewDef str    -&gt; <span class="nottickedoff">&quot;VIEW &quot;++showstr str</span></span>
+<span class="lineno">  128 </span><span class="spaces">      </span><span class="istickedoff">ExplPattern str    -&gt; <span class="nottickedoff">&quot;PATTERN &quot;++ showstr str</span></span>
+<span class="lineno">  129 </span><span class="spaces">      </span><span class="istickedoff">ExplInterface str  -&gt; <span class="nottickedoff">&quot;INTERFACE &quot;++showstr str</span></span>
+<span class="lineno">  130 </span><span class="spaces">      </span><span class="istickedoff">ExplContext str    -&gt; <span class="nottickedoff">&quot;CONTEXT &quot;++showstr str</span></span></span>
 <span class="lineno">  131 </span>
 <span class="lineno">  132 </span>showstr :: String -&gt; String
-<span class="lineno">  133 </span><span class="decl"><span class="nottickedoff">showstr str = &quot;\&quot;&quot;++str++&quot;\&quot;&quot;</span></span>
+<span class="lineno">  133 </span><span class="decl"><span class="istickedoff">showstr str = &quot;\&quot;&quot;++str++&quot;\&quot;&quot;</span></span>
 <span class="lineno">  134 </span>
 <span class="lineno">  135 </span>
 <span class="lineno">  136 </span>-- TODO: making these tuples instance of ShowADL is very hacky
@@ -226,9 +226,9 @@ span.spaces    { background: white }
 <span class="lineno">  210 </span><span class="spaces">          </span><span class="nottickedoff">++ &quot;(&quot; ++intercalate &quot;, &quot; (map showADL $ vdats vd) ++ &quot;)&quot;</span></span>
 <span class="lineno">  211 </span>
 <span class="lineno">  212 </span>instance ShowADL ViewSegment where
-<span class="lineno">  213 </span> <span class="decl"><span class="nottickedoff">showADL (ViewExp objDef) = (if null (name objDef) then &quot;&quot; else &quot;\&quot;&quot;++name objDef++&quot;\&quot;:&quot;) ++ showADL (objctx objDef)</span>
-<span class="lineno">  214 </span><span class="spaces"> </span><span class="nottickedoff">showADL (ViewText str) = &quot;TXT &quot; ++ show str</span>
-<span class="lineno">  215 </span><span class="spaces"> </span><span class="nottickedoff">showADL (ViewHtml str) = &quot;PRIMHTML &quot; ++ show str</span></span>
+<span class="lineno">  213 </span> <span class="decl"><span class="nottickedoff">showADL (ViewExp _ objDef) = (if null (name objDef) then &quot;&quot; else &quot;\&quot;&quot;++name objDef++&quot;\&quot;:&quot;) ++ showADL (objctx objDef)</span>
+<span class="lineno">  214 </span><span class="spaces"> </span><span class="nottickedoff">showADL (ViewText _ str) = &quot;TXT &quot; ++ show str</span>
+<span class="lineno">  215 </span><span class="spaces"> </span><span class="nottickedoff">showADL (ViewHtml _ str) = &quot;PRIMHTML &quot; ++ show str</span></span>
 <span class="lineno">  216 </span>
 <span class="lineno">  217 </span>-- showADL Relation only prints complete signatures to ensure unambiguity.
 <span class="lineno">  218 </span>-- therefore, when printing expressions, do not apply this function to print relations, but apply one that prints names only
@@ -236,35 +236,35 @@ span.spaces    { background: white }
 <span class="lineno">  220 </span>-- showADL rel = show rel
 <span class="lineno">  221 </span>
 <span class="lineno">  222 </span>instance ShowADL Expression where
-<span class="lineno">  223 </span> <span class="decl"><span class="nottickedoff">showADL = showExpr (&quot; = &quot;, &quot; |- &quot;, &quot; /\\ &quot;, &quot; \\/ &quot;, &quot; - &quot;, &quot; / &quot;, &quot; \\ &quot;, &quot; &lt;&gt; &quot;, &quot;;&quot;, &quot;!&quot;, &quot;*&quot;, &quot;*&quot;, &quot;+&quot;, &quot;~&quot;, (&quot;-&quot;++), &quot;(&quot;, &quot;)&quot;, &quot;[&quot;, &quot;*&quot;, &quot;]&quot;)</span>
-<span class="lineno">  224 </span><span class="spaces"></span><span class="nottickedoff">-- NOTE: retain space after \\, because of unexpected side effects if it is used just before an 'r' or 'n'....</span>
-<span class="lineno">  225 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
-<span class="lineno">  226 </span><span class="spaces">     </span><span class="nottickedoff">showExpr :: (String,String,String,String,String,String,String,String,String,String,String,String,String,String,String -&gt; String,String,String,String,String,String)</span>
-<span class="lineno">  227 </span><span class="spaces">            </span><span class="nottickedoff">-&gt; Expression -&gt; String</span>
-<span class="lineno">  228 </span><span class="spaces">     </span><span class="nottickedoff">showExpr    (equi,  impl,  inter, union',diff,  lresi, rresi, rDia, rMul  , rAdd , rPrd ,closK0,closK1,flp',  compl,           lpar,  rpar,  lbr,   star,  rbr)  expr</span>
-<span class="lineno">  229 </span><span class="spaces">      </span><span class="nottickedoff">= showchar (insParentheses expr)</span>
-<span class="lineno">  230 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
-<span class="lineno">  231 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EEqu (l,r)) = showchar l++equi++showchar r</span>
-<span class="lineno">  232 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EImp (l,r)) = showchar l++impl++showchar r</span>
-<span class="lineno">  233 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EIsc (l,r)) = showchar l++inter++showchar r</span>
-<span class="lineno">  234 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EUni (l,r)) = showchar l++union'++showchar r</span>
-<span class="lineno">  235 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDif (l,r)) = showchar l++diff ++showchar r</span>
-<span class="lineno">  236 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ELrs (l,r)) = showchar l++lresi++showchar r</span>
-<span class="lineno">  237 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ERrs (l,r)) = showchar l++rresi++showchar r</span>
-<span class="lineno">  238 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDia (l,r)) = showchar l++rDia++showchar r</span>
-<span class="lineno">  239 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ECps (l,r)) = showchar l++rMul++showchar r</span>
-<span class="lineno">  240 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ERad (l,r)) = showchar l++rAdd++showchar r</span>
-<span class="lineno">  241 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EPrd (l,r)) = showchar l++rPrd++showchar r</span>
-<span class="lineno">  242 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EKl0 e)     = showchar e++closK0</span>
-<span class="lineno">  243 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EKl1 e)     = showchar e++closK1</span>
-<span class="lineno">  244 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EFlp e)     = showchar e++flp'</span>
-<span class="lineno">  245 </span><span class="spaces">          </span><span class="nottickedoff">showchar (ECpl e)     = compl (showchar e)</span>
-<span class="lineno">  246 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EBrk e)     = lpar++showchar e++rpar</span>
-<span class="lineno">  247 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDcD dcl)   = name dcl</span>
-<span class="lineno">  248 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDcI c)     = &quot;I&quot;++lbr++name c++rbr</span>
-<span class="lineno">  249 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EEps i _)   = &quot;I{-Eps-}&quot;++lbr++name i++rbr --HJO, 20140622: Modified this, because the output must comply to Ampersand syntax.</span>
-<span class="lineno">  250 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EDcV sgn)   = &quot;V&quot;++lbr++name (source sgn)++star++name (target sgn)++rbr</span>
-<span class="lineno">  251 </span><span class="spaces">          </span><span class="nottickedoff">showchar (EMp1 a c)   = &quot;'&quot;++a++&quot;'&quot;++lbr++name c++rbr</span></span>
+<span class="lineno">  223 </span> <span class="decl"><span class="istickedoff">showADL = showExpr (<span class="nottickedoff">&quot; = &quot;</span>, <span class="nottickedoff">&quot; |- &quot;</span>, &quot; /\\ &quot;, <span class="nottickedoff">&quot; \\/ &quot;</span>, <span class="nottickedoff">&quot; - &quot;</span>, <span class="nottickedoff">&quot; / &quot;</span>, <span class="nottickedoff">&quot; \\ &quot;</span>, <span class="nottickedoff">&quot; &lt;&gt; &quot;</span>, &quot;;&quot;, <span class="nottickedoff">&quot;!&quot;</span>, <span class="nottickedoff">&quot;*&quot;</span>, <span class="nottickedoff">&quot;*&quot;</span>, <span class="nottickedoff">&quot;+&quot;</span>, &quot;~&quot;, <span class="nottickedoff">(&quot;-&quot;++)</span>, <span class="nottickedoff">&quot;(&quot;</span>, <span class="nottickedoff">&quot;)&quot;</span>, &quot;[&quot;, &quot;*&quot;, &quot;]&quot;)</span>
+<span class="lineno">  224 </span><span class="spaces"></span><span class="istickedoff">-- NOTE: retain space after \\, because of unexpected side effects if it is used just before an 'r' or 'n'....</span>
+<span class="lineno">  225 </span><span class="spaces">   </span><span class="istickedoff">where</span>
+<span class="lineno">  226 </span><span class="spaces">     </span><span class="istickedoff">showExpr :: (String,String,String,String,String,String,String,String,String,String,String,String,String,String,String -&gt; String,String,String,String,String,String)</span>
+<span class="lineno">  227 </span><span class="spaces">            </span><span class="istickedoff">-&gt; Expression -&gt; String</span>
+<span class="lineno">  228 </span><span class="spaces">     </span><span class="istickedoff">showExpr    (equi,  impl,  inter, union',diff,  lresi, rresi, rDia, rMul  , rAdd , rPrd ,closK0,closK1,flp',  compl,           lpar,  rpar,  lbr,   star,  rbr)  expr</span>
+<span class="lineno">  229 </span><span class="spaces">      </span><span class="istickedoff">= showchar (insParentheses expr)</span>
+<span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff">where</span>
+<span class="lineno">  231 </span><span class="spaces">          </span><span class="istickedoff">showchar (EEqu (l,r)) = <span class="nottickedoff">showchar l++equi++showchar r</span></span>
+<span class="lineno">  232 </span><span class="spaces">          </span><span class="istickedoff">showchar (EImp (l,r)) = <span class="nottickedoff">showchar l++impl++showchar r</span></span>
+<span class="lineno">  233 </span><span class="spaces">          </span><span class="istickedoff">showchar (EIsc (l,r)) = showchar l++inter++showchar r</span>
+<span class="lineno">  234 </span><span class="spaces">          </span><span class="istickedoff">showchar (EUni (l,r)) = <span class="nottickedoff">showchar l++union'++showchar r</span></span>
+<span class="lineno">  235 </span><span class="spaces">          </span><span class="istickedoff">showchar (EDif (l,r)) = <span class="nottickedoff">showchar l++diff ++showchar r</span></span>
+<span class="lineno">  236 </span><span class="spaces">          </span><span class="istickedoff">showchar (ELrs (l,r)) = <span class="nottickedoff">showchar l++lresi++showchar r</span></span>
+<span class="lineno">  237 </span><span class="spaces">          </span><span class="istickedoff">showchar (ERrs (l,r)) = <span class="nottickedoff">showchar l++rresi++showchar r</span></span>
+<span class="lineno">  238 </span><span class="spaces">          </span><span class="istickedoff">showchar (EDia (l,r)) = <span class="nottickedoff">showchar l++rDia++showchar r</span></span>
+<span class="lineno">  239 </span><span class="spaces">          </span><span class="istickedoff">showchar (ECps (l,r)) = showchar l++rMul++showchar r</span>
+<span class="lineno">  240 </span><span class="spaces">          </span><span class="istickedoff">showchar (ERad (l,r)) = <span class="nottickedoff">showchar l++rAdd++showchar r</span></span>
+<span class="lineno">  241 </span><span class="spaces">          </span><span class="istickedoff">showchar (EPrd (l,r)) = <span class="nottickedoff">showchar l++rPrd++showchar r</span></span>
+<span class="lineno">  242 </span><span class="spaces">          </span><span class="istickedoff">showchar (EKl0 e)     = <span class="nottickedoff">showchar e++closK0</span></span>
+<span class="lineno">  243 </span><span class="spaces">          </span><span class="istickedoff">showchar (EKl1 e)     = <span class="nottickedoff">showchar e++closK1</span></span>
+<span class="lineno">  244 </span><span class="spaces">          </span><span class="istickedoff">showchar (EFlp e)     = showchar e++flp'</span>
+<span class="lineno">  245 </span><span class="spaces">          </span><span class="istickedoff">showchar (ECpl e)     = <span class="nottickedoff">compl (showchar e)</span></span>
+<span class="lineno">  246 </span><span class="spaces">          </span><span class="istickedoff">showchar (EBrk e)     = <span class="nottickedoff">lpar++showchar e++rpar</span></span>
+<span class="lineno">  247 </span><span class="spaces">          </span><span class="istickedoff">showchar (EDcD dcl)   = name dcl</span>
+<span class="lineno">  248 </span><span class="spaces">          </span><span class="istickedoff">showchar (EDcI c)     = &quot;I&quot;++lbr++name c++rbr</span>
+<span class="lineno">  249 </span><span class="spaces">          </span><span class="istickedoff">showchar (EEps i _)   = <span class="nottickedoff">&quot;I{-Eps-}&quot;++lbr++name i++rbr</span> --HJO, 20140622: Modified this, because the output must comply to Ampersand syntax.</span>
+<span class="lineno">  250 </span><span class="spaces">          </span><span class="istickedoff">showchar (EDcV sgn)   = &quot;V&quot;++lbr++name (source sgn)++star++name (target sgn)++rbr</span>
+<span class="lineno">  251 </span><span class="spaces">          </span><span class="istickedoff">showchar (EMp1 a c)   = <span class="nottickedoff">&quot;'&quot;++a++&quot;'&quot;++lbr++name c++rbr</span></span></span>
 <span class="lineno">  252 </span>
 <span class="lineno">  253 </span>instance ShowADL DnfClause where
 <span class="lineno">  254 </span> <span class="decl"><span class="nottickedoff">showADL dnfClause = showADL (dnf2expr dnfClause)</span></span>
@@ -308,7 +308,7 @@ span.spaces    { background: white }
 <span class="lineno">  292 </span> <span class="decl"><span class="nottickedoff">showADL = show</span></span>
 <span class="lineno">  293 </span>
 <span class="lineno">  294 </span>instance ShowADL A_Concept where
-<span class="lineno">  295 </span> <span class="decl"><span class="nottickedoff">showADL c = show (name c)</span></span>
+<span class="lineno">  295 </span> <span class="decl"><span class="istickedoff">showADL c = show (name c)</span></span>
 <span class="lineno">  296 </span>
 <span class="lineno">  297 </span>instance ShowADL ConceptDef where
 <span class="lineno">  298 </span> <span class="decl"><span class="nottickedoff">showADL cd</span>
@@ -343,26 +343,26 @@ span.spaces    { background: white }
 <span class="lineno">  327 </span> <span class="decl"><span class="nottickedoff">showADL (a,b) = &quot;(&quot; ++ showADL a ++ &quot;, &quot; ++ showADL b ++ &quot;)&quot;</span></span>
 <span class="lineno">  328 </span>
 <span class="lineno">  329 </span>instance ShowADL P_Population where
-<span class="lineno">  330 </span> <span class="decl"><span class="nottickedoff">showADL pop</span>
-<span class="lineno">  331 </span><span class="spaces">  </span><span class="nottickedoff">= &quot;POPULATION &quot;++name pop</span>
-<span class="lineno">  332 </span><span class="spaces">  </span><span class="nottickedoff">++ case pop of</span>
-<span class="lineno">  333 </span><span class="spaces">        </span><span class="nottickedoff">P_TRelPop{} -&gt; &quot;[&quot;++(name.pSrc.p_type) pop++&quot;*&quot;++(name.pTgt.p_type) pop++&quot;]&quot;</span>
-<span class="lineno">  334 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; &quot;&quot;</span>
-<span class="lineno">  335 </span><span class="spaces">  </span><span class="nottickedoff">++ &quot; CONTAINS\n&quot;</span>
-<span class="lineno">  336 </span><span class="spaces">  </span><span class="nottickedoff">++ if (case pop of</span>
-<span class="lineno">  337 </span><span class="spaces">            </span><span class="nottickedoff">P_RelPopu{} -&gt; null (p_popps pop)</span>
-<span class="lineno">  338 </span><span class="spaces">            </span><span class="nottickedoff">P_TRelPop{} -&gt; null (p_popps pop)</span>
-<span class="lineno">  339 </span><span class="spaces">            </span><span class="nottickedoff">P_CptPopu{} -&gt; null (p_popas pop)</span>
-<span class="lineno">  340 </span><span class="spaces">        </span><span class="nottickedoff">)</span>
-<span class="lineno">  341 </span><span class="spaces">     </span><span class="nottickedoff">then &quot;&quot;</span>
-<span class="lineno">  342 </span><span class="spaces">     </span><span class="nottickedoff">else indent++&quot;[ &quot;++intercalate (&quot;\n&quot;++indent++&quot;, &quot;) showContent++indent++&quot;]&quot;</span>
-<span class="lineno">  343 </span><span class="spaces">    </span><span class="nottickedoff">where indent = &quot;   &quot;</span>
-<span class="lineno">  344 </span><span class="spaces">          </span><span class="nottickedoff">showContent = case pop of</span>
-<span class="lineno">  345 </span><span class="spaces">                          </span><span class="nottickedoff">P_RelPopu{} -&gt; map showPaire (p_popps pop)</span>
-<span class="lineno">  346 </span><span class="spaces">                          </span><span class="nottickedoff">P_TRelPop{} -&gt; map showPaire (p_popps pop)</span>
-<span class="lineno">  347 </span><span class="spaces">                          </span><span class="nottickedoff">P_CptPopu{} -&gt; map showAtom  (p_popas pop)</span></span>
+<span class="lineno">  330 </span> <span class="decl"><span class="istickedoff">showADL pop</span>
+<span class="lineno">  331 </span><span class="spaces">  </span><span class="istickedoff">= &quot;POPULATION &quot;++name pop</span>
+<span class="lineno">  332 </span><span class="spaces">  </span><span class="istickedoff">++ case pop of</span>
+<span class="lineno">  333 </span><span class="spaces">        </span><span class="istickedoff">P_TRelPop{} -&gt; &quot;[&quot;++(name.pSrc.p_type) pop++&quot;*&quot;++(name.pTgt.p_type) pop++&quot;]&quot;</span>
+<span class="lineno">  334 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; &quot;&quot;</span>
+<span class="lineno">  335 </span><span class="spaces">  </span><span class="istickedoff">++ &quot; CONTAINS\n&quot;</span>
+<span class="lineno">  336 </span><span class="spaces">  </span><span class="istickedoff">++ if <span class="tickonlyfalse">(case pop of</span></span>
+<span class="lineno">  337 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">P_RelPopu{} -&gt; null (p_popps pop)</span></span>
+<span class="lineno">  338 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">P_TRelPop{} -&gt; null (p_popps pop)</span></span>
+<span class="lineno">  339 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">P_CptPopu{} -&gt; <span class="nottickedoff">null (p_popas pop)</span></span></span>
+<span class="lineno">  340 </span><span class="spaces">        </span><span class="istickedoff"><span class="tickonlyfalse">)</span></span>
+<span class="lineno">  341 </span><span class="spaces">     </span><span class="istickedoff">then <span class="nottickedoff">&quot;&quot;</span></span>
+<span class="lineno">  342 </span><span class="spaces">     </span><span class="istickedoff">else indent++&quot;[ &quot;++intercalate (&quot;\n&quot;++indent++&quot;, &quot;) showContent++indent++&quot;]&quot;</span>
+<span class="lineno">  343 </span><span class="spaces">    </span><span class="istickedoff">where indent = &quot;   &quot;</span>
+<span class="lineno">  344 </span><span class="spaces">          </span><span class="istickedoff">showContent = case pop of</span>
+<span class="lineno">  345 </span><span class="spaces">                          </span><span class="istickedoff">P_RelPopu{} -&gt; map showPaire (p_popps pop)</span>
+<span class="lineno">  346 </span><span class="spaces">                          </span><span class="istickedoff">P_TRelPop{} -&gt; map showPaire (p_popps pop)</span>
+<span class="lineno">  347 </span><span class="spaces">                          </span><span class="istickedoff">P_CptPopu{} -&gt; <span class="nottickedoff">map showAtom  (p_popas pop)</span></span></span>
 <span class="lineno">  348 </span>showPaire :: Paire -&gt; String
-<span class="lineno">  349 </span><span class="decl"><span class="nottickedoff">showPaire p = showAtom (srcPaire p)++&quot;, &quot;++ showAtom (trgPaire p)</span></span>
+<span class="lineno">  349 </span><span class="decl"><span class="istickedoff">showPaire p = showAtom (srcPaire p)++&quot;, &quot;++ showAtom (trgPaire p)</span></span>
 <span class="lineno">  350 </span>instance ShowADL Paire where
 <span class="lineno">  351 </span> <span class="decl"><span class="nottickedoff">showADL p = &quot;(&quot;++showAtom (srcPaire p)++&quot;,&quot;++ showAtom (trgPaire p)++&quot;)&quot;</span></span>
 <span class="lineno">  352 </span>instance ShowADL Pairs where
@@ -392,20 +392,20 @@ span.spaces    { background: white }
 <span class="lineno">  376 </span>--    where indent = &quot;   &quot;
 <span class="lineno">  377 </span>
 <span class="lineno">  378 </span>showAtom :: String -&gt; String
-<span class="lineno">  379 </span><span class="decl"><span class="nottickedoff">showAtom x = &quot;'&quot;++[if c=='\'' then '`' else c|c&lt;-x]++&quot;'&quot;</span></span>
+<span class="lineno">  379 </span><span class="decl"><span class="istickedoff">showAtom x = &quot;'&quot;++[if c=='\'' then '`' else c|c&lt;-x]++&quot;'&quot;</span></span>
 <span class="lineno">  380 </span>
 <span class="lineno">  381 </span>instance ShowADL TermPrim where
-<span class="lineno">  382 </span> <span class="decl"><span class="nottickedoff">showADL (PI _)                                   = &quot;I&quot;</span>
-<span class="lineno">  383 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Pid _ c)                                = &quot;I[&quot;++showADL c++&quot;]&quot;</span>
-<span class="lineno">  384 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Patm _ a Nothing)                       = &quot;'&quot;++a++&quot;'&quot;</span>
-<span class="lineno">  385 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Patm _ a (Just c))                      = &quot;'&quot;++a++&quot;'[&quot;++show c++&quot;]&quot;</span>
-<span class="lineno">  386 </span><span class="spaces"> </span><span class="nottickedoff">showADL (PVee _)                                 = &quot;V&quot;</span>
-<span class="lineno">  387 </span><span class="spaces"> </span><span class="nottickedoff">showADL (Pfull _ s t)                            = &quot;V[&quot;++show s++&quot;*&quot;++show t++&quot;]&quot;</span>
-<span class="lineno">  388 </span><span class="spaces"> </span><span class="nottickedoff">showADL (PNamedR rel)                            = showADL rel</span></span>
+<span class="lineno">  382 </span> <span class="decl"><span class="istickedoff">showADL (PI _)                                   = &quot;I&quot;</span>
+<span class="lineno">  383 </span><span class="spaces"> </span><span class="istickedoff">showADL (Pid _ c)                                = <span class="nottickedoff">&quot;I[&quot;++showADL c++&quot;]&quot;</span></span>
+<span class="lineno">  384 </span><span class="spaces"> </span><span class="istickedoff">showADL (Patm _ a Nothing)                       = <span class="nottickedoff">&quot;'&quot;++a++&quot;'&quot;</span></span>
+<span class="lineno">  385 </span><span class="spaces"> </span><span class="istickedoff">showADL (Patm _ a (Just c))                      = <span class="nottickedoff">&quot;'&quot;++a++&quot;'[&quot;++show c++&quot;]&quot;</span></span>
+<span class="lineno">  386 </span><span class="spaces"> </span><span class="istickedoff">showADL (PVee _)                                 = <span class="nottickedoff">&quot;V&quot;</span></span>
+<span class="lineno">  387 </span><span class="spaces"> </span><span class="istickedoff">showADL (Pfull _ s t)                            = <span class="nottickedoff">&quot;V[&quot;++show s++&quot;*&quot;++show t++&quot;]&quot;</span></span>
+<span class="lineno">  388 </span><span class="spaces"> </span><span class="istickedoff">showADL (PNamedR rel)                            = showADL rel</span></span>
 <span class="lineno">  389 </span> 
 <span class="lineno">  390 </span>instance ShowADL P_NamedRel where
-<span class="lineno">  391 </span> <span class="decl"><span class="nottickedoff">showADL (PNamedRel _ rel mSgn)                    = rel++maybe &quot;&quot; showsign mSgn</span>
-<span class="lineno">  392 </span><span class="spaces">  </span><span class="nottickedoff">where     showsign (P_Sign src trg)                         = &quot;[&quot;++showADL src++&quot;*&quot;++showADL trg++&quot;]&quot;</span></span>
+<span class="lineno">  391 </span> <span class="decl"><span class="istickedoff">showADL (PNamedRel _ rel mSgn)                    = rel++maybe &quot;&quot; <span class="nottickedoff">showsign</span> mSgn</span>
+<span class="lineno">  392 </span><span class="spaces">  </span><span class="istickedoff">where     <span class="nottickedoff">showsign (P_Sign src trg)                         = &quot;[&quot;++showADL src++&quot;*&quot;++showADL trg++&quot;]&quot;</span></span></span>
 <span class="lineno">  393 </span>
 <span class="lineno">  394 </span>--used to compose error messages at p2a time
 <span class="lineno">  395 </span>instance (ShowADL a, Traced a) =&gt; ShowADL (Term a) where

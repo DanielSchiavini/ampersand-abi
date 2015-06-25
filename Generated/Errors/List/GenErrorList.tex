@@ -3,7 +3,7 @@
   \item[Incorrect ADL]~\\
 \begin{adl}
 use of 'CORNCEPT' instead of CONCEPT\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -13,7 +13,7 @@ Expecting "ENDPATTERN" or (lower case identifier ?lc? or "CLASSIFY" or "CONCEPT"
  or "IDENT" or "KEY" or "POPULATION" or "PURPOSE" or "RELATION" or "ROLE" or "RU
 LE" or "SPEC" or "VIEW" ...)*
 Try inserting symbol "CONCEPT"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -45,7 +45,7 @@ clientName :: Client -Z> Name =
     ; ("Client_2"      , "Stef")
     ]
 \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -72,7 +72,7 @@ Try deleting symbol ">" at line 14, column 24 of file "testfile_mba.adl"
 before upper case identifier Name at line 14, column 26 of file "testfle_mba.adl
 " Expecting lower case identifier ?lc? or "." or "=" or "CLASSIFY" or "CONCEPT" or  "ENDCONTEXT" or "IDENT" or "INCLUDE" or "INTERFACE" or "KEY" or "META" or "PATTERN" or "PHPPLUG" or "POPULATION" or "PROCESS" or "PURPOSE" or "RELATION" or "RULE" or "SPEC" or "SQLPLUG" or "THEMES" or "VIEW"
 Try deleting symbol upper case identifier Name at line 14, column 26 of file "testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -103,14 +103,14 @@ clientName :: Client ** Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
 before "*" at line 14, column 23 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or string ""
 Try deleting symbol "*" at line 14, column 23 of file "testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -140,7 +140,7 @@ clientName :: Client [] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -149,7 +149,7 @@ Expecting "*" or "-" or "0" or "1"
 Try inserting symbol "-"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -180,7 +180,7 @@ clientName :: Client [0..2-*] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -194,7 +194,7 @@ a.adl"
 before "-" at line 14, column 27 of file "testfile_mba.adl"
 Expecting "*" or "1"
 Try inserting symbol "1"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -225,7 +225,7 @@ clientName :: Client [0..1] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -233,7 +233,7 @@ before symbol ] at line 14, column 27 of file "testfile_mba.adl"
 Expecting "-"
 Try inserting symbol "-"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -264,7 +264,7 @@ clientName :: Client [0-1] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -277,7 +277,7 @@ Try inserting symbol ".."
 before "-" at line 14, column 24 of file "testfile_mba.adl"
 Expecting "*" or "1"
 Try inserting symbol "1"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -308,7 +308,7 @@ clientName :: Client [0-a] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -328,7 +328,7 @@ before lower case identifier a at line 14, column 25 of file "testfile_mba.adl"
 Expecting symbol ] or "*" or "0" or "1"
 Try deleting symbol lower case identifier a at line 14, column 25 of file "testf
 ile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -360,7 +360,7 @@ clientName :: Client [*-1..0] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -373,7 +373,7 @@ Try deleting symbol "0" at line 14, column 28 of file "testfile_mba.adl"
 before symbol ] at line 14, column 29 of file "testfile_mba.adl"
 Expecting "*" or "1"
 Try inserting symbol "1"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -404,14 +404,14 @@ clientName :: 0Client [*-1..1] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
 before "0" at line 14, column 15 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or string ""
 Try deleting symbol "0" at line 14, column 15 of file "testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -441,7 +441,7 @@ clientName : Client [*-1..1] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -455,7 +455,7 @@ before upper case identifier Client at line 14, column 14 of file "testfile_mba.
 adl"
 Expecting "::"
 Try inserting symbol "::"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -483,7 +483,7 @@ expecting Operator '::'\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 RELATION RelTest [RelationCR]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -498,7 +498,7 @@ Try deleting symbol upper case identifier RelTest at line 29, column 10 of file
 before symbol [ at line 29, column 18 of file "testfile_mba.adl"
 Expecting lower case identifier ?lc?
 Try inserting symbol lower case identifier ?lc?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -525,7 +525,7 @@ unexpected Upper case identifier RelTest\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 RELATION relTest [relationCR]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -541,7 +541,7 @@ before symbol ] at line 29, column 29 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or "ONE" or string ""
 Try inserting symbol "ONE"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -569,7 +569,7 @@ expecting Keyword "ONE"\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 RELATION relTest [ONE-ONNE]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -584,7 +584,7 @@ l"
 Expecting symbol ]
 Try deleting symbol upper case identifier ONNE at line 19, column 23 of file "te
 stfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -615,7 +615,7 @@ clientName :: client [*-1..1] Name =
     [ ("Client_1"      , "Martijn")
     ; ("Client_2"      , "Stef")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -630,7 +630,7 @@ testfile_mba.adl"
 before symbol [ at line 27, column 22 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or string ""
 Try inserting symbol upper case identifier ?uc?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -660,7 +660,7 @@ unexpected Lower case identifier client\end{haskell}
     [ (""Client_1""      , ""Martijn"")
     ; (""Client_2""      , ""Stef"")
     ]"\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -874,7 +874,7 @@ UG" or "THEMES" or "VIEW" or "VIOLATION" or "\\" or "\\/" or "|-" or ("*" or "+"
  or "~" ...)* or ("MEANING" ...)* or ("MESSAGE" ...)*
 Try inserting symbol lower case identifier ?lc?
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -900,7 +900,7 @@ PE Lexer error LexerError line 27:1, file ArchitectureAndDesign/Syntax/testfile_
   \item[Incorrect ADL]~\\
 \begin{adl}
 RELATION relTest [ONE*ONE]]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -911,7 +911,7 @@ LASSIFY" or "CONCEPT" or "ENDCONTEXT" or "IDENT" or "INCLUDE" or "INTERFACE" or
 S" or "PURPOSE" or "RELATION" or "RULE" or "SPEC" or "SQLPLUG" or "THEMES" or "V
 IEW" or ("MEANING" ...)*
 Try deleting symbol symbol ] at line 19, column 27 of file "testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -940,7 +940,7 @@ expecting Keyword "META", Keyword "PATTERN", Keyword "PROCESS", Keyword "RULE", 
   \item[Incorrect ADL]~\\
 \begin{adl}
 RELATION relTest [[ONE*ONE]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -948,7 +948,7 @@ before symbol [ at line 19, column 19 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or "ONE" or string ""
 Try deleting symbol symbol [ at line 19, column 19 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -976,7 +976,7 @@ expecting Keyword "ONE"\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONTEXT DeliverySimple IN ENGLISH REST2\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -989,7 +989,7 @@ r "PURPOSE" or "RELATION" or "RULE" or "SPEC" or "SQLPLUG" or "THEMES" or "VIEW"
  ...)*
 Try deleting symbol upper case identifier REST2 at line 1, column 35 of file "te
 stfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1018,7 +1018,7 @@ expecting Keyword "REST", Keyword "HTML", Keyword "LATEX", Keyword "MARKDOWN", K
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONTEXT DeliverySimple REST2 IN ENGLISH \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1032,7 +1032,7 @@ r "VIEW" ...)*
 Try deleting symbol upper case identifier REST2 at line 1, column 24 of file "te
 stfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1061,7 +1061,7 @@ expecting Keyword "IN"
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONTEXT DeliverySimple IN ENGLISHD\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1077,7 +1077,7 @@ before lower case identifier clientName at line 14, column 1 of file "testfile_m
 ba.adl"
 Expecting "DUTCH" or "ENGLISH"
 Try inserting symbol "DUTCH"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1105,7 +1105,7 @@ expecting Keyword "DUTCH" or Keyword "ENGLISH"\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONTEXT DeliverySimple in ENGLISH\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1120,7 +1120,7 @@ ba.adl"
 Expecting "::"
 Try deleting symbol lower case identifier clientName at line 14, column 1 of fil
 e "testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1148,7 +1148,7 @@ expecting Keyword "IN"\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONTEXT deliverySimple IN ENGLISH\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1163,7 +1163,7 @@ file "testfile_mba.adl"
 before "IN" at line 1, column 24 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or string ""
 Try inserting symbol upper case identifier ?uc?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1190,7 +1190,7 @@ unexpected Lower case identifier deliverySimple\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONTEXT DeliverySimple INCLUDE 0FILEPATH IN ENGLISH\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1232,7 +1232,7 @@ Expecting "HTML" or "LATEX" or "MARKDOWN" or "REF" or "REST" or explanation {+-}
 Try inserting symbol explanation {+-}
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Bad
@@ -1260,7 +1260,7 @@ expecting Keyword "IN"\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONTEXT DeliverySimple IN ENGLISH INCLUDE 0FILEPATH\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1283,7 +1283,7 @@ ba.adl"
 Expecting string ""
 Try inserting symbol string ""
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1312,7 +1312,7 @@ unexpected Integer 0\end{haskell}
 CONTEXT
 
 ENDCONTEXT3\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1331,7 +1331,7 @@ unexpected end of input
 Expecting "ENDCONTEXT"
 Try inserting symbol "ENDCONTEXT"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1360,7 +1360,7 @@ expecting Keyword "META", Keyword "PATTERN", Keyword "PROCESS", Keyword "RULE", 
   \item[Incorrect ADL]~\\
 \begin{adl}
 META "authors" "Jan" "Paul"\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1373,7 +1373,7 @@ Try deleting symbol string "Paul" at line 11, column 22 of file "testfile_mba.ad
 l"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1402,7 +1402,7 @@ expecting Keyword "META", Keyword "PATTERN", Keyword "PROCESS", Keyword "RULE", 
   \item[Incorrect ADL]~\\
 \begin{adl}
 META "authors" \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1411,7 +1411,7 @@ ba.adl"
 Expecting string ""
 Try inserting symbol string ""
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1438,7 +1438,7 @@ unexpected Lower case identifier clientName\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 METZA "authors"  "Jan"\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1450,7 +1450,7 @@ ACE" or "KEY" or "META" or "PATTERN" or "PHPPLUG" or "POPULATION" or "PROCESS" o
 r "PURPOSE" or "RELATION" or "RULE" or "SPEC" or "SQLPLUG" or "THEMES" or "VIEW"
  ...)*
 Try inserting symbol "CONCEPT"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1479,7 +1479,7 @@ expecting Keyword "REST", Keyword "HTML", Keyword "LATEX", Keyword "MARKDOWN", K
   \item[Incorrect ADL]~\\
 \begin{adl}
 METZA "authors"  "Jan""\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1499,7 +1499,7 @@ or "SQLPLUG" or "THEMES" or "VIEW"
 Try deleting symbol error in scanner: Unterminated string literal at line 11, co
 lumn 19 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1534,7 +1534,7 @@ PURPOSE RELATION werkgever
 {+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies een werkgever heeft.-}
 
 ENDPATTERN\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1569,7 +1569,7 @@ or "SQLPLUG" or "THEMES" or "VIEW"
 Try deleting symbol "ENDPATTERN" at line 19, column 1 of file "testfile_mba.adl"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1598,7 +1598,7 @@ expecting Keyword "REST", Keyword "HTML", Keyword "LATEX", Keyword "MARKDOWN", K
   \item[Incorrect ADL]~\\
 \begin{adl}
 BYPLUG [UNIS] BYPLUG\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1609,7 +1609,7 @@ YM" or "TOT" or "TRN" or "UNI" ...)*
 Try deleting symbol upper case identifier UNIS at line 14, column 9 of file "tes
 tfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1638,7 +1638,7 @@ expecting Keyword "UNI", Keyword "INJ", Keyword "SUR", Keyword "TOT", Keyword "S
   \item[Incorrect ADL]~\\
 \begin{adl}
 BYPLUG [UNI, TRN, ] BYPLUG\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1647,7 +1647,7 @@ Expecting "ASY" or "INJ" or "IRF" or "PROP" or "RFX" or "SUR" or "SYM" or "TOT"
 or "TRN" or "UNI"
 Try inserting symbol "UNI"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1676,7 +1676,7 @@ expecting Keyword "UNI", Keyword "INJ", Keyword "SUR", Keyword "TOT", Keyword "S
   \item[Incorrect ADL]~\\
 \begin{adl}
 BYPLUG [UNI, TRN] BYPLUGS\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1688,7 +1688,7 @@ RPOSE" or "RELATION" or "ROLE" or "RULE" or "SPEC" or "VIEW" or ("MEANING" ...)*
 
 Try deleting symbol upper case identifier BYPLUGS at line 14, column 19 of file
 "testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1716,7 +1716,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "CONCE
   \item[Incorrect ADL]~\\
 \begin{adl}
 PRAGMA "In" d\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1742,7 +1742,7 @@ Try inserting symbol "*"
 before "PURPOSE" at line 17, column 1 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or string ""
 Try inserting symbol upper case identifier ?uc?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1771,7 +1771,7 @@ expecting Operator '::'
   \item[Incorrect ADL]~\\
 \begin{adl}
 PRAGMQA "In"\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1806,7 +1806,7 @@ Try inserting symbol "*"
 before "PURPOSE" at line 17, column 1 of file "testfile_mba.adl"
 Expecting upper case identifier ?uc? or string ""
 Try inserting symbol upper case identifier ?uc?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1835,7 +1835,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "CONCE
 \begin{adl}
 PURPOSE RELATION werkgever
 --{+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies een werkgever heeft.-}\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1844,7 +1844,7 @@ Expecting symbol [ or "HTML" or "IN" or "LATEX" or "MARKDOWN" or "REF" or "REST"
  or explanation {+-}
 Try inserting symbol explanation {+-}
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1873,7 +1873,7 @@ expecting Symbol '[', Keyword "IN", Keyword "REST", Keyword "HTML", Keyword "LAT
 \begin{adl}
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 = [abc]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1888,7 +1888,7 @@ Expecting lower case identifier ?lc? or upper case identifier ?uc? or atom '' or
  decimal Integer 1
 Try inserting symbol atom ''
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -1917,7 +1917,7 @@ expecting Symbol '(' or Symbol ']'\end{haskell}
 \begin{adl}
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 = [(0,0)]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1942,7 +1942,7 @@ Try deleting symbol "0" at line 17, column 7 of file "testfile_mba.adl"
 before symbol ) at line 17, column 8 of file "testfile_mba.adl"
 Expecting string ""
 Try inserting symbol string ""\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -1970,7 +1970,7 @@ unexpected Integer 0\end{haskell}
 \begin{adl}
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 = [(1,"0")]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -1999,7 +1999,7 @@ before symbol , at line 17, column 6 of file "testfile_mba.adl"
 Expecting string ""
 Try inserting symbol string ""
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -2027,7 +2027,7 @@ unexpected Integer 1\end{haskell}
 \begin{adl}
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 = [("a","0")\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2036,7 +2036,7 @@ Expecting symbol ] or (";" ...)*
 Try inserting symbol symbol ]
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2065,7 +2065,7 @@ expecting Operator ';' or Symbol ']'\end{haskell}
 \begin{adl}
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 == [("a","0")]        \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2073,7 +2073,7 @@ before "=" at line 17, column 2 of file "testfile_mba.adl"
 Expecting symbol [
 Try deleting symbol "=" at line 17, column 2 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2102,7 +2102,7 @@ expecting Symbol '['\end{haskell}
 \begin{adl}
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 == [("a","0");]     \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Expecting symbol [
 Try deleting symbol "=" at line 17, column 2 of file "testfile_mba.adl"
@@ -2150,7 +2150,7 @@ Expecting symbol ] or ";"
 Try inserting symbol symbol ]
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2179,7 +2179,7 @@ expecting Symbol '['\end{haskell}
 \begin{adl}
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 = [("a","0");(1)] \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2205,7 +2205,7 @@ before symbol ) at line 17, column 16 of file "testfile_mba.adl"
 Expecting string ""
 Try inserting symbol string ""
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -2236,7 +2236,7 @@ PRAGMA "In"
 MEANING IN ENGLISH "Elke arbeidsrelatie benoemt expliciet welke (rechts)persoon de rol van werkgever vervult."
 = [("a","0");("","")]
 DEFINE SRC "test"\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2300,7 +2300,7 @@ UG" or "POPULATION" or "PROCESS" or "PURPOSE" or "RELATION" or "RULE" or "SPEC"
 or "SQLPLUG" or "THEMES" or "VIEW"
 Try deleting symbol "ENDPATTERN" at line 25, column 1 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2329,7 +2329,7 @@ RULE orderInAssortment :: orderOf |- orderedAt; sells
 MEANING "Products ordered at a vendor must be sold by that vendor"
 MESSAGE "A product was ordered at a vendor that does not sell it"
 VIOLATION (SRC orderedAt;vendorName, TXT " does not sell ", TGT productName)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2347,7 +2347,7 @@ before lower case identifier orderOf at line 223, column 27 of file "testfile_mb
 a.adl"
 Expecting ":"
 Try inserting symbol ":"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2375,7 +2375,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "ROLE"
   \item[Incorrect ADL]~\\
 \begin{adl}
 RULE 1onlyAcceptOwn : orderAccepted |- orderedAt\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2384,7 +2384,7 @@ Expecting symbol ( or lower case identifier ?LC? or upper case identifier ?uc? o
 r "I" or "V" or string "" or atom '' or ("-" ...)*
 Try deleting symbol "1" at line 228, column 6 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -2412,7 +2412,7 @@ expecting Operator '-', Keyword "I", Keyword "V" or Symbol '('\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIEW 1client: Client(clientName, TXT ", ", clientAddress, TXT " in ", clientCity)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2421,7 +2421,7 @@ Expecting lower case identifier ?LC? or upper case identifier ?UC? or string "?S
 TR?"
 Try deleting symbol "1" at line 48, column 6 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2448,7 +2448,7 @@ unexpected Integer 1\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIEW Client: Client{Test}(clientName, TXT ", ", clientAddress, TXT " in ", clientCity)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2475,7 +2475,7 @@ before lower case identifier clientName at line 48, column 27 of file "testfile_
 mba.adl"
 Expecting ":"
 Try inserting symbol ":"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -2503,7 +2503,7 @@ expecting Operator ':'\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIEW Client: Client, Client(clientName, TXT ", ", clientAddress, TXT " in ", clientCity)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2520,7 +2520,7 @@ Try deleting symbol upper case identifier Client at line 48, column 22 of file "
 testfile_mba.adl"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -2548,7 +2548,7 @@ expecting Keyword "DEFAULT", Symbol '{' or Symbol '('\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIEW Client: Client(clientName, TXT ", "; clientAddress, TXT " in ", clientCity)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2563,7 +2563,7 @@ Expecting symbol ( or lower case identifier ?LC? or upper case identifier ?UC? o
 r "I" or "PRIMHTML" or "TXT" or "V" or string "?STR?" or atom '' or ("-" ...)*
 Try inserting symbol lower case identifier ?LC?
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2591,7 +2591,7 @@ expecting Symbol ',' or Symbol ')'\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIEW Client: Client(clientName, TXdT ", ", clientAddress, TXT " in ", clientCity)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2642,7 +2642,7 @@ or "IDENT" or "INCLUDE" or "INTERFACE" or "KEY" or "META" or "PATTERN" or "PHPPL
 UG" or "POPULATION" or "PROCESS" or "PURPOSE" or "RELATION" or "RULE" or "SPEC"
 or "SQLPLUG" or "THEMES" or "VIEW"
 Try inserting symbol lower case identifier ?lc?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2670,7 +2670,7 @@ expecting Symbol '{' or Operator ':'\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIEWs Client: Client(Client:clientName, PRIMHTML ", ", clientAddress, TXT " in ", clientCity)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2733,7 +2733,7 @@ mba.adl"
 Expecting ":"
 Try inserting symbol ":"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2762,7 +2762,7 @@ expecting Keyword "META", Keyword "PATTERN", Keyword "PROCESS", Keyword "RULE", 
   \item[Incorrect ADL]~\\
 \begin{adl}
 INTERFACE Overview {client} (lient) : I[ONE]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2796,7 +2796,7 @@ before "INTERFACE" at line 120, column 1 of file "testfile_mba.adl"
 Expecting symbol ] or (symbol , ...)*
 Try inserting symbol symbol ]
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2824,7 +2824,7 @@ expecting Keyword "FOR" or Operator ':'\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 INTERFACE Client (clientName, clientAddress, clientCity, orderReceived) FORT Client, Customer, "test" : I[Client]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2840,7 +2840,7 @@ Expecting symbol , or symbol } or (lower case identifier ?lc? or upper case iden
 tifier ?uc? or string "" ...)*
 Try inserting symbol symbol }
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2868,7 +2868,7 @@ expecting Symbol '{', Keyword "FOR" or Operator ':'\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 INTERFACE Client "test" (clientName, clientAddress, clientCity, orderReceived) FOR Client, Customer, "test" : I[Client]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2877,7 +2877,7 @@ Expecting symbol ( or symbol { or ":" or "FOR"
 Try deleting symbol string "test" at line 120, column 18 of file "testfile_mba.a
 dl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2905,7 +2905,7 @@ expecting Keyword "CLASS", Symbol '(', Symbol '{', Keyword "FOR" or Operator ':'
   \item[Incorrect ADL]~\\
 \begin{adl}
 INTERFACE Client (clientName, clientAddress, clientCity, orderReceived) FOR Client, Customer, "test" :: I[Client]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2920,7 +2920,7 @@ Expecting ":"
 Try inserting symbol ":"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -2950,7 +2950,7 @@ expecting Symbol ',' or Operator ':'
 \begin{adl}
 BOX <Test> [ "Name"   : clientName
     , "Street" : clientAddress\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -2972,7 +2972,7 @@ before ">" at line 121, column 10 of file "testfile_mba.adl"
 Expecting symbol [
 Try deleting symbol ">" at line 121, column 10 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3003,7 +3003,7 @@ expecting Symbol '<' or Symbol '['
 ROWS [ "Name"   : clientName
     , "Street" : clientAddress
     , "City"   : clientCity\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3021,7 +3021,7 @@ Expecting "BOX" or "INTERFACE"
 Try inserting symbol "BOX"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3056,7 +3056,7 @@ BOX [[ "All clients"  : V[ONE*Client]
          ] 
    ]
    INTERFACE test]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3154,7 +3154,7 @@ Expecting lower case identifier ?LC? or upper case identifier ?UC? or string "?S
 TR?"
 Try inserting symbol lower case identifier ?LC?
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3181,7 +3181,7 @@ unexpected Symbol '['\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 MEANING IN DUTCH RfEST {+ test -}\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3191,7 +3191,7 @@ Expecting "HTML" or "LATEX" or "MARKDOWN" or "REST" or string "" or explanation
 {+-}
 Try deleting symbol upper case identifier RfEST at line 225, column 18 of file "
 testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3220,7 +3220,7 @@ expecting Keyword "REST", Keyword "HTML", Keyword "LATEX" or Keyword "MARKDOWN"
   \item[Incorrect ADL]~\\
 \begin{adl}
 MEANING REST IN DUTCH  {+ test -}\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3235,7 +3235,7 @@ Expecting lower case identifier ?lc? or "CLASSIFY" or "CONCEPT" or "ENDPROCESS"
 or "IDENT" or "KEY" or "MEANING" or "POPULATION" or "PURPOSE" or "RELATION" or "
 ROLE" or "RULE" or "SPEC" or "VIEW" or "VIOLATION" or ("MESSAGE" ...)*
 Try inserting symbol "MESSAGE"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -3266,7 +3266,7 @@ MESSAGE "A product was ordered at a vendor that does not sell it"
 MEANING IN DUTCH  {+ test -}
 VIOLATION (SRC orderedAt;vendorName, TXT " does not sell ", TGT productName)
 \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3283,7 +3283,7 @@ Expecting symbol ( or lower case identifier ?lc? or upper case identifier ?uc? o
 r "I" or "V" or string "" or atom '' or ("-" ...)*
 Try inserting symbol lower case identifier ?LC?
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3312,7 +3312,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "ROLE"
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIOLATION (SRC orderedAt;vendorName+1, TXT " does not sell ", TGT productName)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3322,7 +3322,7 @@ r "\\/" or "~" or (symbol , ...)*
 Try deleting symbol "1" at line 227, column 37 of file "testfile_mba.adl"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3350,7 +3350,7 @@ expecting Operator '~', Operator '*', Operator '+', Operator ';', Operator '/', 
   \item[Incorrect ADL]~\\
 \begin{adl}
 VIOLATION (SRC orderedAt;vendorName; TXT " does not sell ", TGT productName)\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3366,7 +3366,7 @@ Expecting symbol ) or symbol [ or "-" or "/" or "/\\" or ";" or "<>" or "\\" or
 "\\/" or (symbol , ...)* or ("*" or "+" or "~" ...)*
 Try inserting symbol symbol ,
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3394,7 +3394,7 @@ expecting Operator '-', Keyword "I", Keyword "V" or Symbol '('\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 productPrice :: Product -> Price BYPLUG [UNI, PORP] BYPLUG \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3413,7 +3413,7 @@ or "TRN" or "UNI"
 Try inserting symbol "UNI"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3441,14 +3441,14 @@ expecting Keyword "UNI", Keyword "INJ", Keyword "SUR", Keyword "TOT", Keyword "S
   \item[Incorrect ADL]~\\
 \begin{adl}
 productPrice :: Product -> Price BYPLUG [UNI, PROP] BYPLUG PRAGMA\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
 before "=" at line 82, column 3 of file "testfile_mba.adl"
 Expecting (string "" ...)+
 Try inserting symbol string ""\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3482,7 +3482,7 @@ MEANING IN DUTCH  {+ test -}
     ; ("Product_4", "8,50 euro")
     ; ("Product_5", "4,50 euro")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Expecting symbol ,
 Try deleting symbol ";" at line 83, column 19 of file "testfile_mba.adl"
@@ -3493,7 +3493,7 @@ before string "10,00 euro" at line 83, column 21 of file "testfile_mba.adl"
 Expecting symbol ,
 Try inserting symbol symbol ,
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3528,7 +3528,7 @@ MEANING IN DUTCH  {+ test -}
     ; ("Product_4", "8,50 euro")
     ; ("Product_5", "4,50 euro")
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3542,7 +3542,7 @@ before symbol ( at line 84, column 7 of file "testfile_mba.adl"
 Expecting symbol ] or (";" ...)*
 Try inserting symbol ";"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3574,7 +3574,7 @@ productName :: Product -> Name
   = [ "Product_1" * "Inner tube"
     ; "Product_2" * "Outer tube"
     ]\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3633,7 +3633,7 @@ r "<>" or "=" or "CLASSIFY" or "CONCEPT" or "ENDCONTEXT" or "IDENT" or "INCLUDE"
 or ("MEANING" ...)* or ("MESSAGE" ...)*
 Try inserting symbol symbol [
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Bad
@@ -3664,7 +3664,7 @@ productName :: Product -> Name
   = ( "Product_1" * "Inner tube"
     , "Product_2" * "Outer tube"
     )\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3705,7 +3705,7 @@ _mba.adl"
 Expecting symbol ] or (";" ...)*
 Try inserting symbol symbol ]
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3733,7 +3733,7 @@ expecting Symbol '[\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 CONCEPT "PrestatieIndicator" BYPLUG "Een prestatie-indicator is een variable om prestaties van ondernemingen te analyseren." TYPE TESe\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3749,7 +3749,7 @@ before "ENDPATTERN" at line 25, column 1 of file "testfile_mba.adl"
 Expecting string ""
 Try inserting symbol string ""
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3776,7 +3776,7 @@ unexpected Upper case identifier TESe\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 SPEC PrestatieIndicator ISA "Functie"""\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -3785,7 +3785,7 @@ Expecting lower case identifier ?lc? or "CLASSIFY" or "CONCEPT" or "ENDPATTERN"
 or "IDENT" or "KEY" or "POPULATION" or "PURPOSE" or "RELATION" or "ROLE" or "RUL
 E" or "SPEC" or "VIEW"
 Try deleting symbol string "" at line 26, column 38 of file "testfile_mba.adl"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3813,12 +3813,12 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "CONCE
   \item[Incorrect ADL]~\\
 \begin{adl}
 CLASIFY PrestatieIndicator ISA "Functie"\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 PE "ArchitectureAndDesign/Syntax/testfile_mba.adl" (line 26, column 38):
 unexpected String ""
 expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "CONCEPT", Keyword "SPEC", Keyword "IDENT", Keyword "VIEW", Keyword "KEY", Keyword "PURPOSE", Keyword "POPULATION" or Keyword "ENDPATTERN"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -3847,7 +3847,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "CONCE
   \item[Incorrect ADL]~\\
 \begin{adl}
 {+Om de werkgever te kunnen bepalen gaan we ervan uit dat elke arbeidsrelatie precies een werkgever heeft.-}\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4104,7 +4104,7 @@ UG" or "POPULATION" or "PROCESS" or "PURPOSE" or "RELATION" or "RULE" or "SPEC"
 or "SQLPLUG" or "THEMES" or "VIEW"
 Try deleting symbol symbol ] at line 91, column 5 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4132,7 +4132,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "CONCE
   \item[Incorrect ADL]~\\
 \begin{adl}
 CLASSIFY PrestatieIndicator ISA ("Functie" /\ "Functie")\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4197,7 +4197,7 @@ ES" or "VIEW" or "VIOLATION" or "\\" or "|-" or ("*" or "+" or "~" ...)* or ("ME
 ANING" ...)* or ("MESSAGE" ...)*
 Try deleting symbol "ENDPATTERN" at line 29, column 1 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4224,7 +4224,7 @@ unexpected Symbol '('\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 CLASSIFY PrestatieIndicator ISA "Functie" /\ "Functie"\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4242,7 +4242,7 @@ Try deleting symbol string "Functie" at line 27, column 46 of file "testfile_mba
 .adl"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4276,7 +4276,7 @@ CONTEXT DeliverySimple IN ENGLISH
 ENDCONTEXT
 
 ENDPATTERN\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4299,7 +4299,7 @@ Try deleting symbol "ENDCONTEXT" at line 31, column 1 of file "testfile_mba.adl"
 before "ENDPATTERN" at line 33, column 1 of file "testfile_mba.adl"
 Expecting explanation {+-}
 Try inserting symbol explanation {+-}\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4328,7 +4328,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "CONCE
   \item[Incorrect ADL]~\\
 \begin{adl}
 RULE allAccepted: I |- orderAccepted; orderAccepted~ <> bestelling!\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4336,7 +4336,7 @@ before "MEANING" at line 249, column 1 of file "testfile_mba.adl"
 Expecting symbol ( or lower case identifier ?LC? or "I" or "V" or atom '' or ("-
 " ...)*
 Try inserting symbol lower case identifier ?LC?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4365,7 +4365,7 @@ expecting Operator '-', Keyword "I", Keyword "V" or Symbol '('
   \item[Incorrect ADL]~\\
 \begin{adl}
 RULE allAccepted: I |- orderAccepted; orderAccepted~ <> bestelling!levering/pakje --\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4382,7 +4382,7 @@ before "/" at line 248, column 76 of file "testfile_mba.adl"
 Expecting symbol ( or lower case identifier ?lc? or upper case identifier ?uc? o
 r "I" or "V" or string "" or atom '' or ("-" ...)*
 Try inserting symbol lower case identifier ?LC?\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4411,7 +4411,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "ROLE"
   \item[Incorrect ADL]~\\
 \begin{adl}
 RULE allAccepted: (I |- orderAccepted; orderAccepted~ <> bestelling) \end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4430,7 +4430,7 @@ ATION" or "\\/" or ("*" or "+" or "~" ...)* or ("MEANING" ...)* or ("MESSAGE" ..
 .)*
 Try deleting symbol symbol ) at line 248, column 68 of file "testfile_mba.adl"
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4458,7 +4458,7 @@ expecting Symbol '[', Operator '~', Operator '*', Operator '+', Operator ';', Op
   \item[Incorrect ADL]~\\
 \begin{adl}
 RULE allAccepted: I |- orderAccepted; orderAccepted- -- == TOT\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4467,7 +4467,7 @@ Expecting symbol ( or lower case identifier ?LC? or "I" or "V" or atom '' or ("-
 " ...)*
 Try inserting symbol lower case identifier ?LC?
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Acceptable
@@ -4495,7 +4495,7 @@ expecting Operator '-', Keyword "I", Keyword "V" or Symbol '('\end{haskell}
   \item[Incorrect ADL]~\\
 \begin{adl}
 RULE allAccepted: I ONE <> orderAccepted; orderAccepted~ -- == TOT\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4508,7 +4508,7 @@ EC" or "VIEW" or "VIOLATION" or "\\" or "\\/" or "|-" or ("*" or "+" or "~" ...)
 Try deleting symbol "ONE" at line 248, column 21 of file "testfile_mba.adl"
 
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4537,7 +4537,7 @@ expecting Keyword "RULE", Keyword "CLASSIFY", Keyword "RELATION", Keyword "ROLE"
   \item[Incorrect ADL]~\\
 \begin{adl}
 RULE allAccepted: ATOM <> orderAccepted; orderAccepted~ -- == TOT\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4555,7 +4555,7 @@ Expecting symbol ( or lower case identifier ?LC? or "I" or "V" or atom '' or ("-
 " ...)*
 Try inserting symbol lower case identifier ?LC?
 \end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good
@@ -4584,7 +4584,7 @@ expecting Operator '-', Keyword "I", Keyword "V" or Symbol '('
   \item[Incorrect ADL]~\\
 \begin{adl}
 ROLE Client,Order MAINTAIN allReceived,allsent\end{adl}
-  \item[Previous error]~\\
+  \item[Old error]~\\
 \begin{haskell}
 Error(s) found:
 
@@ -4600,7 +4600,7 @@ before lower case identifier allReceived at line 261, column 28 of file "testfil
 e_mba.adl"
 Expecting "EDITS"
 Try inserting symbol "EDITS"\end{haskell}
-  \item[Previous evaluation]~\\
+  \item[Old evaluation]~\\
     \begin{itemize}
     \item \textbf{Accurate:} Good
     \item \textbf{Intuitive:} Good

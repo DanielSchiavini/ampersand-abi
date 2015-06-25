@@ -14,460 +14,174 @@ span.spaces    { background: white }
 </head>
 <body>
 <pre>
-<span class="lineno">    1 </span>module Database.Design.Ampersand.Input.ADL1.LexerTexts(
-<span class="lineno">    2 </span>    warning, hint,
-<span class="lineno">    3 </span>    parserSyntaxError, parserOr, parserUnknown, parserExpecting, parserUnexpected,
-<span class="lineno">    4 </span>    parserEndOfInput, parserSingleDigitPriority, parserTypeClass, parserTypeConstructor,
-<span class="lineno">    5 </span>    parserTypeVariable, parserModuleName, parserVariable,
-<span class="lineno">    6 </span>    parserConstructor, parserConstructorOperator, parserOperator,
-<span class="lineno">    7 </span>    parserCharacterLiteral, parserStringLiteral, parserIntegerLiteral, parserFloatLiteral,
-<span class="lineno">    8 </span>    parserKeyword, parserInsertedLBrace, parserEndOfFile, parserNextInBlock, parserEndOfBlock,
-<span class="lineno">    9 </span>    parserExpression, parserPattern, parserType, parserLiteral, parserNumericLiteral, 
-<span class="lineno">   10 </span>    parserImportDeclaration, parserDeclaration,
-<span class="lineno">   11 </span>    lexerUnterminatedComment, lexerUnterminatedPurpose, lexerUnterminatedAtom, lexerUnterminatedInfix,
-<span class="lineno">   12 </span>    lexerMissingExponentDigits, lexerUnexpectedInfixKeyword, lexerUnexpectedInfixChar, lexerUnexpectedChar,
-<span class="lineno">   13 </span>    lexerIllegalEscapeInChar, lexerEmptyChar, lexerIllegalCharInChar, lexerNonTerminatedString,
-<span class="lineno">   14 </span>    lexerInfixHint, lexerEOFInChar, lexerEOFInString,
-<span class="lineno">   15 </span>    lexerIllegalEscapeInString, lexerNewLineInString, lexerIllegalCharInString,
-<span class="lineno">   16 </span>    lexerTooManyClose, lexerUnexpectedClose, lexerStillOpenAtEOF, lexerCorrectStrings,
-<span class="lineno">   17 </span>    lexerTabCharacter, lexerLooksLikeFloatNoFraction, lexerLooksLikeFloatNoDigits,
-<span class="lineno">   18 </span>    lexerUtfChar, lexerNestedComment, lexerCommentOperator
-<span class="lineno">   19 </span>) where
+<span class="lineno">    1 </span>module Database.Design.Ampersand.Input.ADL1.LexerTexts
+<span class="lineno">    2 </span>    ( lexerCommentOperator
+<span class="lineno">    3 </span>    , lexerCorrectStrings
+<span class="lineno">    4 </span>    , lexerNestedComment
+<span class="lineno">    5 </span>    , lexerNonTerminatedString
+<span class="lineno">    6 </span>    , lexerStillOpenAtEOF
+<span class="lineno">    7 </span>    , lexerTabCharacter
+<span class="lineno">    8 </span>    , lexerTooManyClose
+<span class="lineno">    9 </span>    , lexerUnexpectedChar
+<span class="lineno">   10 </span>    , lexerUnexpectedClose
+<span class="lineno">   11 </span>    , lexerUnterminatedAtom
+<span class="lineno">   12 </span>    , lexerUnterminatedComment
+<span class="lineno">   13 </span>    , lexerUnterminatedPurpose
+<span class="lineno">   14 </span>    , lexerUtfChar
+<span class="lineno">   15 </span>    ) where
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>import Data.IORef
+<span class="lineno">   18 </span>import System.IO.Unsafe
+<span class="lineno">   19 </span>import Data.Maybe (fromMaybe)
 <span class="lineno">   20 </span>
-<span class="lineno">   21 </span>import Data.IORef
-<span class="lineno">   22 </span>import System.IO.Unsafe
-<span class="lineno">   23 </span>import Data.Maybe (fromMaybe)
-<span class="lineno">   24 </span>
-<span class="lineno">   25 </span>data Language = English | Dutch deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>
+<span class="lineno">   21 </span>data Language = English | Dutch deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>{-# NOINLINE language #-}
+<span class="lineno">   24 </span>language :: IORef Language
+<span class="lineno">   25 </span><span class="decl"><span class="nottickedoff">language = unsafePerformIO (newIORef English)</span></span>
 <span class="lineno">   26 </span>
-<span class="lineno">   27 </span>{-# NOINLINE language #-}
-<span class="lineno">   28 </span>language :: IORef Language
-<span class="lineno">   29 </span><span class="decl"><span class="nottickedoff">language = unsafePerformIO (newIORef English)</span></span>
+<span class="lineno">   27 </span>data Arrow a b = a :-&gt; b
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>infix 0 :-&gt;
 <span class="lineno">   30 </span>
-<span class="lineno">   31 </span>data Arrow a b = a :-&gt; b
-<span class="lineno">   32 </span>
-<span class="lineno">   33 </span>infix 0 :-&gt;
-<span class="lineno">   34 </span>
-<span class="lineno">   35 </span>select :: IORef Language -&gt; [Arrow Language msg] -&gt; msg
-<span class="lineno">   36 </span><span class="decl"><span class="nottickedoff">select languageRef table =</span>
-<span class="lineno">   37 </span><span class="spaces">    </span><span class="nottickedoff">let lang = unsafePerformIO (readIORef languageRef)</span>
-<span class="lineno">   38 </span><span class="spaces">        </span><span class="nottickedoff">convert (a :-&gt; b) = (a, b)</span>
-<span class="lineno">   39 </span><span class="spaces">    </span><span class="nottickedoff">in fromMaybe (error &quot;Texts.select: unknown language&quot;)</span>
-<span class="lineno">   40 </span><span class="spaces">        </span><span class="nottickedoff">(lookup lang (map convert table))</span></span>
-<span class="lineno">   41 </span>
-<span class="lineno">   42 </span>warning :: String
-<span class="lineno">   43 </span><span class="decl"><span class="nottickedoff">warning = select language</span>
-<span class="lineno">   44 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Warning&quot;</span>
-<span class="lineno">   45 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Waarschuwing&quot;</span>
-<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   47 </span>
-<span class="lineno">   48 </span>hint :: String
-<span class="lineno">   49 </span><span class="decl"><span class="nottickedoff">hint = select language</span>
-<span class="lineno">   50 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Hint&quot;</span>
-<span class="lineno">   51 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Hint&quot;</span>
-<span class="lineno">   52 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   53 </span>
-<span class="lineno">   54 </span>parserSyntaxError :: String
-<span class="lineno">   55 </span><span class="decl"><span class="nottickedoff">parserSyntaxError = select language</span>
-<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Syntax error&quot;</span>
-<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Syntax fout&quot;</span>
-<span class="lineno">   58 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   59 </span>
-<span class="lineno">   60 </span>parserOr :: String
-<span class="lineno">   61 </span><span class="decl"><span class="nottickedoff">parserOr = select language</span>
-<span class="lineno">   62 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;or&quot;</span>
-<span class="lineno">   63 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;of&quot;</span>
+<span class="lineno">   31 </span>select :: IORef Language -&gt; [Arrow Language msg] -&gt; msg
+<span class="lineno">   32 </span><span class="decl"><span class="nottickedoff">select languageRef table =</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="nottickedoff">let lang = unsafePerformIO (readIORef languageRef)</span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="nottickedoff">convert (a :-&gt; b) = (a, b)</span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">in fromMaybe (error &quot;Texts.select: unknown language&quot;)</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="nottickedoff">(lookup lang (map convert table))</span></span>
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>-- | Translates 'Unterminated comment' into the chosen language
+<span class="lineno">   39 </span>lexerUnterminatedComment :: String -- ^ The translated string
+<span class="lineno">   40 </span><span class="decl"><span class="nottickedoff">lexerUnterminatedComment = select language</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated comment&quot;</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Commentaar niet afgesloten&quot;</span>
+<span class="lineno">   43 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   44 </span>        
+<span class="lineno">   45 </span>-- | Translates 'Unterminated purpose' into the chosen language
+<span class="lineno">   46 </span>lexerUnterminatedPurpose:: String -- ^ The translated string
+<span class="lineno">   47 </span><span class="decl"><span class="nottickedoff">lexerUnterminatedPurpose= select language</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated PURPOSE section&quot;</span>
+<span class="lineno">   49 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;PURPOSE sectie niet afgesloten&quot;</span>
+<span class="lineno">   50 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>-- | Translates 'Unterminated atom' into the chosen language
+<span class="lineno">   53 </span>lexerUnterminatedAtom :: String -- ^ The translated string
+<span class="lineno">   54 </span><span class="decl"><span class="nottickedoff">lexerUnterminatedAtom = select language</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated Atom literal&quot;</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Atom literal niet afgesloten&quot;</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>-- | Translates 'Unexpected character' into the chosen language
+<span class="lineno">   60 </span>lexerUnexpectedChar :: Char -&gt; String -- ^ The translated string
+<span class="lineno">   61 </span><span class="decl"><span class="nottickedoff">lexerUnexpectedChar c = select language</span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unexpected character '&quot; ++ [c] ++ &quot;'&quot;</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Onverwachte letter '&quot; ++ [c] ++ &quot;'&quot;</span>
 <span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
 <span class="lineno">   65 </span>
-<span class="lineno">   66 </span>parserUnknown :: String
-<span class="lineno">   67 </span><span class="decl"><span class="nottickedoff">parserUnknown = select language</span>
-<span class="lineno">   68 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;unknown parse error&quot;</span>
-<span class="lineno">   69 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;onbekende syntax fout&quot;</span>
-<span class="lineno">   70 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   71 </span>
-<span class="lineno">   72 </span>parserExpecting :: String
-<span class="lineno">   73 </span><span class="decl"><span class="nottickedoff">parserExpecting = select language</span>
-<span class="lineno">   74 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;expecting&quot;</span>
-<span class="lineno">   75 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;verwacht: &quot;</span>
-<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   77 </span>
-<span class="lineno">   78 </span>parserUnexpected :: String
-<span class="lineno">   79 </span><span class="decl"><span class="nottickedoff">parserUnexpected = select language</span>
-<span class="lineno">   80 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;unexpected&quot;</span>
-<span class="lineno">   81 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;onverwacht: &quot;</span>
-<span class="lineno">   82 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   83 </span>
-<span class="lineno">   84 </span>parserEndOfInput :: String
-<span class="lineno">   85 </span><span class="decl"><span class="nottickedoff">parserEndOfInput = select language</span>
-<span class="lineno">   86 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;end of input&quot;</span>
-<span class="lineno">   87 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;einde van de tekst&quot;</span>
-<span class="lineno">   88 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   89 </span>
-<span class="lineno">   90 </span>parserSingleDigitPriority :: String
-<span class="lineno">   91 </span><span class="decl"><span class="nottickedoff">parserSingleDigitPriority = select language</span>
-<span class="lineno">   92 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;priority must be a single digit&quot;</span>
-<span class="lineno">   93 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;de prioriteit mag maar uit 1 cijfer bestaan&quot;</span>
-<span class="lineno">   94 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   95 </span>
-<span class="lineno">   96 </span>parserTypeClass :: String
-<span class="lineno">   97 </span><span class="decl"><span class="nottickedoff">parserTypeClass = select language</span>
-<span class="lineno">   98 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;type class&quot;</span>
-<span class="lineno">   99 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;type klasse&quot;</span>
-<span class="lineno">  100 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  101 </span>
-<span class="lineno">  102 </span>parserTypeConstructor :: String
-<span class="lineno">  103 </span><span class="decl"><span class="nottickedoff">parserTypeConstructor = select language</span>
-<span class="lineno">  104 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;type constructor&quot;</span>
-<span class="lineno">  105 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;type constructor&quot;</span>
-<span class="lineno">  106 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  107 </span>
-<span class="lineno">  108 </span>parserTypeVariable :: String
-<span class="lineno">  109 </span><span class="decl"><span class="nottickedoff">parserTypeVariable = select language</span>
-<span class="lineno">  110 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;type variable&quot;</span>
-<span class="lineno">  111 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;type variabele&quot;</span>
-<span class="lineno">  112 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  113 </span>
-<span class="lineno">  114 </span>parserModuleName :: String
-<span class="lineno">  115 </span><span class="decl"><span class="nottickedoff">parserModuleName = select language</span>
-<span class="lineno">  116 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;module name&quot;</span>
-<span class="lineno">  117 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;module naam&quot;</span>
-<span class="lineno">  118 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  119 </span>
-<span class="lineno">  120 </span>parserVariable :: String
-<span class="lineno">  121 </span><span class="decl"><span class="nottickedoff">parserVariable = select language</span>
-<span class="lineno">  122 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;variable&quot;</span>
-<span class="lineno">  123 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;variabele&quot;</span>
-<span class="lineno">  124 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  125 </span>
-<span class="lineno">  126 </span>parserConstructor :: String
-<span class="lineno">  127 </span><span class="decl"><span class="nottickedoff">parserConstructor = select language</span>
-<span class="lineno">  128 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;constructor&quot;</span>
-<span class="lineno">  129 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;constructor&quot;</span>
-<span class="lineno">  130 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  131 </span>
-<span class="lineno">  132 </span>parserConstructorOperator :: String
-<span class="lineno">  133 </span><span class="decl"><span class="nottickedoff">parserConstructorOperator = select language</span>
-<span class="lineno">  134 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;constructor operator&quot;</span>
-<span class="lineno">  135 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;constructor operator&quot;</span>
-<span class="lineno">  136 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  137 </span>
-<span class="lineno">  138 </span>parserOperator :: String
-<span class="lineno">  139 </span><span class="decl"><span class="nottickedoff">parserOperator = select language</span>
-<span class="lineno">  140 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;operator&quot;</span>
-<span class="lineno">  141 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;operator&quot;</span>
-<span class="lineno">  142 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  143 </span>
-<span class="lineno">  144 </span>parserCharacterLiteral :: String
-<span class="lineno">  145 </span><span class="decl"><span class="nottickedoff">parserCharacterLiteral = select language</span>
-<span class="lineno">  146 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;character literal&quot;</span>
-<span class="lineno">  147 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;letter constante&quot;</span>
-<span class="lineno">  148 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  149 </span>
-<span class="lineno">  150 </span>parserStringLiteral :: String
-<span class="lineno">  151 </span><span class="decl"><span class="nottickedoff">parserStringLiteral = select language</span>
-<span class="lineno">  152 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;string literal&quot;</span>
-<span class="lineno">  153 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;string constante&quot;</span>
+<span class="lineno">   66 </span>-- | Translates 'Unterminated string' into the chosen language
+<span class="lineno">   67 </span>lexerNonTerminatedString :: String -- ^ The translated string
+<span class="lineno">   68 </span><span class="decl"><span class="nottickedoff">lexerNonTerminatedString = select language</span>
+<span class="lineno">   69 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated string literal&quot;</span>
+<span class="lineno">   70 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;String niet afgesloten&quot;</span>
+<span class="lineno">   71 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   72 </span>
+<span class="lineno">   73 </span>-- | Translates 'Close bracket but no open bracket' into the chosen language
+<span class="lineno">   74 </span>lexerTooManyClose :: Show a =&gt; a -&gt; String -- ^ The translated string
+<span class="lineno">   75 </span><span class="decl"><span class="nottickedoff">lexerTooManyClose c = select language</span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Close bracket &quot; ++ show c ++ &quot; but no open bracket&quot;</span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Haakje &quot; ++ show c ++ &quot; wordt gesloten maar nergens geopend&quot;</span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   79 </span>
+<span class="lineno">   80 </span>-- | Translates 'Unexpected close bracket' into the chosen language
+<span class="lineno">   81 </span>lexerUnexpectedClose :: Char -&gt; Char -&gt; [String]
+<span class="lineno">   82 </span><span class="decl"><span class="nottickedoff">lexerUnexpectedClose c1 c2 = select language</span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Unexpected close bracket &quot; ++ show c1</span>
+<span class="lineno">   84 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Expecting a close bracket for &quot; ++ show c2</span>
+<span class="lineno">   85 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Onverwacht sluithaakje &quot; ++ show c1</span>
+<span class="lineno">   87 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Sluithaakje voor &quot; ++ show c2 ++ &quot; wordt nog verwacht&quot;</span>
+<span class="lineno">   88 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>-- | Translates 'Bracket is never closed' into the chosen language
+<span class="lineno">   92 </span>lexerStillOpenAtEOF :: [String] -- ^ The brackets
+<span class="lineno">   93 </span>                    -&gt; String -- ^ The translated string
+<span class="lineno">   94 </span><span class="decl"><span class="nottickedoff">lexerStillOpenAtEOF [s] = select language</span>
+<span class="lineno">   95 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Bracket &quot; ++ s ++ &quot; is never closed&quot;</span>
+<span class="lineno">   96 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Sluithaakje voor &quot; ++ s ++ &quot; wordt nog verwacht&quot;</span>
+<span class="lineno">   97 </span><span class="spaces">    </span><span class="nottickedoff">]</span>
+<span class="lineno">   98 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   99 </span><span class="spaces"></span><span class="nottickedoff">-- | Translates 'Brackets are never closed' into the chosen language</span>
+<span class="lineno">  100 </span><span class="spaces"></span><span class="nottickedoff">lexerStillOpenAtEOF xs = select language</span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;The following brackets are never closed: &quot; ++ commasAnd xs</span>
+<span class="lineno">  102 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;De volgende haakjes worden nergens gesloten: &quot; ++ kommasEn xs</span>
+<span class="lineno">  103 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>-- | Gives string examples in the chosen language
+<span class="lineno">  106 </span>lexerCorrectStrings :: String -- ^ The translated string
+<span class="lineno">  107 </span><span class="decl"><span class="nottickedoff">lexerCorrectStrings = select language</span>
+<span class="lineno">  108 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Correct examples of Strings: \&quot;Helium is cool\&quot; \&quot;abc\\ndef\&quot; \&quot;\&quot;&quot;</span>
+<span class="lineno">  109 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Correcte voorbeelden van teksten: \&quot;Helium is geweldig\&quot; \&quot;abc\\ndef\&quot; \&quot;\&quot;&quot;</span>
+<span class="lineno">  110 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  111 </span>
+<span class="lineno">  112 </span>-- | Translates 'Tab character encountered' into the chosen language
+<span class="lineno">  113 </span>lexerTabCharacter :: [String] -- ^ The translated strings
+<span class="lineno">  114 </span><span class="decl"><span class="nottickedoff">lexerTabCharacter = select language</span>
+<span class="lineno">  115 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Tab character encountered; may cause problems with the layout rule&quot;</span>
+<span class="lineno">  116 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Configure your editor to replace tabs by spaces&quot;</span>
+<span class="lineno">  117 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  118 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Tab karakters kunnen problemn opleveren met de layout rule&quot;</span>
+<span class="lineno">  119 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Stel je editor zo in dat hij tabs vervangt door spaties&quot;</span>
+<span class="lineno">  120 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  122 </span>
+<span class="lineno">  123 </span>-- | Translates 'Unrecognized character' into the chosen language
+<span class="lineno">  124 </span>lexerUtfChar :: [String] -- ^ The translated strings
+<span class="lineno">  125 </span><span class="decl"><span class="nottickedoff">lexerUtfChar = select language</span>
+<span class="lineno">  126 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Unrecognized character in the beginning of the file.&quot;</span>
+<span class="lineno">  127 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Is it saved with encoding UTF-8 without BOM?&quot;</span>
+<span class="lineno">  128 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  129 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Onbekend karakter in het begin van het bestand.&quot;</span>
+<span class="lineno">  130 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Is het bestand opgeslagen met encoding UTF-8 zonder BOM?&quot;</span>
+<span class="lineno">  131 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  133 </span>
+<span class="lineno">  134 </span>-- | Translates 'Nested comment' into the chosen language
+<span class="lineno">  135 </span>lexerNestedComment :: [String] -- ^ The translated strings
+<span class="lineno">  136 </span><span class="decl"><span class="nottickedoff">lexerNestedComment = select language</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Syntax coloring usually can not handle nested comments&quot;</span>
+<span class="lineno">  138 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Some of your code may be in comments but not visibly so&quot;</span>
+<span class="lineno">  139 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  140 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Syntax kleuring van editor kan meestal niet overweg met genest commentaar&quot;</span>
+<span class="lineno">  141 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Het kan zo zijn dat een deel van je code in commentaar staat maar dat je dat niet ziet&quot;</span>
+<span class="lineno">  142 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  143 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  144 </span>
+<span class="lineno">  145 </span>-- | Translates 'Comment operator' into the chosen language
+<span class="lineno">  146 </span>lexerCommentOperator :: [String] -- ^ The translated strings
+<span class="lineno">  147 </span><span class="decl"><span class="nottickedoff">lexerCommentOperator = select language</span>
+<span class="lineno">  148 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Syntax coloring usually cannot handle names containing --&quot;</span>
+<span class="lineno">  149 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;If you wanted to start a comment, write spaces around --&quot;</span>
+<span class="lineno">  150 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  151 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Syntax kleuring van editor kan meestal niet overweg met namen die -- bevatten&quot;</span>
+<span class="lineno">  152 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Als je commentaar wilde beginnen schrijf dan spaties voor en na --&quot;</span>
+<span class="lineno">  153 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
 <span class="lineno">  154 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
 <span class="lineno">  155 </span>
-<span class="lineno">  156 </span>parserIntegerLiteral :: String
-<span class="lineno">  157 </span><span class="decl"><span class="nottickedoff">parserIntegerLiteral = select language</span>
-<span class="lineno">  158 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;integer literal&quot;</span>
-<span class="lineno">  159 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;geheel getal&quot;</span>
-<span class="lineno">  160 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  161 </span>
-<span class="lineno">  162 </span>parserFloatLiteral :: String
-<span class="lineno">  163 </span><span class="decl"><span class="nottickedoff">parserFloatLiteral = select language</span>
-<span class="lineno">  164 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;floating-point literal&quot;</span>
-<span class="lineno">  165 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;reeel getal&quot;</span>
-<span class="lineno">  166 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  167 </span>
-<span class="lineno">  168 </span>parserKeyword :: String
-<span class="lineno">  169 </span><span class="decl"><span class="nottickedoff">parserKeyword = select language</span>
-<span class="lineno">  170 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;keyword&quot;</span>
-<span class="lineno">  171 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;gereserveerd woord&quot;</span>
-<span class="lineno">  172 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  173 </span>
-<span class="lineno">  174 </span>parserInsertedLBrace :: String
-<span class="lineno">  175 </span><span class="decl"><span class="nottickedoff">parserInsertedLBrace = select language</span>
-<span class="lineno">  176 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;inserted '{'&quot;</span>
-<span class="lineno">  177 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;ingevoegde '{'&quot;</span>
-<span class="lineno">  178 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  179 </span>
-<span class="lineno">  180 </span>parserEndOfFile :: String
-<span class="lineno">  181 </span><span class="decl"><span class="nottickedoff">parserEndOfFile = select language</span>
-<span class="lineno">  182 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;end of file&quot;</span>
-<span class="lineno">  183 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;einde van het bestand&quot;</span>
-<span class="lineno">  184 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  185 </span>
-<span class="lineno">  186 </span>parserNextInBlock :: String
-<span class="lineno">  187 </span><span class="decl"><span class="nottickedoff">parserNextInBlock = select language</span>
-<span class="lineno">  188 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;next in block (based on layout)&quot;</span>
-<span class="lineno">  189 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;volgende in blok (d.m.v. inspringing)&quot;</span>
-<span class="lineno">  190 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  191 </span>
-<span class="lineno">  192 </span>parserEndOfBlock :: String
-<span class="lineno">  193 </span><span class="decl"><span class="nottickedoff">parserEndOfBlock = select language</span>
-<span class="lineno">  194 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;end of block (based on layout)&quot;</span>
-<span class="lineno">  195 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;einde van het blok (d.m.v. inspringing)&quot;</span>
-<span class="lineno">  196 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  197 </span>
-<span class="lineno">  198 </span>parserExpression :: String
-<span class="lineno">  199 </span><span class="decl"><span class="nottickedoff">parserExpression = select language</span>
-<span class="lineno">  200 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;expression&quot;</span>
-<span class="lineno">  201 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;expressie&quot;</span>
-<span class="lineno">  202 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  203 </span>
-<span class="lineno">  204 </span>parserPattern :: String
-<span class="lineno">  205 </span><span class="decl"><span class="nottickedoff">parserPattern = select language</span>
-<span class="lineno">  206 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;pattern&quot;</span>
-<span class="lineno">  207 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;patroon&quot;</span>
-<span class="lineno">  208 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  209 </span>
-<span class="lineno">  210 </span>parserType :: String
-<span class="lineno">  211 </span><span class="decl"><span class="nottickedoff">parserType = select language</span>
-<span class="lineno">  212 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;type&quot;</span>
-<span class="lineno">  213 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;type&quot;</span>
-<span class="lineno">  214 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  215 </span>
-<span class="lineno">  216 </span>parserLiteral :: String
-<span class="lineno">  217 </span><span class="decl"><span class="nottickedoff">parserLiteral = select language</span>
-<span class="lineno">  218 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;literal&quot;</span>
-<span class="lineno">  219 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;constante&quot;</span>
-<span class="lineno">  220 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  221 </span>
-<span class="lineno">  222 </span>parserNumericLiteral :: String
-<span class="lineno">  223 </span><span class="decl"><span class="nottickedoff">parserNumericLiteral = select language</span>
-<span class="lineno">  224 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;numeric literal&quot;</span>
-<span class="lineno">  225 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;getal&quot;</span>
-<span class="lineno">  226 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  227 </span>
-<span class="lineno">  228 </span>parserImportDeclaration :: String
-<span class="lineno">  229 </span><span class="decl"><span class="nottickedoff">parserImportDeclaration = select language</span>
-<span class="lineno">  230 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;import declaration&quot;</span>
-<span class="lineno">  231 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;import declaratie&quot;</span>
-<span class="lineno">  232 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  233 </span>
-<span class="lineno">  234 </span>parserDeclaration :: String
-<span class="lineno">  235 </span><span class="decl"><span class="nottickedoff">parserDeclaration = select language</span>
-<span class="lineno">  236 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;declaration&quot;</span>
-<span class="lineno">  237 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;declaratie&quot;</span>
-<span class="lineno">  238 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  239 </span>
-<span class="lineno">  240 </span>lexerUnterminatedComment :: String
-<span class="lineno">  241 </span><span class="decl"><span class="nottickedoff">lexerUnterminatedComment = select language</span>
-<span class="lineno">  242 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated comment&quot;</span>
-<span class="lineno">  243 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Commentaar niet afgesloten&quot;</span>
-<span class="lineno">  244 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  245 </span>        
-<span class="lineno">  246 </span>lexerUnterminatedPurpose:: String
-<span class="lineno">  247 </span><span class="decl"><span class="nottickedoff">lexerUnterminatedPurpose= select language</span>
-<span class="lineno">  248 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated PURPOSE section&quot;</span>
-<span class="lineno">  249 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;PURPOSE sectie niet afgesloten&quot;</span>
-<span class="lineno">  250 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  251 </span>        
-<span class="lineno">  252 </span>lexerUnterminatedAtom :: String
-<span class="lineno">  253 </span><span class="decl"><span class="nottickedoff">lexerUnterminatedAtom = select language</span>
-<span class="lineno">  254 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated Atom literal&quot;</span>
-<span class="lineno">  255 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Atom literal niet afgesloten&quot;</span>
-<span class="lineno">  256 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  257 </span>
-<span class="lineno">  258 </span>lexerUnterminatedInfix :: String
-<span class="lineno">  259 </span><span class="decl"><span class="nottickedoff">lexerUnterminatedInfix = select language</span>
-<span class="lineno">  260 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated infix identifier&quot;</span>
-<span class="lineno">  261 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Infix identifier niet afgesloten&quot;</span>
-<span class="lineno">  262 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  263 </span>
-<span class="lineno">  264 </span>lexerMissingExponentDigits :: String
-<span class="lineno">  265 </span><span class="decl"><span class="nottickedoff">lexerMissingExponentDigits = select language</span>
-<span class="lineno">  266 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Missing digits in exponent in floating-point literal&quot;</span>
-<span class="lineno">  267 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Geen cijfers in de exponent van een reeel getal&quot;</span>
-<span class="lineno">  268 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  269 </span>
-<span class="lineno">  270 </span>lexerUnexpectedInfixKeyword :: String -&gt; String
-<span class="lineno">  271 </span><span class="decl"><span class="nottickedoff">lexerUnexpectedInfixKeyword s = select language</span>
-<span class="lineno">  272 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Keyword used as infix identifier:  '&quot;           ++ s ++ &quot;'&quot;</span>
-<span class="lineno">  273 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Een Keyword is gebruikt als infix operator '&quot;   ++ s ++ &quot;'&quot;</span>
-<span class="lineno">  274 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  275 </span>
-<span class="lineno">  276 </span>lexerUnexpectedInfixChar :: Char -&gt; String
-<span class="lineno">  277 </span><span class="decl"><span class="nottickedoff">lexerUnexpectedInfixChar c = select language</span>
-<span class="lineno">  278 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unexpected character in infix identifier: &quot;           ++ [c] ++ &quot;'&quot;</span>
-<span class="lineno">  279 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Ongekend karakter gebruikt in infix operator '&quot;       ++ [c] ++ &quot;'&quot;</span>
-<span class="lineno">  280 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  281 </span>        
-<span class="lineno">  282 </span>lexerUnexpectedChar :: Char -&gt; String
-<span class="lineno">  283 </span><span class="decl"><span class="nottickedoff">lexerUnexpectedChar c = select language</span>
-<span class="lineno">  284 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unexpected character '&quot; ++ [c] ++ &quot;'&quot;</span>
-<span class="lineno">  285 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Onverwachte letter '&quot; ++ [c] ++ &quot;'&quot;</span>
-<span class="lineno">  286 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  287 </span>
-<span class="lineno">  288 </span>lexerIllegalEscapeInChar :: String
-<span class="lineno">  289 </span><span class="decl"><span class="nottickedoff">lexerIllegalEscapeInChar = select language</span>
-<span class="lineno">  290 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Illegal escape sequence in character literal&quot;</span>
-<span class="lineno">  291 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Illegaal escape karakter in letter constante&quot;</span>
-<span class="lineno">  292 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  293 </span>
-<span class="lineno">  294 </span>lexerEmptyChar :: String
-<span class="lineno">  295 </span><span class="decl"><span class="nottickedoff">lexerEmptyChar = select language</span>
-<span class="lineno">  296 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Empty character literal&quot;</span>
-<span class="lineno">  297 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Lege letter constante&quot;</span>
-<span class="lineno">  298 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  299 </span>
-<span class="lineno">  300 </span>lexerIllegalCharInChar :: String
-<span class="lineno">  301 </span><span class="decl"><span class="nottickedoff">lexerIllegalCharInChar = select language</span>
-<span class="lineno">  302 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Illegal character in character literal&quot;</span>
-<span class="lineno">  303 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Niet toegestaan teken in letter constante&quot;</span>
-<span class="lineno">  304 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  305 </span>
-<span class="lineno">  306 </span>lexerNonTerminatedString :: String
-<span class="lineno">  307 </span><span class="decl"><span class="nottickedoff">lexerNonTerminatedString = select language</span>
-<span class="lineno">  308 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Unterminated string literal&quot;</span>
-<span class="lineno">  309 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;String niet afgesloten&quot;</span>
-<span class="lineno">  310 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  311 </span>
-<span class="lineno">  312 </span>lexerInfixHint :: String -&gt; String
-<span class="lineno">  313 </span><span class="decl"><span class="nottickedoff">lexerInfixHint name = select language</span>
-<span class="lineno">  314 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;To write a function in infix notation, use backquotes: `&quot; ++ name ++ &quot;`&quot;</span>
-<span class="lineno">  315 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Om een functie infix te schrijven gebruik je backquotes: `&quot; ++ name ++ &quot;`&quot;</span>
-<span class="lineno">  316 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  317 </span>
-<span class="lineno">  318 </span>lexerEOFInChar :: String
-<span class="lineno">  319 </span><span class="decl"><span class="nottickedoff">lexerEOFInChar = select language</span>
-<span class="lineno">  320 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;End of file in character literal&quot;</span>
-<span class="lineno">  321 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Einde van bestand in letter constante&quot;</span>
-<span class="lineno">  322 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  323 </span>
-<span class="lineno">  324 </span>lexerEOFInString :: String
-<span class="lineno">  325 </span><span class="decl"><span class="nottickedoff">lexerEOFInString = select language</span>
-<span class="lineno">  326 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;End of file in string literal&quot;</span>
-<span class="lineno">  327 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Einde van bestand in tekst constante&quot;</span>
-<span class="lineno">  328 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  329 </span>
-<span class="lineno">  330 </span>lexerIllegalEscapeInString :: String
-<span class="lineno">  331 </span><span class="decl"><span class="nottickedoff">lexerIllegalEscapeInString = select language</span>
-<span class="lineno">  332 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Illegal escape sequence in string literal&quot;</span>
-<span class="lineno">  333 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Illegaal escape karakter in tekst constante&quot;</span>
-<span class="lineno">  334 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  335 </span>
-<span class="lineno">  336 </span>lexerNewLineInString :: String
-<span class="lineno">  337 </span><span class="decl"><span class="nottickedoff">lexerNewLineInString = select language</span>
-<span class="lineno">  338 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Newline in string literal (expecting \&quot;)&quot;</span>
-<span class="lineno">  339 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Einde van regel in een tekst (gebruik \&quot; om de tekst te sluiten)&quot;</span>
-<span class="lineno">  340 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  341 </span>
-<span class="lineno">  342 </span>lexerIllegalCharInString :: String
-<span class="lineno">  343 </span><span class="decl"><span class="nottickedoff">lexerIllegalCharInString = select language</span>
-<span class="lineno">  344 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Illegal character in string literal&quot;</span>
-<span class="lineno">  345 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Niet toegestaan teken in tekst constante&quot;</span>
-<span class="lineno">  346 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  347 </span>
-<span class="lineno">  348 </span>lexerTooManyClose :: Show a =&gt; a -&gt; String
-<span class="lineno">  349 </span><span class="decl"><span class="nottickedoff">lexerTooManyClose c = select language</span>
-<span class="lineno">  350 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Close bracket &quot; ++ show c ++ &quot; but no open bracket&quot;</span>
-<span class="lineno">  351 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Haakje &quot; ++ show c ++ &quot; wordt gesloten maar nergens geopend&quot;</span>
-<span class="lineno">  352 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  353 </span>
-<span class="lineno">  354 </span>lexerUnexpectedClose :: Char -&gt; Char -&gt; [String]
-<span class="lineno">  355 </span><span class="decl"><span class="nottickedoff">lexerUnexpectedClose c1 c2 = select language</span>
-<span class="lineno">  356 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Unexpected close bracket &quot; ++ show c1</span>
-<span class="lineno">  357 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Expecting a close bracket for &quot; ++ show c2</span>
-<span class="lineno">  358 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  359 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Onverwacht sluithaakje &quot; ++ show c1</span>
-<span class="lineno">  360 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Sluithaakje voor &quot; ++ show c2 ++ &quot; wordt nog verwacht&quot;</span>
-<span class="lineno">  361 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  362 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  363 </span>
-<span class="lineno">  364 </span>lexerStillOpenAtEOF :: [String] -&gt; String
-<span class="lineno">  365 </span><span class="decl"><span class="nottickedoff">lexerStillOpenAtEOF [s] = select language</span>
-<span class="lineno">  366 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Bracket &quot; ++ s ++ &quot; is never closed&quot;</span>
-<span class="lineno">  367 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Sluithaakje voor &quot; ++ s ++ &quot; wordt nog verwacht&quot;</span>
-<span class="lineno">  368 </span><span class="spaces">    </span><span class="nottickedoff">]</span>
-<span class="lineno">  369 </span><span class="spaces"></span><span class="nottickedoff">lexerStillOpenAtEOF xs = select language</span>
-<span class="lineno">  370 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;The following brackets are never closed: &quot; ++ commasAnd xs</span>
-<span class="lineno">  371 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;De volgende haakjes worden nergens gesloten: &quot; ++ kommasEn xs</span>
-<span class="lineno">  372 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  373 </span>
-<span class="lineno">  374 </span>lexerCorrectStrings :: String
-<span class="lineno">  375 </span><span class="decl"><span class="nottickedoff">lexerCorrectStrings = select language</span>
-<span class="lineno">  376 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; &quot;Correct examples of Strings: \&quot;Helium is cool\&quot; \&quot;abc\\ndef\&quot; \&quot;\&quot;&quot;</span>
-<span class="lineno">  377 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; &quot;Correcte voorbeelden van teksten: \&quot;Helium is geweldig\&quot; \&quot;abc\\ndef\&quot; \&quot;\&quot;&quot;</span>
-<span class="lineno">  378 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  379 </span>
-<span class="lineno">  380 </span>lexerTabCharacter :: [String]
-<span class="lineno">  381 </span><span class="decl"><span class="nottickedoff">lexerTabCharacter = select language</span>
-<span class="lineno">  382 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Tab character encountered; may cause problems with the layout rule&quot;</span>
-<span class="lineno">  383 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Configure your editor to replace tabs by spaces&quot;</span>
-<span class="lineno">  384 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  385 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Tab karakters kunnen problemn opleveren met de layout rule&quot;</span>
-<span class="lineno">  386 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Stel je editor zo in dat hij tabs vervangt door spaties&quot;</span>
-<span class="lineno">  387 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  388 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  389 </span>
-<span class="lineno">  390 </span>lexerLooksLikeFloatNoFraction :: String -&gt; [String]
-<span class="lineno">  391 </span><span class="decl"><span class="nottickedoff">lexerLooksLikeFloatNoFraction digits = select language</span>
-<span class="lineno">  392 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Integer immediately followed by function composition (.)&quot;</span>
-<span class="lineno">  393 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;If a Float was meant, write \&quot;&quot; ++ digits ++ &quot;.0\&quot;&quot;</span>
-<span class="lineno">  394 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Otherwise, insert a space for readability&quot;</span>
-<span class="lineno">  395 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  396 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Geheel getal direct gevolgd door functie compositie (.)&quot;</span>
-<span class="lineno">  397 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Als je een reeel getal bedoelde, schrijf dan \&quot;&quot; ++ digits ++ &quot;.0\&quot;&quot;</span>
-<span class="lineno">  398 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Voeg anders een spatie in voor leesbaarheid&quot;</span>
-<span class="lineno">  399 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  400 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  401 </span>
-<span class="lineno">  402 </span>lexerLooksLikeFloatNoDigits :: String -&gt; [String]
-<span class="lineno">  403 </span><span class="decl"><span class="nottickedoff">lexerLooksLikeFloatNoDigits fraction = select language</span>
-<span class="lineno">  404 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Function composition (.) immediately followed by number&quot;</span>
-<span class="lineno">  405 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;If a Float was meant, write \&quot;0.&quot; ++ fraction ++ &quot;\&quot;&quot;</span>
-<span class="lineno">  406 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Otherwise, insert a space for readability&quot;</span>
-<span class="lineno">  407 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  408 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Functie compositie (.) direct gevolgd door een getal&quot;</span>
-<span class="lineno">  409 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Als je een reeel getal bedoelde, schrijf dan \&quot;0.&quot; ++ fraction ++ &quot;\&quot;&quot;</span>
-<span class="lineno">  410 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Voeg anders een spatie in voor leesbaarheid&quot;</span>
-<span class="lineno">  411 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  412 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  413 </span>
-<span class="lineno">  414 </span>lexerUtfChar :: [String]
-<span class="lineno">  415 </span><span class="decl"><span class="nottickedoff">lexerUtfChar = select language</span>
-<span class="lineno">  416 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Unrecognized character in the beginning of the file.&quot;</span>
-<span class="lineno">  417 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Is it saved with encoding UTF-8 without BOM?&quot;</span>
-<span class="lineno">  418 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  419 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Onbekend karakter in het begin van het bestand.&quot;</span>
-<span class="lineno">  420 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Is het bestand opgeslagen met encoding UTF-8 zonder BOM?&quot;</span>
-<span class="lineno">  421 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  422 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  423 </span>
-<span class="lineno">  424 </span>lexerNestedComment :: [String]
-<span class="lineno">  425 </span><span class="decl"><span class="nottickedoff">lexerNestedComment = select language</span>
-<span class="lineno">  426 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Syntax colouring usually can not handle nested comments&quot;</span>
-<span class="lineno">  427 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Some of your code may be in comments but not visibly so&quot;</span>
-<span class="lineno">  428 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  429 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Syntax kleuring van editor kan meestal niet overweg met genest commentaar&quot;</span>
-<span class="lineno">  430 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Het kan zo zijn dat een deel van je code in commentaar staat maar dat je dat niet ziet&quot;</span>
-<span class="lineno">  431 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  432 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  433 </span>
-<span class="lineno">  434 </span>lexerCommentOperator :: [String]
-<span class="lineno">  435 </span><span class="decl"><span class="nottickedoff">lexerCommentOperator = select language</span>
-<span class="lineno">  436 </span><span class="spaces">    </span><span class="nottickedoff">[ English :-&gt; [ &quot;Syntax colouring usually can not handle names containing --&quot;</span>
-<span class="lineno">  437 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;If you wanted to start a comment, write spaces around --&quot;</span>
-<span class="lineno">  438 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  439 </span><span class="spaces">    </span><span class="nottickedoff">, Dutch   :-&gt; [ &quot;Syntax kleuring van editor kan meestal niet overweg met namen die -- bevatten&quot;</span>
-<span class="lineno">  440 </span><span class="spaces">                  </span><span class="nottickedoff">, &quot;Als je commentaar wilde beginnen schrijf dan spaties voor en na --&quot;</span>
-<span class="lineno">  441 </span><span class="spaces">                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  442 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  443 </span>
-<span class="lineno">  444 </span>
-<span class="lineno">  445 </span>commasAnd :: [String] -&gt; String
-<span class="lineno">  446 </span><span class="decl"><span class="nottickedoff">commasAnd [] = []</span>
-<span class="lineno">  447 </span><span class="spaces"></span><span class="nottickedoff">commasAnd [x] = x</span>
-<span class="lineno">  448 </span><span class="spaces"></span><span class="nottickedoff">commasAnd (x:xs) = x ++ concatMap (&quot;, &quot; ++) (init xs) ++ &quot; and &quot; ++ last xs</span></span>
-<span class="lineno">  449 </span>
-<span class="lineno">  450 </span>kommasEn :: [String] -&gt; String
-<span class="lineno">  451 </span><span class="decl"><span class="nottickedoff">kommasEn [] = []</span>
-<span class="lineno">  452 </span><span class="spaces"></span><span class="nottickedoff">kommasEn [x] = x</span>
-<span class="lineno">  453 </span><span class="spaces"></span><span class="nottickedoff">kommasEn (x:xs) = x ++ concatMap (&quot;, &quot; ++) (init xs) ++ &quot; en &quot; ++ last xs</span></span>
-<span class="lineno">  454 </span>
+<span class="lineno">  156 </span>-- | Adds commas and 'and' in between each element of the list
+<span class="lineno">  157 </span>commasAndLang :: String   -- ^ The word to use for 'and'
+<span class="lineno">  158 </span>              -&gt; [String] -- ^ The list of items to show
+<span class="lineno">  159 </span>              -&gt; String   -- ^ The result
+<span class="lineno">  160 </span><span class="decl"><span class="nottickedoff">commasAndLang _ [] = []</span>
+<span class="lineno">  161 </span><span class="spaces"></span><span class="nottickedoff">commasAndLang _ [x] = x</span>
+<span class="lineno">  162 </span><span class="spaces"></span><span class="nottickedoff">commasAndLang a (x:xs) = x ++ concatMap (&quot;, &quot; ++) (init xs) ++ &quot; &quot; ++ a ++ &quot; &quot; ++ last xs</span></span>
+<span class="lineno">  163 </span>
+<span class="lineno">  164 </span>commasAnd :: [String] -&gt; String
+<span class="lineno">  165 </span><span class="decl"><span class="nottickedoff">commasAnd = commasAndLang &quot;and&quot;</span></span>
+<span class="lineno">  166 </span>
+<span class="lineno">  167 </span>kommasEn :: [String] -&gt; String
+<span class="lineno">  168 </span><span class="decl"><span class="nottickedoff">kommasEn = commasAndLang &quot;en&quot;</span></span>
 
 </pre>
 </body>

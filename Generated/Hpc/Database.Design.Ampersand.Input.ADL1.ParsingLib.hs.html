@@ -36,160 +36,170 @@ span.spaces    { background: white }
 <span class="lineno">   20 </span>    pZero, pOne, pInteger
 <span class="lineno">   21 </span>) where
 <span class="lineno">   22 </span>
-<span class="lineno">   23 </span>--TODO! Haddock comments to the parsing lib
-<span class="lineno">   24 </span>
-<span class="lineno">   25 </span>import Control.Monad.Identity (Identity)
-<span class="lineno">   26 </span>import Database.Design.Ampersand.Input.ADL1.FilePos (Origin(..))
-<span class="lineno">   27 </span>import Database.Design.Ampersand.Input.ADL1.LexerToken
-<span class="lineno">   28 </span>import qualified Control.Applicative as CA
-<span class="lineno">   29 </span>import qualified Data.Functor as DF
-<span class="lineno">   30 </span>import qualified Text.Parsec.Prim as P
-<span class="lineno">   31 </span>import Text.Parsec as P hiding(satisfy)
-<span class="lineno">   32 </span>import Text.Parsec.Pos (newPos)
-<span class="lineno">   33 </span>
-<span class="lineno">   34 </span>type AmpParser a = P.ParsecT [Token] FilePos Identity a
-<span class="lineno">   35 </span>
-<span class="lineno">   36 </span>-----------------------------------------------------------
-<span class="lineno">   37 </span>-- Useful functions
-<span class="lineno">   38 </span>-----------------------------------------------------------
-<span class="lineno">   39 </span>
-<span class="lineno">   40 </span>-- TODO! Use Parsec operators
-<span class="lineno">   41 </span>infixl 4 &lt;$
-<span class="lineno">   42 </span>(&lt;$) :: a -&gt; AmpParser b -&gt; AmpParser a
-<span class="lineno">   43 </span><span class="decl"><span class="istickedoff">a &lt;$ p = do { _ &lt;- p; return a }</span></span>
-<span class="lineno">   44 </span>
-<span class="lineno">   45 </span>(&lt;??&gt;) :: AmpParser a -&gt; AmpParser (a -&gt; a) -&gt; AmpParser a
-<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">p &lt;??&gt; q = (\x f -&gt; f x) CA.&lt;$&gt; p CA.&lt;*&gt; (q `opt` id)</span></span>
-<span class="lineno">   47 </span>
-<span class="lineno">   48 </span>pIsThere :: AmpParser a -&gt; AmpParser Bool
-<span class="lineno">   49 </span><span class="decl"><span class="istickedoff">pIsThere p = (True &lt;$ p) `opt` False</span></span>
-<span class="lineno">   50 </span>
-<span class="lineno">   51 </span>optList :: AmpParser [a] -&gt; AmpParser [a]
-<span class="lineno">   52 </span><span class="decl"><span class="istickedoff">optList p = p `opt` []</span></span>
-<span class="lineno">   53 </span>
-<span class="lineno">   54 </span>pMaybe :: AmpParser a -&gt; AmpParser (Maybe a)
-<span class="lineno">   55 </span><span class="decl"><span class="istickedoff">pMaybe p = Just CA.&lt;$&gt; p &lt;|&gt; P.parserReturn Nothing</span></span>
-<span class="lineno">   56 </span>
-<span class="lineno">   57 </span>--TODO! Remove `opt` and use Parsec's option instead.
-<span class="lineno">   58 </span>opt ::  AmpParser a -&gt; a -&gt; AmpParser a
-<span class="lineno">   59 </span><span class="decl"><span class="istickedoff">a `opt` b = P.option b a</span></span>
-<span class="lineno">   60 </span>
-<span class="lineno">   61 </span>-----------------------------------------------------------
-<span class="lineno">   62 </span>-- Keywords &amp; operators
-<span class="lineno">   63 </span>-----------------------------------------------------------
-<span class="lineno">   64 </span>pKey :: String -&gt; AmpParser String
-<span class="lineno">   65 </span><span class="decl"><span class="istickedoff">pKey key = match (LexKeyword key)</span></span>
-<span class="lineno">   66 </span>
-<span class="lineno">   67 </span>pOperator :: String -&gt; AmpParser String
-<span class="lineno">   68 </span><span class="decl"><span class="istickedoff">pOperator op = match (LexOperator op)</span></span>
-<span class="lineno">   69 </span>
-<span class="lineno">   70 </span>pDash :: AmpParser String
-<span class="lineno">   71 </span><span class="decl"><span class="istickedoff">pDash = pOperator &quot;-&quot;</span></span>
-<span class="lineno">   72 </span>
-<span class="lineno">   73 </span>pSemi :: AmpParser String
-<span class="lineno">   74 </span><span class="decl"><span class="istickedoff">pSemi = pOperator &quot;;&quot;</span></span>
-<span class="lineno">   75 </span>
-<span class="lineno">   76 </span>pColon :: AmpParser String
-<span class="lineno">   77 </span><span class="decl"><span class="istickedoff">pColon = pOperator &quot;:&quot;</span></span>
-<span class="lineno">   78 </span>
-<span class="lineno">   79 </span>-----------------------------------------------------------
-<span class="lineno">   80 </span>-- Token parsers
-<span class="lineno">   81 </span>-----------------------------------------------------------
+<span class="lineno">   23 </span>import Control.Monad.Identity (Identity)
+<span class="lineno">   24 </span>import Database.Design.Ampersand.Input.ADL1.FilePos (Origin(..))
+<span class="lineno">   25 </span>import Database.Design.Ampersand.Input.ADL1.LexerToken
+<span class="lineno">   26 </span>import qualified Control.Applicative as CA
+<span class="lineno">   27 </span>import qualified Data.Functor as DF
+<span class="lineno">   28 </span>import qualified Text.Parsec.Prim as P
+<span class="lineno">   29 </span>import Text.Parsec as P hiding(satisfy)
+<span class="lineno">   30 </span>import Text.Parsec.Pos (newPos)
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>-- | The Ampersand parser type
+<span class="lineno">   33 </span>type AmpParser a = P.ParsecT [Token] FilePos Identity a -- ^ The Parsec parser for a list of tokens with a file position.
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>-----------------------------------------------------------
+<span class="lineno">   36 </span>-- Useful functions
+<span class="lineno">   37 </span>-----------------------------------------------------------
+<span class="lineno">   38 </span>
+<span class="lineno">   39 </span>infixl 4 &lt;$
+<span class="lineno">   40 </span>
+<span class="lineno">   41 </span>-- | Applies the given parser and returns the given constructor
+<span class="lineno">   42 </span>(&lt;$) :: a           -- ^ The value to return
+<span class="lineno">   43 </span>     -&gt; AmpParser b -- ^ The parser to apply
+<span class="lineno">   44 </span>     -&gt; AmpParser a -- ^ The result
+<span class="lineno">   45 </span><span class="decl"><span class="istickedoff">a &lt;$ p = do { _ &lt;- p; return a }</span></span>
+<span class="lineno">   46 </span>
+<span class="lineno">   47 </span>(&lt;??&gt;) :: AmpParser a -&gt; AmpParser (a -&gt; a) -&gt; AmpParser a
+<span class="lineno">   48 </span><span class="decl"><span class="istickedoff">p &lt;??&gt; q = (\x f -&gt; f x) CA.&lt;$&gt; p CA.&lt;*&gt; (q `opt` id)</span></span>
+<span class="lineno">   49 </span>
+<span class="lineno">   50 </span>-- | Tries to apply the given parser and returns a parser with a boolean indicating whether it succeeded
+<span class="lineno">   51 </span>pIsThere :: AmpParser a     -- ^ The parser to run
+<span class="lineno">   52 </span>         -&gt; AmpParser Bool  -- ^ The parser with the result
+<span class="lineno">   53 </span><span class="decl"><span class="istickedoff">pIsThere p = (True &lt;$ p) `opt` False</span></span>
+<span class="lineno">   54 </span>
+<span class="lineno">   55 </span>-- | Optionally applies a list parser, returning an empty list if it doesn't succeed
+<span class="lineno">   56 </span>optList :: AmpParser [a]
+<span class="lineno">   57 </span>        -&gt; AmpParser [a]
+<span class="lineno">   58 </span><span class="decl"><span class="istickedoff">optList p = p `opt` []</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>-- | Tries to apply the given parser and encapsulates the result in Maybe
+<span class="lineno">   61 </span>pMaybe :: AmpParser a           -- ^ The parser to apply
+<span class="lineno">   62 </span>       -&gt; AmpParser (Maybe a)   -- ^ The result
+<span class="lineno">   63 </span><span class="decl"><span class="istickedoff">pMaybe p = Just CA.&lt;$&gt; p &lt;|&gt; P.parserReturn Nothing</span></span>
+<span class="lineno">   64 </span>
+<span class="lineno">   65 </span>-- | Tries to apply the given parser and returns the second argument if it doesn't succeed
+<span class="lineno">   66 </span>opt ::  AmpParser a  -- ^ The parser to try
+<span class="lineno">   67 </span>    -&gt; a             -- ^ The item to return if the parser doesn't succeed
+<span class="lineno">   68 </span>    -&gt; AmpParser a   -- ^ The resulting parser
+<span class="lineno">   69 </span><span class="decl"><span class="istickedoff">a `opt` b = P.option b a</span></span>
+<span class="lineno">   70 </span>
+<span class="lineno">   71 </span>-----------------------------------------------------------
+<span class="lineno">   72 </span>-- Keywords &amp; operators
+<span class="lineno">   73 </span>-----------------------------------------------------------
+<span class="lineno">   74 </span>pKey :: String -&gt; AmpParser String
+<span class="lineno">   75 </span><span class="decl"><span class="istickedoff">pKey key = match (LexKeyword key)</span></span>
+<span class="lineno">   76 </span>
+<span class="lineno">   77 </span>pOperator :: String -&gt; AmpParser String
+<span class="lineno">   78 </span><span class="decl"><span class="istickedoff">pOperator op = match (LexOperator op)</span></span>
+<span class="lineno">   79 </span>
+<span class="lineno">   80 </span>pDash :: AmpParser String
+<span class="lineno">   81 </span><span class="decl"><span class="istickedoff">pDash = pOperator &quot;-&quot;</span></span>
 <span class="lineno">   82 </span>
-<span class="lineno">   83 </span>check :: (Lexeme -&gt; Maybe a) -&gt; AmpParser a
-<span class="lineno">   84 </span><span class="decl"><span class="istickedoff">check predicate = tokenPrim <span class="nottickedoff">showTok</span> nextPos matchTok</span>
-<span class="lineno">   85 </span><span class="spaces">  </span><span class="istickedoff">where  -- Token pretty-printing function</span>
-<span class="lineno">   86 </span><span class="spaces">         </span><span class="istickedoff">showTok :: Token -&gt; String</span>
-<span class="lineno">   87 </span><span class="spaces">         </span><span class="istickedoff"><span class="nottickedoff">showTok (Tok lx _)   = show lx</span></span>
-<span class="lineno">   88 </span><span class="spaces">         </span><span class="istickedoff">-- Next position calculating function</span>
-<span class="lineno">   89 </span><span class="spaces">         </span><span class="istickedoff">nextPos :: SourcePos -&gt; Token -&gt; [Token] -&gt; SourcePos</span>
-<span class="lineno">   90 </span><span class="spaces">         </span><span class="istickedoff">nextPos pos _ [] = pos</span>
-<span class="lineno">   91 </span><span class="spaces">         </span><span class="istickedoff">nextPos _ _ (Tok _ (FilePos file line col):_) = newPos file line col</span>
-<span class="lineno">   92 </span><span class="spaces">         </span><span class="istickedoff">-- ^ Matching function for the token to parse.</span>
-<span class="lineno">   93 </span><span class="spaces">         </span><span class="istickedoff">matchTok (Tok l _) = predicate l</span></span>
-<span class="lineno">   94 </span>
-<span class="lineno">   95 </span>match :: Lexeme -&gt; AmpParser String
-<span class="lineno">   96 </span><span class="decl"><span class="istickedoff">match lx = check (\lx' -&gt; if lx == lx' then Just (lexemeText lx) else Nothing) &lt;?&gt; <span class="nottickedoff">show lx</span></span></span>
-<span class="lineno">   97 </span>
-<span class="lineno">   98 </span>--- Conid ::= UpperChar (Char | '_')*
-<span class="lineno">   99 </span>pConid :: AmpParser String
-<span class="lineno">  100 </span><span class="decl"><span class="istickedoff">pConid = check (\lx -&gt; case lx of { LexConId s -&gt; Just s; _ -&gt; Nothing })</span></span>
-<span class="lineno">  101 </span>
-<span class="lineno">  102 </span>--- String ::= '&quot;' Any* '&quot;'
-<span class="lineno">  103 </span>--- StringListSemi ::= String (';' String)*
-<span class="lineno">  104 </span>pString :: AmpParser String
-<span class="lineno">  105 </span><span class="decl"><span class="istickedoff">pString = check (\lx -&gt; case lx of { LexString s -&gt; Just s; _ -&gt; Nothing })</span></span>
-<span class="lineno">  106 </span>
-<span class="lineno">  107 </span>--- Expl ::= '{+' Any* '-}'
-<span class="lineno">  108 </span>pExpl :: AmpParser String
-<span class="lineno">  109 </span><span class="decl"><span class="istickedoff">pExpl = check (\lx -&gt; case lx of { LexExpl s -&gt; Just s; _ -&gt; <span class="nottickedoff">Nothing</span> })</span></span>
-<span class="lineno">  110 </span>
-<span class="lineno">  111 </span>--- Varid ::= (LowerChar | '_') (Char | '_')*
-<span class="lineno">  112 </span>pVarid :: AmpParser String
-<span class="lineno">  113 </span><span class="decl"><span class="istickedoff">pVarid = check (\lx -&gt; case lx of { LexVarId s -&gt; Just s; _ -&gt; Nothing })</span></span>
-<span class="lineno">  114 </span>
-<span class="lineno">  115 </span>--- Atom ::= &quot;'&quot; Any* &quot;'&quot;
-<span class="lineno">  116 </span>pAtom :: AmpParser String
-<span class="lineno">  117 </span><span class="decl"><span class="istickedoff">pAtom = check (\lx -&gt; case lx of { LexAtom s -&gt; Just s; _ -&gt; Nothing })</span></span>
-<span class="lineno">  118 </span>
-<span class="lineno">  119 </span>-----------------------------------------------------------
-<span class="lineno">  120 </span>-- Integers
-<span class="lineno">  121 </span>-----------------------------------------------------------
-<span class="lineno">  122 </span>
-<span class="lineno">  123 </span>pNumber :: Int -&gt; AmpParser String
-<span class="lineno">  124 </span><span class="decl"><span class="nottickedoff">pNumber nr = match (LexDecimal nr) &lt;|&gt; match (LexHex nr) &lt;|&gt; match (LexOctal nr)</span></span>
-<span class="lineno">  125 </span>
-<span class="lineno">  126 </span>pInteger :: AmpParser Int
-<span class="lineno">  127 </span><span class="decl"><span class="nottickedoff">pInteger = check isNr</span>
-<span class="lineno">  128 </span><span class="spaces">    </span><span class="nottickedoff">where isNr (LexDecimal i) = Just i</span>
-<span class="lineno">  129 </span><span class="spaces">          </span><span class="nottickedoff">isNr (LexHex i)     = Just i</span>
-<span class="lineno">  130 </span><span class="spaces">          </span><span class="nottickedoff">isNr (LexOctal i)   = Just i</span>
-<span class="lineno">  131 </span><span class="spaces">          </span><span class="nottickedoff">isNr _              = Nothing</span></span>
+<span class="lineno">   83 </span>pSemi :: AmpParser String
+<span class="lineno">   84 </span><span class="decl"><span class="istickedoff">pSemi = pOperator &quot;;&quot;</span></span>
+<span class="lineno">   85 </span>
+<span class="lineno">   86 </span>pColon :: AmpParser String
+<span class="lineno">   87 </span><span class="decl"><span class="istickedoff">pColon = pOperator &quot;:&quot;</span></span>
+<span class="lineno">   88 </span>
+<span class="lineno">   89 </span>-----------------------------------------------------------
+<span class="lineno">   90 </span>-- Token parsers
+<span class="lineno">   91 </span>-----------------------------------------------------------
+<span class="lineno">   92 </span>
+<span class="lineno">   93 </span>check :: (Lexeme -&gt; Maybe a) -&gt; AmpParser a
+<span class="lineno">   94 </span><span class="decl"><span class="istickedoff">check predicate = tokenPrim showTok nextPos matchTok</span>
+<span class="lineno">   95 </span><span class="spaces">  </span><span class="istickedoff">where  -- Token pretty-printing function</span>
+<span class="lineno">   96 </span><span class="spaces">         </span><span class="istickedoff">showTok :: Token -&gt; String</span>
+<span class="lineno">   97 </span><span class="spaces">         </span><span class="istickedoff">showTok (Tok lx _)   = show lx</span>
+<span class="lineno">   98 </span><span class="spaces">         </span><span class="istickedoff">-- Next position calculating function</span>
+<span class="lineno">   99 </span><span class="spaces">         </span><span class="istickedoff">nextPos :: SourcePos -&gt; Token -&gt; [Token] -&gt; SourcePos</span>
+<span class="lineno">  100 </span><span class="spaces">         </span><span class="istickedoff">nextPos pos _ [] = pos</span>
+<span class="lineno">  101 </span><span class="spaces">         </span><span class="istickedoff">nextPos _ _ (Tok _ (FilePos file line col):_) = newPos file line col</span>
+<span class="lineno">  102 </span><span class="spaces">         </span><span class="istickedoff">-- ^ Matching function for the token to parse.</span>
+<span class="lineno">  103 </span><span class="spaces">         </span><span class="istickedoff">matchTok (Tok l _) = predicate l</span></span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>match :: Lexeme -&gt; AmpParser String
+<span class="lineno">  106 </span><span class="decl"><span class="istickedoff">match lx = check (\lx' -&gt; if lx == lx' then Just (lexemeText lx) else Nothing) &lt;?&gt; show lx</span></span>
+<span class="lineno">  107 </span>
+<span class="lineno">  108 </span>--- Conid ::= UpperChar (Char | '_')*
+<span class="lineno">  109 </span>pConid :: AmpParser String
+<span class="lineno">  110 </span><span class="decl"><span class="istickedoff">pConid = check (\lx -&gt; case lx of { LexConId s -&gt; Just s; _ -&gt; Nothing })</span></span>
+<span class="lineno">  111 </span>
+<span class="lineno">  112 </span>--- String ::= '&quot;' Any* '&quot;'
+<span class="lineno">  113 </span>--- StringListSemi ::= String (';' String)*
+<span class="lineno">  114 </span>pString :: AmpParser String
+<span class="lineno">  115 </span><span class="decl"><span class="istickedoff">pString = check (\lx -&gt; case lx of { LexString s -&gt; Just s; _ -&gt; Nothing })</span></span>
+<span class="lineno">  116 </span>
+<span class="lineno">  117 </span>--- Expl ::= '{+' Any* '-}'
+<span class="lineno">  118 </span>pExpl :: AmpParser String
+<span class="lineno">  119 </span><span class="decl"><span class="istickedoff">pExpl = check (\lx -&gt; case lx of { LexExpl s -&gt; Just s; _ -&gt; Nothing })</span></span>
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>--- Varid ::= (LowerChar | '_') (Char | '_')*
+<span class="lineno">  122 </span>pVarid :: AmpParser String
+<span class="lineno">  123 </span><span class="decl"><span class="istickedoff">pVarid = check (\lx -&gt; case lx of { LexVarId s -&gt; Just s; _ -&gt; Nothing })</span></span>
+<span class="lineno">  124 </span>
+<span class="lineno">  125 </span>--- Atom ::= &quot;'&quot; Any* &quot;'&quot;
+<span class="lineno">  126 </span>pAtom :: AmpParser String
+<span class="lineno">  127 </span><span class="decl"><span class="istickedoff">pAtom = check (\lx -&gt; case lx of { LexAtom s -&gt; Just s; _ -&gt; Nothing })</span></span>
+<span class="lineno">  128 </span>
+<span class="lineno">  129 </span>-----------------------------------------------------------
+<span class="lineno">  130 </span>-- Integers
+<span class="lineno">  131 </span>-----------------------------------------------------------
 <span class="lineno">  132 </span>
-<span class="lineno">  133 </span>pZero :: AmpParser String
-<span class="lineno">  134 </span><span class="decl"><span class="nottickedoff">pZero = pNumber 0</span></span>
+<span class="lineno">  133 </span>pNumber :: Int -&gt; AmpParser String
+<span class="lineno">  134 </span><span class="decl"><span class="nottickedoff">pNumber nr = match (LexDecimal nr) &lt;|&gt; match (LexHex nr) &lt;|&gt; match (LexOctal nr)</span></span>
 <span class="lineno">  135 </span>
-<span class="lineno">  136 </span>pOne :: AmpParser String
-<span class="lineno">  137 </span><span class="decl"><span class="nottickedoff">pOne = pNumber 1</span></span>
-<span class="lineno">  138 </span>
-<span class="lineno">  139 </span>-----------------------------------------------------------
-<span class="lineno">  140 </span>-- Special characters
-<span class="lineno">  141 </span>-----------------------------------------------------------
+<span class="lineno">  136 </span>pInteger :: AmpParser Int
+<span class="lineno">  137 </span><span class="decl"><span class="nottickedoff">pInteger = check isNr</span>
+<span class="lineno">  138 </span><span class="spaces">    </span><span class="nottickedoff">where isNr (LexDecimal i) = Just i</span>
+<span class="lineno">  139 </span><span class="spaces">          </span><span class="nottickedoff">isNr (LexHex i)     = Just i</span>
+<span class="lineno">  140 </span><span class="spaces">          </span><span class="nottickedoff">isNr (LexOctal i)   = Just i</span>
+<span class="lineno">  141 </span><span class="spaces">          </span><span class="nottickedoff">isNr _              = Nothing</span></span>
 <span class="lineno">  142 </span>
-<span class="lineno">  143 </span>-- matches special characters
-<span class="lineno">  144 </span>pSpec :: Char -&gt; AmpParser String
-<span class="lineno">  145 </span><span class="decl"><span class="istickedoff">pSpec sym = match (LexSymbol sym)</span></span>
-<span class="lineno">  146 </span>
-<span class="lineno">  147 </span>pComma :: AmpParser String
-<span class="lineno">  148 </span><span class="decl"><span class="istickedoff">pComma  = pSpec ','</span></span>
-<span class="lineno">  149 </span>
-<span class="lineno">  150 </span>pParens :: AmpParser a -&gt; AmpParser a
-<span class="lineno">  151 </span><span class="decl"><span class="istickedoff">pParens parser = pSpec '(' CA.*&gt; parser CA.&lt;* pSpec ')'</span></span>
+<span class="lineno">  143 </span>pZero :: AmpParser String
+<span class="lineno">  144 </span><span class="decl"><span class="nottickedoff">pZero = pNumber 0</span></span>
+<span class="lineno">  145 </span>
+<span class="lineno">  146 </span>pOne :: AmpParser String
+<span class="lineno">  147 </span><span class="decl"><span class="nottickedoff">pOne = pNumber 1</span></span>
+<span class="lineno">  148 </span>
+<span class="lineno">  149 </span>-----------------------------------------------------------
+<span class="lineno">  150 </span>-- Special characters
+<span class="lineno">  151 </span>-----------------------------------------------------------
 <span class="lineno">  152 </span>
-<span class="lineno">  153 </span>pBraces :: AmpParser a -&gt; AmpParser a
-<span class="lineno">  154 </span><span class="decl"><span class="istickedoff">pBraces parser = pSpec '{' CA.*&gt; parser CA.&lt;* pSpec '}'</span></span>
-<span class="lineno">  155 </span>
-<span class="lineno">  156 </span>pBrackets :: AmpParser a -&gt; AmpParser a
-<span class="lineno">  157 </span><span class="decl"><span class="istickedoff">pBrackets parser = pSpec '[' CA.*&gt; parser CA.&lt;* pSpec ']'</span></span>
-<span class="lineno">  158 </span>
-<span class="lineno">  159 </span>pChevrons :: AmpParser a -&gt; AmpParser a
-<span class="lineno">  160 </span><span class="decl"><span class="istickedoff">pChevrons parser = pSpec '&lt;' CA.*&gt; <span class="nottickedoff">parser</span> CA.&lt;* <span class="nottickedoff">pSpec '&gt;'</span></span></span>
-<span class="lineno">  161 </span>
-<span class="lineno">  162 </span>-----------------------------------------------------------
-<span class="lineno">  163 </span>-- Token positioning
-<span class="lineno">  164 </span>-----------------------------------------------------------
+<span class="lineno">  153 </span>-- matches special characters
+<span class="lineno">  154 </span>pSpec :: Char -&gt; AmpParser String
+<span class="lineno">  155 </span><span class="decl"><span class="istickedoff">pSpec sym = match (LexSymbol sym)</span></span>
+<span class="lineno">  156 </span>
+<span class="lineno">  157 </span>pComma :: AmpParser String
+<span class="lineno">  158 </span><span class="decl"><span class="istickedoff">pComma  = pSpec ','</span></span>
+<span class="lineno">  159 </span>
+<span class="lineno">  160 </span>pParens :: AmpParser a -&gt; AmpParser a
+<span class="lineno">  161 </span><span class="decl"><span class="istickedoff">pParens parser = pSpec '(' CA.*&gt; parser CA.&lt;* pSpec ')'</span></span>
+<span class="lineno">  162 </span>
+<span class="lineno">  163 </span>pBraces :: AmpParser a -&gt; AmpParser a
+<span class="lineno">  164 </span><span class="decl"><span class="istickedoff">pBraces parser = pSpec '{' CA.*&gt; parser CA.&lt;* pSpec '}'</span></span>
 <span class="lineno">  165 </span>
-<span class="lineno">  166 </span>posOrigin :: Show a =&gt; a -&gt; SourcePos -&gt; Origin
-<span class="lineno">  167 </span><span class="decl"><span class="istickedoff">posOrigin sym p = FileLoc (FilePos (sourceName p) (sourceLine p) (sourceColumn p)) <span class="nottickedoff">(show sym)</span></span></span>
+<span class="lineno">  166 </span>pBrackets :: AmpParser a -&gt; AmpParser a
+<span class="lineno">  167 </span><span class="decl"><span class="istickedoff">pBrackets parser = pSpec '[' CA.*&gt; parser CA.&lt;* pSpec ']'</span></span>
 <span class="lineno">  168 </span>
-<span class="lineno">  169 </span>currPos :: AmpParser Origin
-<span class="lineno">  170 </span><span class="decl"><span class="istickedoff">currPos = posOf $ return <span class="nottickedoff">()</span></span></span>
+<span class="lineno">  169 </span>pChevrons :: AmpParser a -&gt; AmpParser a
+<span class="lineno">  170 </span><span class="decl"><span class="istickedoff">pChevrons parser = pSpec '&lt;' CA.*&gt; parser CA.&lt;* pSpec '&gt;'</span></span>
 <span class="lineno">  171 </span>
-<span class="lineno">  172 </span>posOf :: Show a =&gt; AmpParser a -&gt; AmpParser Origin
-<span class="lineno">  173 </span><span class="decl"><span class="istickedoff">posOf parser = do { pos &lt;- getPosition; a &lt;- parser; return (posOrigin <span class="nottickedoff">a</span> pos) }</span></span>
-<span class="lineno">  174 </span>
-<span class="lineno">  175 </span>valPosOf :: Show a =&gt; AmpParser a -&gt; AmpParser (a, Origin)
-<span class="lineno">  176 </span><span class="decl"><span class="istickedoff">valPosOf parser = do { pos &lt;- getPosition; a &lt;- parser; return (a, <span class="nottickedoff">posOrigin a pos</span>) }</span></span>
+<span class="lineno">  172 </span>-----------------------------------------------------------
+<span class="lineno">  173 </span>-- Token positioning
+<span class="lineno">  174 </span>-----------------------------------------------------------
+<span class="lineno">  175 </span>
+<span class="lineno">  176 </span>posOrigin :: Show a =&gt; a -&gt; SourcePos -&gt; Origin
+<span class="lineno">  177 </span><span class="decl"><span class="istickedoff">posOrigin sym p = FileLoc (FilePos (sourceName p) (sourceLine p) (sourceColumn p)) (show sym)</span></span>
+<span class="lineno">  178 </span>
+<span class="lineno">  179 </span>currPos :: AmpParser Origin
+<span class="lineno">  180 </span><span class="decl"><span class="istickedoff">currPos = posOf $ return ()</span></span>
+<span class="lineno">  181 </span>
+<span class="lineno">  182 </span>posOf :: Show a =&gt; AmpParser a -&gt; AmpParser Origin
+<span class="lineno">  183 </span><span class="decl"><span class="istickedoff">posOf parser = do { pos &lt;- getPosition; a &lt;- parser; return (posOrigin a pos) }</span></span>
+<span class="lineno">  184 </span>
+<span class="lineno">  185 </span>valPosOf :: Show a =&gt; AmpParser a -&gt; AmpParser (a, Origin)
+<span class="lineno">  186 </span><span class="decl"><span class="istickedoff">valPosOf parser = do { pos &lt;- getPosition; a &lt;- parser; return (a, <span class="nottickedoff">posOrigin a pos</span>) }</span></span>
 
 </pre>
 </body>

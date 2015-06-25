@@ -29,68 +29,80 @@ span.spaces    { background: white }
 <span class="lineno">   13 </span>--fatal :: Int -&gt; String -&gt; a
 <span class="lineno">   14 </span>--fatal = fatalMsg &quot;Input.ADL1.FilePos&quot;
 <span class="lineno">   15 </span>
-<span class="lineno">   16 </span>type Line = Int
-<span class="lineno">   17 </span>type Column = Int
-<span class="lineno">   18 </span>type SymbolName = String
-<span class="lineno">   19 </span>
-<span class="lineno">   20 </span>initPos :: FilePath -&gt; FilePos
-<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">initPos fn = FilePos fn 1 1</span></span>
+<span class="lineno">   16 </span>-- | The line number
+<span class="lineno">   17 </span>type Line = Int
+<span class="lineno">   18 </span>-- | The column number
+<span class="lineno">   19 </span>type Column = Int
+<span class="lineno">   20 </span>-- | The name of a symbol
+<span class="lineno">   21 </span>type SymbolName = String
 <span class="lineno">   22 </span>
-<span class="lineno">   23 </span>updatePos :: FilePos -&gt; Char -&gt; FilePos
-<span class="lineno">   24 </span><span class="decl"><span class="istickedoff">updatePos pos '\n' = addLn 1 pos</span>
-<span class="lineno">   25 </span><span class="spaces"></span><span class="istickedoff">updatePos pos '\t' = addTab pos</span>
-<span class="lineno">   26 </span><span class="spaces"></span><span class="istickedoff">updatePos pos   _  = addPos 1 pos</span></span>
+<span class="lineno">   23 </span>-- | Makes the initial position for a file
+<span class="lineno">   24 </span>initPos :: FilePath -- ^ The file path
+<span class="lineno">   25 </span>        -&gt; FilePos  -- ^ The initial position
+<span class="lineno">   26 </span><span class="decl"><span class="istickedoff">initPos fn = FilePos fn 1 1</span></span>
 <span class="lineno">   27 </span>
-<span class="lineno">   28 </span>addTab :: FilePos -&gt; FilePos
-<span class="lineno">   29 </span><span class="decl"><span class="istickedoff">addTab pos@(FilePos _ _ col) = addPos tabWidth pos</span>
-<span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">where tabWidth = 8 - ((col-1) `mod` 8)</span></span>
-<span class="lineno">   31 </span>
-<span class="lineno">   32 </span>addPos :: Int -&gt; FilePos -&gt; FilePos 
-<span class="lineno">   33 </span><span class="decl"><span class="istickedoff">addPos n (FilePos fn line col) = FilePos fn line (col + n)</span></span>
-<span class="lineno">   34 </span>
-<span class="lineno">   35 </span>addLn :: Int -&gt; FilePos -&gt; FilePos 
-<span class="lineno">   36 </span><span class="decl"><span class="istickedoff">addLn n (FilePos fn line _) = FilePos fn (line+n) 1</span></span>
-<span class="lineno">   37 </span>
-<span class="lineno">   38 </span>--Traced a have an origin, which may be unknown.
-<span class="lineno">   39 </span>data FilePos = FilePos FilePath Line Column deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, Generic)
-<span class="lineno">   40 </span>
-<span class="lineno">   41 </span>instance Hashable FilePos where
-<span class="lineno">   42 </span>  <span class="decl"><span class="nottickedoff">hashWithSalt s (FilePos fn l c) = s `hashWithSalt` fn `hashWithSalt` l `hashWithSalt` c</span></span>
-<span class="lineno">   43 </span>
-<span class="lineno">   44 </span>data Origin = OriginUnknown | Origin String | FileLoc FilePos SymbolName | DBLoc String
-<span class="lineno">   45 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff">Ord</span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>, Generic)
-<span class="lineno">   46 </span>
-<span class="lineno">   47 </span>instance Unique Origin where
-<span class="lineno">   48 </span>  <span class="decl"><span class="nottickedoff">showUnique = show</span></span>
-<span class="lineno">   49 </span>instance Hashable Origin
-<span class="lineno">   50 </span>
-<span class="lineno">   51 </span>instance Show FilePos where
-<span class="lineno">   52 </span>  <span class="decl"><span class="istickedoff">show (FilePos fn l c) = &quot;line &quot; ++ show l ++ &quot;:&quot; ++ show c ++ &quot;, file &quot; ++ fn</span></span>
-<span class="lineno">   53 </span>
-<span class="lineno">   54 </span>instance Show Origin where
-<span class="lineno">   55 </span>  <span class="decl"><span class="nottickedoff">show (FileLoc pos _) = show pos</span>
-<span class="lineno">   56 </span><span class="spaces">  </span><span class="nottickedoff">show (DBLoc str)     = &quot;Database location: &quot;++str</span>
-<span class="lineno">   57 </span><span class="spaces">  </span><span class="nottickedoff">show (Origin str)    = str</span>
-<span class="lineno">   58 </span><span class="spaces">  </span><span class="nottickedoff">show OriginUnknown   = &quot;Unknown origin&quot;</span></span>
-<span class="lineno">   59 </span>
-<span class="lineno">   60 </span>class Traced a where
-<span class="lineno">   61 </span>  origin :: a -&gt; Origin
-<span class="lineno">   62 </span>  filenm :: a -&gt; String
-<span class="lineno">   63 </span>  linenr :: a -&gt; Int
-<span class="lineno">   64 </span>  colnr :: a -&gt; Int
-<span class="lineno">   65 </span>  <span class="decl"><span class="nottickedoff">filenm x = case origin x of</span>
-<span class="lineno">   66 </span><span class="spaces">               </span><span class="nottickedoff">FileLoc (FilePos nm _ _) _ -&gt; nm</span>
-<span class="lineno">   67 </span><span class="spaces">               </span><span class="nottickedoff">_ -&gt; &quot;&quot;</span></span>
-<span class="lineno">   68 </span>  <span class="decl"><span class="nottickedoff">linenr x = case origin x of</span>
-<span class="lineno">   69 </span><span class="spaces">               </span><span class="nottickedoff">FileLoc (FilePos _ l _) _ -&gt; l</span>
-<span class="lineno">   70 </span><span class="spaces">               </span><span class="nottickedoff">_ -&gt; 0</span></span>
-<span class="lineno">   71 </span>  <span class="decl"><span class="nottickedoff">colnr x  = case origin x of</span>
-<span class="lineno">   72 </span><span class="spaces">               </span><span class="nottickedoff">FileLoc (FilePos _ _ c) _ -&gt; c</span>
-<span class="lineno">   73 </span><span class="spaces">               </span><span class="nottickedoff">_ -&gt; 0</span></span>
-<span class="lineno">   74 </span>
-<span class="lineno">   75 </span>instance Traced Origin where
-<span class="lineno">   76 </span>  <span class="decl"><span class="nottickedoff">origin = id</span></span>
-<span class="lineno">   77 </span>
+<span class="lineno">   28 </span>-- | Increases the position of a lexer monad with the given character
+<span class="lineno">   29 </span>updatePos :: FilePos -- ^ The file position
+<span class="lineno">   30 </span>          -&gt; Char    -- ^ The character to add
+<span class="lineno">   31 </span>          -&gt; FilePos -- ^ The new position
+<span class="lineno">   32 </span><span class="decl"><span class="istickedoff">updatePos pos '\n' = addLn 1 pos</span>
+<span class="lineno">   33 </span><span class="spaces"></span><span class="istickedoff">updatePos pos '\t' = addTab pos</span>
+<span class="lineno">   34 </span><span class="spaces"></span><span class="istickedoff">updatePos pos   _  = addPos 1 pos</span></span>
+<span class="lineno">   35 </span>
+<span class="lineno">   36 </span>-- | Adds a tab character to the given position
+<span class="lineno">   37 </span>addTab :: FilePos -- ^ The old position
+<span class="lineno">   38 </span>       -&gt; FilePos -- ^ The new position
+<span class="lineno">   39 </span><span class="decl"><span class="istickedoff">addTab pos@(FilePos _ _ col) = addPos tabWidth pos</span>
+<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff">where tabWidth = 8 - ((col-1) `mod` 8)</span></span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>-- | Adds one column to the file position
+<span class="lineno">   43 </span>addPos :: Int -&gt; FilePos -&gt; FilePos 
+<span class="lineno">   44 </span><span class="decl"><span class="istickedoff">addPos n (FilePos fn line col) = FilePos fn line (col + n)</span></span>
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>-- | Adds one line to the file position, resetting the column number
+<span class="lineno">   47 </span>addLn :: Int -&gt; FilePos -&gt; FilePos 
+<span class="lineno">   48 </span><span class="decl"><span class="istickedoff">addLn n (FilePos fn line _) = FilePos fn (line+n) 1</span></span>
+<span class="lineno">   49 </span>
+<span class="lineno">   50 </span>-- | Represents a position within a file, including the file path, line and column numbers
+<span class="lineno">   51 </span>data FilePos = FilePos FilePath Line Column deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, Generic)
+<span class="lineno">   52 </span>
+<span class="lineno">   53 </span>instance Hashable FilePos where
+<span class="lineno">   54 </span>  <span class="decl"><span class="nottickedoff">hashWithSalt s (FilePos fn l c) = s `hashWithSalt` fn `hashWithSalt` l `hashWithSalt` c</span></span>
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>data Origin = OriginUnknown | Origin String | FileLoc FilePos SymbolName | DBLoc String
+<span class="lineno">   57 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff">Ord</span></span>, <span class="decl"><span class="nottickedoff">Typeable</span></span>, Generic)
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>instance Unique Origin where
+<span class="lineno">   60 </span>  <span class="decl"><span class="nottickedoff">showUnique = show</span></span>
+<span class="lineno">   61 </span>instance Hashable Origin
+<span class="lineno">   62 </span>
+<span class="lineno">   63 </span>instance Show FilePos where
+<span class="lineno">   64 </span>  <span class="decl"><span class="istickedoff">show (FilePos fn l c) = &quot;line &quot; ++ show l ++ &quot;:&quot; ++ show c ++ &quot;, file &quot; ++ fn</span></span>
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>instance Show Origin where
+<span class="lineno">   67 </span>  <span class="decl"><span class="istickedoff">show (FileLoc pos _) = show pos</span>
+<span class="lineno">   68 </span><span class="spaces">  </span><span class="istickedoff">show (DBLoc str)     = <span class="nottickedoff">&quot;Database location: &quot;++str</span></span>
+<span class="lineno">   69 </span><span class="spaces">  </span><span class="istickedoff">show (Origin str)    = <span class="nottickedoff">str</span></span>
+<span class="lineno">   70 </span><span class="spaces">  </span><span class="istickedoff">show OriginUnknown   = <span class="nottickedoff">&quot;Unknown origin&quot;</span></span></span>
+<span class="lineno">   71 </span>
+<span class="lineno">   72 </span>class Traced a where
+<span class="lineno">   73 </span>  origin :: a -&gt; Origin
+<span class="lineno">   74 </span>  filenm :: a -&gt; String
+<span class="lineno">   75 </span>  linenr :: a -&gt; Int
+<span class="lineno">   76 </span>  colnr :: a -&gt; Int
+<span class="lineno">   77 </span>  <span class="decl"><span class="nottickedoff">filenm x = case origin x of</span>
+<span class="lineno">   78 </span><span class="spaces">               </span><span class="nottickedoff">FileLoc (FilePos nm _ _) _ -&gt; nm</span>
+<span class="lineno">   79 </span><span class="spaces">               </span><span class="nottickedoff">_ -&gt; &quot;&quot;</span></span>
+<span class="lineno">   80 </span>  <span class="decl"><span class="nottickedoff">linenr x = case origin x of</span>
+<span class="lineno">   81 </span><span class="spaces">               </span><span class="nottickedoff">FileLoc (FilePos _ l _) _ -&gt; l</span>
+<span class="lineno">   82 </span><span class="spaces">               </span><span class="nottickedoff">_ -&gt; 0</span></span>
+<span class="lineno">   83 </span>  <span class="decl"><span class="nottickedoff">colnr x  = case origin x of</span>
+<span class="lineno">   84 </span><span class="spaces">               </span><span class="nottickedoff">FileLoc (FilePos _ _ c) _ -&gt; c</span>
+<span class="lineno">   85 </span><span class="spaces">               </span><span class="nottickedoff">_ -&gt; 0</span></span>
+<span class="lineno">   86 </span>
+<span class="lineno">   87 </span>instance Traced Origin where
+<span class="lineno">   88 </span>  <span class="decl"><span class="istickedoff">origin = id</span></span>
+<span class="lineno">   89 </span>
 
 </pre>
 </body>

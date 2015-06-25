@@ -55,8 +55,8 @@ span.spaces    { background: white }
 <span class="lineno">   39 </span>-- The function is a bit more compositional than the previous ly used &lt;?&gt; as you don't have to tuple all the arguments.
 <span class="lineno">   40 </span>-- Similar to join and bind we have: unguard g = id &lt;?&gt; g, and f &lt;?&gt; g = unguard $ f &lt;$&gt; g
 <span class="lineno">   41 </span>unguard :: Guarded (Guarded a) -&gt; Guarded a
-<span class="lineno">   42 </span><span class="decl"><span class="nottickedoff">unguard (Errors errs) = Errors errs</span>
-<span class="lineno">   43 </span><span class="spaces"></span><span class="nottickedoff">unguard (Checked g)   = g</span></span>  
+<span class="lineno">   42 </span><span class="decl"><span class="istickedoff">unguard (Errors errs) = Errors errs</span>
+<span class="lineno">   43 </span><span class="spaces"></span><span class="istickedoff">unguard (Checked g)   = g</span></span>  
 <span class="lineno">   44 </span>
 <span class="lineno">   45 </span>data CtxError = CTXE Origin String -- SJC: I consider it ill practice to export CTXE, see remark at top
 <span class="lineno">   46 </span>              | PE Message
@@ -70,7 +70,7 @@ span.spaces    { background: white }
 <span class="lineno">   54 </span><span class="spaces"></span><span class="nottickedoff">errors (Errors lst) = lst</span></span>
 <span class="lineno">   55 </span>
 <span class="lineno">   56 </span>makeError :: String -&gt; Guarded a
-<span class="lineno">   57 </span><span class="decl"><span class="nottickedoff">makeError msg = Errors [PE (Message msg)]</span></span>
+<span class="lineno">   57 </span><span class="decl"><span class="istickedoff">makeError msg = Errors [PE (Message msg)]</span></span>
 <span class="lineno">   58 </span>
 <span class="lineno">   59 </span>addError :: String -&gt; Guarded a -&gt; Guarded b
 <span class="lineno">   60 </span><span class="decl"><span class="nottickedoff">addError msg guard = Errors (PE (Message msg):errors guard)</span></span>
@@ -92,64 +92,64 @@ span.spaces    { background: white }
 <span class="lineno">   76 </span>  <span class="decl"><span class="nottickedoff">hasNone _ o = Errors [CTXE (origin o)$ &quot;Required: one subinterface in &quot;++showADL o]</span></span>
 <span class="lineno">   77 </span>
 <span class="lineno">   78 </span>instance GetOneGuarded Declaration where
-<span class="lineno">   79 </span>  <span class="decl"><span class="nottickedoff">getOneExactly _ [d] = Checked d</span>
-<span class="lineno">   80 </span><span class="spaces">  </span><span class="nottickedoff">getOneExactly o []  = Errors [CTXE (origin o)$ &quot;No declaration for &quot;++showADL o]</span>
-<span class="lineno">   81 </span><span class="spaces">  </span><span class="nottickedoff">getOneExactly o lst = Errors [CTXE (origin o)$ &quot;Too many declarations match &quot;++showADL o++&quot;.\n  Be more specific. These are the matching declarations:&quot;++concat [&quot;\n  - &quot;++showADL l++&quot; at &quot;++showFullOrig (origin l) | l&lt;-lst]]</span></span>
+<span class="lineno">   79 </span>  <span class="decl"><span class="istickedoff">getOneExactly _ [d] = Checked d</span>
+<span class="lineno">   80 </span><span class="spaces">  </span><span class="istickedoff">getOneExactly o []  = Errors [CTXE (origin o)$ &quot;No declaration for &quot;++showADL o]</span>
+<span class="lineno">   81 </span><span class="spaces">  </span><span class="istickedoff">getOneExactly o lst = <span class="nottickedoff">Errors [CTXE (origin o)$ &quot;Too many declarations match &quot;++showADL o++&quot;.\n  Be more specific. These are the matching declarations:&quot;++concat [&quot;\n  - &quot;++showADL l++&quot; at &quot;++showFullOrig (origin l) | l&lt;-lst]]</span></span></span>
 <span class="lineno">   82 </span>
 <span class="lineno">   83 </span>cannotDisambRel :: TermPrim -&gt; [Expression] -&gt; Guarded Expression
-<span class="lineno">   84 </span><span class="decl"><span class="nottickedoff">cannotDisambRel o exprs</span>
-<span class="lineno">   85 </span><span class="spaces"> </span><span class="nottickedoff">= Errors [CTXE (origin o) message]</span>
-<span class="lineno">   86 </span><span class="spaces">  </span><span class="nottickedoff">where </span>
-<span class="lineno">   87 </span><span class="spaces">   </span><span class="nottickedoff">message =</span>
-<span class="lineno">   88 </span><span class="spaces">    </span><span class="nottickedoff">case exprs of</span>
-<span class="lineno">   89 </span><span class="spaces">     </span><span class="nottickedoff">[] -&gt; &quot;No declarations match the relation: &quot;++showADL o</span>
-<span class="lineno">   90 </span><span class="spaces">     </span><span class="nottickedoff">_  -&gt; case o of</span>
-<span class="lineno">   91 </span><span class="spaces">             </span><span class="nottickedoff">(PNamedR(PNamedRel _ _ Nothing)) </span>
-<span class="lineno">   92 </span><span class="spaces">                </span><span class="nottickedoff">-&gt; intercalate &quot;\n&quot; $</span>
-<span class="lineno">   93 </span><span class="spaces">                       </span><span class="nottickedoff">[&quot;Cannot disambiguate the relation: &quot;++showADL o</span>
-<span class="lineno">   94 </span><span class="spaces">                       </span><span class="nottickedoff">,&quot;  Please add a signature (e.g. [A*B]) to the relation.&quot;</span>
-<span class="lineno">   95 </span><span class="spaces">                       </span><span class="nottickedoff">,&quot;  Relations you may have intended:&quot;</span>
-<span class="lineno">   96 </span><span class="spaces">                       </span><span class="nottickedoff">]++</span>
-<span class="lineno">   97 </span><span class="spaces">                       </span><span class="nottickedoff">[&quot;  &quot;++showADL e++&quot;[&quot;++name (source e)++&quot;*&quot;++name (target e)++&quot;]&quot;</span>
-<span class="lineno">   98 </span><span class="spaces">                       </span><span class="nottickedoff">|e&lt;-exprs]</span>
-<span class="lineno">   99 </span><span class="spaces">             </span><span class="nottickedoff">_  -&gt; intercalate &quot;\n&quot; $</span>
-<span class="lineno">  100 </span><span class="spaces">                       </span><span class="nottickedoff">[&quot;Cannot disambiguate: &quot;++showADL o</span>
-<span class="lineno">  101 </span><span class="spaces">                       </span><span class="nottickedoff">,&quot;  Please add a signature.&quot;</span>
-<span class="lineno">  102 </span><span class="spaces">                       </span><span class="nottickedoff">,&quot;  You may have intended one of these:&quot;</span>
-<span class="lineno">  103 </span><span class="spaces">                       </span><span class="nottickedoff">]++</span>
-<span class="lineno">  104 </span><span class="spaces">                       </span><span class="nottickedoff">[&quot;  &quot;++showADL e|e&lt;-exprs]</span></span>
+<span class="lineno">   84 </span><span class="decl"><span class="istickedoff">cannotDisambRel o exprs</span>
+<span class="lineno">   85 </span><span class="spaces"> </span><span class="istickedoff">= Errors [CTXE (origin o) message]</span>
+<span class="lineno">   86 </span><span class="spaces">  </span><span class="istickedoff">where </span>
+<span class="lineno">   87 </span><span class="spaces">   </span><span class="istickedoff">message =</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">case exprs of</span>
+<span class="lineno">   89 </span><span class="spaces">     </span><span class="istickedoff">[] -&gt; &quot;No declarations match the relation: &quot;++showADL o</span>
+<span class="lineno">   90 </span><span class="spaces">     </span><span class="istickedoff">_  -&gt; case o of</span>
+<span class="lineno">   91 </span><span class="spaces">             </span><span class="istickedoff">(PNamedR(PNamedRel _ _ Nothing)) </span>
+<span class="lineno">   92 </span><span class="spaces">                </span><span class="istickedoff">-&gt; intercalate &quot;\n&quot; $</span>
+<span class="lineno">   93 </span><span class="spaces">                       </span><span class="istickedoff">[&quot;Cannot disambiguate the relation: &quot;++showADL o</span>
+<span class="lineno">   94 </span><span class="spaces">                       </span><span class="istickedoff">,&quot;  Please add a signature (e.g. [A*B]) to the relation.&quot;</span>
+<span class="lineno">   95 </span><span class="spaces">                       </span><span class="istickedoff">,&quot;  Relations you may have intended:&quot;</span>
+<span class="lineno">   96 </span><span class="spaces">                       </span><span class="istickedoff">]++</span>
+<span class="lineno">   97 </span><span class="spaces">                       </span><span class="istickedoff">[&quot;  &quot;++showADL e++&quot;[&quot;++name (source e)++&quot;*&quot;++name (target e)++&quot;]&quot;</span>
+<span class="lineno">   98 </span><span class="spaces">                       </span><span class="istickedoff">|e&lt;-exprs]</span>
+<span class="lineno">   99 </span><span class="spaces">             </span><span class="istickedoff">_  -&gt; intercalate &quot;\n&quot; $</span>
+<span class="lineno">  100 </span><span class="spaces">                       </span><span class="istickedoff">[&quot;Cannot disambiguate: &quot;++showADL o</span>
+<span class="lineno">  101 </span><span class="spaces">                       </span><span class="istickedoff">,&quot;  Please add a signature.&quot;</span>
+<span class="lineno">  102 </span><span class="spaces">                       </span><span class="istickedoff">,&quot;  You may have intended one of these:&quot;</span>
+<span class="lineno">  103 </span><span class="spaces">                       </span><span class="istickedoff">]++</span>
+<span class="lineno">  104 </span><span class="spaces">                       </span><span class="istickedoff">[&quot;  &quot;++showADL e|e&lt;-exprs]</span></span>
 <span class="lineno">  105 </span>
 <span class="lineno">  106 </span>cannotDisamb :: TermPrim -&gt; Guarded Expression
-<span class="lineno">  107 </span><span class="decl"><span class="nottickedoff">cannotDisamb o = Errors [CTXE (origin o)$ &quot;Cannot disambiguate: &quot;++showADL o++&quot;\n  Please add a signature to it&quot;]</span></span>
+<span class="lineno">  107 </span><span class="decl"><span class="istickedoff">cannotDisamb o = Errors [CTXE (origin o)$ &quot;Cannot disambiguate: &quot;++showADL o++&quot;\n  Please add a signature to it&quot;]</span></span>
 <span class="lineno">  108 </span>
 <span class="lineno">  109 </span>uniqueNames :: (Named a, Traced a) =&gt;
 <span class="lineno">  110 </span>                     [a] -&gt; Guarded ()
-<span class="lineno">  111 </span><span class="decl"><span class="nottickedoff">uniqueNames a = case (filter moreThanOne . groupWith name)  a of</span>
-<span class="lineno">  112 </span><span class="spaces">                  </span><span class="nottickedoff">[] -&gt; pure ()</span>
-<span class="lineno">  113 </span><span class="spaces">                  </span><span class="nottickedoff">xs -&gt; Errors (map messageFor xs)</span>
-<span class="lineno">  114 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">  115 </span><span class="spaces">     </span><span class="nottickedoff">moreThanOne (_:_:_) = True</span>
-<span class="lineno">  116 </span><span class="spaces">     </span><span class="nottickedoff">moreThanOne  _      = False</span>
-<span class="lineno">  117 </span><span class="spaces">     </span><span class="nottickedoff">messageFor :: (Named a, Traced a) =&gt; [a] -&gt; CtxError</span>
-<span class="lineno">  118 </span><span class="spaces">     </span><span class="nottickedoff">messageFor (x:xs) = CTXE (origin x)</span>
-<span class="lineno">  119 </span><span class="spaces">                      </span><span class="nottickedoff">(&quot;Names / labels must be unique. &quot;++(show . name) x++&quot;, however, is used at:&quot;++</span>
-<span class="lineno">  120 </span><span class="spaces">                        </span><span class="nottickedoff">concatMap ((&quot;\n    &quot;++ ) . show . origin) (x:xs)</span>
-<span class="lineno">  121 </span><span class="spaces">                        </span><span class="nottickedoff">++&quot;.&quot;</span>
-<span class="lineno">  122 </span><span class="spaces">                       </span><span class="nottickedoff">)</span>
-<span class="lineno">  123 </span><span class="spaces">     </span><span class="nottickedoff">messageFor _ = fatal 90 &quot;messageFor must only be used on lists with more that one element!&quot;</span></span>
+<span class="lineno">  111 </span><span class="decl"><span class="istickedoff">uniqueNames a = case (filter moreThanOne . groupWith name)  a of</span>
+<span class="lineno">  112 </span><span class="spaces">                  </span><span class="istickedoff">[] -&gt; pure ()</span>
+<span class="lineno">  113 </span><span class="spaces">                  </span><span class="istickedoff">xs -&gt; Errors (map messageFor xs)</span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  115 </span><span class="spaces">     </span><span class="istickedoff">moreThanOne (_:_:_) = True</span>
+<span class="lineno">  116 </span><span class="spaces">     </span><span class="istickedoff">moreThanOne  _      = False</span>
+<span class="lineno">  117 </span><span class="spaces">     </span><span class="istickedoff">messageFor :: (Named a, Traced a) =&gt; [a] -&gt; CtxError</span>
+<span class="lineno">  118 </span><span class="spaces">     </span><span class="istickedoff">messageFor (x:xs) = CTXE (origin x)</span>
+<span class="lineno">  119 </span><span class="spaces">                      </span><span class="istickedoff">(&quot;Names / labels must be unique. &quot;++(show . name) x++&quot;, however, is used at:&quot;++</span>
+<span class="lineno">  120 </span><span class="spaces">                        </span><span class="istickedoff">concatMap ((&quot;\n    &quot;++ ) . show . origin) (x:xs)</span>
+<span class="lineno">  121 </span><span class="spaces">                        </span><span class="istickedoff">++&quot;.&quot;</span>
+<span class="lineno">  122 </span><span class="spaces">                       </span><span class="istickedoff">)</span>
+<span class="lineno">  123 </span><span class="spaces">     </span><span class="istickedoff">messageFor _ = <span class="nottickedoff">fatal 90 &quot;messageFor must only be used on lists with more that one element!&quot;</span></span></span>
 <span class="lineno">  124 </span>
 <span class="lineno">  125 </span>mkDanglingPurposeError :: Purpose -&gt; CtxError
-<span class="lineno">  126 </span><span class="decl"><span class="nottickedoff">mkDanglingPurposeError p = CTXE (origin p) $ &quot;Purpose refers to non-existent &quot; ++ showADL (explObj p)</span></span> 
+<span class="lineno">  126 </span><span class="decl"><span class="istickedoff">mkDanglingPurposeError p = CTXE (origin p) $ &quot;Purpose refers to non-existent &quot; ++ showADL (explObj p)</span></span> 
 <span class="lineno">  127 </span>-- Unfortunately, we cannot use position of the explanation object itself because it is not an instance of Trace.
 <span class="lineno">  128 </span>mkDanglingRefError :: String -- The type of thing that dangles. eg. &quot;Rule&quot;
 <span class="lineno">  129 </span>                   -&gt; String -- the reference itself. eg. &quot;Rule 42&quot;
 <span class="lineno">  130 </span>                   -&gt; Origin -- The place where the thing is found.
 <span class="lineno">  131 </span>                   -&gt; CtxError
-<span class="lineno">  132 </span><span class="decl"><span class="nottickedoff">mkDanglingRefError entity ref orig =</span>
-<span class="lineno">  133 </span><span class="spaces">  </span><span class="nottickedoff">CTXE orig $ &quot;Refference to non-existent &quot; ++ entity ++ &quot;: &quot;++show ref</span></span>   
+<span class="lineno">  132 </span><span class="decl"><span class="istickedoff">mkDanglingRefError entity ref orig =</span>
+<span class="lineno">  133 </span><span class="spaces">  </span><span class="istickedoff">CTXE orig $ &quot;Refference to non-existent &quot; ++ entity ++ &quot;: &quot;++show ref</span></span>   
 <span class="lineno">  134 </span>mkUndeclaredError :: (Traced e, Named e) =&gt; String -&gt; e -&gt; String -&gt; CtxError
-<span class="lineno">  135 </span><span class="decl"><span class="nottickedoff">mkUndeclaredError entity objDef ref = </span>
-<span class="lineno">  136 </span><span class="spaces">  </span><span class="nottickedoff">CTXE (origin objDef) $ &quot;Undeclared &quot; ++ entity ++ &quot; &quot; ++ show ref ++ &quot; referenced at field &quot; ++ show (name objDef)</span></span>
+<span class="lineno">  135 </span><span class="decl"><span class="istickedoff">mkUndeclaredError entity objDef ref = </span>
+<span class="lineno">  136 </span><span class="spaces">  </span><span class="istickedoff">CTXE (origin objDef) $ &quot;Undeclared &quot; ++ entity ++ &quot; &quot; ++ show ref ++ &quot; referenced at field &quot; ++ show (name objDef)</span></span>
 <span class="lineno">  137 </span>
 <span class="lineno">  138 </span>mkMultipleInterfaceError :: String -&gt; Interface -&gt; [Interface] -&gt; CtxError
 <span class="lineno">  139 </span><span class="decl"><span class="nottickedoff">mkMultipleInterfaceError role ifc duplicateIfcs = </span>
@@ -200,17 +200,17 @@ span.spaces    { background: white }
 <span class="lineno">  184 </span>  <span class="decl"><span class="nottickedoff">showMini (_,c1,_) = showADL c1</span></span>
 <span class="lineno">  185 </span>  
 <span class="lineno">  186 </span>showEC' :: (SrcOrTgt, A_Concept, String) -&gt; String
-<span class="lineno">  187 </span><span class="decl"><span class="nottickedoff">showEC' (p1,c1,e1) = showADL c1++&quot; (&quot;++show p1++&quot; of &quot;++e1++&quot;)&quot;</span></span>
+<span class="lineno">  187 </span><span class="decl"><span class="istickedoff">showEC' (p1,c1,e1) = showADL c1++&quot; (&quot;++show p1++&quot; of &quot;++e1++&quot;)&quot;</span></span>
 <span class="lineno">  188 </span>  
 <span class="lineno">  189 </span>instance (ShowADL a2, Association a2) =&gt; ErrorConcept (SrcOrTgt, a2) where
-<span class="lineno">  190 </span>  <span class="decl"><span class="nottickedoff">showEC (p1,e1)</span>
-<span class="lineno">  191 </span><span class="spaces">   </span><span class="nottickedoff">= case p1 of</span>
-<span class="lineno">  192 </span><span class="spaces">      </span><span class="nottickedoff">Src -&gt; showEC' (p1,source e1,showADL e1)</span>
-<span class="lineno">  193 </span><span class="spaces">      </span><span class="nottickedoff">Tgt -&gt; showEC' (p1,target e1,showADL e1)</span></span>
-<span class="lineno">  194 </span>  <span class="decl"><span class="nottickedoff">showMini (p1,e1)</span>
-<span class="lineno">  195 </span><span class="spaces">   </span><span class="nottickedoff">= case p1 of</span>
-<span class="lineno">  196 </span><span class="spaces">      </span><span class="nottickedoff">Src -&gt; showADL (source e1)</span>
-<span class="lineno">  197 </span><span class="spaces">      </span><span class="nottickedoff">Tgt -&gt; showADL (target e1)</span></span>
+<span class="lineno">  190 </span>  <span class="decl"><span class="istickedoff">showEC (p1,e1)</span>
+<span class="lineno">  191 </span><span class="spaces">   </span><span class="istickedoff">= case p1 of</span>
+<span class="lineno">  192 </span><span class="spaces">      </span><span class="istickedoff">Src -&gt; showEC' (p1,source e1,showADL e1)</span>
+<span class="lineno">  193 </span><span class="spaces">      </span><span class="istickedoff">Tgt -&gt; showEC' (p1,target e1,showADL e1)</span></span>
+<span class="lineno">  194 </span>  <span class="decl"><span class="istickedoff">showMini (p1,e1)</span>
+<span class="lineno">  195 </span><span class="spaces">   </span><span class="istickedoff">= case p1 of</span>
+<span class="lineno">  196 </span><span class="spaces">      </span><span class="istickedoff">Src -&gt; showADL (source e1)</span>
+<span class="lineno">  197 </span><span class="spaces">      </span><span class="istickedoff">Tgt -&gt; showADL (target e1)</span></span>
 <span class="lineno">  198 </span>      
 <span class="lineno">  199 </span>instance (ShowADL a2, Association a2) =&gt; ErrorConcept (SrcOrTgt, Origin, a2) where
 <span class="lineno">  200 </span>  <span class="decl"><span class="nottickedoff">showEC (p1,o,e1)</span>
@@ -223,38 +223,38 @@ span.spaces    { background: white }
 <span class="lineno">  207 </span><span class="spaces">      </span><span class="nottickedoff">Tgt -&gt; showADL (target e1)</span></span>
 <span class="lineno">  208 </span>
 <span class="lineno">  209 </span>mustBeOrdered :: (Traced a1, ErrorConcept a2, ErrorConcept a3) =&gt; a1 -&gt; a2 -&gt; a3 -&gt; Guarded a
-<span class="lineno">  210 </span><span class="decl"><span class="nottickedoff">mustBeOrdered o a b</span>
-<span class="lineno">  211 </span><span class="spaces"> </span><span class="nottickedoff">= Errors [CTXE (origin o)$ &quot;Type error, cannot match:\n  the concept &quot;++showEC a</span>
-<span class="lineno">  212 </span><span class="spaces">                                          </span><span class="nottickedoff">++&quot;\n  and concept &quot;++showEC b</span>
-<span class="lineno">  213 </span><span class="spaces">                   </span><span class="nottickedoff">++&quot;\n  if you think there is no type error, add an order between concepts &quot;++showMini a++&quot; and &quot;++showMini b++&quot;.&quot;]</span></span>
+<span class="lineno">  210 </span><span class="decl"><span class="istickedoff">mustBeOrdered o a b</span>
+<span class="lineno">  211 </span><span class="spaces"> </span><span class="istickedoff">= Errors [CTXE (origin o)$ &quot;Type error, cannot match:\n  the concept &quot;++showEC a</span>
+<span class="lineno">  212 </span><span class="spaces">                                          </span><span class="istickedoff">++&quot;\n  and concept &quot;++showEC b</span>
+<span class="lineno">  213 </span><span class="spaces">                   </span><span class="istickedoff">++&quot;\n  if you think there is no type error, add an order between concepts &quot;++showMini a++&quot; and &quot;++showMini b++&quot;.&quot;]</span></span>
 <span class="lineno">  214 </span>
 <span class="lineno">  215 </span>mustBeOrderedLst :: (Traced o, ShowADL o, ShowADL a) =&gt; o -&gt; [(A_Concept, SrcOrTgt, a)] -&gt; Guarded b
-<span class="lineno">  216 </span><span class="decl"><span class="nottickedoff">mustBeOrderedLst o lst</span>
-<span class="lineno">  217 </span><span class="spaces"> </span><span class="nottickedoff">= Errors [CTXE (origin o)$ &quot;Type error in &quot;++showADL o++&quot;\n  Cannot match:&quot;++ concat</span>
-<span class="lineno">  218 </span><span class="spaces">             </span><span class="nottickedoff">[ &quot;\n  - concept &quot;++showADL c++&quot;, &quot;++show st++&quot; of &quot;++showADL a</span>
-<span class="lineno">  219 </span><span class="spaces">             </span><span class="nottickedoff">| (c,st,a) &lt;- lst ] ++</span>
-<span class="lineno">  220 </span><span class="spaces">             </span><span class="nottickedoff">&quot;\n  if you think there is no type error, add an order between the mismatched concepts.&quot;</span>
-<span class="lineno">  221 </span><span class="spaces">          </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  216 </span><span class="decl"><span class="istickedoff">mustBeOrderedLst o lst</span>
+<span class="lineno">  217 </span><span class="spaces"> </span><span class="istickedoff">= Errors [<span class="nottickedoff">CTXE (origin o)$ &quot;Type error in &quot;++showADL o++&quot;\n  Cannot match:&quot;++ concat</span></span>
+<span class="lineno">  218 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">[ &quot;\n  - concept &quot;++showADL c++&quot;, &quot;++show st++&quot; of &quot;++showADL a</span></span>
+<span class="lineno">  219 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">| (c,st,a) &lt;- lst ] ++</span></span>
+<span class="lineno">  220 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">&quot;\n  if you think there is no type error, add an order between the mismatched concepts.&quot;</span></span>
+<span class="lineno">  221 </span><span class="spaces">          </span><span class="istickedoff">]</span></span>
 <span class="lineno">  222 </span>
 <span class="lineno">  223 </span>mustBeOrderedConcLst :: Origin -&gt; (SrcOrTgt, Expression) -&gt; (SrcOrTgt, Expression) -&gt; [[A_Concept]] -&gt; Guarded a
-<span class="lineno">  224 </span><span class="decl"><span class="nottickedoff">mustBeOrderedConcLst o (p1,e1) (p2,e2) cs</span>
-<span class="lineno">  225 </span><span class="spaces"> </span><span class="nottickedoff">= Errors [CTXE o$ &quot;Ambiguous type when matching: &quot;++show p1++&quot; of &quot;++showADL e1++&quot;\n&quot;</span>
-<span class="lineno">  226 </span><span class="spaces">                                          </span><span class="nottickedoff">++&quot; and &quot;++show p2++&quot; of &quot;++showADL e2++&quot;.\n&quot;</span>
-<span class="lineno">  227 </span><span class="spaces">                   </span><span class="nottickedoff">++&quot;  The type can be &quot;++intercalate &quot; or &quot; (map (showADL . Slash) cs)</span>
-<span class="lineno">  228 </span><span class="spaces">                   </span><span class="nottickedoff">++&quot;\n  None of these concepts is known to be the smallest, you may want to add an order between them.&quot;]</span></span>
+<span class="lineno">  224 </span><span class="decl"><span class="istickedoff">mustBeOrderedConcLst o (p1,e1) (p2,e2) cs</span>
+<span class="lineno">  225 </span><span class="spaces"> </span><span class="istickedoff">= Errors [<span class="nottickedoff">CTXE o$ &quot;Ambiguous type when matching: &quot;++show p1++&quot; of &quot;++showADL e1++&quot;\n&quot;</span></span>
+<span class="lineno">  226 </span><span class="spaces">                                          </span><span class="istickedoff"><span class="nottickedoff">++&quot; and &quot;++show p2++&quot; of &quot;++showADL e2++&quot;.\n&quot;</span></span>
+<span class="lineno">  227 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">++&quot;  The type can be &quot;++intercalate &quot; or &quot; (map (showADL . Slash) cs)</span></span>
+<span class="lineno">  228 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">++&quot;\n  None of these concepts is known to be the smallest, you may want to add an order between them.&quot;</span>]</span></span>
 <span class="lineno">  229 </span>
 <span class="lineno">  230 </span>newtype Slash a = Slash [a]
 <span class="lineno">  231 </span>instance ShowADL a =&gt; ShowADL (Slash a) where
 <span class="lineno">  232 </span>  <span class="decl"><span class="nottickedoff">showADL (Slash x) = intercalate &quot;/&quot; (map showADL x)</span></span>
 <span class="lineno">  233 </span>
 <span class="lineno">  234 </span>mustBeBound :: Origin -&gt; [(SrcOrTgt, Expression)] -&gt; Guarded a
-<span class="lineno">  235 </span><span class="decl"><span class="nottickedoff">mustBeBound o [(p,e)]</span>
-<span class="lineno">  236 </span><span class="spaces"> </span><span class="nottickedoff">= Errors [CTXE o$ &quot;An ambiguity arises in type checking. Be more specific by binding the &quot;++show p++&quot; of the expression &quot;++showADL e++&quot;.\n&quot;++</span>
-<span class="lineno">  237 </span><span class="spaces">                   </span><span class="nottickedoff">&quot;  You could add more types inside the expression, or just write &quot;++writeBind e++&quot;.&quot;]</span>
-<span class="lineno">  238 </span><span class="spaces"></span><span class="nottickedoff">mustBeBound o lst</span>
-<span class="lineno">  239 </span><span class="spaces"> </span><span class="nottickedoff">= Errors [CTXE o$ &quot;An ambiguity arises in type checking. Be more specific in the expressions &quot;++intercalate &quot; and &quot; (map (showADL . snd) lst) ++&quot;.\n&quot;++</span>
-<span class="lineno">  240 </span><span class="spaces">                   </span><span class="nottickedoff">&quot;  You could add more types inside the expression, or write:&quot;++</span>
-<span class="lineno">  241 </span><span class="spaces">                   </span><span class="nottickedoff">concat [&quot;\n  &quot;++writeBind e| (_,e)&lt;-lst]]</span></span>
+<span class="lineno">  235 </span><span class="decl"><span class="istickedoff">mustBeBound o [(p,e)]</span>
+<span class="lineno">  236 </span><span class="spaces"> </span><span class="istickedoff">= Errors [<span class="nottickedoff">CTXE o$ &quot;An ambiguity arises in type checking. Be more specific by binding the &quot;++show p++&quot; of the expression &quot;++showADL e++&quot;.\n&quot;++</span></span>
+<span class="lineno">  237 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">&quot;  You could add more types inside the expression, or just write &quot;++writeBind e++&quot;.&quot;</span>]</span>
+<span class="lineno">  238 </span><span class="spaces"></span><span class="istickedoff">mustBeBound o lst</span>
+<span class="lineno">  239 </span><span class="spaces"> </span><span class="istickedoff">= <span class="nottickedoff">Errors [CTXE o$ &quot;An ambiguity arises in type checking. Be more specific in the expressions &quot;++intercalate &quot; and &quot; (map (showADL . snd) lst) ++&quot;.\n&quot;++</span></span>
+<span class="lineno">  240 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">&quot;  You could add more types inside the expression, or write:&quot;++</span></span>
+<span class="lineno">  241 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">concat [&quot;\n  &quot;++writeBind e| (_,e)&lt;-lst]]</span></span></span>
 <span class="lineno">  242 </span>
 <span class="lineno">  243 </span>writeBind :: Expression -&gt; String
 <span class="lineno">  244 </span><span class="decl"><span class="nottickedoff">writeBind (ECpl e)</span>
@@ -265,15 +265,15 @@ span.spaces    { background: white }
 <span class="lineno">  249 </span>data Guarded a = Errors [CtxError] | Checked a deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span>
 <span class="lineno">  250 </span>
 <span class="lineno">  251 </span>instance Functor Guarded where
-<span class="lineno">  252 </span> <span class="decl"><span class="istickedoff">fmap _ (Errors a)  = <span class="nottickedoff">Errors a</span></span>
+<span class="lineno">  252 </span> <span class="decl"><span class="istickedoff">fmap _ (Errors a)  = Errors a</span>
 <span class="lineno">  253 </span><span class="spaces"> </span><span class="istickedoff">fmap f (Checked a) = Checked (f a)</span></span>
 <span class="lineno">  254 </span>
 <span class="lineno">  255 </span>instance Applicative Guarded where
 <span class="lineno">  256 </span> <span class="decl"><span class="istickedoff">pure = Checked</span></span>
 <span class="lineno">  257 </span> <span class="decl"><span class="istickedoff">(&lt;*&gt;) (Checked f) (Checked a) = Checked (f a)</span>
-<span class="lineno">  258 </span><span class="spaces"> </span><span class="istickedoff">(&lt;*&gt;) (Errors  a) (Checked _) = <span class="nottickedoff">Errors a</span></span>
-<span class="lineno">  259 </span><span class="spaces"> </span><span class="istickedoff">(&lt;*&gt;) (Checked _) (Errors  b) = <span class="nottickedoff">Errors b</span></span>
-<span class="lineno">  260 </span><span class="spaces"> </span><span class="istickedoff">(&lt;*&gt;) (Errors  a) (Errors  b) = <span class="nottickedoff">Errors (a ++ b)</span></span></span> -- this line makes Guarded not a monad
+<span class="lineno">  258 </span><span class="spaces"> </span><span class="istickedoff">(&lt;*&gt;) (Errors  a) (Checked _) = Errors a</span>
+<span class="lineno">  259 </span><span class="spaces"> </span><span class="istickedoff">(&lt;*&gt;) (Checked _) (Errors  b) = Errors b</span>
+<span class="lineno">  260 </span><span class="spaces"> </span><span class="istickedoff">(&lt;*&gt;) (Errors  a) (Errors  b) = Errors (a ++ <span class="nottickedoff">b</span>)</span></span> -- this line makes Guarded not a monad
 <span class="lineno">  261 </span> -- Guarded is NOT a monad!
 <span class="lineno">  262 </span> -- Reason: (&lt;*&gt;) has to be equal to `ap' if it is, and this definition is different
 <span class="lineno">  263 </span> -- Use &lt;?&gt; if you wish to use the monad-like thing
@@ -283,27 +283,27 @@ span.spaces    { background: white }
 <span class="lineno">  267 </span><span class="decl"><span class="istickedoff">whenCheckedIO ioGA fIOGB =</span>
 <span class="lineno">  268 </span><span class="spaces">   </span><span class="istickedoff">do gA &lt;- ioGA </span>
 <span class="lineno">  269 </span><span class="spaces">      </span><span class="istickedoff">case gA of</span>
-<span class="lineno">  270 </span><span class="spaces">         </span><span class="istickedoff">Errors err -&gt; <span class="nottickedoff">return (Errors err)</span></span>
+<span class="lineno">  270 </span><span class="spaces">         </span><span class="istickedoff">Errors err -&gt; return (Errors err)</span>
 <span class="lineno">  271 </span><span class="spaces">         </span><span class="istickedoff">Checked a  -&gt; fIOGB a</span></span>
 <span class="lineno">  272 </span>
 <span class="lineno">  273 </span>whenChecked :: Guarded a -&gt; (a -&gt; Guarded b) -&gt; Guarded b
 <span class="lineno">  274 </span><span class="decl"><span class="istickedoff">whenChecked ga fgb =</span>
 <span class="lineno">  275 </span><span class="spaces">      </span><span class="istickedoff">case ga of</span>
 <span class="lineno">  276 </span><span class="spaces">         </span><span class="istickedoff">Checked a  -&gt; fgb a</span>
-<span class="lineno">  277 </span><span class="spaces">         </span><span class="istickedoff">Errors err -&gt; <span class="nottickedoff">Errors err</span></span></span>
+<span class="lineno">  277 </span><span class="spaces">         </span><span class="istickedoff">Errors err -&gt; Errors err</span></span>
 <span class="lineno">  278 </span>
 <span class="lineno">  279 </span>showErr :: CtxError -&gt; String
-<span class="lineno">  280 </span><span class="decl"><span class="nottickedoff">showErr (CTXE o s) = s ++ &quot;\n  &quot; ++ showFullOrig o</span>
-<span class="lineno">  281 </span><span class="spaces"></span><span class="nottickedoff">showErr (PE msg)   = messageString msg</span></span>
+<span class="lineno">  280 </span><span class="decl"><span class="istickedoff">showErr (CTXE o s) = s ++ &quot;\n  &quot; ++ showFullOrig o</span>
+<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff">showErr (PE msg)   = messageString msg</span></span>
 <span class="lineno">  282 </span>
 <span class="lineno">  283 </span>showFullOrig :: Origin -&gt; String
-<span class="lineno">  284 </span><span class="decl"><span class="nottickedoff">showFullOrig (FileLoc (FilePos filename line column) t)</span>
-<span class="lineno">  285 </span><span class="spaces">              </span><span class="nottickedoff">= &quot;Error at symbol &quot; ++ t ++</span>
-<span class="lineno">  286 </span><span class="spaces">                </span><span class="nottickedoff">&quot; in file &quot; ++ filename ++</span>
-<span class="lineno">  287 </span><span class="spaces">                </span><span class="nottickedoff">&quot; at line &quot; ++ show line ++</span>
-<span class="lineno">  288 </span><span class="spaces">                </span><span class="nottickedoff">&quot; : &quot; ++ show column</span>
-<span class="lineno">  289 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  290 </span><span class="spaces"></span><span class="nottickedoff">showFullOrig x = show x</span></span>
+<span class="lineno">  284 </span><span class="decl"><span class="istickedoff">showFullOrig (FileLoc (FilePos filename line column) t)</span>
+<span class="lineno">  285 </span><span class="spaces">              </span><span class="istickedoff">= &quot;Error at symbol &quot; ++ t ++</span>
+<span class="lineno">  286 </span><span class="spaces">                </span><span class="istickedoff">&quot; in file &quot; ++ filename ++</span>
+<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">&quot; at line &quot; ++ show line ++</span>
+<span class="lineno">  288 </span><span class="spaces">                </span><span class="istickedoff">&quot; : &quot; ++ show column</span>
+<span class="lineno">  289 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  290 </span><span class="spaces"></span><span class="istickedoff">showFullOrig x = <span class="nottickedoff">show x</span></span></span>
 <span class="lineno">  291 </span>showMinorOrigin :: Origin -&gt; String
 <span class="lineno">  292 </span><span class="decl"><span class="nottickedoff">showMinorOrigin (FileLoc (FilePos _ line column) _) = &quot;line &quot; ++ show line ++&quot; : &quot;++show column</span>
 <span class="lineno">  293 </span><span class="spaces"></span><span class="nottickedoff">showMinorOrigin v = show v</span></span>

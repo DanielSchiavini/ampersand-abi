@@ -105,7 +105,7 @@ span.spaces    { background: white }
 <span class="lineno">   89 </span><span class="spaces">   </span><span class="nottickedoff">filter (not.nullContent)</span>
 <span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">(</span>
 <span class="lineno">   91 </span><span class="spaces">    </span><span class="nottickedoff">[Comment  &quot; &quot;, Comment $ &quot;PATTERN Context: ('&quot;++name fSpec++&quot;')&quot;]</span>
-<span class="lineno">   92 </span><span class="spaces">  </span><span class="nottickedoff">++[ Pop &quot;name&quot;   &quot;Context&quot; &quot;ContextName&quot;</span>
+<span class="lineno">   92 </span><span class="spaces">  </span><span class="nottickedoff">++[ Pop &quot;name&quot;   &quot;Context&quot; &quot;TEXT&quot;</span>
 <span class="lineno">   93 </span><span class="spaces">           </span><span class="nottickedoff">[(uri fSpec,name fSpec)]]</span>
 <span class="lineno">   94 </span><span class="spaces">  </span><span class="nottickedoff">++[ Comment &quot; &quot;, Comment $ &quot;PATTERN Patterns: (count=&quot;++(show.length.vpatterns) fSpec++&quot;)&quot;]</span>
 <span class="lineno">   95 </span><span class="spaces">  </span><span class="nottickedoff">++   concatMap (metaPops fSpec) ((sortBy (comparing name).vpatterns)    fSpec)</span>
@@ -136,7 +136,7 @@ span.spaces    { background: white }
 <span class="lineno">  120 </span><span class="spaces">   </span><span class="nottickedoff">, Comment $ &quot; Pattern `&quot;++name pat++&quot;` &quot;</span>
 <span class="lineno">  121 </span><span class="spaces">   </span><span class="nottickedoff">, Pop &quot;patterns&quot; &quot;Context&quot; &quot;Pattern&quot;</span>
 <span class="lineno">  122 </span><span class="spaces">          </span><span class="nottickedoff">[(uri fSpec,uri pat)]</span>
-<span class="lineno">  123 </span><span class="spaces">   </span><span class="nottickedoff">, Pop &quot;name&quot;    &quot;Pattern&quot; &quot;PatternName&quot;</span>
+<span class="lineno">  123 </span><span class="spaces">   </span><span class="nottickedoff">, Pop &quot;name&quot;    &quot;Pattern&quot; &quot;TEXT&quot;</span>
 <span class="lineno">  124 </span><span class="spaces">          </span><span class="nottickedoff">[(uri pat, name pat)]</span>
 <span class="lineno">  125 </span><span class="spaces">   </span><span class="nottickedoff">, Pop &quot;rules&quot;   &quot;Pattern&quot; &quot;Rule&quot;</span>
 <span class="lineno">  126 </span><span class="spaces">          </span><span class="nottickedoff">[(uri pat,uri x) | x &lt;- ptrls pat]</span>
@@ -149,9 +149,9 @@ span.spaces    { background: white }
 <span class="lineno">  133 </span> <span class="decl"><span class="nottickedoff">metaPops fSpec gen =</span>
 <span class="lineno">  134 </span><span class="spaces">  </span><span class="nottickedoff">[ Pop &quot;gens&quot; &quot;Context&quot; &quot;Gen&quot;</span>
 <span class="lineno">  135 </span><span class="spaces">          </span><span class="nottickedoff">[(uri fSpec,uri gen)]</span>
-<span class="lineno">  136 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;genspc&quot;  &quot;Gen&quot; &quot;PlainConcept&quot;</span>
+<span class="lineno">  136 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;genspc&quot;  &quot;Gen&quot; &quot;Concept&quot;</span>
 <span class="lineno">  137 </span><span class="spaces">          </span><span class="nottickedoff">[(uri gen,uri(genspc gen))]</span>
-<span class="lineno">  138 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;gengen&quot;  &quot;Gen&quot; &quot;PlainConcept&quot;</span>
+<span class="lineno">  138 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;gengen&quot;  &quot;Gen&quot; &quot;Concept&quot;</span>
 <span class="lineno">  139 </span><span class="spaces">          </span><span class="nottickedoff">[(uri gen,uri c) | c&lt;- case gen of</span>
 <span class="lineno">  140 </span><span class="spaces">                                   </span><span class="nottickedoff">Isa{} -&gt; [gengen gen]</span>
 <span class="lineno">  141 </span><span class="spaces">                                   </span><span class="nottickedoff">IsE{} -&gt; genrhs gen</span>
@@ -166,7 +166,7 @@ span.spaces    { background: white }
 <span class="lineno">  150 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Concept `&quot;++name cpt++&quot;` &quot;</span>
 <span class="lineno">  151 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allConcepts&quot; &quot;Context&quot; &quot;Concept&quot;</span>
 <span class="lineno">  152 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec,uri cpt)]</span>
-<span class="lineno">  153 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Concept&quot; &quot;ConceptName&quot;</span>
+<span class="lineno">  153 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Concept&quot; &quot;TEXT&quot;</span>
 <span class="lineno">  154 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt, name cpt)]</span>
 <span class="lineno">  155 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;affectedInvConjunctIds&quot; &quot;Concept&quot; &quot;ConjunctID&quot;</span>
 <span class="lineno">  156 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt, uri conj) | conj &lt;- filterFrontEndInvConjuncts affConjs]</span>
@@ -175,365 +175,374 @@ span.spaces    { background: white }
 <span class="lineno">  159 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;conceptTableFields&quot; &quot;Concept&quot; &quot;TableColumn&quot;</span>
 <span class="lineno">  160 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt, uri fld) | fld &lt;- tablesAndFields]</span>
 <span class="lineno">  161 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
-<span class="lineno">  162 </span><span class="spaces">     </span><span class="nottickedoff">ONE -&gt; [</span>
-<span class="lineno">  163 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
-<span class="lineno">  164 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
-<span class="lineno">  165 </span><span class="spaces">   </span><span class="nottickedoff">affConjs = fromMaybe [] (lookup cpt $ allConjsPerConcept fSpec)</span>
-<span class="lineno">  166 </span><span class="spaces">   </span><span class="nottickedoff">tablesAndFields = nub . concatMap (lookupCpt fSpec) $ cpt : largerConcepts (vgens fSpec) cpt</span></span>
-<span class="lineno">  167 </span>instance MetaPopulations A_Concept where
-<span class="lineno">  168 </span> <span class="decl"><span class="nottickedoff">metaPops fSpec cpt =</span>
-<span class="lineno">  169 </span><span class="spaces">   </span><span class="nottickedoff">case cpt of</span>
-<span class="lineno">  170 </span><span class="spaces">     </span><span class="nottickedoff">PlainConcept{} -&gt;</span>
-<span class="lineno">  171 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  172 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Concept `&quot;++name cpt++&quot;` &quot;</span>
-<span class="lineno">  173 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;concs&quot; &quot;Context&quot; &quot;PlainConcept&quot;</span>
-<span class="lineno">  174 </span><span class="spaces">           </span><span class="nottickedoff">[(uri fSpec,uri cpt)]</span>
-<span class="lineno">  175 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;PlainConcept&quot; &quot;ConceptName&quot;</span>
-<span class="lineno">  176 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt, name cpt)]</span>
-<span class="lineno">  177 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;cptdf&quot; &quot;PlainConcept&quot; &quot;ConceptDefinition&quot;</span>
-<span class="lineno">  178 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt,showADL cdef) | cdef &lt;- conceptDefs  fSpec, name cdef == name cpt]</span>
-<span class="lineno">  179 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;cptpurpose&quot; &quot;PlainConcept&quot; &quot;Purpose&quot;</span>
-<span class="lineno">  180 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt,showADL x) | lang &lt;- allLangs, x &lt;- fromMaybe [] (purposeOf fSpec lang cpt) ]</span>
-<span class="lineno">  181 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
-<span class="lineno">  182 </span><span class="spaces">     </span><span class="nottickedoff">ONE -&gt; [</span>
-<span class="lineno">  183 </span><span class="spaces">            </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  184 </span>instance GenericPopulations PlugSQL where
-<span class="lineno">  185 </span>  <span class="decl"><span class="nottickedoff">generics fSpec plug =</span>
-<span class="lineno">  186 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  187 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot;Plug: '&quot;++name plug++&quot;'&quot;</span>
-<span class="lineno">  188 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tableInfo&quot; &quot;Context&quot; &quot;DBTable&quot;</span>
-<span class="lineno">  189 </span><span class="spaces">               </span><span class="nottickedoff">[(uri fSpec, uri plug)]</span>
-<span class="lineno">  190 </span><span class="spaces">      </span><span class="nottickedoff">] ++ concatMap (generics fSpec) [(plug,fld) | fld &lt;- plugFields plug]</span></span>
-<span class="lineno">  191 </span>
-<span class="lineno">  192 </span>instance GenericPopulations (PlugSQL,SqlField) where
-<span class="lineno">  193 </span>  <span class="decl"><span class="nottickedoff">generics _ (plug,fld) =</span>
-<span class="lineno">  194 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;columninfo&quot; &quot;DBTable&quot; &quot;TableColumn&quot;</span>
-<span class="lineno">  195 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri plug, uri (plug,fld)) ]</span>
-<span class="lineno">  196 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;concept&quot; &quot;TableColumn&quot; &quot;Concept&quot;</span>
-<span class="lineno">  197 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri (plug,fld), uri.target.fldexpr $ fld)]</span>
-<span class="lineno">  198 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;unique&quot; &quot;TableColumn&quot; &quot;BOOLEAN&quot;</span>
-<span class="lineno">  199 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri (plug,fld), uri.flduniq $ fld)]</span>
-<span class="lineno">  200 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;null&quot; &quot;TableColumn&quot; &quot;BOOLEAN&quot;</span>
-<span class="lineno">  201 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri (plug,fld), uri.fldnull $ fld)]</span>
-<span class="lineno">  202 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  203 </span>     
-<span class="lineno">  204 </span>instance GenericPopulations Role where
-<span class="lineno">  205 </span>  <span class="decl"><span class="nottickedoff">generics fSpec rol =</span>
-<span class="lineno">  206 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment $ &quot;Role: '&quot;++name rol++&quot;'&quot;</span>
-<span class="lineno">  207 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allRoles&quot; &quot;Context&quot; &quot;Role&quot;</span>
-<span class="lineno">  208 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri fSpec, uri rol) ]</span>
-<span class="lineno">  209 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Role&quot; &quot;RoleName&quot;</span>
-<span class="lineno">  210 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri rol, name rol) ]</span>
-<span class="lineno">  211 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;maintains&quot; &quot;Role&quot; &quot;Rule&quot;</span>
-<span class="lineno">  212 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri rol, uri rul) | (rol',rul) &lt;-  fRoleRuls fSpec, rol==rol' ]</span>
-<span class="lineno">  213 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  214 </span>
-<span class="lineno">  215 </span>instance MetaPopulations Atom where
-<span class="lineno">  216 </span> <span class="decl"><span class="nottickedoff">metaPops _ atm =</span>
-<span class="lineno">  217 </span><span class="spaces">   </span><span class="nottickedoff">[ Pop &quot;key&quot; &quot;Atom&quot; &quot;AtomID&quot; </span>
-<span class="lineno">  218 </span><span class="spaces">          </span><span class="nottickedoff">[(uri atm, uri atm)]</span>
-<span class="lineno">  219 </span><span class="spaces">   </span><span class="nottickedoff">, Pop &quot;atomvalue&quot;  &quot;Atom&quot; &quot;AtomValue&quot;</span>
-<span class="lineno">  220 </span><span class="spaces">          </span><span class="nottickedoff">[(uri atm,(show.atmVal) atm)]</span>
-<span class="lineno">  221 </span><span class="spaces">   </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  222 </span>--instance MetaPopulations Sign where
-<span class="lineno">  223 </span>-- metaPops _ sgn =
-<span class="lineno">  224 </span>--      [ Pop &quot;src&quot; &quot;Sign&quot; &quot;Concept&quot;
-<span class="lineno">  225 </span>--             [(uri sgn, uri (source sgn))]
-<span class="lineno">  226 </span>--      , Pop &quot;trg&quot; &quot;Sign&quot; &quot;Concept&quot;
-<span class="lineno">  227 </span>--             [(uri sgn, uri (target sgn))]
-<span class="lineno">  228 </span>--      ]
-<span class="lineno">  229 </span>
-<span class="lineno">  230 </span>instance GenericPopulations Declaration where
-<span class="lineno">  231 </span> <span class="decl"><span class="nottickedoff">generics fSpec dcl =</span>
-<span class="lineno">  232 </span><span class="spaces">   </span><span class="nottickedoff">case dcl of </span>
-<span class="lineno">  233 </span><span class="spaces">     </span><span class="nottickedoff">Sgn{} -&gt;</span>
-<span class="lineno">  234 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  235 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Relation '&quot;++name dcl++showSign (sign dcl)++&quot;'&quot;</span>
-<span class="lineno">  236 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allRelations&quot; &quot;Context&quot; &quot;Relation&quot;</span>
-<span class="lineno">  237 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec, uri dcl)]</span>
-<span class="lineno">  238 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Relation&quot; &quot;RelationName&quot;</span>
-<span class="lineno">  239 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,name dcl)]</span>
-<span class="lineno">  240 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;srcConcept&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
-<span class="lineno">  241 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (source dcl))]</span>
-<span class="lineno">  242 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tgtConcept&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
-<span class="lineno">  243 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (target dcl))]</span>
-<span class="lineno">  244 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;table&quot; &quot;Relation&quot; &quot;DBTable&quot;</span>
-<span class="lineno">  245 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri table)]</span>
-<span class="lineno">  246 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;srcCol&quot; &quot;Relation&quot; &quot;DBTableColumn&quot;</span>
-<span class="lineno">  247 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (table,srcCol))]</span>
-<span class="lineno">  248 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tgtCol&quot; &quot;Relation&quot; &quot;DBTableColumn&quot;</span>
-<span class="lineno">  249 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (table,tgtCol))]</span>
-<span class="lineno">  250 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;affectedInvConjunctIds&quot; &quot;Relation&quot; &quot;ConjunctID&quot;</span>
-<span class="lineno">  251 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri conj) | conj &lt;- filterFrontEndInvConjuncts affConjs ]</span>
-<span class="lineno">  252 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;affectedSigConjunctIds&quot; &quot;Relation&quot; &quot;ConjunctID&quot;</span>
-<span class="lineno">  253 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri conj) | conj &lt;- filterFrontEndSigConjuncts affConjs ]</span>
-<span class="lineno">  254 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
-<span class="lineno">  255 </span><span class="spaces">     </span><span class="nottickedoff">Isn{} -&gt; fatal 157 &quot;Isn is not implemented yet&quot;</span>
-<span class="lineno">  256 </span><span class="spaces">     </span><span class="nottickedoff">Vs{}  -&gt; fatal 158 &quot;Vs is not implemented yet&quot;</span>
-<span class="lineno">  257 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
-<span class="lineno">  258 </span><span class="spaces">     </span><span class="nottickedoff">(table,srcCol,tgtCol) = getDeclarationTableInfo fSpec dcl</span>
-<span class="lineno">  259 </span><span class="spaces">     </span><span class="nottickedoff">affConjs = fromMaybe [] (lookup dcl $ allConjsPerDecl fSpec)</span></span>
-<span class="lineno">  260 </span>instance MetaPopulations Declaration where
-<span class="lineno">  261 </span> <span class="decl"><span class="nottickedoff">metaPops fSpec dcl =</span>
-<span class="lineno">  262 </span><span class="spaces">   </span><span class="nottickedoff">case dcl of</span>
-<span class="lineno">  263 </span><span class="spaces">     </span><span class="nottickedoff">Sgn{} -&gt;</span>
-<span class="lineno">  264 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  265 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Declaration `&quot;++name dcl++&quot; [&quot;++(name.source.decsgn) dcl++&quot; * &quot;++(name.target.decsgn) dcl++&quot;]&quot;++&quot;` &quot;</span>
-<span class="lineno">  266 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allDeclarations&quot; &quot;Context&quot; &quot;Declaration&quot;</span>
-<span class="lineno">  267 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec,uri dcl)] </span>
-<span class="lineno">  268 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Declaration&quot; &quot;DeclarationName&quot;</span>
-<span class="lineno">  269 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl, name dcl)]</span>
-<span class="lineno">  270 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;sign&quot; &quot;Declaration&quot; &quot;Sign&quot;</span>
-<span class="lineno">  271 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl,uri (sign dcl))]</span>
-<span class="lineno">  272 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;source&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
-<span class="lineno">  273 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (source dcl))]</span>
-<span class="lineno">  274 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;target&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
-<span class="lineno">  275 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (target dcl))]</span>
-<span class="lineno">  276 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;decprL&quot; &quot;Declaration&quot; &quot;String&quot;</span>
-<span class="lineno">  277 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,decprL dcl)]</span>
-<span class="lineno">  278 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;decprM&quot; &quot;Declaration&quot; &quot;String&quot;</span>
-<span class="lineno">  279 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,decprM dcl)]</span>
-<span class="lineno">  280 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;decprR&quot; &quot;Declaration&quot; &quot;String&quot;</span>
-<span class="lineno">  281 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,decprR dcl)]</span>
-<span class="lineno">  282 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;decmean&quot; &quot;Declaration&quot; &quot;Meaning&quot;</span>
-<span class="lineno">  283 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl, show(decMean dcl))]</span>
-<span class="lineno">  284 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;decpurpose&quot; &quot;Declaration&quot; &quot;Purpose&quot;</span>
-<span class="lineno">  285 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl, showADL x) | x &lt;- explanations dcl]</span>
-<span class="lineno">  286 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
-<span class="lineno">  287 </span><span class="spaces">     </span><span class="nottickedoff">Isn{} -&gt; </span>
-<span class="lineno">  288 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  289 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Declaration `I[&quot;++name (source dcl)++&quot;]`&quot;</span>
-<span class="lineno">  290 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;sign&quot; &quot;Declaration&quot; &quot;Sign&quot;</span>
-<span class="lineno">  291 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl,uri (sign dcl))]</span>
-<span class="lineno">  292 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;source&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
-<span class="lineno">  293 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (source dcl))]</span>
-<span class="lineno">  294 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;target&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
-<span class="lineno">  295 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (target dcl))]</span>
-<span class="lineno">  296 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
-<span class="lineno">  297 </span><span class="spaces">     </span><span class="nottickedoff">Vs{}  -&gt; fatal 158 &quot;Vs is not implemented yet&quot;</span></span>
-<span class="lineno">  298 </span>
-<span class="lineno">  299 </span>instance MetaPopulations A_Pair where
-<span class="lineno">  300 </span> <span class="decl"><span class="nottickedoff">metaPops _ pair =</span>
-<span class="lineno">  301 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;in&quot; &quot;Pair&quot; &quot;Relation&quot;</span>
-<span class="lineno">  302 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pair, uri (lnkDcl pair))]</span>
-<span class="lineno">  303 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;l&quot; &quot;Pair&quot; &quot;Atom&quot;</span>
-<span class="lineno">  304 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pair, uri(lnkLeft pair))]</span>
-<span class="lineno">  305 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;r&quot; &quot;Pair&quot; &quot;Atom&quot;</span>
-<span class="lineno">  306 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pair, uri(lnkRight pair))]</span>
-<span class="lineno">  307 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  308 </span>
-<span class="lineno">  309 </span>instance MetaPopulations Expression where
-<span class="lineno">  310 </span> <span class="decl"><span class="nottickedoff">metaPops _ e =</span>
-<span class="lineno">  311 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;exprvalue&quot; &quot;ExpressionID&quot; &quot;Expression&quot;</span>
-<span class="lineno">  312 </span><span class="spaces">             </span><span class="nottickedoff">[(uri e, showADL e)]</span>
-<span class="lineno">  313 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  314 </span>
-<span class="lineno">  315 </span>instance GenericPopulations Rule where
-<span class="lineno">  316 </span> <span class="decl"><span class="nottickedoff">generics fSpec rul =</span>
-<span class="lineno">  317 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  318 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Rule `&quot;++name rul++&quot;` &quot;</span>
-<span class="lineno">  319 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allRules&quot; &quot;Context&quot; &quot;Rule&quot;</span>
-<span class="lineno">  320 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec, uri rul)]</span>
-<span class="lineno">  321 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot;  &quot;Rule&quot; &quot;RuleID&quot;</span>
-<span class="lineno">  322 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,name rul)]</span>
-<span class="lineno">  323 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;ruleAdl&quot;  &quot;Rule&quot; &quot;Adl&quot;</span>
-<span class="lineno">  324 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(showADL.rrexp) rul)]</span>
-<span class="lineno">  325 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;origin&quot;  &quot;Rule&quot; &quot;Origin&quot;</span>
-<span class="lineno">  326 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(show.origin) rul)]</span>
-<span class="lineno">  327 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;meaning&quot;  &quot;Rule&quot; &quot;Meaning&quot;</span>
-<span class="lineno">  328 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,aMarkup2String m) | m &lt;- (maybeToList . meaning (fsLang fSpec)) rul ]</span>
-<span class="lineno">  329 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;message&quot;  &quot;Rule&quot; &quot;Message&quot;</span>
-<span class="lineno">  330 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,aMarkup2String m) | m &lt;- rrmsg rul, amLang m == fsLang fSpec ]</span>
-<span class="lineno">  331 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;srcConcept&quot;  &quot;Rule&quot; &quot;Concept&quot;</span>
-<span class="lineno">  332 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(uri.source.rrexp) rul)]</span>
-<span class="lineno">  333 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tgtConcept&quot;  &quot;Rule&quot; &quot;Concept&quot;</span>
-<span class="lineno">  334 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(uri.target.rrexp) rul)]</span>
-<span class="lineno">  335 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;conjunctIds&quot;  &quot;Rule&quot; &quot;ConjunctID&quot;</span>
-<span class="lineno">  336 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,uri conj) | (rule,conjs)&lt;-allConjsPerRule fSpec, rule==rul,conj &lt;- conjs]</span>
-<span class="lineno">  337 </span><span class="spaces">      </span><span class="nottickedoff">]++case rrviol rul of</span>
-<span class="lineno">  338 </span><span class="spaces">        </span><span class="nottickedoff">Nothing -&gt; []</span>
-<span class="lineno">  339 </span><span class="spaces">        </span><span class="nottickedoff">Just pve -&gt;</span>
-<span class="lineno">  340 </span><span class="spaces">         </span><span class="nottickedoff">[ Pop &quot;pairView&quot;  &quot;Rule&quot; &quot;PairView&quot;</span>
-<span class="lineno">  341 </span><span class="spaces">              </span><span class="nottickedoff">[(uri rul, uri pve)]</span>
-<span class="lineno">  342 </span><span class="spaces">         </span><span class="nottickedoff">]++generics fSpec pve</span></span>
-<span class="lineno">  343 </span>      
-<span class="lineno">  344 </span>      
-<span class="lineno">  345 </span>instance GenericPopulations (PairView Expression) where
-<span class="lineno">  346 </span> <span class="decl"><span class="nottickedoff">generics fSpec pve = </span>
-<span class="lineno">  347 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  348 </span><span class="spaces">      </span><span class="nottickedoff">]++concatMap makeSegment (zip [0..] (ppv_segs pve))</span>
-<span class="lineno">  349 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
-<span class="lineno">  350 </span><span class="spaces">    </span><span class="nottickedoff">makeSegment :: (Int,PairViewSegment Expression) -&gt; [Pop]</span>
-<span class="lineno">  351 </span><span class="spaces">    </span><span class="nottickedoff">makeSegment (i,pvs) =</span>
-<span class="lineno">  352 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;segment&quot; &quot;PairView&quot; &quot;PairViewSegment&quot;</span>
-<span class="lineno">  353 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pve,uri pvs)]</span>
-<span class="lineno">  354 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;sequenceNr&quot; &quot;PairViewSegment&quot; &quot;Int&quot;</span>
-<span class="lineno">  355 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pvs,show i)]</span>
-<span class="lineno">  356 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;segmentType&quot; &quot;PairViewSegment&quot; &quot;PairViewSegmentType&quot;</span>
-<span class="lineno">  357 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pvs, case pvs of </span>
-<span class="lineno">  358 </span><span class="spaces">                         </span><span class="nottickedoff">PairViewText{} -&gt; &quot;Text&quot;</span>
-<span class="lineno">  359 </span><span class="spaces">                         </span><span class="nottickedoff">PairViewExp{}  -&gt; &quot;Exp&quot;)</span>
-<span class="lineno">  360 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
-<span class="lineno">  361 </span><span class="spaces">      </span><span class="nottickedoff">]++</span>
-<span class="lineno">  362 </span><span class="spaces">      </span><span class="nottickedoff">case pvs of</span>
-<span class="lineno">  363 </span><span class="spaces">        </span><span class="nottickedoff">PairViewText{} -&gt; </span>
-<span class="lineno">  364 </span><span class="spaces">          </span><span class="nottickedoff">[Pop &quot;text&quot; &quot;PairViewSegment&quot; &quot;String&quot;</span>
-<span class="lineno">  365 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, pvsStr pvs)] </span>
-<span class="lineno">  366 </span><span class="spaces">          </span><span class="nottickedoff">]</span>
-<span class="lineno">  367 </span><span class="spaces">        </span><span class="nottickedoff">PairViewExp{} -&gt; </span>
-<span class="lineno">  368 </span><span class="spaces">          </span><span class="nottickedoff">[Pop &quot;srcOrTgt&quot; &quot;PairViewSegment&quot; &quot;SourceOrTarget&quot;</span>
-<span class="lineno">  369 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, show (pvsSoT pvs))] </span>
-<span class="lineno">  370 </span><span class="spaces">          </span><span class="nottickedoff">,Pop &quot;expTgt&quot; &quot;PairViewSegment&quot; &quot;Concept&quot;</span>
-<span class="lineno">  371 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, uri (case pvsSoT pvs of</span>
-<span class="lineno">  372 </span><span class="spaces">                                </span><span class="nottickedoff">Src -&gt; source (pvsExp pvs)</span>
-<span class="lineno">  373 </span><span class="spaces">                                </span><span class="nottickedoff">Tgt -&gt; target (pvsExp pvs)</span>
-<span class="lineno">  374 </span><span class="spaces">                              </span><span class="nottickedoff">))] </span>
-<span class="lineno">  375 </span><span class="spaces">          </span><span class="nottickedoff">,Pop &quot;expSQL&quot; &quot;PairViewSegment&quot; &quot;MySQLQuery&quot;</span>
-<span class="lineno">  376 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, prettySQLQuery fSpec 0 (pvsExp pvs))] </span>
-<span class="lineno">  377 </span><span class="spaces">          </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  378 </span>         
-<span class="lineno">  379 </span>      
-<span class="lineno">  380 </span>instance MetaPopulations Rule where
-<span class="lineno">  381 </span> <span class="decl"><span class="nottickedoff">metaPops _ rul =</span>
-<span class="lineno">  382 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
-<span class="lineno">  383 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Rule `&quot;++name rul++&quot;` &quot;</span>
-<span class="lineno">  384 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot;  &quot;Rule&quot; &quot;RuleName&quot;</span>
-<span class="lineno">  385 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,name rul)]</span>
-<span class="lineno">  386 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;rrexp&quot;  &quot;Rule&quot; &quot;ExpressionID&quot;</span>
-<span class="lineno">  387 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,uri (rrexp rul))]</span>
-<span class="lineno">  388 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;rrmean&quot;  &quot;Rule&quot; &quot;Meaning&quot;</span>
-<span class="lineno">  389 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,show(rrmean rul))]</span>
-<span class="lineno">  390 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;rrpurpose&quot;  &quot;Rule&quot; &quot;Purpose&quot;</span>
-<span class="lineno">  391 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,showADL x) | x &lt;- explanations rul]</span>
-<span class="lineno">  392 </span><span class="spaces">      </span><span class="nottickedoff">, -- The next population is from the adl pattern 'Plugs':</span>
-<span class="lineno">  393 </span><span class="spaces">        </span><span class="nottickedoff">Pop &quot;sign&quot; &quot;Rule&quot; &quot;Sign&quot;</span>
-<span class="lineno">  394 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,uri (sign rul))]</span>
-<span class="lineno">  395 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;declaredthrough&quot; &quot;PropertyRule&quot; &quot;Property&quot;</span>
-<span class="lineno">  396 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,show prp) | Just(prp,_) &lt;- [rrdcl rul]]</span>
-<span class="lineno">  397 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;decprps&quot; &quot;Declaration&quot; &quot;PropertyRule&quot;</span>
-<span class="lineno">  398 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl, uri rul) | Just(_,dcl) &lt;- [rrdcl rul]]</span>
-<span class="lineno">  399 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  400 </span>
-<span class="lineno">  401 </span>
-<span class="lineno">  402 </span>
-<span class="lineno">  403 </span>instance MetaPopulations PlugInfo where
-<span class="lineno">  404 </span> <span class="decl"><span class="nottickedoff">metaPops _ plug = </span>
-<span class="lineno">  405 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment $ &quot; Plug `&quot;++name plug++&quot;` &quot;</span>
-<span class="lineno">  406 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;maintains&quot; &quot;Plug&quot; &quot;Rule&quot; [{-STILL TODO. -}] --HJO, 20150205: Waar halen we deze info vandaan??</span>
-<span class="lineno">  407 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;in&quot; &quot;PlainConcept&quot; &quot;Plug&quot;                 </span>
-<span class="lineno">  408 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt,uri plug)| cpt &lt;- concs plug]  </span>
-<span class="lineno">  409 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;in&quot; &quot;Declaration&quot; &quot;Plug&quot;</span>
-<span class="lineno">  410 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri plug)| dcl &lt;- relsMentionedIn plug]</span>
-<span class="lineno">  411 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>      
-<span class="lineno">  412 </span>
-<span class="lineno">  413 </span>instance MetaPopulations a =&gt; MetaPopulations [a] where
-<span class="lineno">  414 </span> <span class="decl"><span class="nottickedoff">metaPops fSpec = concatMap $ metaPops fSpec</span></span>
-<span class="lineno">  415 </span> 
-<span class="lineno">  416 </span>instance GenericPopulations Conjunct where
-<span class="lineno">  417 </span> <span class="decl"><span class="nottickedoff">generics fSpec conj =</span>
-<span class="lineno">  418 </span><span class="spaces">  </span><span class="nottickedoff">[ Comment $ &quot;Conjunct: '&quot;++rc_id conj++&quot;'.&quot;</span>
-<span class="lineno">  419 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;allConjuncts&quot; &quot;Context&quot; &quot;Conjunct&quot; </span>
-<span class="lineno">  420 </span><span class="spaces">         </span><span class="nottickedoff">[(uri fSpec, uri conj)]</span>
-<span class="lineno">  421 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;signalRuleNames&quot; &quot;Conjunct&quot; &quot;Rule&quot; </span>
-<span class="lineno">  422 </span><span class="spaces">         </span><span class="nottickedoff">[(uri conj,uri r) | r &lt;- rc_orgRules conj, isFrontEndSignal r]</span>
-<span class="lineno">  423 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;invariantRuleNames&quot; &quot;Conjunct&quot; &quot;Rule&quot; </span>
-<span class="lineno">  424 </span><span class="spaces">         </span><span class="nottickedoff">[(uri conj,uri r) | r &lt;- rc_orgRules conj, isFrontEndInvariant  r]</span>
-<span class="lineno">  425 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;violationsSQL&quot; &quot;Conjunct&quot; &quot;MySQLQuery&quot; </span>
-<span class="lineno">  426 </span><span class="spaces">         </span><span class="nottickedoff">[(uri conj , prettySQLQuery fSpec 0 (conjNF (getOpts fSpec) (notCpl (rc_conjunct conj)))</span>
-<span class="lineno">  427 </span><span class="spaces">          </span><span class="nottickedoff">)]</span>
-<span class="lineno">  428 </span><span class="spaces">  </span><span class="nottickedoff">]</span></span> 
-<span class="lineno">  429 </span>
-<span class="lineno">  430 </span>
-<span class="lineno">  431 </span>-----------------------------------------------------
-<span class="lineno">  432 </span>data Pop = Pop { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popName</span></span></span> ::String
-<span class="lineno">  433 </span>               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popSource</span></span></span> :: String
-<span class="lineno">  434 </span>               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popTarget</span></span></span> :: String
-<span class="lineno">  435 </span>               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popPairs</span></span></span> :: [(String,String)]
-<span class="lineno">  436 </span>               }
-<span class="lineno">  437 </span>         | Comment { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">comment</span></span></span> :: String  -- Not-so-nice way to get comments in a list of populations. Since it is local to this module, it is not so bad, I guess...
-<span class="lineno">  438 </span>                   }
-<span class="lineno">  439 </span>instance ShowADL Pop where
-<span class="lineno">  440 </span> <span class="decl"><span class="nottickedoff">showADL pop =</span>
-<span class="lineno">  441 </span><span class="spaces">  </span><span class="nottickedoff">case pop of</span>
-<span class="lineno">  442 </span><span class="spaces">      </span><span class="nottickedoff">Pop{} -&gt; &quot;POPULATION &quot;++ popName pop++</span>
-<span class="lineno">  443 </span><span class="spaces">                  </span><span class="nottickedoff">&quot; [&quot;++popSource pop++&quot; * &quot;++popTarget pop++&quot;] CONTAINS&quot;</span>
-<span class="lineno">  444 </span><span class="spaces">              </span><span class="nottickedoff">++</span>
-<span class="lineno">  445 </span><span class="spaces">              </span><span class="nottickedoff">if null (popPairs pop)</span>
-<span class="lineno">  446 </span><span class="spaces">              </span><span class="nottickedoff">then &quot;[]&quot;</span>
-<span class="lineno">  447 </span><span class="spaces">              </span><span class="nottickedoff">else &quot;\n&quot;++indentA++&quot;[ &quot;++intercalate (&quot;\n&quot;++indentA++&quot;; &quot;) showContent++indentA++&quot;]&quot;</span>
-<span class="lineno">  448 </span><span class="spaces">      </span><span class="nottickedoff">Comment{} -&gt; intercalate &quot;\n&quot; (map prepend (lines (comment pop)))</span>
-<span class="lineno">  449 </span><span class="spaces">    </span><span class="nottickedoff">where indentA = &quot;   &quot;</span>
-<span class="lineno">  450 </span><span class="spaces">          </span><span class="nottickedoff">showContent = map showPaire (popPairs pop)</span>
-<span class="lineno">  451 </span><span class="spaces">          </span><span class="nottickedoff">showPaire (s,t) = &quot;( &quot;++show s++&quot; , &quot;++show t++&quot; )&quot;</span>
-<span class="lineno">  452 </span><span class="spaces">          </span><span class="nottickedoff">prepend str = &quot;-- &quot; ++ str</span></span>
-<span class="lineno">  453 </span>
-<span class="lineno">  454 </span>class Unique a =&gt; AdlId a where
-<span class="lineno">  455 </span> uri :: a -&gt; String
-<span class="lineno">  456 </span> <span class="decl"><span class="nottickedoff">uri = camelCase . uniqueShow False</span></span>
-<span class="lineno">  457 </span>-- All 'things' that are relevant in the meta-environment (RAP),
-<span class="lineno">  458 </span>-- must be an instance of AdlId:
-<span class="lineno">  459 </span>instance AdlId A_Concept
-<span class="lineno">  460 </span>instance AdlId A_Gen
-<span class="lineno">  461 </span>instance AdlId Atom
-<span class="lineno">  462 </span>instance AdlId ConceptDef
-<span class="lineno">  463 </span>instance AdlId Declaration
-<span class="lineno">  464 </span>instance AdlId Expression
-<span class="lineno">  465 </span>instance AdlId FSpec
-<span class="lineno">  466 </span>instance AdlId A_Pair
-<span class="lineno">  467 </span>instance AdlId Pattern
-<span class="lineno">  468 </span>instance AdlId PlugInfo
-<span class="lineno">  469 </span>instance AdlId PlugSQL
-<span class="lineno">  470 </span>instance AdlId (PlugSQL,SqlField)
-<span class="lineno">  471 </span>instance AdlId Purpose
-<span class="lineno">  472 </span>instance AdlId Rule
-<span class="lineno">  473 </span>instance AdlId Role
-<span class="lineno">  474 </span>instance AdlId Sign
-<span class="lineno">  475 </span>instance AdlId Conjunct
-<span class="lineno">  476 </span>instance AdlId (PairView Expression)
-<span class="lineno">  477 </span>  where <span class="decl"><span class="nottickedoff">uri x = show (typeOf x)++show (hash x)</span></span>
-<span class="lineno">  478 </span>instance AdlId (PairViewSegment Expression)
-<span class="lineno">  479 </span>  where <span class="decl"><span class="nottickedoff">uri x = show (typeOf x)++show (hash (show (hash x) ++ show (origin x)))</span></span>
-<span class="lineno">  480 </span>instance AdlId Bool where
-<span class="lineno">  481 </span> <span class="decl"><span class="nottickedoff">uri = showUnique</span></span>
-<span class="lineno">  482 </span>instance AdlId a =&gt; AdlId [a] where
-<span class="lineno">  483 </span>--instance AdlId (Declaration,Paire)
-<span class="lineno">  484 </span>
-<span class="lineno">  485 </span>
-<span class="lineno">  486 </span>
-<span class="lineno">  487 </span>-- | remove spaces and make camelCase
-<span class="lineno">  488 </span>camelCase :: String -&gt; String
-<span class="lineno">  489 </span><span class="decl"><span class="nottickedoff">camelCase str = concatMap capitalize (words str)</span>
-<span class="lineno">  490 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
-<span class="lineno">  491 </span><span class="spaces">    </span><span class="nottickedoff">capitalize [] = []</span>
-<span class="lineno">  492 </span><span class="spaces">    </span><span class="nottickedoff">capitalize (s:ss) = toUpper s : ss</span></span>
+<span class="lineno">  162 </span><span class="spaces">     </span><span class="nottickedoff">ONE -&gt; </span>
+<span class="lineno">  163 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  164 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Concept ONE &quot;</span>
+<span class="lineno">  165 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allConcepts&quot; &quot;Context&quot; &quot;Concept&quot;</span>
+<span class="lineno">  166 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec,uri cpt)]</span>
+<span class="lineno">  167 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Concept&quot; &quot;TEXT&quot;</span>
+<span class="lineno">  168 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt, name cpt)]</span>
+<span class="lineno">  169 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;conceptTableFields&quot; &quot;Concept&quot; &quot;TableColumn&quot;</span>
+<span class="lineno">  170 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt, uri fld) | fld &lt;- tablesAndFields]</span>
+<span class="lineno">  171 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
+<span class="lineno">  172 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">  173 </span><span class="spaces">   </span><span class="nottickedoff">affConjs = fromMaybe [] (lookup cpt $ allConjsPerConcept fSpec)</span>
+<span class="lineno">  174 </span><span class="spaces">   </span><span class="nottickedoff">tablesAndFields = nub . concatMap (lookupCpt fSpec) $ cpt : largerConcepts (vgens fSpec) cpt</span></span>
+<span class="lineno">  175 </span>instance MetaPopulations A_Concept where
+<span class="lineno">  176 </span> <span class="decl"><span class="nottickedoff">metaPops fSpec cpt =</span>
+<span class="lineno">  177 </span><span class="spaces">   </span><span class="nottickedoff">case cpt of</span>
+<span class="lineno">  178 </span><span class="spaces">     </span><span class="nottickedoff">PlainConcept{} -&gt;</span>
+<span class="lineno">  179 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  180 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Concept `&quot;++name cpt++&quot;` &quot;</span>
+<span class="lineno">  181 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;concs&quot; &quot;Context&quot; &quot;Concept&quot;</span>
+<span class="lineno">  182 </span><span class="spaces">           </span><span class="nottickedoff">[(uri fSpec,uri cpt)]</span>
+<span class="lineno">  183 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Concept&quot; &quot;TEXT&quot;</span>
+<span class="lineno">  184 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt, name cpt)]</span>
+<span class="lineno">  185 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;cptdf&quot; &quot;Concept&quot; &quot;ConceptDefinition&quot;</span>
+<span class="lineno">  186 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri cpt,showADL cdef) | cdef &lt;- conceptDefs  fSpec, name cdef == name cpt]</span>
+<span class="lineno">  187 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;cptpurpose&quot; &quot;Concept&quot; &quot;Purpose&quot;</span>
+<span class="lineno">  188 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri cpt,showADL x) | lang &lt;- allLangs, x &lt;- fromMaybe [] (purposeOf fSpec lang cpt) ]</span>
+<span class="lineno">  189 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
+<span class="lineno">  190 </span><span class="spaces">     </span><span class="nottickedoff">ONE -&gt; [</span>
+<span class="lineno">  191 </span><span class="spaces">            </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  192 </span>instance GenericPopulations PlugSQL where
+<span class="lineno">  193 </span>  <span class="decl"><span class="nottickedoff">generics fSpec plug =</span>
+<span class="lineno">  194 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  195 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot;Plug: '&quot;++name plug++&quot;'&quot;</span>
+<span class="lineno">  196 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tableInfo&quot; &quot;Context&quot; &quot;DBTable&quot;</span>
+<span class="lineno">  197 </span><span class="spaces">               </span><span class="nottickedoff">[(uri fSpec, uri plug)]</span>
+<span class="lineno">  198 </span><span class="spaces">      </span><span class="nottickedoff">] ++ concatMap (generics fSpec) [(plug,fld) | fld &lt;- plugFields plug]</span></span>
+<span class="lineno">  199 </span>
+<span class="lineno">  200 </span>instance GenericPopulations (PlugSQL,SqlField) where
+<span class="lineno">  201 </span>  <span class="decl"><span class="nottickedoff">generics _ (plug,fld) =</span>
+<span class="lineno">  202 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;columninfo&quot; &quot;DBTable&quot; &quot;TableColumn&quot;</span>
+<span class="lineno">  203 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri plug, uri (plug,fld)) ]</span>
+<span class="lineno">  204 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;concept&quot; &quot;TableColumn&quot; &quot;Concept&quot;</span>
+<span class="lineno">  205 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri (plug,fld), uri.target.fldexpr $ fld)]</span>
+<span class="lineno">  206 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;unique&quot; &quot;TableColumn&quot; &quot;BOOLEAN&quot;</span>
+<span class="lineno">  207 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri (plug,fld), uri.flduniq $ fld)]</span>
+<span class="lineno">  208 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;null&quot; &quot;TableColumn&quot; &quot;BOOLEAN&quot;</span>
+<span class="lineno">  209 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri (plug,fld), uri.fldnull $ fld)]</span>
+<span class="lineno">  210 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  211 </span>     
+<span class="lineno">  212 </span>instance GenericPopulations Role where
+<span class="lineno">  213 </span>  <span class="decl"><span class="nottickedoff">generics fSpec rol =</span>
+<span class="lineno">  214 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment $ &quot;Role: '&quot;++name rol++&quot;'&quot;</span>
+<span class="lineno">  215 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allRoles&quot; &quot;Context&quot; &quot;Role&quot;</span>
+<span class="lineno">  216 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri fSpec, uri rol) ]</span>
+<span class="lineno">  217 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Role&quot; &quot;TEXT&quot;</span>
+<span class="lineno">  218 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri rol, name rol) ]</span>
+<span class="lineno">  219 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;maintains&quot; &quot;Role&quot; &quot;Rule&quot;</span>
+<span class="lineno">  220 </span><span class="spaces">                 </span><span class="nottickedoff">[(uri rol, uri rul) | (rol',rul) &lt;-  fRoleRuls fSpec, rol==rol' ]</span>
+<span class="lineno">  221 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  222 </span>
+<span class="lineno">  223 </span>instance MetaPopulations Atom where
+<span class="lineno">  224 </span> <span class="decl"><span class="nottickedoff">metaPops _ atm =</span>
+<span class="lineno">  225 </span><span class="spaces">   </span><span class="nottickedoff">[ Pop &quot;pop&quot; &quot;Atom&quot; &quot;Concept&quot; </span>
+<span class="lineno">  226 </span><span class="spaces">          </span><span class="nottickedoff">[(uri atm, uri cpt)</span>
+<span class="lineno">  227 </span><span class="spaces">          </span><span class="nottickedoff">|cpt &lt;- atmRoots atm]</span>
+<span class="lineno">  228 </span><span class="spaces">   </span><span class="nottickedoff">, Pop &quot;repr&quot;  &quot;Atom&quot; &quot;TEXT&quot;</span>
+<span class="lineno">  229 </span><span class="spaces">          </span><span class="nottickedoff">[(uri atm, atmVal atm)]</span>
+<span class="lineno">  230 </span><span class="spaces">   </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  231 </span>--instance MetaPopulations Sign where
+<span class="lineno">  232 </span>-- metaPops _ sgn =
+<span class="lineno">  233 </span>--      [ Pop &quot;src&quot; &quot;Sign&quot; &quot;Concept&quot;
+<span class="lineno">  234 </span>--             [(uri sgn, uri (source sgn))]
+<span class="lineno">  235 </span>--      , Pop &quot;trg&quot; &quot;Sign&quot; &quot;Concept&quot;
+<span class="lineno">  236 </span>--             [(uri sgn, uri (target sgn))]
+<span class="lineno">  237 </span>--      ]
+<span class="lineno">  238 </span>
+<span class="lineno">  239 </span>instance GenericPopulations Declaration where
+<span class="lineno">  240 </span> <span class="decl"><span class="nottickedoff">generics fSpec dcl =</span>
+<span class="lineno">  241 </span><span class="spaces">   </span><span class="nottickedoff">case dcl of </span>
+<span class="lineno">  242 </span><span class="spaces">     </span><span class="nottickedoff">Sgn{} -&gt;</span>
+<span class="lineno">  243 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  244 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Relation '&quot;++name dcl++showSign (sign dcl)++&quot;'&quot;</span>
+<span class="lineno">  245 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allRelations&quot; &quot;Context&quot; &quot;Relation&quot;</span>
+<span class="lineno">  246 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec, uri dcl)]</span>
+<span class="lineno">  247 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Relation&quot; &quot;RelationName&quot;</span>
+<span class="lineno">  248 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,name dcl)]</span>
+<span class="lineno">  249 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;srcConcept&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
+<span class="lineno">  250 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (source dcl))]</span>
+<span class="lineno">  251 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tgtConcept&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
+<span class="lineno">  252 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (target dcl))]</span>
+<span class="lineno">  253 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;table&quot; &quot;Relation&quot; &quot;DBTable&quot;</span>
+<span class="lineno">  254 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri table)]</span>
+<span class="lineno">  255 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;srcCol&quot; &quot;Relation&quot; &quot;DBTableColumn&quot;</span>
+<span class="lineno">  256 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (table,srcCol))]</span>
+<span class="lineno">  257 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tgtCol&quot; &quot;Relation&quot; &quot;DBTableColumn&quot;</span>
+<span class="lineno">  258 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (table,tgtCol))]</span>
+<span class="lineno">  259 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;affectedInvConjunctIds&quot; &quot;Relation&quot; &quot;ConjunctID&quot;</span>
+<span class="lineno">  260 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri conj) | conj &lt;- filterFrontEndInvConjuncts affConjs ]</span>
+<span class="lineno">  261 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;affectedSigConjunctIds&quot; &quot;Relation&quot; &quot;ConjunctID&quot;</span>
+<span class="lineno">  262 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri conj) | conj &lt;- filterFrontEndSigConjuncts affConjs ]</span>
+<span class="lineno">  263 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
+<span class="lineno">  264 </span><span class="spaces">     </span><span class="nottickedoff">Isn{} -&gt; fatal 157 &quot;Isn is not implemented yet&quot;</span>
+<span class="lineno">  265 </span><span class="spaces">     </span><span class="nottickedoff">Vs{}  -&gt; fatal 158 &quot;Vs is not implemented yet&quot;</span>
+<span class="lineno">  266 </span><span class="spaces">   </span><span class="nottickedoff">where</span>
+<span class="lineno">  267 </span><span class="spaces">     </span><span class="nottickedoff">(table,srcCol,tgtCol) = getDeclarationTableInfo fSpec dcl</span>
+<span class="lineno">  268 </span><span class="spaces">     </span><span class="nottickedoff">affConjs = fromMaybe [] (lookup dcl $ allConjsPerDecl fSpec)</span></span>
+<span class="lineno">  269 </span>instance MetaPopulations Declaration where
+<span class="lineno">  270 </span> <span class="decl"><span class="nottickedoff">metaPops fSpec dcl =</span>
+<span class="lineno">  271 </span><span class="spaces">   </span><span class="nottickedoff">case dcl of</span>
+<span class="lineno">  272 </span><span class="spaces">     </span><span class="nottickedoff">Sgn{} -&gt;</span>
+<span class="lineno">  273 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  274 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Declaration `&quot;++name dcl++&quot; [&quot;++(name.source.decsgn) dcl++&quot; * &quot;++(name.target.decsgn) dcl++&quot;]&quot;++&quot;` &quot;</span>
+<span class="lineno">  275 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allDeclarations&quot; &quot;Context&quot; &quot;Relation&quot;</span>
+<span class="lineno">  276 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec,uri dcl)] </span>
+<span class="lineno">  277 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot; &quot;Relation&quot; &quot;TEXT&quot;</span>
+<span class="lineno">  278 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl, name dcl)]</span>
+<span class="lineno">  279 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;sign&quot; &quot;Declaration&quot; &quot;Sign&quot;</span>
+<span class="lineno">  280 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl,uri (sign dcl))]</span>
+<span class="lineno">  281 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;source&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
+<span class="lineno">  282 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (source dcl))]</span>
+<span class="lineno">  283 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;target&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
+<span class="lineno">  284 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (target dcl))]</span>
+<span class="lineno">  285 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;decprL&quot; &quot;Declaration&quot; &quot;String&quot;</span>
+<span class="lineno">  286 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl,decprL dcl)]</span>
+<span class="lineno">  287 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;decprM&quot; &quot;Declaration&quot; &quot;String&quot;</span>
+<span class="lineno">  288 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl,decprM dcl)]</span>
+<span class="lineno">  289 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;decprR&quot; &quot;Declaration&quot; &quot;String&quot;</span>
+<span class="lineno">  290 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl,decprR dcl)]</span>
+<span class="lineno">  291 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;decmean&quot; &quot;Declaration&quot; &quot;Meaning&quot;</span>
+<span class="lineno">  292 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl, show(decMean dcl))]</span>
+<span class="lineno">  293 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;decpurpose&quot; &quot;Declaration&quot; &quot;Purpose&quot;</span>
+<span class="lineno">  294 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl, showADL x) | x &lt;- explanations dcl]</span>
+<span class="lineno">  295 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
+<span class="lineno">  296 </span><span class="spaces">     </span><span class="nottickedoff">Isn{} -&gt; </span>
+<span class="lineno">  297 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  298 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Declaration `I[&quot;++name (source dcl)++&quot;]`&quot;</span>
+<span class="lineno">  299 </span><span class="spaces"></span><span class="nottickedoff">--      , Pop &quot;sign&quot; &quot;Declaration&quot; &quot;Sign&quot;</span>
+<span class="lineno">  300 </span><span class="spaces"></span><span class="nottickedoff">--             [(uri dcl,uri (sign dcl))]</span>
+<span class="lineno">  301 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;source&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
+<span class="lineno">  302 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (source dcl))]</span>
+<span class="lineno">  303 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;target&quot; &quot;Relation&quot; &quot;Concept&quot;</span>
+<span class="lineno">  304 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri (target dcl))]</span>
+<span class="lineno">  305 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
+<span class="lineno">  306 </span><span class="spaces">     </span><span class="nottickedoff">Vs{}  -&gt; fatal 158 &quot;Vs is not implemented yet&quot;</span></span>
+<span class="lineno">  307 </span>
+<span class="lineno">  308 </span>instance MetaPopulations A_Pair where
+<span class="lineno">  309 </span> <span class="decl"><span class="nottickedoff">metaPops _ pair =</span>
+<span class="lineno">  310 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;in&quot; &quot;Pair&quot; &quot;Relation&quot;</span>
+<span class="lineno">  311 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pair, uri (lnkDcl pair))]</span>
+<span class="lineno">  312 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;l&quot; &quot;Pair&quot; &quot;Atom&quot;</span>
+<span class="lineno">  313 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pair, uri(lnkLeft pair))]</span>
+<span class="lineno">  314 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;r&quot; &quot;Pair&quot; &quot;Atom&quot;</span>
+<span class="lineno">  315 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pair, uri(lnkRight pair))]</span>
+<span class="lineno">  316 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  317 </span>
+<span class="lineno">  318 </span>instance MetaPopulations Expression where
+<span class="lineno">  319 </span> <span class="decl"><span class="nottickedoff">metaPops _ e =</span>
+<span class="lineno">  320 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;exprvalue&quot; &quot;ExpressionID&quot; &quot;Expression&quot;</span>
+<span class="lineno">  321 </span><span class="spaces">             </span><span class="nottickedoff">[(uri e, showADL e)]</span>
+<span class="lineno">  322 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  323 </span>
+<span class="lineno">  324 </span>instance GenericPopulations Rule where
+<span class="lineno">  325 </span> <span class="decl"><span class="nottickedoff">generics fSpec rul =</span>
+<span class="lineno">  326 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  327 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Rule `&quot;++name rul++&quot;` &quot;</span>
+<span class="lineno">  328 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;allRules&quot; &quot;Context&quot; &quot;Rule&quot;</span>
+<span class="lineno">  329 </span><span class="spaces">             </span><span class="nottickedoff">[(uri fSpec, uri rul)]</span>
+<span class="lineno">  330 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot;  &quot;Rule&quot; &quot;RuleID&quot;</span>
+<span class="lineno">  331 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,name rul)]</span>
+<span class="lineno">  332 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;ruleAdl&quot;  &quot;Rule&quot; &quot;Adl&quot;</span>
+<span class="lineno">  333 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(showADL.rrexp) rul)]</span>
+<span class="lineno">  334 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;origin&quot;  &quot;Rule&quot; &quot;Origin&quot;</span>
+<span class="lineno">  335 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(show.origin) rul)]</span>
+<span class="lineno">  336 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;meaning&quot;  &quot;Rule&quot; &quot;Meaning&quot;</span>
+<span class="lineno">  337 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,aMarkup2String m) | m &lt;- (maybeToList . meaning (fsLang fSpec)) rul ]</span>
+<span class="lineno">  338 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;message&quot;  &quot;Rule&quot; &quot;Message&quot;</span>
+<span class="lineno">  339 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,aMarkup2String m) | m &lt;- rrmsg rul, amLang m == fsLang fSpec ]</span>
+<span class="lineno">  340 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;srcConcept&quot;  &quot;Rule&quot; &quot;Concept&quot;</span>
+<span class="lineno">  341 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(uri.source.rrexp) rul)]</span>
+<span class="lineno">  342 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;tgtConcept&quot;  &quot;Rule&quot; &quot;Concept&quot;</span>
+<span class="lineno">  343 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,(uri.target.rrexp) rul)]</span>
+<span class="lineno">  344 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;conjunctIds&quot;  &quot;Rule&quot; &quot;ConjunctID&quot;</span>
+<span class="lineno">  345 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,uri conj) | (rule,conjs)&lt;-allConjsPerRule fSpec, rule==rul,conj &lt;- conjs]</span>
+<span class="lineno">  346 </span><span class="spaces">      </span><span class="nottickedoff">]++case rrviol rul of</span>
+<span class="lineno">  347 </span><span class="spaces">        </span><span class="nottickedoff">Nothing -&gt; []</span>
+<span class="lineno">  348 </span><span class="spaces">        </span><span class="nottickedoff">Just pve -&gt;</span>
+<span class="lineno">  349 </span><span class="spaces">         </span><span class="nottickedoff">[ Pop &quot;pairView&quot;  &quot;Rule&quot; &quot;PairView&quot;</span>
+<span class="lineno">  350 </span><span class="spaces">              </span><span class="nottickedoff">[(uri rul, uri pve)]</span>
+<span class="lineno">  351 </span><span class="spaces">         </span><span class="nottickedoff">]++generics fSpec pve</span></span>
+<span class="lineno">  352 </span>      
+<span class="lineno">  353 </span>      
+<span class="lineno">  354 </span>instance GenericPopulations (PairView Expression) where
+<span class="lineno">  355 </span> <span class="decl"><span class="nottickedoff">generics fSpec pve = </span>
+<span class="lineno">  356 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  357 </span><span class="spaces">      </span><span class="nottickedoff">]++concatMap makeSegment (zip [0..] (ppv_segs pve))</span>
+<span class="lineno">  358 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">  359 </span><span class="spaces">    </span><span class="nottickedoff">makeSegment :: (Int,PairViewSegment Expression) -&gt; [Pop]</span>
+<span class="lineno">  360 </span><span class="spaces">    </span><span class="nottickedoff">makeSegment (i,pvs) =</span>
+<span class="lineno">  361 </span><span class="spaces">      </span><span class="nottickedoff">[ Pop &quot;segment&quot; &quot;PairView&quot; &quot;PairViewSegment&quot;</span>
+<span class="lineno">  362 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pve,uri pvs)]</span>
+<span class="lineno">  363 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;sequenceNr&quot; &quot;PairViewSegment&quot; &quot;Int&quot;</span>
+<span class="lineno">  364 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pvs,show i)]</span>
+<span class="lineno">  365 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;segmentType&quot; &quot;PairViewSegment&quot; &quot;PairViewSegmentType&quot;</span>
+<span class="lineno">  366 </span><span class="spaces">             </span><span class="nottickedoff">[(uri pvs, case pvs of </span>
+<span class="lineno">  367 </span><span class="spaces">                         </span><span class="nottickedoff">PairViewText{} -&gt; &quot;Text&quot;</span>
+<span class="lineno">  368 </span><span class="spaces">                         </span><span class="nottickedoff">PairViewExp{}  -&gt; &quot;Exp&quot;)</span>
+<span class="lineno">  369 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
+<span class="lineno">  370 </span><span class="spaces">      </span><span class="nottickedoff">]++</span>
+<span class="lineno">  371 </span><span class="spaces">      </span><span class="nottickedoff">case pvs of</span>
+<span class="lineno">  372 </span><span class="spaces">        </span><span class="nottickedoff">PairViewText{} -&gt; </span>
+<span class="lineno">  373 </span><span class="spaces">          </span><span class="nottickedoff">[Pop &quot;text&quot; &quot;PairViewSegment&quot; &quot;String&quot;</span>
+<span class="lineno">  374 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, pvsStr pvs)] </span>
+<span class="lineno">  375 </span><span class="spaces">          </span><span class="nottickedoff">]</span>
+<span class="lineno">  376 </span><span class="spaces">        </span><span class="nottickedoff">PairViewExp{} -&gt; </span>
+<span class="lineno">  377 </span><span class="spaces">          </span><span class="nottickedoff">[Pop &quot;srcOrTgt&quot; &quot;PairViewSegment&quot; &quot;SourceOrTarget&quot;</span>
+<span class="lineno">  378 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, show (pvsSoT pvs))] </span>
+<span class="lineno">  379 </span><span class="spaces">          </span><span class="nottickedoff">,Pop &quot;expTgt&quot; &quot;PairViewSegment&quot; &quot;Concept&quot;</span>
+<span class="lineno">  380 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, uri (case pvsSoT pvs of</span>
+<span class="lineno">  381 </span><span class="spaces">                                </span><span class="nottickedoff">Src -&gt; source (pvsExp pvs)</span>
+<span class="lineno">  382 </span><span class="spaces">                                </span><span class="nottickedoff">Tgt -&gt; target (pvsExp pvs)</span>
+<span class="lineno">  383 </span><span class="spaces">                              </span><span class="nottickedoff">))] </span>
+<span class="lineno">  384 </span><span class="spaces">          </span><span class="nottickedoff">,Pop &quot;expSQL&quot; &quot;PairViewSegment&quot; &quot;MySQLQuery&quot;</span>
+<span class="lineno">  385 </span><span class="spaces">               </span><span class="nottickedoff">[(uri pvs, prettySQLQuery fSpec 0 (pvsExp pvs))] </span>
+<span class="lineno">  386 </span><span class="spaces">          </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  387 </span>         
+<span class="lineno">  388 </span>      
+<span class="lineno">  389 </span>instance MetaPopulations Rule where
+<span class="lineno">  390 </span> <span class="decl"><span class="nottickedoff">metaPops _ rul =</span>
+<span class="lineno">  391 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment &quot; &quot;</span>
+<span class="lineno">  392 </span><span class="spaces">      </span><span class="nottickedoff">, Comment $ &quot; Rule `&quot;++name rul++&quot;` &quot;</span>
+<span class="lineno">  393 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;name&quot;  &quot;Rule&quot; &quot;TEXT&quot;</span>
+<span class="lineno">  394 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,name rul)]</span>
+<span class="lineno">  395 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;rrexp&quot;  &quot;Rule&quot; &quot;ExpressionID&quot;</span>
+<span class="lineno">  396 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,uri (rrexp rul))]</span>
+<span class="lineno">  397 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;rrmean&quot;  &quot;Rule&quot; &quot;Meaning&quot;</span>
+<span class="lineno">  398 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,show(rrmean rul))]</span>
+<span class="lineno">  399 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;rrpurpose&quot;  &quot;Rule&quot; &quot;Purpose&quot;</span>
+<span class="lineno">  400 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,showADL x) | x &lt;- explanations rul]</span>
+<span class="lineno">  401 </span><span class="spaces">      </span><span class="nottickedoff">, -- The next population is from the adl pattern 'Plugs':</span>
+<span class="lineno">  402 </span><span class="spaces">        </span><span class="nottickedoff">Pop &quot;sign&quot; &quot;Rule&quot; &quot;Sign&quot;</span>
+<span class="lineno">  403 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,uri (sign rul))]</span>
+<span class="lineno">  404 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;declaredthrough&quot; &quot;PropertyRule&quot; &quot;Property&quot;</span>
+<span class="lineno">  405 </span><span class="spaces">             </span><span class="nottickedoff">[(uri rul,show prp) | Just(prp,_) &lt;- [rrdcl rul]]</span>
+<span class="lineno">  406 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;decprps&quot; &quot;Declaration&quot; &quot;PropertyRule&quot;</span>
+<span class="lineno">  407 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl, uri rul) | Just(_,dcl) &lt;- [rrdcl rul]]</span>
+<span class="lineno">  408 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  409 </span>
+<span class="lineno">  410 </span>
+<span class="lineno">  411 </span>
+<span class="lineno">  412 </span>instance MetaPopulations PlugInfo where
+<span class="lineno">  413 </span> <span class="decl"><span class="nottickedoff">metaPops _ plug = </span>
+<span class="lineno">  414 </span><span class="spaces">      </span><span class="nottickedoff">[ Comment $ &quot; Plug `&quot;++name plug++&quot;` &quot;</span>
+<span class="lineno">  415 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;maintains&quot; &quot;Plug&quot; &quot;Rule&quot; [{-STILL TODO. -}] --HJO, 20150205: Waar halen we deze info vandaan??</span>
+<span class="lineno">  416 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;in&quot; &quot;Concept&quot; &quot;Plug&quot;                 </span>
+<span class="lineno">  417 </span><span class="spaces">             </span><span class="nottickedoff">[(uri cpt,uri plug)| cpt &lt;- concs plug]  </span>
+<span class="lineno">  418 </span><span class="spaces">      </span><span class="nottickedoff">, Pop &quot;in&quot; &quot;Declaration&quot; &quot;Plug&quot;</span>
+<span class="lineno">  419 </span><span class="spaces">             </span><span class="nottickedoff">[(uri dcl,uri plug)| dcl &lt;- relsMentionedIn plug]</span>
+<span class="lineno">  420 </span><span class="spaces">      </span><span class="nottickedoff">]</span></span>      
+<span class="lineno">  421 </span>
+<span class="lineno">  422 </span>instance MetaPopulations a =&gt; MetaPopulations [a] where
+<span class="lineno">  423 </span> <span class="decl"><span class="nottickedoff">metaPops fSpec = concatMap $ metaPops fSpec</span></span>
+<span class="lineno">  424 </span> 
+<span class="lineno">  425 </span>instance GenericPopulations Conjunct where
+<span class="lineno">  426 </span> <span class="decl"><span class="nottickedoff">generics fSpec conj =</span>
+<span class="lineno">  427 </span><span class="spaces">  </span><span class="nottickedoff">[ Comment $ &quot;Conjunct: '&quot;++rc_id conj++&quot;'.&quot;</span>
+<span class="lineno">  428 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;allConjuncts&quot; &quot;Context&quot; &quot;Conjunct&quot; </span>
+<span class="lineno">  429 </span><span class="spaces">         </span><span class="nottickedoff">[(uri fSpec, uri conj)]</span>
+<span class="lineno">  430 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;signalRuleNames&quot; &quot;Conjunct&quot; &quot;Rule&quot; </span>
+<span class="lineno">  431 </span><span class="spaces">         </span><span class="nottickedoff">[(uri conj,uri r) | r &lt;- rc_orgRules conj, isFrontEndSignal r]</span>
+<span class="lineno">  432 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;invariantRuleNames&quot; &quot;Conjunct&quot; &quot;Rule&quot; </span>
+<span class="lineno">  433 </span><span class="spaces">         </span><span class="nottickedoff">[(uri conj,uri r) | r &lt;- rc_orgRules conj, isFrontEndInvariant  r]</span>
+<span class="lineno">  434 </span><span class="spaces">  </span><span class="nottickedoff">, Pop &quot;violationsSQL&quot; &quot;Conjunct&quot; &quot;MySQLQuery&quot; </span>
+<span class="lineno">  435 </span><span class="spaces">         </span><span class="nottickedoff">[(uri conj , prettySQLQuery fSpec 0 (conjNF (getOpts fSpec) (notCpl (rc_conjunct conj)))</span>
+<span class="lineno">  436 </span><span class="spaces">          </span><span class="nottickedoff">)]</span>
+<span class="lineno">  437 </span><span class="spaces">  </span><span class="nottickedoff">]</span></span> 
+<span class="lineno">  438 </span>
+<span class="lineno">  439 </span>
+<span class="lineno">  440 </span>-----------------------------------------------------
+<span class="lineno">  441 </span>data Pop = Pop { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popName</span></span></span> ::String
+<span class="lineno">  442 </span>               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popSource</span></span></span> :: String
+<span class="lineno">  443 </span>               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popTarget</span></span></span> :: String
+<span class="lineno">  444 </span>               , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">popPairs</span></span></span> :: [(String,String)]
+<span class="lineno">  445 </span>               }
+<span class="lineno">  446 </span>         | Comment { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">comment</span></span></span> :: String  -- Not-so-nice way to get comments in a list of populations. Since it is local to this module, it is not so bad, I guess...
+<span class="lineno">  447 </span>                   }
+<span class="lineno">  448 </span>instance ShowADL Pop where
+<span class="lineno">  449 </span> <span class="decl"><span class="nottickedoff">showADL pop =</span>
+<span class="lineno">  450 </span><span class="spaces">  </span><span class="nottickedoff">case pop of</span>
+<span class="lineno">  451 </span><span class="spaces">      </span><span class="nottickedoff">Pop{} -&gt; &quot;POPULATION &quot;++ popName pop++</span>
+<span class="lineno">  452 </span><span class="spaces">                  </span><span class="nottickedoff">&quot; [&quot;++popSource pop++&quot; * &quot;++popTarget pop++&quot;] CONTAINS&quot;</span>
+<span class="lineno">  453 </span><span class="spaces">              </span><span class="nottickedoff">++</span>
+<span class="lineno">  454 </span><span class="spaces">              </span><span class="nottickedoff">if null (popPairs pop)</span>
+<span class="lineno">  455 </span><span class="spaces">              </span><span class="nottickedoff">then &quot;[]&quot;</span>
+<span class="lineno">  456 </span><span class="spaces">              </span><span class="nottickedoff">else &quot;\n&quot;++indentA++&quot;[ &quot;++intercalate (&quot;\n&quot;++indentA++&quot;; &quot;) showContent++indentA++&quot;]&quot;</span>
+<span class="lineno">  457 </span><span class="spaces">      </span><span class="nottickedoff">Comment{} -&gt; intercalate &quot;\n&quot; (map prepend (lines (comment pop)))</span>
+<span class="lineno">  458 </span><span class="spaces">    </span><span class="nottickedoff">where indentA = &quot;   &quot;</span>
+<span class="lineno">  459 </span><span class="spaces">          </span><span class="nottickedoff">showContent = map showPaire (popPairs pop)</span>
+<span class="lineno">  460 </span><span class="spaces">          </span><span class="nottickedoff">showPaire (s,t) = &quot;( &quot;++show s++&quot; , &quot;++show t++&quot; )&quot;</span>
+<span class="lineno">  461 </span><span class="spaces">          </span><span class="nottickedoff">prepend str = &quot;-- &quot; ++ str</span></span>
+<span class="lineno">  462 </span>
+<span class="lineno">  463 </span>class Unique a =&gt; AdlId a where
+<span class="lineno">  464 </span> uri :: a -&gt; String
+<span class="lineno">  465 </span> <span class="decl"><span class="nottickedoff">uri = camelCase . uniqueShow False</span></span>
+<span class="lineno">  466 </span>-- All 'things' that are relevant in the meta-environment (RAP),
+<span class="lineno">  467 </span>-- must be an instance of AdlId:
+<span class="lineno">  468 </span>instance AdlId A_Concept
+<span class="lineno">  469 </span>instance AdlId A_Gen
+<span class="lineno">  470 </span>instance AdlId Atom
+<span class="lineno">  471 </span>instance AdlId ConceptDef
+<span class="lineno">  472 </span>instance AdlId Declaration
+<span class="lineno">  473 </span>instance AdlId Expression
+<span class="lineno">  474 </span>instance AdlId FSpec
+<span class="lineno">  475 </span>instance AdlId A_Pair
+<span class="lineno">  476 </span>instance AdlId Pattern
+<span class="lineno">  477 </span>instance AdlId PlugInfo
+<span class="lineno">  478 </span>instance AdlId PlugSQL
+<span class="lineno">  479 </span>instance AdlId (PlugSQL,SqlField)
+<span class="lineno">  480 </span>instance AdlId Purpose
+<span class="lineno">  481 </span>instance AdlId Rule
+<span class="lineno">  482 </span>instance AdlId Role
+<span class="lineno">  483 </span>instance AdlId Sign
+<span class="lineno">  484 </span>instance AdlId Conjunct
+<span class="lineno">  485 </span>instance AdlId (PairView Expression)
+<span class="lineno">  486 </span>  where <span class="decl"><span class="nottickedoff">uri x = show (typeOf x)++show (hash x)</span></span>
+<span class="lineno">  487 </span>instance AdlId (PairViewSegment Expression)
+<span class="lineno">  488 </span>  where <span class="decl"><span class="nottickedoff">uri x = show (typeOf x)++show (hash (show (hash x) ++ show (origin x)))</span></span>
+<span class="lineno">  489 </span>instance AdlId Bool where
+<span class="lineno">  490 </span> <span class="decl"><span class="nottickedoff">uri = showUnique</span></span>
+<span class="lineno">  491 </span>instance AdlId a =&gt; AdlId [a] where
+<span class="lineno">  492 </span>--instance AdlId (Declaration,Paire)
 <span class="lineno">  493 </span>
-<span class="lineno">  494 </span>nullContent :: Pop -&gt; Bool
-<span class="lineno">  495 </span><span class="decl"><span class="nottickedoff">nullContent (Pop _ _ _ []) = True</span>
-<span class="lineno">  496 </span><span class="spaces"></span><span class="nottickedoff">nullContent _ = False</span></span>
-<span class="lineno">  497 </span>    
-<span class="lineno">  498 </span>class MetaPopulations a where
-<span class="lineno">  499 </span> metaPops :: FSpec -&gt; a -&gt; [Pop]
-<span class="lineno">  500 </span>class GenericPopulations a where
-<span class="lineno">  501 </span> generics :: FSpec -&gt; a -&gt; [Pop]   
+<span class="lineno">  494 </span>
+<span class="lineno">  495 </span>
+<span class="lineno">  496 </span>-- | remove spaces and make camelCase
+<span class="lineno">  497 </span>camelCase :: String -&gt; String
+<span class="lineno">  498 </span><span class="decl"><span class="nottickedoff">camelCase str = concatMap capitalize (words str)</span>
+<span class="lineno">  499 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">  500 </span><span class="spaces">    </span><span class="nottickedoff">capitalize [] = []</span>
+<span class="lineno">  501 </span><span class="spaces">    </span><span class="nottickedoff">capitalize (s:ss) = toUpper s : ss</span></span>
 <span class="lineno">  502 </span>
-<span class="lineno">  503 </span>
-<span class="lineno">  504 </span>--------- Below here are some functions copied from Generate.hs TODO: Clean up.
-<span class="lineno">  505 </span>-- Because the signal/invariant condition appears both in generateConjuncts and generateInterface, we use
-<span class="lineno">  506 </span>-- two abstractions to guarantee the same implementation.
-<span class="lineno">  507 </span>isFrontEndInvariant :: Rule -&gt; Bool
-<span class="lineno">  508 </span><span class="decl"><span class="nottickedoff">isFrontEndInvariant r = not (isSignal r) &amp;&amp; not (ruleIsInvariantUniOrInj r)</span></span>
-<span class="lineno">  509 </span>
-<span class="lineno">  510 </span>isFrontEndSignal :: Rule -&gt; Bool
-<span class="lineno">  511 </span><span class="decl"><span class="nottickedoff">isFrontEndSignal r = isSignal r</span></span>
+<span class="lineno">  503 </span>nullContent :: Pop -&gt; Bool
+<span class="lineno">  504 </span><span class="decl"><span class="nottickedoff">nullContent (Pop _ _ _ []) = True</span>
+<span class="lineno">  505 </span><span class="spaces"></span><span class="nottickedoff">nullContent _ = False</span></span>
+<span class="lineno">  506 </span>    
+<span class="lineno">  507 </span>class MetaPopulations a where
+<span class="lineno">  508 </span> metaPops :: FSpec -&gt; a -&gt; [Pop]
+<span class="lineno">  509 </span>class GenericPopulations a where
+<span class="lineno">  510 </span> generics :: FSpec -&gt; a -&gt; [Pop]   
+<span class="lineno">  511 </span>
 <span class="lineno">  512 </span>
-<span class="lineno">  513 </span>-- NOTE that results from filterFrontEndInvConjuncts and filterFrontEndSigConjuncts may overlap (conjunct appearing in both invariants and signals)
-<span class="lineno">  514 </span>-- and that because of extra condition in isFrontEndInvariant (not (ruleIsInvariantUniOrInj r)), some parameter conjuncts may not be returned
-<span class="lineno">  515 </span>-- as either inv or sig conjuncts (i.e. conjuncts that appear only in uni or inj rules) 
-<span class="lineno">  516 </span>filterFrontEndInvConjuncts :: [Conjunct] -&gt; [Conjunct]
-<span class="lineno">  517 </span><span class="decl"><span class="nottickedoff">filterFrontEndInvConjuncts conjs = filter (\c -&gt; any isFrontEndInvariant $ rc_orgRules c) conjs</span></span>
+<span class="lineno">  513 </span>--------- Below here are some functions copied from Generate.hs TODO: Clean up.
+<span class="lineno">  514 </span>-- Because the signal/invariant condition appears both in generateConjuncts and generateInterface, we use
+<span class="lineno">  515 </span>-- two abstractions to guarantee the same implementation.
+<span class="lineno">  516 </span>isFrontEndInvariant :: Rule -&gt; Bool
+<span class="lineno">  517 </span><span class="decl"><span class="nottickedoff">isFrontEndInvariant r = not (isSignal r) &amp;&amp; not (ruleIsInvariantUniOrInj r)</span></span>
 <span class="lineno">  518 </span>
-<span class="lineno">  519 </span>filterFrontEndSigConjuncts :: [Conjunct] -&gt; [Conjunct]
-<span class="lineno">  520 </span><span class="decl"><span class="nottickedoff">filterFrontEndSigConjuncts conjs = filter (\c -&gt; any isFrontEndSignal $ rc_orgRules c) conjs</span></span>
+<span class="lineno">  519 </span>isFrontEndSignal :: Rule -&gt; Bool
+<span class="lineno">  520 </span><span class="decl"><span class="nottickedoff">isFrontEndSignal r = isSignal r</span></span>
+<span class="lineno">  521 </span>
+<span class="lineno">  522 </span>-- NOTE that results from filterFrontEndInvConjuncts and filterFrontEndSigConjuncts may overlap (conjunct appearing in both invariants and signals)
+<span class="lineno">  523 </span>-- and that because of extra condition in isFrontEndInvariant (not (ruleIsInvariantUniOrInj r)), some parameter conjuncts may not be returned
+<span class="lineno">  524 </span>-- as either inv or sig conjuncts (i.e. conjuncts that appear only in uni or inj rules) 
+<span class="lineno">  525 </span>filterFrontEndInvConjuncts :: [Conjunct] -&gt; [Conjunct]
+<span class="lineno">  526 </span><span class="decl"><span class="nottickedoff">filterFrontEndInvConjuncts conjs = filter (\c -&gt; any isFrontEndInvariant $ rc_orgRules c) conjs</span></span>
+<span class="lineno">  527 </span>
+<span class="lineno">  528 </span>filterFrontEndSigConjuncts :: [Conjunct] -&gt; [Conjunct]
+<span class="lineno">  529 </span><span class="decl"><span class="nottickedoff">filterFrontEndSigConjuncts conjs = filter (\c -&gt; any isFrontEndSignal $ rc_orgRules c) conjs</span></span>
 
 </pre>
 </body>

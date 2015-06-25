@@ -33,7 +33,7 @@ span.spaces    { background: white }
 <span class="lineno">   17 </span>      )
 <span class="lineno">   18 </span>
 <span class="lineno">   19 </span>emptySystem :: EqualitySystem a
-<span class="lineno">   20 </span><span class="decl"><span class="nottickedoff">emptySystem = ES Map.empty IntMap.empty</span></span>
+<span class="lineno">   20 </span><span class="decl"><span class="istickedoff">emptySystem = ES Map.empty IntMap.empty</span></span>
 <span class="lineno">   21 </span>
 <span class="lineno">   22 </span>isInSystem :: (Ord a) =&gt; Op1EqualitySystem a -&gt; a -&gt; Bool
 <span class="lineno">   23 </span><span class="decl"><span class="nottickedoff">isInSystem (ES1 t _ _) a = Map.member a t</span></span>
@@ -69,9 +69,9 @@ span.spaces    { background: white }
 <span class="lineno">   53 </span><span class="spaces">      </span><span class="nottickedoff">newElems = IntMap.union (IntMap.fromSet (const newKey) newItm) allElems</span></span> -- overwrites some of the allElems items with the new key
 <span class="lineno">   54 </span>
 <span class="lineno">   55 </span>findExact :: (Ord a, SetLike x) =&gt; Op1EqualitySystem a -&gt; FreeLattice a -&gt; x a -- returns the empty set on a failure, returns all sets equivalent to &quot;FreeLattice a&quot; according to the equalitysystem
-<span class="lineno">   56 </span><span class="decl"><span class="nottickedoff">findExact = findWith lookupInRevMap (\x -&gt; fromList [x])</span></span>
+<span class="lineno">   56 </span><span class="decl"><span class="istickedoff">findExact = findWith lookupInRevMap (\x -&gt; fromList [x])</span></span>
 <span class="lineno">   57 </span>findSubsets :: (Ord a, SetLike x) =&gt; Op1EqualitySystem a -&gt; FreeLattice a -&gt; [x a] -- returns a list of largest subsets
-<span class="lineno">   58 </span><span class="decl"><span class="nottickedoff">findSubsets = findWith findSubsetInRevMap (\x -&gt; [fromList [x]])</span></span>
+<span class="lineno">   58 </span><span class="decl"><span class="istickedoff">findSubsets = findWith findSubsetInRevMap (\x -&gt; [fromList [x]])</span></span>
 <span class="lineno">   59 </span>
 <span class="lineno">   60 </span>findWith :: Ord a
 <span class="lineno">   61 </span>  =&gt; ([Int] -&gt; RevMap a -&gt; b) -- Function that finds the normalized form
@@ -79,77 +79,77 @@ span.spaces    { background: white }
 <span class="lineno">   63 </span>  -&gt; Op1EqualitySystem a        -- system in which the FreeLattice elements can be found
 <span class="lineno">   64 </span>  -&gt; FreeLattice a              -- the FreeLattice that needs translation
 <span class="lineno">   65 </span>  -&gt; b
-<span class="lineno">   66 </span><span class="decl"><span class="nottickedoff">findWith f f2 es@(ES1 _ back _) trmUnsimplified</span>
-<span class="lineno">   67 </span><span class="spaces">  </span><span class="nottickedoff">= case trm of</span>
-<span class="lineno">   68 </span><span class="spaces">     </span><span class="nottickedoff">Atom x -&gt; f2 x</span>
-<span class="lineno">   69 </span><span class="spaces">     </span><span class="nottickedoff">_ -&gt; f (IntSet.toList (case trm' of</span>
-<span class="lineno">   70 </span><span class="spaces">                       </span><span class="nottickedoff">Just t -&gt; intersections (map it t)</span>
-<span class="lineno">   71 </span><span class="spaces">                       </span><span class="nottickedoff">Nothing -&gt; IntSet.empty</span>
-<span class="lineno">   72 </span><span class="spaces">                     </span><span class="nottickedoff">)</span>
-<span class="lineno">   73 </span><span class="spaces">            </span><span class="nottickedoff">) back</span>
-<span class="lineno">   74 </span><span class="spaces">  </span><span class="nottickedoff">where it = simplifySet es</span>
-<span class="lineno">   75 </span><span class="spaces">        </span><span class="nottickedoff">intersections [] = IntSet.empty</span>
-<span class="lineno">   76 </span><span class="spaces">        </span><span class="nottickedoff">intersections x = foldr1 IntSet.intersection x</span>
-<span class="lineno">   77 </span><span class="spaces">        </span><span class="nottickedoff">trm' = latticeToTranslatable es trm</span>
-<span class="lineno">   78 </span><span class="spaces">        </span><span class="nottickedoff">trm = simpl trmUnsimplified</span>
-<span class="lineno">   79 </span><span class="spaces">        </span><span class="nottickedoff">simpl (Meet a b)</span>
-<span class="lineno">   80 </span><span class="spaces">          </span><span class="nottickedoff">= case (simpl a, simpl b) of</span>
-<span class="lineno">   81 </span><span class="spaces">             </span><span class="nottickedoff">(Atom a', Atom b') | a'==b' -&gt; Atom a'</span>
-<span class="lineno">   82 </span><span class="spaces">             </span><span class="nottickedoff">(a',b') -&gt; Meet a' b'</span>
-<span class="lineno">   83 </span><span class="spaces">        </span><span class="nottickedoff">simpl (Join a b)</span>
-<span class="lineno">   84 </span><span class="spaces">          </span><span class="nottickedoff">= case (simpl a, simpl b) of</span>
-<span class="lineno">   85 </span><span class="spaces">             </span><span class="nottickedoff">(Atom a', Atom b') | a'==b' -&gt; Atom a'</span>
-<span class="lineno">   86 </span><span class="spaces">             </span><span class="nottickedoff">(a',b') -&gt; Join a' b'</span>
-<span class="lineno">   87 </span><span class="spaces">        </span><span class="nottickedoff">simpl (Atom x) = Atom x</span></span>
+<span class="lineno">   66 </span><span class="decl"><span class="istickedoff">findWith f f2 es@(ES1 _ back _) trmUnsimplified</span>
+<span class="lineno">   67 </span><span class="spaces">  </span><span class="istickedoff">= case trm of</span>
+<span class="lineno">   68 </span><span class="spaces">     </span><span class="istickedoff">Atom x -&gt; f2 x</span>
+<span class="lineno">   69 </span><span class="spaces">     </span><span class="istickedoff">_ -&gt; f (IntSet.toList (case trm' of</span>
+<span class="lineno">   70 </span><span class="spaces">                       </span><span class="istickedoff">Just t -&gt; intersections (map it t)</span>
+<span class="lineno">   71 </span><span class="spaces">                       </span><span class="istickedoff">Nothing -&gt; IntSet.empty</span>
+<span class="lineno">   72 </span><span class="spaces">                     </span><span class="istickedoff">)</span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">) back</span>
+<span class="lineno">   74 </span><span class="spaces">  </span><span class="istickedoff">where it = simplifySet es</span>
+<span class="lineno">   75 </span><span class="spaces">        </span><span class="istickedoff">intersections [] = <span class="nottickedoff">IntSet.empty</span></span>
+<span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff">intersections x = foldr1 IntSet.intersection x</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">trm' = latticeToTranslatable es trm</span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">trm = simpl trmUnsimplified</span>
+<span class="lineno">   79 </span><span class="spaces">        </span><span class="istickedoff">simpl (Meet a b)</span>
+<span class="lineno">   80 </span><span class="spaces">          </span><span class="istickedoff">= case (simpl a, simpl b) of</span>
+<span class="lineno">   81 </span><span class="spaces">             </span><span class="istickedoff">(Atom a', Atom b') | a'==b' -&gt; Atom a'</span>
+<span class="lineno">   82 </span><span class="spaces">             </span><span class="istickedoff">(a',b') -&gt; Meet a' b'</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">simpl (Join a b)</span>
+<span class="lineno">   84 </span><span class="spaces">          </span><span class="istickedoff">= case (simpl a, simpl b) of</span>
+<span class="lineno">   85 </span><span class="spaces">             </span><span class="istickedoff">(Atom a', Atom b') | a'==b' -&gt; Atom a'</span>
+<span class="lineno">   86 </span><span class="spaces">             </span><span class="istickedoff">(a',b') -&gt; Join a' b'</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">simpl (Atom x) = Atom x</span></span>
 <span class="lineno">   88 </span>
 <span class="lineno">   89 </span>simplifySet :: Op1EqualitySystem t -&gt; IntSet.IntSet -&gt; IntSet.IntSet
-<span class="lineno">   90 </span><span class="decl"><span class="nottickedoff">simplifySet (ES1 _ _ imap) x = imapTranslate imap x IntSet.empty</span></span>
+<span class="lineno">   90 </span><span class="decl"><span class="istickedoff">simplifySet (ES1 _ _ imap) x = imapTranslate imap x IntSet.empty</span></span>
 <span class="lineno">   91 </span>
 <span class="lineno">   92 </span>latticeToTranslatable :: Ord a =&gt; Op1EqualitySystem a -&gt; FreeLattice a -&gt; Maybe [IntSet.IntSet]
-<span class="lineno">   93 </span><span class="decl"><span class="nottickedoff">latticeToTranslatable (ES1 m _ _) lt = t lt</span>
-<span class="lineno">   94 </span><span class="spaces"> </span><span class="nottickedoff">where</span>
-<span class="lineno">   95 </span><span class="spaces">   </span><span class="nottickedoff">t (Atom a)   = do{r&lt;-Map.lookup a m;return [r]}</span>
-<span class="lineno">   96 </span><span class="spaces">   </span><span class="nottickedoff">t (Meet a b) = do{a'&lt;-t a;b'&lt;- t b;return [IntSet.union ta tb | ta &lt;- a', tb &lt;- b']}</span>
-<span class="lineno">   97 </span><span class="spaces">   </span><span class="nottickedoff">t (Join a b) = do{a'&lt;-t a;b'&lt;- t b;return (a'++b')}</span></span>
+<span class="lineno">   93 </span><span class="decl"><span class="istickedoff">latticeToTranslatable (ES1 m _ _) lt = t lt</span>
+<span class="lineno">   94 </span><span class="spaces"> </span><span class="istickedoff">where</span>
+<span class="lineno">   95 </span><span class="spaces">   </span><span class="istickedoff">t (Atom a)   = do{r&lt;-Map.lookup a m;return [r]}</span>
+<span class="lineno">   96 </span><span class="spaces">   </span><span class="istickedoff">t (Meet a b) = do{a'&lt;-t a;b'&lt;- t b;return [IntSet.union ta tb | ta &lt;- a', tb &lt;- b']}</span>
+<span class="lineno">   97 </span><span class="spaces">   </span><span class="istickedoff">t (Join a b) = do{a'&lt;-t a;b'&lt;- t b;return (a'++b')}</span></span>
 <span class="lineno">   98 </span>
 <span class="lineno">   99 </span>-- how to lookup something in a RevMap (Precondition: list is sorted!)
 <span class="lineno">  100 </span>lookupInRevMap :: (Ord a, SetLike x) =&gt; [Int] -&gt; RevMap a -&gt; x a
-<span class="lineno">  101 </span><span class="decl"><span class="nottickedoff">lookupInRevMap [] (RevMap st _) = fromSet st</span>
-<span class="lineno">  102 </span><span class="spaces"></span><span class="nottickedoff">lookupInRevMap (a:as) (RevMap _ mp)</span>
-<span class="lineno">  103 </span><span class="spaces"> </span><span class="nottickedoff">= case IntMap.lookup a mp of</span>
-<span class="lineno">  104 </span><span class="spaces">    </span><span class="nottickedoff">Nothing -&gt; slEmpty</span>
-<span class="lineno">  105 </span><span class="spaces">    </span><span class="nottickedoff">Just rm -&gt; lookupInRevMap as rm</span></span>
+<span class="lineno">  101 </span><span class="decl"><span class="istickedoff">lookupInRevMap [] (RevMap st _) = fromSet st</span>
+<span class="lineno">  102 </span><span class="spaces"></span><span class="istickedoff">lookupInRevMap (a:as) (RevMap _ mp)</span>
+<span class="lineno">  103 </span><span class="spaces"> </span><span class="istickedoff">= case IntMap.lookup a mp of</span>
+<span class="lineno">  104 </span><span class="spaces">    </span><span class="istickedoff">Nothing -&gt; slEmpty</span>
+<span class="lineno">  105 </span><span class="spaces">    </span><span class="istickedoff">Just rm -&gt; lookupInRevMap as rm</span></span>
 <span class="lineno">  106 </span>
 <span class="lineno">  107 </span>-- a bit slower: suppose we could not find our element in the RevMap, we find all subsets of it (as a RevMap)
 <span class="lineno">  108 </span>findSubsetAsRevMap :: (Ord a) =&gt; [Int] -&gt; RevMap a -&gt; RevMap a
-<span class="lineno">  109 </span><span class="decl"><span class="nottickedoff">findSubsetAsRevMap [] (RevMap st _) = RevMap st IntMap.empty</span>
-<span class="lineno">  110 </span><span class="spaces"></span><span class="nottickedoff">findSubsetAsRevMap lst (RevMap st mp)</span>
-<span class="lineno">  111 </span><span class="spaces"> </span><span class="nottickedoff">= RevMap st (IntMap.fromList [ (l, rm)</span>
-<span class="lineno">  112 </span><span class="spaces">                              </span><span class="nottickedoff">| (l, rst) &lt;- listAndRest lst</span>
-<span class="lineno">  113 </span><span class="spaces">                              </span><span class="nottickedoff">, (Just mp') &lt;- [IntMap.lookup l mp]</span>
-<span class="lineno">  114 </span><span class="spaces">                              </span><span class="nottickedoff">, let rm@(RevMap st2 mp2) = findSubsetAsRevMap rst mp'</span>
-<span class="lineno">  115 </span><span class="spaces">                              </span><span class="nottickedoff">, not (Set.null st2 &amp;&amp; IntMap.null mp2)</span>
-<span class="lineno">  116 </span><span class="spaces">                              </span><span class="nottickedoff">] )</span></span>
+<span class="lineno">  109 </span><span class="decl"><span class="istickedoff">findSubsetAsRevMap [] (RevMap st _) = RevMap st IntMap.empty</span>
+<span class="lineno">  110 </span><span class="spaces"></span><span class="istickedoff">findSubsetAsRevMap lst (RevMap st mp)</span>
+<span class="lineno">  111 </span><span class="spaces"> </span><span class="istickedoff">= RevMap st (IntMap.fromList [ (l, rm)</span>
+<span class="lineno">  112 </span><span class="spaces">                              </span><span class="istickedoff">| (l, rst) &lt;- listAndRest lst</span>
+<span class="lineno">  113 </span><span class="spaces">                              </span><span class="istickedoff">, (Just mp') &lt;- [IntMap.lookup l mp]</span>
+<span class="lineno">  114 </span><span class="spaces">                              </span><span class="istickedoff">, let rm@(RevMap st2 mp2) = findSubsetAsRevMap rst mp'</span>
+<span class="lineno">  115 </span><span class="spaces">                              </span><span class="istickedoff">, <span class="tickonlytrue">not (Set.null st2 &amp;&amp; IntMap.null mp2)</span></span>
+<span class="lineno">  116 </span><span class="spaces">                              </span><span class="istickedoff">] )</span></span>
 <span class="lineno">  117 </span>
 <span class="lineno">  118 </span>-- fins the largest subsets! (endpoints only)
 <span class="lineno">  119 </span>findSubsetInRevMap :: (Ord a, SetLike x) =&gt; [Int] -&gt; RevMap a -&gt; [x a]
-<span class="lineno">  120 </span><span class="decl"><span class="nottickedoff">findSubsetInRevMap lst rm = largestSubset (findSubsetAsRevMap lst rm)</span></span>
+<span class="lineno">  120 </span><span class="decl"><span class="istickedoff">findSubsetInRevMap lst rm = largestSubset (findSubsetAsRevMap lst rm)</span></span>
 <span class="lineno">  121 </span>
 <span class="lineno">  122 </span>largestSubset :: (Ord a, SetLike x) =&gt; RevMap a -&gt; [x a]
-<span class="lineno">  123 </span><span class="decl"><span class="nottickedoff">largestSubset i</span>
-<span class="lineno">  124 </span><span class="spaces"> </span><span class="nottickedoff">= elimSubsets (endPoints i)</span>
-<span class="lineno">  125 </span><span class="spaces"> </span><span class="nottickedoff">where elimSubsets ((a,v):as) = v : elimSubsets (filter (\x -&gt; not (IntSet.isSubsetOf (fst x) a)) as)</span>
-<span class="lineno">  126 </span><span class="spaces">       </span><span class="nottickedoff">elimSubsets [] = []</span></span>
+<span class="lineno">  123 </span><span class="decl"><span class="istickedoff">largestSubset i</span>
+<span class="lineno">  124 </span><span class="spaces"> </span><span class="istickedoff">= elimSubsets (endPoints i)</span>
+<span class="lineno">  125 </span><span class="spaces"> </span><span class="istickedoff">where elimSubsets ((a,v):as) = v : elimSubsets (filter (\x -&gt; not (IntSet.isSubsetOf (fst x) a)) as)</span>
+<span class="lineno">  126 </span><span class="spaces">       </span><span class="istickedoff">elimSubsets [] = []</span></span>
 <span class="lineno">  127 </span>
 <span class="lineno">  128 </span>endPoints :: (Ord a, SetLike x) =&gt; RevMap a -&gt; [(IntSet.IntSet,x a)]
-<span class="lineno">  129 </span><span class="decl"><span class="nottickedoff">endPoints (RevMap st im)</span>
-<span class="lineno">  130 </span><span class="spaces"> </span><span class="nottickedoff">= if (IntMap.null im) then (if slNull st then [] else [(IntSet.empty,fromSet st)]) else concatMap endPoints' (IntMap.toList im)</span>
-<span class="lineno">  131 </span><span class="spaces"> </span><span class="nottickedoff">where endPoints' (i,rm) = map addi (endPoints rm)</span>
-<span class="lineno">  132 </span><span class="spaces">        </span><span class="nottickedoff">where addi (lst,elm) = (IntSet.insert i lst,elm)</span></span>
+<span class="lineno">  129 </span><span class="decl"><span class="istickedoff">endPoints (RevMap st im)</span>
+<span class="lineno">  130 </span><span class="spaces"> </span><span class="istickedoff">= if (IntMap.null im) then (if slNull st then [] else [(IntSet.empty,fromSet st)]) else concatMap endPoints' (IntMap.toList im)</span>
+<span class="lineno">  131 </span><span class="spaces"> </span><span class="istickedoff">where endPoints' (i,rm) = map addi (endPoints rm)</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">where addi (lst,elm) = (IntSet.insert i lst,elm)</span></span>
 <span class="lineno">  133 </span>
 <span class="lineno">  134 </span>listAndRest :: [t] -&gt; [(t, [t])]
-<span class="lineno">  135 </span><span class="decl"><span class="nottickedoff">listAndRest [] = []</span>
-<span class="lineno">  136 </span><span class="spaces"></span><span class="nottickedoff">listAndRest (a:rst) = (a,rst):listAndRest rst</span></span>
+<span class="lineno">  135 </span><span class="decl"><span class="istickedoff">listAndRest [] = []</span>
+<span class="lineno">  136 </span><span class="spaces"></span><span class="istickedoff">listAndRest (a:rst) = (a,rst):listAndRest rst</span></span>
 <span class="lineno">  137 </span>
 <span class="lineno">  138 </span>data RevMap a
 <span class="lineno">  139 </span> = RevMap (Set.Set a) -- all elements equivalent to this point in the map
@@ -167,70 +167,70 @@ span.spaces    { background: white }
 <span class="lineno">  151 </span>
 <span class="lineno">  152 </span>-- TODO: this function can be optimised a lot
 <span class="lineno">  153 </span>reverseMap :: (Ord a) =&gt; [(a,[Int])] -&gt; RevMap a
-<span class="lineno">  154 </span><span class="decl"><span class="nottickedoff">reverseMap lst</span>
-<span class="lineno">  155 </span><span class="spaces"> </span><span class="nottickedoff">= RevMap (Set.fromList (map fst empties)) (buildMap rest)</span>
-<span class="lineno">  156 </span><span class="spaces"> </span><span class="nottickedoff">where</span>
-<span class="lineno">  157 </span><span class="spaces">   </span><span class="nottickedoff">(empties,rest) = partition (null . snd) lst</span>
-<span class="lineno">  158 </span><span class="spaces">   </span><span class="nottickedoff">buildMap [] = IntMap.empty</span>
-<span class="lineno">  159 </span><span class="spaces">   </span><span class="nottickedoff">buildMap o@((_,~(f:_)):_)</span>
-<span class="lineno">  160 </span><span class="spaces">     </span><span class="nottickedoff">= IntMap.insert f (reverseMap (map tail2 h)) (buildMap tl)</span>
-<span class="lineno">  161 </span><span class="spaces">     </span><span class="nottickedoff">where tail2 (a,b) = (a, tail b)</span>
-<span class="lineno">  162 </span><span class="spaces">           </span><span class="nottickedoff">(h,tl) = partition ((== f) . head . snd) o</span></span>
+<span class="lineno">  154 </span><span class="decl"><span class="istickedoff">reverseMap lst</span>
+<span class="lineno">  155 </span><span class="spaces"> </span><span class="istickedoff">= RevMap (Set.fromList (map fst empties)) (buildMap rest)</span>
+<span class="lineno">  156 </span><span class="spaces"> </span><span class="istickedoff">where</span>
+<span class="lineno">  157 </span><span class="spaces">   </span><span class="istickedoff">(empties,rest) = partition (null . snd) lst</span>
+<span class="lineno">  158 </span><span class="spaces">   </span><span class="istickedoff">buildMap [] = IntMap.empty</span>
+<span class="lineno">  159 </span><span class="spaces">   </span><span class="istickedoff">buildMap o@((_,~(f:_)):_)</span>
+<span class="lineno">  160 </span><span class="spaces">     </span><span class="istickedoff">= IntMap.insert f (reverseMap (map tail2 h)) (buildMap tl)</span>
+<span class="lineno">  161 </span><span class="spaces">     </span><span class="istickedoff">where tail2 (a,b) = (a, tail b)</span>
+<span class="lineno">  162 </span><span class="spaces">           </span><span class="istickedoff">(h,tl) = partition ((== f) . head . snd) o</span></span>
 <span class="lineno">  163 </span>
 <span class="lineno">  164 </span>optimize1 :: Ord a =&gt; EqualitySystem a -&gt; Op1EqualitySystem a
-<span class="lineno">  165 </span><span class="decl"><span class="nottickedoff">optimize1 (ES oldmap oldimap)</span>
-<span class="lineno">  166 </span><span class="spaces"> </span><span class="nottickedoff">= ES1 newmap</span>
-<span class="lineno">  167 </span><span class="spaces">       </span><span class="nottickedoff">(reverseMap (Map.toList (Map.map IntSet.toList newmap)))</span>
-<span class="lineno">  168 </span><span class="spaces">       </span><span class="nottickedoff">(IntMap.mapMaybe maybeMapper     oldimap)</span>
-<span class="lineno">  169 </span><span class="spaces"> </span><span class="nottickedoff">where notEmpty [] = Nothing</span>
-<span class="lineno">  170 </span><span class="spaces">       </span><span class="nottickedoff">notEmpty a = Just a</span>
-<span class="lineno">  171 </span><span class="spaces">       </span><span class="nottickedoff">maybeMapper :: [(IntSet.IntSet,IntSet.IntSet)] -&gt; Maybe [(IntSet.IntSet,IntSet.IntSet)]</span>
-<span class="lineno">  172 </span><span class="spaces">       </span><span class="nottickedoff">maybeMapper x = notEmpty [ (s1,imapTranslate oldimap s2 (IntSet.empty))</span>
-<span class="lineno">  173 </span><span class="spaces">                                </span><span class="nottickedoff">| (s1,s2) &lt;- x</span>
-<span class="lineno">  174 </span><span class="spaces">                                </span><span class="nottickedoff">, not (IntSet.null s1)</span>
-<span class="lineno">  175 </span><span class="spaces">                                </span><span class="nottickedoff">, not (IntSet.null s2)</span>
-<span class="lineno">  176 </span><span class="spaces">                                </span><span class="nottickedoff">]</span>
-<span class="lineno">  177 </span><span class="spaces">       </span><span class="nottickedoff">newmap = Map.map (\x -&gt; imapTranslate oldimap (IntSet.singleton x) (IntSet.empty)) oldmap</span></span>
+<span class="lineno">  165 </span><span class="decl"><span class="istickedoff">optimize1 (ES oldmap oldimap)</span>
+<span class="lineno">  166 </span><span class="spaces"> </span><span class="istickedoff">= ES1 newmap</span>
+<span class="lineno">  167 </span><span class="spaces">       </span><span class="istickedoff">(reverseMap (Map.toList (Map.map IntSet.toList newmap)))</span>
+<span class="lineno">  168 </span><span class="spaces">       </span><span class="istickedoff">(IntMap.mapMaybe maybeMapper     oldimap)</span>
+<span class="lineno">  169 </span><span class="spaces"> </span><span class="istickedoff">where notEmpty [] = Nothing</span>
+<span class="lineno">  170 </span><span class="spaces">       </span><span class="istickedoff">notEmpty a = Just a</span>
+<span class="lineno">  171 </span><span class="spaces">       </span><span class="istickedoff">maybeMapper :: [(IntSet.IntSet,IntSet.IntSet)] -&gt; Maybe [(IntSet.IntSet,IntSet.IntSet)]</span>
+<span class="lineno">  172 </span><span class="spaces">       </span><span class="istickedoff">maybeMapper x = notEmpty [ (s1,imapTranslate oldimap s2 (IntSet.empty))</span>
+<span class="lineno">  173 </span><span class="spaces">                                </span><span class="istickedoff">| (s1,s2) &lt;- x</span>
+<span class="lineno">  174 </span><span class="spaces">                                </span><span class="istickedoff">, not (IntSet.null s1)</span>
+<span class="lineno">  175 </span><span class="spaces">                                </span><span class="istickedoff">, not (IntSet.null s2)</span>
+<span class="lineno">  176 </span><span class="spaces">                                </span><span class="istickedoff">]</span>
+<span class="lineno">  177 </span><span class="spaces">       </span><span class="istickedoff">newmap = Map.map (\x -&gt; imapTranslate oldimap (IntSet.singleton x) (IntSet.empty)) oldmap</span></span>
 <span class="lineno">  178 </span>
 <span class="lineno">  179 </span>addEquality :: (Ord a, SetLike x) =&gt; (x a, x a) -&gt; EqualitySystem a -&gt; EqualitySystem a
-<span class="lineno">  180 </span><span class="decl"><span class="nottickedoff">addEquality (set1, set2) eqSys0</span>
-<span class="lineno">  181 </span><span class="spaces"> </span><span class="nottickedoff">= addEquality' eqSys2 ns1 ns2</span>
-<span class="lineno">  182 </span><span class="spaces"> </span><span class="nottickedoff">where</span>
-<span class="lineno">  183 </span><span class="spaces">   </span><span class="nottickedoff">(eqSys1, ns1) = translateWith eqSys0 set1</span>
-<span class="lineno">  184 </span><span class="spaces">   </span><span class="nottickedoff">(eqSys2, ns2) = translateWith eqSys1 set2</span></span>
+<span class="lineno">  180 </span><span class="decl"><span class="istickedoff">addEquality (set1, set2) eqSys0</span>
+<span class="lineno">  181 </span><span class="spaces"> </span><span class="istickedoff">= addEquality' eqSys2 ns1 ns2</span>
+<span class="lineno">  182 </span><span class="spaces"> </span><span class="istickedoff">where</span>
+<span class="lineno">  183 </span><span class="spaces">   </span><span class="istickedoff">(eqSys1, ns1) = translateWith eqSys0 set1</span>
+<span class="lineno">  184 </span><span class="spaces">   </span><span class="istickedoff">(eqSys2, ns2) = translateWith eqSys1 set2</span></span>
 <span class="lineno">  185 </span>
 <span class="lineno">  186 </span>addEquality' :: Ord a =&gt; EqualitySystem a -&gt; IntSet.IntSet -&gt; IntSet.IntSet -&gt; EqualitySystem a
-<span class="lineno">  187 </span><span class="decl"><span class="nottickedoff">addEquality' ~(ES nms imap) set1 set2</span>
-<span class="lineno">  188 </span><span class="spaces"> </span><span class="nottickedoff">= ES nms (addRule (addRule imap set1 set1 uni) set2 (IntSet.difference set2 set1) uni)</span>
-<span class="lineno">  189 </span><span class="spaces"> </span><span class="nottickedoff">where</span>
-<span class="lineno">  190 </span><span class="spaces">   </span><span class="nottickedoff">uni = IntSet.union set1 set2</span>
-<span class="lineno">  191 </span><span class="spaces">   </span><span class="nottickedoff">addRule :: IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)] -&gt; IntSet.IntSet -&gt; IntSet.IntSet -&gt; IntSet.IntSet -&gt; IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)]</span>
-<span class="lineno">  192 </span><span class="spaces">   </span><span class="nottickedoff">addRule oldimap origSet triggers newSet</span>
-<span class="lineno">  193 </span><span class="spaces">    </span><span class="nottickedoff">= foldl updateMapForTrigger oldimap (IntSet.toList triggers)</span>
-<span class="lineno">  194 </span><span class="spaces">    </span><span class="nottickedoff">where dif = IntSet.difference newSet origSet</span>
-<span class="lineno">  195 </span><span class="spaces">          </span><span class="nottickedoff">updateMapForTrigger :: IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)] -&gt; Int -&gt; IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)]</span>
-<span class="lineno">  196 </span><span class="spaces">          </span><span class="nottickedoff">updateMapForTrigger mp trigger</span>
-<span class="lineno">  197 </span><span class="spaces">           </span><span class="nottickedoff">= IntMap.insertWith (++) trigger [(IntSet.delete trigger origSet, dif)] mp</span></span>
+<span class="lineno">  187 </span><span class="decl"><span class="istickedoff">addEquality' ~(ES nms imap) set1 set2</span>
+<span class="lineno">  188 </span><span class="spaces"> </span><span class="istickedoff">= ES nms (addRule (addRule imap set1 set1 uni) set2 (IntSet.difference set2 set1) uni)</span>
+<span class="lineno">  189 </span><span class="spaces"> </span><span class="istickedoff">where</span>
+<span class="lineno">  190 </span><span class="spaces">   </span><span class="istickedoff">uni = IntSet.union set1 set2</span>
+<span class="lineno">  191 </span><span class="spaces">   </span><span class="istickedoff">addRule :: IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)] -&gt; IntSet.IntSet -&gt; IntSet.IntSet -&gt; IntSet.IntSet -&gt; IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)]</span>
+<span class="lineno">  192 </span><span class="spaces">   </span><span class="istickedoff">addRule oldimap origSet triggers newSet</span>
+<span class="lineno">  193 </span><span class="spaces">    </span><span class="istickedoff">= foldl updateMapForTrigger oldimap (IntSet.toList triggers)</span>
+<span class="lineno">  194 </span><span class="spaces">    </span><span class="istickedoff">where dif = IntSet.difference newSet origSet</span>
+<span class="lineno">  195 </span><span class="spaces">          </span><span class="istickedoff">updateMapForTrigger :: IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)] -&gt; Int -&gt; IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)]</span>
+<span class="lineno">  196 </span><span class="spaces">          </span><span class="istickedoff">updateMapForTrigger mp trigger</span>
+<span class="lineno">  197 </span><span class="spaces">           </span><span class="istickedoff">= IntMap.insertWith (++) trigger [(IntSet.delete trigger origSet, dif)] mp</span></span>
 <span class="lineno">  198 </span>
 <span class="lineno">  199 </span>translateWith :: (Ord a, SetLike x) =&gt; EqualitySystem a -&gt; x a -&gt; (EqualitySystem a, IntSet.IntSet)
-<span class="lineno">  200 </span><span class="decl"><span class="nottickedoff">translateWith ~(ES nomenclature imap) inSet</span>
-<span class="lineno">  201 </span><span class="spaces"> </span><span class="nottickedoff">= ( ES newNomenclature imap</span>
-<span class="lineno">  202 </span><span class="spaces">   </span><span class="nottickedoff">, IntSet.fromList$ map (newNomenclature Map.!) (getList inSet)</span>
-<span class="lineno">  203 </span><span class="spaces">   </span><span class="nottickedoff">)</span>
-<span class="lineno">  204 </span><span class="spaces"> </span><span class="nottickedoff">where</span>
-<span class="lineno">  205 </span><span class="spaces">  </span><span class="nottickedoff">newNomenclature</span>
-<span class="lineno">  206 </span><span class="spaces">   </span><span class="nottickedoff">= foldr (\x y -&gt; if Map.member x y then y else Map.insert x (Map.size y) y) nomenclature (getList inSet)</span></span>
+<span class="lineno">  200 </span><span class="decl"><span class="istickedoff">translateWith ~(ES nomenclature imap) inSet</span>
+<span class="lineno">  201 </span><span class="spaces"> </span><span class="istickedoff">= ( ES newNomenclature imap</span>
+<span class="lineno">  202 </span><span class="spaces">   </span><span class="istickedoff">, IntSet.fromList$ map (newNomenclature Map.!) (getList inSet)</span>
+<span class="lineno">  203 </span><span class="spaces">   </span><span class="istickedoff">)</span>
+<span class="lineno">  204 </span><span class="spaces"> </span><span class="istickedoff">where</span>
+<span class="lineno">  205 </span><span class="spaces">  </span><span class="istickedoff">newNomenclature</span>
+<span class="lineno">  206 </span><span class="spaces">   </span><span class="istickedoff">= foldr (\x y -&gt; if Map.member x y then y else Map.insert x (Map.size y) y) nomenclature (getList inSet)</span></span>
 <span class="lineno">  207 </span>
 <span class="lineno">  208 </span>imapTranslate :: IntMap.IntMap [(IntSet.IntSet, IntSet.IntSet)] -&gt; IntSet.IntSet -&gt; IntSet.IntSet -&gt; IntSet.IntSet
-<span class="lineno">  209 </span><span class="decl"><span class="nottickedoff">imapTranslate imap tds doneSet</span>
-<span class="lineno">  210 </span><span class="spaces"> </span><span class="nottickedoff">= case IntSet.minView tds of</span>
-<span class="lineno">  211 </span><span class="spaces">    </span><span class="nottickedoff">Nothing -&gt; doneSet</span>
-<span class="lineno">  212 </span><span class="spaces">    </span><span class="nottickedoff">Just (todo,set) -&gt; imapTranslate imap (newSet todo set) (IntSet.insert todo doneSet)</span>
-<span class="lineno">  213 </span><span class="spaces"> </span><span class="nottickedoff">where</span>
-<span class="lineno">  214 </span><span class="spaces">  </span><span class="nottickedoff">newSet todo set</span>
-<span class="lineno">  215 </span><span class="spaces">   </span><span class="nottickedoff">= case IntMap.lookup todo imap of</span>
-<span class="lineno">  216 </span><span class="spaces">       </span><span class="nottickedoff">Nothing -&gt; set</span>
-<span class="lineno">  217 </span><span class="spaces">       </span><span class="nottickedoff">Just lst -&gt; IntSet.unions (set:[IntSet.difference tl doneSet | (fl,tl) &lt;- lst, IntSet.isSubsetOf fl doneSet])</span></span>
+<span class="lineno">  209 </span><span class="decl"><span class="istickedoff">imapTranslate imap tds doneSet</span>
+<span class="lineno">  210 </span><span class="spaces"> </span><span class="istickedoff">= case IntSet.minView tds of</span>
+<span class="lineno">  211 </span><span class="spaces">    </span><span class="istickedoff">Nothing -&gt; doneSet</span>
+<span class="lineno">  212 </span><span class="spaces">    </span><span class="istickedoff">Just (todo,set) -&gt; imapTranslate imap (newSet todo set) (IntSet.insert todo doneSet)</span>
+<span class="lineno">  213 </span><span class="spaces"> </span><span class="istickedoff">where</span>
+<span class="lineno">  214 </span><span class="spaces">  </span><span class="istickedoff">newSet todo set</span>
+<span class="lineno">  215 </span><span class="spaces">   </span><span class="istickedoff">= case IntMap.lookup todo imap of</span>
+<span class="lineno">  216 </span><span class="spaces">       </span><span class="istickedoff">Nothing -&gt; set</span>
+<span class="lineno">  217 </span><span class="spaces">       </span><span class="istickedoff">Just lst -&gt; IntSet.unions (set:[IntSet.difference tl doneSet | (fl,tl) &lt;- lst, IntSet.isSubsetOf fl doneSet])</span></span>
 <span class="lineno">  218 </span>
 <span class="lineno">  219 </span>data FreeLattice a
 <span class="lineno">  220 </span> = Join (FreeLattice a) (FreeLattice a)
@@ -238,8 +238,8 @@ span.spaces    { background: white }
 <span class="lineno">  222 </span> | Atom a
 <span class="lineno">  223 </span>
 <span class="lineno">  224 </span>instance SetLike [] where
-<span class="lineno">  225 </span>  <span class="decl"><span class="nottickedoff">fromList = id</span></span>
-<span class="lineno">  226 </span>  <span class="decl"><span class="nottickedoff">fromSet = Set.toList</span></span>
+<span class="lineno">  225 </span>  <span class="decl"><span class="istickedoff">fromList = id</span></span>
+<span class="lineno">  226 </span>  <span class="decl"><span class="istickedoff">fromSet = Set.toList</span></span>
 <span class="lineno">  227 </span>  <span class="decl"><span class="nottickedoff">toSet = Set.fromList</span></span>
 <span class="lineno">  228 </span>  <span class="decl"><span class="nottickedoff">getList = id</span></span>
 <span class="lineno">  229 </span>  <span class="decl"><span class="nottickedoff">slUnion a b = mrgUnion a b</span></span>
@@ -254,12 +254,12 @@ span.spaces    { background: white }
 <span class="lineno">  238 </span>  <span class="decl"><span class="nottickedoff">slEmpty = Set.empty</span></span>
 <span class="lineno">  239 </span>  <span class="decl"><span class="nottickedoff">slUnions = Set.unions</span></span>
 <span class="lineno">  240 </span>  <span class="decl"><span class="nottickedoff">slMap = Set.map</span></span>
-<span class="lineno">  241 </span>  <span class="decl"><span class="nottickedoff">getList = Set.toList</span></span>
-<span class="lineno">  242 </span>  <span class="decl"><span class="nottickedoff">fromList = Set.fromList</span></span>
-<span class="lineno">  243 </span>  <span class="decl"><span class="nottickedoff">fromSet = id</span></span>
+<span class="lineno">  241 </span>  <span class="decl"><span class="istickedoff">getList = Set.toList</span></span>
+<span class="lineno">  242 </span>  <span class="decl"><span class="istickedoff">fromList = Set.fromList</span></span>
+<span class="lineno">  243 </span>  <span class="decl"><span class="istickedoff">fromSet = id</span></span>
 <span class="lineno">  244 </span>  <span class="decl"><span class="nottickedoff">isElemOf = Set.member</span></span>
 <span class="lineno">  245 </span>  <span class="decl"><span class="nottickedoff">slFold f = Set.fold (flip f)</span></span>
-<span class="lineno">  246 </span>  <span class="decl"><span class="nottickedoff">slNull = Set.null</span></span>
+<span class="lineno">  246 </span>  <span class="decl"><span class="istickedoff">slNull = Set.null</span></span>
 <span class="lineno">  247 </span>  <span class="decl"><span class="nottickedoff">slSize = Set.size</span></span>
 <span class="lineno">  248 </span>  <span class="decl"><span class="nottickedoff">slInsert = Set.insert</span></span>
 <span class="lineno">  249 </span>  <span class="decl"><span class="nottickedoff">toSet = id</span></span>
@@ -273,7 +273,7 @@ span.spaces    { background: white }
 <span class="lineno">  257 </span>  slMap :: (Ord a,Ord b) =&gt; (a -&gt; b) -&gt; x a -&gt; x b
 <span class="lineno">  258 </span>  <span class="decl"><span class="nottickedoff">slMap f = fromList . nub' . sort . (map f) . getList</span></span>
 <span class="lineno">  259 </span>  slEmpty :: Ord a =&gt; x a
-<span class="lineno">  260 </span>  <span class="decl"><span class="nottickedoff">slEmpty = fromList []</span></span>
+<span class="lineno">  260 </span>  <span class="decl"><span class="istickedoff">slEmpty = fromList []</span></span>
 <span class="lineno">  261 </span>  slUnions :: Ord a =&gt; [x a] -&gt; x a
 <span class="lineno">  262 </span>  <span class="decl"><span class="nottickedoff">slUnions = foldr slUnion slEmpty</span></span>
 <span class="lineno">  263 </span>  isElemOf :: Ord a =&gt; a -&gt; x a -&gt; Bool
