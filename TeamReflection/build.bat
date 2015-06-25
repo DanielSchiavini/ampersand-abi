@@ -4,18 +4,18 @@
 call:cleanup
 
 :: Run pdflatex -&gt; bibtex -&gt; pdflatex -&gt; pdflatex  
-echo Running pdflatex for LessonsLearned...
-pdflatex LessonsLearned>nul
+echo Running pdflatex for TeamReflection...
+pdflatex TeamReflection>nul
 echo Running bibtex...
 bibtex  ac
 bibtex  nac
 bibtex  pr
-pdflatex LessonsLearned>nul
-pdflatex LessonsLearned>nul
+pdflatex TeamReflection>nul
+pdflatex TeamReflection>nul
 echo Glossary...
-makeglossaries LessonsLearned
-pdflatex LessonsLearned>nul
-find "Warning" Thesis.log
+makeglossaries TeamReflection
+pdflatex TeamReflection>nul
+find "Warning" TeamReflection.log
 where bibtex>nul         || echo Error: Could not find bibtex.exe in the PATH
 where makeglossaries>nul || echo Error: Could not find makeglossaries.exe in the PATH
 pause
