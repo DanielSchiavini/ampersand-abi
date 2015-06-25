@@ -3,13 +3,13 @@
 \subsection{Test suite}
   Together with the new parser, a test suite has been developed.
   This test suite has been used to verify the performance and correctness of the new parser.
-  The source code can be found in the folder \code{src/Database/Design/Ampersand/Test} within the Ampersand repository.
+  The source code can be found in the directory \code{src/Database/Design/Ampersand/Test} within the Ampersand repository.
 
   The test suite runs in three steps (see \autoref{fig:TestModules}).
   The first step is to check if a list of input files can be parsed successfully. 
   If no issues are found during the parsing, the same list is used by the module \code{RunAmpersand} in which all input scripts are processed completely by Ampersand.
   As a final step, a series of random generated parse tree structures is generated, translated in ADL files and tested.
-  Each of the modules are described in the following subsection.
+  Each of the modules is described in the following subsection.
   %
   \begin{figure}[ht]%
     \includegraphics[width=\columnwidth]{Figures/TestModules}
@@ -17,7 +17,6 @@
     \label{fig:TestModules}
   \end{figure}%
 
-  %todo: herwerking op basis van de opmerkingen van Bastiaan
   \subsubsection{Modules}
   \label{tests:test-modules}
   In this section a short description of each module is given:%
@@ -36,13 +35,13 @@
       \end{itemize}
     
     \item[RunAmpersand] receives a list of files, and checks that every file can be executed successfully by Ampersand.
-      This tests thus not only the parser, but also the interface between the parser and the type checker, as the rest of the Ampersand chain.
+      This tests thus not only the parser, but also the interface between the parser and the type checker, as well as the rest of the Ampersand chain.
   \end{description}
 	  
   The following modules are supporting one ore more of the three main modules:
   \begin{description}	  
     \item[TestScripts] retrieves a list of scripts that can be used for the different tests.
-      It searches for tests within the folder \code{ArchitectureAndDesign}, and contains a list of scripts from the \code{ampersand-models} repository, that can be changed at a later moment if wished.
+      It searches for tests within the directory \code{ArchitectureAndDesign}, and contains a list of scripts from the \code{ampersand-models} repository, that can be changed at a later moment if wished.
       Note that all the ADL-scripts listed in this section must be correct for the parser and the type checker.
       During development, the list was limited to the scripts that could be successfully executed by the original Ampersand version.   
 	  
@@ -62,12 +61,12 @@
   The most innovative part of the test suite is the use of random structures to test the parser.
   In this section we describe how this generation is implemented.
   
-  The main role in the generation of random structures is played by the support library QuickCheck, which has been added to the Ampersand project.
+  The main role in the generation of random structures is played by the support library QuickCheck \citeac{quick-check}, which has been added to the Ampersand project.
   QuickCheck is able to generate any data structure randomly.
   However, since the parse tree is a custom structure that must obey specific rules, QuickCheck requires the specification of these rules by instances of the \code{Arbitrary} class.
   
   Every data structure in the parse tree has received an \code{Arbitrary} instance used for test purposes.
-  The instances can be found in the module \code{Database.Design.Ampersand.Test.Parser\-.ArbitraryTree}, as described in subsection~\ref{tests:test-modules}.
+  The instances can be found in the module \code{ArbitraryTree}, as described in subsection~\ref{tests:test-modules}.
   
   After generating the random parse trees, the test suite needs to convert them to ADL-scripts.
   The conversion of parse tree to source code is also known as pretty printing.
@@ -77,7 +76,7 @@
   
   Now that the ADL source is available, the parser is executed.
   The result of the parser is checked to be equal to the generated tree by the property \code{prop\_pretty}.
-  The property is currently tested for 64 generated parse trees in the test suite.
+  The property is currently configured to be tested for 64 random parse trees in each run.
   If the test fails for any generated structure, the test suite fails with an appropriate error.
   
   \subsubsection{Running the tests}

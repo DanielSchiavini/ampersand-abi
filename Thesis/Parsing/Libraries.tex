@@ -3,30 +3,30 @@
 \subsection{Haskell parsing libraries}
 \label{parsing:libraries}
 In the previous section, the choice to use a combinator library has been taken.
-In this section, two libraries will be compared: the Utrecht University parser combinator library (uu-parsinglib) and Parsec.
+In this section, two libraries will be compared: the Utrecht University parser combinator library (UU-parsinglib) and Parsec.
 Other libraries (e.g. Attoparsec, Polyparse) are out of the scope of this research.
 
-\subsubsection{Utrecht University Parsing Library}
-\dict{uu-parsinglib}{New version of the uulib}%
-\dict{uulib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
+\subsubsection{Utrecht University parsing library}
+\dict{UU-parsinglib}{New version of the UUlib}%
+\dict{UUlib}{Haskell parsing library from the Utrecht University. \url{http://foswiki.cs.uu.nl/foswiki/HUT/ParserCombinators}}%
 \dict{GADT}{Generalized Algebraic Datatypes for Haskell}%
-The uu-parsinglib is a combinator library created by Doaitse Swierstra in the Utrecht University.
+The UU-parsinglib is a combinator library created by Doaitse Swierstra in the Utrecht University.
 This library is used in many mature projects and has more than four thousand downloads in the Hackage package manager.
 Two versions of the library are available:
 \begin{itemize}
-  \item The uulib library is older and more limited, dating back from 2005.
+  \item The UUlib library is older and more limited, dating back from 2005.
     It is used in most of the projects distributed by the Utrecht University, and in the current Ampersand parser.
-  \item The new version, named uu-parsinglib, dates from 2008, has several improvements and much simpler internals because of GATD.
-    This version is considered in the rest of the document because of its performance \citenac{benchmark} and the author's recommendation \citenac{uulib-parsinglib}.
+  \item The new version, named UU-parsinglib, dates from 2008, has several improvements and much simpler internals because of GATD.
+    This version is considered in the rest of the document because of its performance \citenac{benchmark} and the author's recommendation \citenac{UUlib-parsinglib}.
 \end{itemize}
 %
 The documentation is mainly in Haddock format and in a paper from 2009 \citeac{uu-doc}.
 The implementation is open source.
-The new version of the uu-parsinglib provides combinators that include error correction and a monadic interface.
+The new version of the UU-parsinglib provides combinators that include error correction and a monadic interface.
 Errors are recognized and corrected automatically if the programmer wants so, but the error reporting is customizable.
 It also supports grammars that are not context-free and even ambiguous grammars (provided the user accepts exponential run-time).
 
-Finally, the uu-parsinglib runs online, i.e. it returns parts of the parsing three as soon as they are ready.
+Finally, the UU-parsinglib runs online, i.e. it returns parts of the parsing three as soon as they are ready.
 This gives programmers the ability to do lazy parsing.
 
 \subsubsection{Parsec}
@@ -36,7 +36,7 @@ It seems to be the most popular combinator library in the Haskell community, wit
 
 Parsec is designed to be simple, safe and well documented industrial parser library.
 Besides, there has also been some work done on the performance and error messages.
-The documentation of Parsec and its documentation tends to be better than that of the uu-parsinglib because of a larger user base.
+The documentation of Parsec and its documentation tends to be better than that of the UU-parsinglib because of a larger user base.
 
 % This section is very empty
 % - https://www.haskell.org/haskellwiki/Parsec
@@ -53,8 +53,8 @@ This means that it is then possible to analyze and optimize the parser before ex
 Swierstra goes so far to say that this works as a run-time parser generator \citeac{error-correcting}.
 On the other hand, the lack of context means that only context-free languages can be implemented this way \citeac{parsec}.
 
-Both the uu-parsinglib and Parsec have monadic and applicative interfaces.
-In the applicative interface, the uu-parsinglib also adds error correction:
+Both the UU-parsinglib and Parsec have monadic and applicative interfaces.
+In the applicative interface, the UU-parsinglib also adds error correction:
 After detecting an error, the library will correct it by adding or deleting tokens.
 It then generates an appropriate error message and continues with the rest of the program.
 By using this interface, the parsing will thus always succeed.
@@ -62,19 +62,19 @@ By using this interface, the parsing will thus always succeed.
 \subsubsection{Conclusion}
 The following differences have been found between the two considered libraries:
 \begin{itemize}
-	\item \textbf{Documentation:} Parsec's documentation seems to be more extended and well maintained than that of the uu-parsinglib.
+	\item \textbf{Documentation:} Parsec's documentation seems to be more extended and well maintained than that of the UU-parsinglib.
 		Several Parsec tutorials can be found on the internet (e.g. \citenac{using-parsec}).
-		Besides, the uu-parsinglib documentation is mostly generated from code annotations.
+		Besides, the UU-parsinglib documentation is mostly generated from code annotations.
 	\item \textbf{Support:} Since Parsec is much more used, online support can be more easily found.
-		For example, the website Stack Overflow currently has 14 questions about the uu-parsinglib and 301 about Parsec.
+		For example, the website Stack Overflow currently has 14 questions about the UU-parsinglib and 301 about Parsec.
 	\item \textbf{Static checking:} None of the libraries is able to do static checking.
-		However, the uu-parsinglib has more possibilities of grammar analysis in its applicative interface.
-	\item \textbf{Precedences:} The Ampersand parser is currently built with the uu-parsinglib with great satisfaction.
+		However, the UU-parsinglib has more possibilities of grammar analysis in its applicative interface.
+	\item \textbf{Precedences:} The Ampersand parser is currently built with the UU-parsinglib with great satisfaction.
 		This both means that the library has enough features and that it is known by the other Ampersand developers.
 	\item \textbf{Error reporting:} No literature has been found with a comparison of the errors generated by the libraries.
 		However, many publications affirm that the generated errors from both libraries are great \citeac{helium-parser,uu-doc,error-correcting,parsec}.
 	\item \textbf{Error recovery:} When a parsing error is found, a Parsec parser stops immediately.
-		A parser built with uu-parsinglib, however, corrects the error and continues parsing.
+		A parser built with UU-parsinglib, however, corrects the error and continues parsing.
 		Error correction is good because the parser always succeeds.
 		On the other hand, a big list of errors can also overwhelm the user \citeac{heeren-error}.
 		Finally, to perform the corrections, the parser needs to make assumptions based e.g. on statistics;
@@ -84,12 +84,12 @@ The following differences have been found between the two considered libraries:
 	\item \textbf{Backtracking:} Parsec works with more traditional backtracking algorithms \citeac{parsec} that can often lead to high space consumption \citeac{uu-doc}.
 		Backtracking must be manually activated, though, with it's \textit{try} combinator.
     This combinator is considered harmful and can be easily misused \citenac{try-harmful}.
-		The uu-parsinglib, on the other hand, uses breadth-first lazy parsing \citeac{uu-doc} so such combinator is not necessary.
+		The UU-parsinglib, on the other hand, uses breadth-first lazy parsing \citeac{uu-doc} so such combinator is not necessary.
 		% http://osdir.com/ml/haskell-cafe@haskell.org/2012-01/msg00566.html
     
 	\item \textbf{Performance:} The Parsec library seems to have better performance \citenac{benchmark}, but the difference is small and is not expected to make a considerable difference in the small ADL scripts.
 	\item \textbf{Maintainability:} No significant difference has been found in the maintainability of the two analyzed libraries.
-		Note that the programmers working on Ampersand are already familiar with the uu-parsinglib.
+		Note that the programmers working on Ampersand are already familiar with the UU-parsinglib.
 		On the other hand, there is more support and documentation available for Parsec, so it can also be seen as more future-proof.
 		The responsibility for the maintainability still lies on the hands of the programmers building the parser.
 	\item \textbf{Origin:} Both libraries are originated at the Utrecht University.

@@ -1,6 +1,6 @@
 % !TEX root = ../Parsing.tex
 
-\subsection{The Ampersand Methodology}
+\subsection{The Ampersand methodology}
 \label{sec:AmpersandTheory}
 
 \subsubsection{Software requirements, the problem statement}
@@ -28,20 +28,20 @@ The formal methods are categorized into three domains:
 \dict{RAISE}{Rigorous Approach to Industrial Software Engineering}
 
 \begin{description}
-	\item[Algebraic languages] describing the system in terms of types of data, mathematical operations on those data and their relationships, such as Z \citeac{Spivey89}, VDM \citeac{RISC3820} and Alloy \citeac{Jackson02}.
+	\item[Algebraic languages] describing the system in terms of types of data, mathematical operations on those data and their relationships, such as Z \citeac{Spivey89}, VDM \citenac{RISC3820} and Alloy \citeac{Jackson02}.
 	\item[Model based languages] using mathematical sets and sequences to express the system specification as a system state model such as OBJ \citenac{Goguen93introducingobj}, Larch \citenac{Guttag93larch:languages} and LOTOS \citeac{BolognesiB87}.
 	\item[Hybrid languages] combining features of both algebraic as model-based languages such as RAISE \citeac{George03thelogic} and CafeOBJ, an enhancement of the OBJ language \citeac{DiaconescuFO03}.
 \end{description}
 
 \paragraph{Business requirements}
 \dict{RML}{Requirement Modeling Language}
-Although formal specification methods had a positive impact on the software development process, it was recognized that these techniques were not sufficient. Concisely summarized by Yu and Mylopoulos \citenac{Understandingwhys}, the formal specification methods focus on the `whats' and the `hows' of the desired system without an understanding of the `whys' behind the system. 
+Although formal specification methods had a positive impact on the software development process, it was recognized that these techniques were not sufficient. Concisely summarized by Yu and Mylopoulos \citeac{Understandingwhys}, the formal specification methods focus on the `whats' and the `hows' of the desired system without an understanding of the `whys' behind the system. 
 
 Within the social environment in which a software system will be introduced, several stakeholders have different goals,  business requirements, and based on these, they will express, often imprecise and inconsistent, expectations. Only by the correct understanding of their business requirements, to a feasible extend, the requirement engineers will truly feel the `whys' needed to derive the correct `whats' and `hows' to support these different goals.
 
 Several early phase requirement modeling languages, RMLs, were introduced and typically included \citeac{JuretaBEM10}: 
 \begin{description}
-	\item[An ontology of requirements] describing the needed information to capture and the desired properties and behavior of of the to-be system, the view on the world from the perspective of the to-be system. This includes instances such as `Entity', `Activity' and `Assertion' \citenac{RMLRevisited}.
+	\item[An ontology of requirements] describing the needed information to capture and the desired properties and behavior of of the to-be system, the view on the world from the perspective of the to-be system. This includes instances such as `Entity', `Activity' and `Assertion' \citeac{RMLRevisited}.
 	\item[Modeling primitives,] to model the concepts and the relations within the ontology.
 	\item[Methods,] sometimes automated, to verify consistency and to perform additional analysis to verify if the stated requirements will satisfy the business expectations.
 \end{description}
@@ -52,10 +52,10 @@ Several early phase requirement modeling languages, RMLs, were introduced and ty
 \dict{KAOS}{Knowledge Acquisition in autOmated Specification}%
 \dict{i*}{A framework for an agent-oriented approach to requirements engineering (pronnounced eye-star)}%
 \dict{COTS}{Commercial Off The Shelf}%
-Early RMLs such as RML \citenac{RMLRevisited}, provided initial methods but suffered from drawbacks such as extensibility as the provided ontologies were rather fixed meaning that no new notions on par with the existing instances could be addressed. CML \citenac{CML}, which evolved to Telos \citeac{mylopoulos90telos}, contained already additional flexibility. 
+Early RMLs such as RML \citeac{RMLRevisited}, provided initial methods but suffered from drawbacks such as extensibility as the provided ontologies were rather fixed meaning that no new notions on par with the existing instances could be addressed. CML \citenac{CML}, which evolved to Telos \citeac{mylopoulos90telos}, contained already additional flexibility. 
 
 KAOS \citeac{KAOS} introduced the notion of `stakeholder goal' where i* \citeac{yu97a} even differentiated between independent and interrelated, joint goals.
-Further research to introduce the concept of goal priorities is ongoing for which a new abstract requirements modeling language `Techne' \citeac{JuretaBEM10} is designed, based on the CORE ontology for requirements \citenac{JuretaMF08}. Techne will provide the framework for new RMLs containing methods to compare candidate solutions and their compliance towards the business requirements, a feature that will come in handy as many software engineering projects nowadays include COTS package based solutions.
+Further research to introduce the concept of goal priorities is ongoing for which a new abstract requirements modeling language `Techne' \citeac{JuretaBEM10} is designed, based on the CORE ontology for requirements \citeac{JuretaMF08}. Techne will provide the framework for new RMLs containing methods to compare candidate solutions and their compliance towards the business requirements, a feature that will come in handy as many software engineering projects nowadays include COTS package based solutions.
 
 \paragraph{Limitations and frequent issues}
 \label{sec:drawbacks}
@@ -73,7 +73,7 @@ Besides the significant improvements and their positive impact in software engin
 \end{description}
 
 
-\subsubsection{The goals of the Ampersand Methodology}
+\subsubsection{The goals of the Ampersand methodology}
    
 The Ampersand Methodology was crafted in 2007 by the inventor Joosten \citenac{joosten2007deriving}, with the vision to provide an answer to several of the main drawbacks of using formal techniques  in software engineering (listed in \autoref{sec:drawbacks}). 
 The Ampersand Methodology is  developed to provide a method to unify the informal process of capturing the needs of users with the formal process of specifying an information system and to provide a formal translation method between both processes, including the necessary tools to ensure that the methodology is useful in real life projects.
@@ -128,7 +128,7 @@ The practical use of the Ampersand Methodology is supported by the ADL tool buil
 This tool produces a wide range of functionalities and design artifacts to support the validation, consistency checks and the subsequent software development steps:
 \begin{description}
 	\item[Business rules and consistency issues] The declared business rules in the ADL Language are compiled and typed checked.
-	This is realized by using Swierstra's combinator package for the compiler \citeac{uu-doc}  and the AG-preprocessor by Dijkstra and Swiestra for the type-checker \citenac{MiddelkoopDS10}.
+	This is realized by using Swierstra's combinator package for the compiler \citeac{uu-doc}  and the AG-preprocessor by Dijkstra and Swiestra for the type-checker \citeac{MiddelkoopDS10}.
 	\item[Data model]  Class diagrams and entity-relationships are created using the the GraphViz package \citenac{gansner2006drawing}. 
 	\item[Service catalogue] The possible services such as create, get, update and delete,  are specified formally for all classes and relationships that are specified in the business rules.
 	This formal representation together with the pre- and postconditions of the service make it possible that several developers can program the services independently of each other. 

@@ -8,11 +8,11 @@ Ampersand has the objective to provide an answer to known issues related to form
 By using natural language in combination with relational algebra to define business rules, the rules are presented in a way that can be understood by business analysts while guaranteeing consistency.
 The keystone of the methodology is the supporting tool, which generates useful design artifacts and working prototypes.
 
-To improve the user feedback quality of the Ampersand parser, a combinator library is preferred instead of a parser generator since it is easier to understand and errors are more customizable.
+To improve the user feedback quality of the Ampersand parser, a combinator library is preferred instead of a parser generator, since the way the combinators work are easier to understand and the generated errors are more customizable.
 Out of several parsing libraries, the Parsec library had the best references and support documentation and is therefore the library of choice for the Ampersand project.
 
 Based on a error manifesto for defining good and bad error messages, the initial measurement of the old parser clearly envisioned the need for improvement.
-In addition, due to the organic growth of the parser coding, code simplification was a necessity.
+In addition, due to the evolutionary growth of the parser code, simplification was a necessity.
 To achieve this, several tools are used, a new test suite is developed and good documentation is written.
 Grammar optimizations to avoid the need for backtracking and data restructuring to align the parse tree on the grammar have also improved the code maintainability.
 

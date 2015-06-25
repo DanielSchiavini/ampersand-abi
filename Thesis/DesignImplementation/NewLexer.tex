@@ -1,10 +1,10 @@
 % !TEX root = ../Thesis.tex
 
-\subsection{New Lexer}
+\subsection{New lexer}
 \label{design:new-lexer}
 
 \subsubsection{The rationale behind the new lexer}
-In the design of the new Ampersand parser, the first decision to tackle is whether to keep the existing scanner/lexer or to implement a new one.
+In the design of the new Ampersand parser, the first decision to tackle is whether to keep the existing scanner/lexer that is implemented in UULib or to implement a new one with Parsec.
 In the analysis of the error improvement areas in \autoref{sec:analysis}, the main improvements are identified within the old parser.
 The error feedback quality, produced by the scanner module, is higher and therefore, there is no stringent need to re-implement the scanner.
 On the other hand, given the aspect that Parsec is identified as the new parser library, keeping the current scanner would result in the utilization of two different libraries providing more of less the same functionality.
@@ -17,7 +17,7 @@ The scanner module is renamed to lexer to stress the aspect that the principle o
 Lexemes can be seen as the part of a token containing the actual language content besides the actual position information.
 
 The lexer is built based on the existing Helium lexer modules. 
-Helium is a Haskell compiler with the main goal of giving user friendly error messages \citeac{helium}.
+Helium is a Haskell compiler with the main goal of giving user friendly error messages \citeac{helium-parser}.
 The lexer module in Helium contains interesting principles such as position monitoring, warnings and easy maintainable error messages.
 
 % !TEX root = ../Documentation.tex

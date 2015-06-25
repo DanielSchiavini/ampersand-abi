@@ -9,6 +9,7 @@ The results of this analysis are compared with the new parser in \autoref{tests:
 The user friendliness and correctness of an error message is a subjective topic and therefore we need to start with a definition to objectively judge the quality of an error message.
 In order to identify the objective aspects of an Ampersand parser error message, we decided to use an existing definition.
 Yang et al.~suggest a manifesto to measure the quality of reported type error messages \citeac{yang2001improving,yang2000improved}.
+Since the definitions of this manifesto are not strictly dependent on type errors, we consider it also well suited to parsing errors.
 According to this manifesto, a good error report should have the following properties.
 \begin{itemize}
   \item \textbf{Correct:} An error message is emitted only for illegal programs, while correct programs are accepted without an error report.
@@ -19,7 +20,7 @@ According to this manifesto, a good error report should have the following prope
 \end{itemize}
 
 \noindent
-To expand on the error manifesto, we consider the following characteristics to be part of intuitive errors:
+To expand on the error manifesto, we consider the following characteristics to be part of intuitive parsing errors:
 \begin{itemize}
   \item	\textbf{\small How does the provided error description outline the discovered error:}
       Providing the user with a good description of the encountered syntax issue will support a fast error resolution.

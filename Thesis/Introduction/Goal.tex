@@ -1,6 +1,5 @@
 % !TEX root = ../Thesis.tex
 
-\subsection{Goals}
 Business rules promise to improve the quality and efficiency of the requirements elicitation process in information system projects.
 Once the business rules are consistently and coherently defined, they form a knowledge repository used for the provisioning of information within organizations.
 However, there used to be a large difference between the rules as seen by the Business Rules Manifesto and the way these were supported by software systems \citeac{invariant-actieregel}.
@@ -13,7 +12,7 @@ As the project becomes larger, users have significant issues with error messages
 Mainly for new users, errors are a large obstacle and cause frustrations.
 
 Our assignment, given by Prof.dr. Stef Joosten, is thus to redesign and implement a new parser for Ampersand, providing user friendly error feedback \citepr{project-announcement}.
-In order to improve the error messages, Daniel Schiavini has researched the qualities of error messages and the options for parsing within Haskell.
+In order to improve the error messages, Daniel Schiavini researched the qualities of error messages and the options for parsing within Haskell.
 By understanding what kind of messages the Ampersand users expect, we have developed a new parser for Ampersand based on the Parsec library.
 The main conclusion was to rewrite the parser using another parsing library, namely Parsec.
 In parallel, Maarten Baertsoen researched business rules and the Ampersand approach more thoroughly.
@@ -32,5 +31,5 @@ The grammar documentation was not up-to-date, so we reverse engineered the code 
 Also, refactoring was applied without changing the language accepted by the parser, in order to improve the parser's performance and its maintainability.
 The new parser improves both the error message quality and the software properties related to readability, extensibility and maintainability.
 
-Finally, a thorough analysis on the error message quality showed that the old parser gave good error messages in 22\% of the time, while the new parser improved this percentage to 82\%.
+Finally, a thorough analysis on the error message quality showed that the old parser gives good error messages in 22\% of the time, while the new parser improves this percentage to 82\%.
 Bad quality messages went down from 21\% to 1\%.

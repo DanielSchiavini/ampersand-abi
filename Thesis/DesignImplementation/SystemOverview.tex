@@ -10,8 +10,9 @@
     \label{fig:ParserModules}
   \end{figure}%
 
+  \noindent
   The parsing process starts in the module \code{Parsing}.
-  As a first step, the input string is sliced into tokens by the \code{lexer} module.
+  As a first step, the input string is sliced into tokens by the \code{Lexer} module.
   Once the input string is separated into the token structure as defined in the module \code{LexerToken} the next step is to actually parse the tokens by the \code{Parser}.
   The parser will use the \code{ParsingLib} to create the parse tree as defined in \code{ParseTree}.
 
@@ -32,7 +33,7 @@
  \end{description}
 
   \noindent
-  Several supporting modules are defined used by one or more main modules:
+  Several supporting modules are defined and used by one or more main modules:
   \begin{description}
     \item[ParsingLib] library that contains several useful functions to assist the parser, e.g. token recognition.
       These functions are not depending on the specific grammar rules.

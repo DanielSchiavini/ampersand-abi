@@ -20,7 +20,7 @@ This was done only when the code readability could be improved by doing so.
 \label{design:parsing-lib}
 As mentioned in \autoref{domain:parsing}, the new Ampersand parser has been rebuilt with another parsing library, namely Parsec.
 However, for the Ampersand developers, the source code of the parser will still look very familiar, thanks to the applicative interface.
-For developers, the main differences between Parsec and the uulib are:
+For developers, the main differences between Parsec and the UUlib are:
 \begin{itemize}
   \item Parsec does not backtrack by default.
     In order to enable backtracking, the \code{try} function must be used.
@@ -37,14 +37,14 @@ For developers, the main differences between Parsec and the uulib are:
 
 \subsubsection{Backtracking}
 \label{design:backtracking}
-In order to explain the differences on backtracking behavior between the uulib and Parsec, we quote here Doaitse Swierstra, the author of the uulib \citenac{swierstra-parsec}:
+In order to explain the differences on backtracking behavior between the UUlib and Parsec, we quote here Doaitse Swierstra, the author of the UUlib \citenac{swierstra-parsec}:
 \begin{quote}
 \textsl{%
-  To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in uu-parsinglib.
+  To understand the subtleties it is important to understand the differences between the try construct in Haskell and the non-greedy parsing strategy used in UU-parsinglib.
   Effectively the latter is a try which just looks ahead one symbol.
   In that respect it is less powerful than the \code{try} construct from Parsec, in which you specify that a specific construct has to be present completely.
   And then there is the underlying different overall strategy.
-  Parsec uses a back-tracking strategy with explicit tries to commit, whereas uu-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.
+  Parsec uses a back-tracking strategy with explicit tries to commit, whereas UU-parsinglib uses a breadth-first strategy with an occasional single symbol look-ahead.
 }
 \end{quote}
 Although the \code{try} construct for backtracking in Parsec is very powerful, it is also undesirable:
